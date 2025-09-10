@@ -1,0 +1,165 @@
+{
+  "main": {
+    "id": "f5fbe38bde29a3b3",
+    "type": "split",
+    "children": [
+      {
+        "id": "66dbc6f59c1f607e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f6979da2634d6042",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "public_records_ai_app.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "83e7976d4184b89b",
+    "type": "split",
+    "children": [
+      {
+        "id": "22b92c23614edd65",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4e2580bc057314b5",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "8d2973a334e79c81",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "c9ae468d3065c141",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "aa5320fb4c60ad63",
+    "type": "split",
+    "children": [
+      {
+        "id": "19347cd2a6930f2a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ac99b64859afdb20",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "public_records_ai_app.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "cd20e3adc69dcf36",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "public_records_ai_app.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "9ad8ffadddb6afde",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "ada1fcdac417af65",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "public_records_ai_app.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "f6979da2634d6042",
+  "lastOpenFiles": [
+    "tasks.md",
+    "progress.md",
+    "activeContext.md",
+    "techContext.md",
+    "systemPatterns.md",
+    "productContext.md",
+    "projectbrief.md",
+    "copilot-rules.md",
+    "memory-bank-instructions.md",
+    "design_doc_public_records_ai.md",
+    "public_records_ai_app.md",
+    "public_records_full_backlog.md",
+    "public_records_prd.md"
+  ]
+}

@@ -1,0 +1,119 @@
+export const tokens = {
+  colors: {
+    primary: {
+      main: '#1976d2',
+      light: '#42a5f5',
+      dark: '#1565c0',
+      contrastText: '#ffffff'
+    },
+    secondary: {
+      main: '#9c27b0',
+      light: '#ba68c8',
+      dark: '#7b1fa2',
+      contrastText: '#ffffff'
+    },
+    error: {
+      main: '#d32f2f',
+      light: '#ef5350',
+      dark: '#c62828',
+      contrastText: '#ffffff'
+    },
+    warning: {
+      main: '#ed6c02',
+      light: '#ff9800',
+      dark: '#e65100',
+      contrastText: '#ffffff'
+    },
+    info: {
+      main: '#0288d1',
+      light: '#03a9f4',
+      dark: '#01579b',
+      contrastText: '#ffffff'
+    },
+    success: {
+      main: '#2e7d32',
+      light: '#4caf50',
+      dark: '#1b5e20',
+      contrastText: '#ffffff'
+    },
+    grey: {
+      50: '#fafafa',
+      100: '#f5f5f5',
+      200: '#eeeeee',
+      300: '#e0e0e0',
+      400: '#bdbdbd',
+      500: '#9e9e9e',
+      600: '#757575',
+      700: '#616161',
+      800: '#424242',
+      900: '#212121'
+    }
+  },
+  typography: {
+    fontFamily: {
+      primary: '"Roboto", "Helvetica", "Arial", sans-serif',
+      mono: '"Roboto Mono", "Courier New", monospace'
+    },
+    fontSizes: {
+      xs: '0.75rem',
+      sm: '0.875rem',
+      md: '1rem',
+      lg: '1.125rem',
+      xl: '1.25rem',
+      '2xl': '1.5rem',
+      '3xl': '1.875rem',
+      '4xl': '2.25rem'
+    },
+    fontWeights: {
+      light: 300,
+      regular: 400,
+      medium: 500,
+      bold: 700
+    },
+    lineHeights: {
+      none: 1,
+      tight: 1.25,
+      normal: 1.5,
+      relaxed: 1.75
+    }
+  },
+  spacing: {
+    xs: '0.25rem',
+    sm: '0.5rem',
+    md: '1rem',
+    lg: '1.5rem',
+    xl: '2rem',
+    '2xl': '4rem'
+  },
+  breakpoints: {
+    xs: '0px',
+    sm: '600px',
+    md: '900px',
+    lg: '1200px',
+    xl: '1536px'
+  },
+  shadows: {
+    none: 'none',
+    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+    md: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+  },
+  radii: {
+    none: '0',
+    sm: '0.125rem',
+    md: '0.25rem',
+    lg: '0.5rem',
+    xl: '0.75rem',
+    full: '9999px'
+  },
+  zIndices: {
+    hide: -1,
+    base: 0,
+    dropdown: 1000,
+    sticky: 1100,
+    modal: 1300,
+    popover: 1400,
+    tooltip: 1500
+  }
+} as const;
