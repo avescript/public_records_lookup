@@ -12,6 +12,7 @@ US-002: Public Records Request Form
 - Given invalid input, appropriate error messages are shown
 - Given valid submission, loading state and success notification are shown
 - Given different screen sizes, the form remains responsive and usable
+- Given file attachments, users can upload and preview files
 
 ### Completed Tasks
 - [x] Create repo and Next.js + TypeScript + MUI baseline
@@ -19,9 +20,13 @@ US-002: Public Records Request Form
 - [x] Implement BaseLayout with Header and Footer
 - [x] Create RequestForm component with validation
 - [x] Add form state management and feedback
+- [x] Set up FileUpload component with drag-and-drop
+- [x] Fix TypeScript configuration and resolve errors
+- [x] Implement proper project structure
 
 ### Current Tasks
-- [ ] Implement file upload functionality
+- [ ] Add file upload preview and validation
+- [ ] Integrate FileUpload with RequestForm
 - [ ] Add department-specific form fields
 - [ ] Create custom date range selector
 - [ ] Add request status tracking

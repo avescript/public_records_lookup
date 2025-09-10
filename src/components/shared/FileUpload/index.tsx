@@ -1,9 +1,7 @@
 'use client';
 
-'use client';
-
 import React, { useCallback } from 'react';
-import { Box, Typography, Button, LinearProgress } from '@mui/material';
+import { Box, Typography, Button, LinearProgress, Alert } from '@mui/material';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled, Theme } from '@mui/material/styles';
@@ -32,6 +30,14 @@ const FileList = styled(Box)(({ theme }: { theme: Theme }) => ({
   marginTop: theme.spacing(2),
 }));
 
+const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+};
+
 const FileUpload: React.FC<FileUploadProps> = ({
   onFilesSelected,
   maxFiles = 5,
@@ -40,7 +46,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   isLoading = false,
   error = '',
 }) => {
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     onFilesSelected(acceptedFiles);
   }, [onFilesSelected]);
 
@@ -70,7 +76,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           Accepted files: {acceptedFileTypes.join(', ')}
         </Typography>
         <Typography variant="caption" display="block" color="textSecondary">
-          Maximum size: {maxSize / (1024 * 1024)}MB
+          Maximum size: {formatFileSize(maxSize)}
         </Typography>
         <Button
           variant="contained"
@@ -93,35 +99,33 @@ const FileUpload: React.FC<FileUploadProps> = ({
         </Typography>
       )}
 
+      {fileRejections.length > 0 && (
+        <Box sx={{ mt: 2 }}>
+          {fileRejections.map(({ file, errors }, index) => (
+            <Alert 
+              key={`${file.name}-${index}`}
+              severity="error" 
+              sx={{ mb: 1 }}
+            >
+              {file.name}: {errors.map(e => e.message).join(', ')}
+            </Alert>
+          ))}
+        </Box>
+      )}
+
       {acceptedFiles.length > 0 && (
         <FileList>
           <Typography variant="subtitle2" gutterBottom>
             Selected Files:
           </Typography>
           {acceptedFiles.map((file: File, index: number) => (
-            <Typography
-              key={index}
-              variant="body2"
-              color="textSecondary"
-              sx={{ mt: 0.5 }}
-            >
-              {file.name} ({(file.size / 1024).toFixed(1)} KB)
-            </Typography>
+            <Box key={`${file.name}-${index}`} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Typography variant="body2" sx={{ flexGrow: 1 }}>
+                {file.name} ({formatFileSize(file.size)})
+              </Typography>
+            </Box>
           ))}
         </FileList>
-      )}
-
-      {fileRejections.length > 0 && (
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle2" color="error" gutterBottom>
-            Rejected Files:
-          </Typography>
-          {fileRejections.map(({ file, errors }: FileRejection, index: number) => (
-            <Typography key={index} variant="body2" color="error">
-              {file.name}: {errors.map((e: { message: string }) => e.message).join(', ')}
-            </Typography>
-          ))}
-        </Box>
       )}
     </Box>
   );

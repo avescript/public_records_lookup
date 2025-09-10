@@ -1,7 +1,7 @@
 # Development Progress
 
 ## Overall Status
-Phase 0 (Prototype) - Initial Setup
+Phase 1 - Core Implementation
 
 ## Current Sprint
 Sprint 1: Foundation & Request Intake (Epics 0-1)
@@ -10,9 +10,11 @@ Sprint 1: Foundation & Request Intake (Epics 0-1)
 
 ### Epic 0 — Foundation & Environments
 Status: In Progress
-- [ ] US-000: Bootstrap project (Active)
-  - [ ] Create repo and Next.js + TypeScript + MUI baseline
-  - [ ] Add ESLint + Prettier + TS strict config
+- [x] US-000: Bootstrap project (Completed)
+  - [x] Create repo and Next.js + TypeScript + MUI baseline
+  - [x] Add ESLint + Prettier + TS strict config
+  - [x] Set up proper project structure
+  - [x] Configure TypeScript with strict mode
   - [ ] Set up GitHub Actions/Cloud Build pipelines
   - [ ] Add `.env.example` for Google Identity/keys
   - [ ] Add top-level README and contributing guide
@@ -20,6 +22,17 @@ Status: In Progress
   - [ ] Infra defaults with us-west regions
   - [ ] Region guardrails documentation
   - [ ] Static analysis/pre-commit check for IaC
+
+### Epic 1 — Core UI Components
+Status: In Progress
+- [x] Create reusable FileUpload component
+  - [x] Implement drag-and-drop functionality
+  - [x] Add file validation
+  - [ ] Add file preview
+- [x] Create RequestForm component
+  - [x] Implement form validation with Zod
+  - [x] Add form state management
+  - [ ] Integrate with FileUpload component
 
 ### Epic 1 — Request Intake (Public Portal)
 Status: Not Started
