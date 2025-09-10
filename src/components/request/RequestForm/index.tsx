@@ -91,7 +91,7 @@ export const RequestForm = () => {
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.department}>
                   <InputLabel>Department</InputLabel>
-                  <Select {...field} label="Department" disabled={isSubmitting}>
+                  <Select {...field} label="Department" disabled={isSubmitting} data-testid="department-select">
                     {departments.map((dept) => (
                       <MenuItem key={dept.id} value={dept.id}>
                         {dept.name}
@@ -111,7 +111,7 @@ export const RequestForm = () => {
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.timeframe}>
                   <InputLabel>Timeframe</InputLabel>
-                  <Select {...field} label="Timeframe" disabled={isSubmitting}>
+                  <Select {...field} label="Timeframe" disabled={isSubmitting} data-testid="timeframe-select">
                     <MenuItem value="last-month">Last Month</MenuItem>
                     <MenuItem value="last-quarter">Last Quarter</MenuItem>
                     <MenuItem value="last-year">Last Year</MenuItem>
