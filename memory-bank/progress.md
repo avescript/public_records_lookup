@@ -28,10 +28,14 @@ Status: In Progress
 - [x] Create reusable FileUpload component
   - [x] Implement drag-and-drop functionality
   - [x] Add file validation
+  - [x] Add comprehensive test coverage
   - [ ] Add file preview
 - [x] Create RequestForm component
   - [x] Implement form validation with Zod
   - [x] Add form state management
+  - [x] Fix test suite and resolve all test errors
+  - [x] Add comprehensive test coverage for form validation
+  - [x] Document Material-UI Select testing patterns
   - [ ] Integrate with FileUpload component
 
 ### Epic 1 — Request Intake (Public Portal)
