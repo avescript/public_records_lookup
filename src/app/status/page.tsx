@@ -18,6 +18,7 @@ import {
 import { Search as SearchIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { StoredRequest, getRequestByTrackingId } from '../../services/requestService';
+import { PublicLayout } from '../../components/layouts/PublicLayout';
 
 export default function StatusLookupPage() {
   const [trackingId, setTrackingId] = useState('');
@@ -101,13 +102,14 @@ export default function StatusLookupPage() {
   };
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
-      <Typography variant="h4" component="h1" gutterBottom align="center">
-        Track Your Request
-      </Typography>
-      <Typography variant="body1" paragraph align="center" color="text.secondary">
-        Enter your tracking ID to check the status of your public records request.
-      </Typography>
+    <PublicLayout>
+      <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom align="center">
+          Track Your Request
+        </Typography>
+        <Typography variant="body1" paragraph align="center" color="text.secondary">
+          Enter your tracking ID to check the status of your public records request.
+        </Typography>
 
       {/* Search Form */}
       <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
@@ -253,5 +255,6 @@ export default function StatusLookupPage() {
         </Typography>
       </Box>
     </Box>
+    </PublicLayout>
   );
 }

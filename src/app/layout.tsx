@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import React from 'react';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
-import { BaseLayout } from '@/components/layouts/BaseLayout';
 
 export const metadata: Metadata = {
   title: "Public Records Request Portal",
@@ -17,9 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ThemeProvider>
-          <BaseLayout>
-            {children}
-          </BaseLayout>
+          {children}
         </ThemeProvider>
       </body>
     </html>
