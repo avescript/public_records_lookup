@@ -2,9 +2,10 @@
 
 ## Overall Status
 Phase 1 - Core Implementation: **EPIC 1 COMPLETED** ✅
+Phase 2 - Staff Workflows: **EPIC 2 IN PROGRESS** 🚧
 
 ## Current Sprint
-Sprint 2: Agency Console & Staff Workflows (Epic 2)
+Sprint 2: Agency Console & Staff Workflows (Epic 2) - **IN PROGRESS**
 **Previous:** Sprint 1: Foundation & Request Intake (Epics 0-1) - COMPLETED
 
 ## Epic Progress
@@ -81,11 +82,32 @@ Status: **COMPLETED**
   - [x] Component test coverage
   - [x] Build optimization
 
-### Epic 2 — Agency Console & SLA
-Status: **READY TO START** 
-Priority: **HIGH** (Next Sprint)
-- [ ] US-020: Filter by agency/status/due date
-- [ ] US-021: SLA clocks & due-soon indicators
+### Epic 2 — Agency Console & SLA 🚧
+Status: **IN PROGRESS** 
+Priority: **HIGH** (Current Sprint)
+- [x] **US-020: Staff request queue with data grid** ✅
+  - [x] Create StaffDashboard component with MUI Data Grid
+  - [x] Implement sortable columns (tracking ID, title, department, status, dates)
+  - [x] Add SLA tracking with business day calculations
+  - [x] Create due date indicators with color coding (overdue/due soon/on time)
+  - [x] Set up staff page routing (/staff) and navigation integration
+  - [x] Build admin tools for test data management (/admin)
+  - [x] Create test data seeder with realistic sample requests
+- [ ] **US-021: Filtering and search capabilities**
+  - [ ] Implement department/agency filtering
+  - [ ] Add status filtering (submitted/processing/under_review/completed/rejected)
+  - [ ] Create date range filtering
+  - [ ] Add search functionality across request titles/descriptions
+  - [ ] Implement URL parameter synchronization for shareable views
+- [ ] **US-022: Request details and status management**
+  - [ ] Create request details view/drawer
+  - [ ] Add status update functionality for staff
+  - [ ] Implement internal notes system
+  - [ ] Add request assignment capabilities
+- [ ] **US-023: Staff authentication and RBAC**
+  - [ ] Implement staff authentication system
+  - [ ] Create role-based access control
+  - [ ] Add different views for different staff roles (Admin, Records Officer, Legal Reviewer)
 
 ### Epic 3 — Search & AI Match
 Status: Not Started
@@ -137,7 +159,7 @@ Status: Not Started
 - [ ] US-120: Generate response draft
 
 ## Recent Achievements (September 2025)
-✅ **Complete Request Submission & Tracking System**
+✅ **Complete Request Submission & Tracking System (Epic 1)**
 - End-to-end user flow: Submit → Confirm → Track
 - Firebase/Firestore integration with proper typing
 - Comprehensive form validation and error handling
@@ -148,11 +170,20 @@ Status: Not Started
 - TypeScript strict mode compliance
 - Build optimization and deployment readiness
 
+🚧 **Staff Console Foundation (Epic 2 - In Progress)**
+- Advanced data grid with MUI X Data Grid for request queue management
+- SLA tracking with business day calculations and due date indicators
+- Color-coded priority system (overdue/due soon/on time)
+- Staff dashboard with sortable/filterable columns
+- Admin tools page with test data seeding functionality
+- Navigation integration for staff and admin workflows
+- Test data seeder with 7 realistic sample requests
+
 ## Known Issues
 None at this stage
 
 ## Next Milestones
-1. **Epic 2**: Staff console for request management
+1. **Epic 2 Completion**: Complete staff console with filtering, details view, and authentication
 2. **Epic 3**: AI matching system integration
 3. **Epic 4**: Document redaction workflow
 4. **Epic 7**: Audit logging and analytics
@@ -162,6 +193,7 @@ None at this stage
 - Comprehensive README documentation (deferred)
 - File upload to Firebase Storage (using local storage for now)
 - Real-time status updates (using manual lookup for now)
+- Staff authentication system (placeholder for RBAC implementation)
 
 ## Performance Metrics
 - Build time: ~4-5 seconds
