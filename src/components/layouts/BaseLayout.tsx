@@ -25,6 +25,12 @@ export function BaseLayout({ children }: BaseLayoutProps) {
             <Button color="inherit" component={Link} href="/status">
               Track Request
             </Button>
+            <Button color="inherit" component={Link} href="/staff">
+              Staff Console
+            </Button>
+            <Button color="inherit" component={Link} href="/admin">
+              Admin Tools
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>

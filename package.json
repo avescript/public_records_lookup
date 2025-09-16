@@ -16,6 +16,7 @@
     "@hookform/resolvers": "^3.3.1",
     "@mui/icons-material": "^5.14.9",
     "@mui/material": "^5.14.9",
+    "@mui/x-data-grid": "^8.11.2",
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
     "firebase": "^12.2.1",
