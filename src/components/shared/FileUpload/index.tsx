@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useCallback } from 'react';
-import { Box, Typography, Button, LinearProgress, Alert } from '@mui/material';
+import React, { useCallback, useState } from 'react';
+import { Box, Typography, Button, LinearProgress, Alert, IconButton, Card, CardContent } from '@mui/material';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DescriptionIcon from '@mui/icons-material/Description';
+import ImageIcon from '@mui/icons-material/Image';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { styled, Theme } from '@mui/material/styles';
 
 export interface FileUploadProps {
@@ -38,19 +42,46 @@ const formatFileSize = (bytes: number): string => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
 
+const getFileIcon = (file: File) => {
+  if (file.type.startsWith('image/')) {
+    return <ImageIcon color="primary" />;
+  } else if (file.type === 'application/pdf') {
+    return <PictureAsPdfIcon color="error" />;
+  } else {
+    return <DescriptionIcon color="action" />;
+  }
+};
+
+const getFilePreview = (file: File): string | null => {
+  if (file.type.startsWith('image/')) {
+    return URL.createObjectURL(file);
+  }
+  return null;
+};
+
 const FileUpload: React.FC<FileUploadProps> = ({
   onFilesSelected,
   maxFiles = 5,
   maxSize = 10 * 1024 * 1024, // 10MB default
-  acceptedFileTypes = ['.pdf', '.doc', '.docx', '.txt', '.jpg', '.jpeg', '.png'],
+  acceptedFileTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'image/jpeg', 'image/png'],
   isLoading = false,
   error = '',
 }) => {
-  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-    onFilesSelected(acceptedFiles);
-  }, [onFilesSelected]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-  const { getRootProps, getInputProps, isDragActive, acceptedFiles, fileRejections } = useDropzone({
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+    const newFiles = [...selectedFiles, ...acceptedFiles];
+    setSelectedFiles(newFiles);
+    onFilesSelected(newFiles);
+  }, [onFilesSelected, selectedFiles]);
+
+  const removeFile = useCallback((indexToRemove: number) => {
+    const newFiles = selectedFiles.filter((_, index) => index !== indexToRemove);
+    setSelectedFiles(newFiles);
+    onFilesSelected(newFiles);
+  }, [selectedFiles, onFilesSelected]);
+
+  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
     maxFiles,
     maxSize,
@@ -73,7 +104,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             : 'Drag and drop files here, or click to select files'}
         </Typography>
         <Typography variant="caption" color="textSecondary">
-          Accepted files: {acceptedFileTypes.join(', ')}
+          Accepted files: PDF, Word documents, text files, images (JPG, PNG)
         </Typography>
         <Typography variant="caption" display="block" color="textSecondary">
           Maximum size: {formatFileSize(maxSize)}
@@ -113,18 +144,55 @@ const FileUpload: React.FC<FileUploadProps> = ({
         </Box>
       )}
 
-      {acceptedFiles.length > 0 && (
+      {selectedFiles.length > 0 && (
         <FileList>
           <Typography variant="subtitle2" gutterBottom>
-            Selected Files:
+            Selected Files ({selectedFiles.length}/{maxFiles}):
           </Typography>
-          {acceptedFiles.map((file: File, index: number) => (
-            <Box key={`${file.name}-${index}`} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <Typography variant="body2" sx={{ flexGrow: 1 }}>
-                {file.name} ({formatFileSize(file.size)})
-              </Typography>
-            </Box>
-          ))}
+          {selectedFiles.map((file: File, index: number) => {
+            const previewUrl = getFilePreview(file);
+            return (
+              <Card key={`${file.name}-${index}`} sx={{ mb: 1 }}>
+                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    {previewUrl ? (
+                      <Box
+                        component="img"
+                        src={previewUrl}
+                        alt={file.name}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          objectFit: 'cover',
+                          borderRadius: 1,
+                        }}
+                      />
+                    ) : (
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40 }}>
+                        {getFileIcon(file)}
+                      </Box>
+                    )}
+                    <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                      <Typography variant="body2" noWrap title={file.name}>
+                        {file.name}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        {formatFileSize(file.size)}
+                      </Typography>
+                    </Box>
+                    <IconButton
+                      size="small"
+                      onClick={() => removeFile(index)}
+                      disabled={isLoading}
+                      aria-label={`Remove ${file.name}`}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
+            );
+          })}
         </FileList>
       )}
     </Box>

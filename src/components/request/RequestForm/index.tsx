@@ -14,11 +14,16 @@ import {
   Alert,
   Snackbar,
   Grid,
+  Typography,
+  Divider,
 } from '@mui/material';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { RequestFormData, requestSchema } from './types';
+import { RequestFormData, RequestFormDataWithFiles, requestSchema } from './types';
 import { zodResolver } from '@hookform/resolvers/zod';
+import FileUpload from '../../shared/FileUpload';
+import DateRangePicker, { DateRange } from '../../shared/DateRangePicker';
+import { saveRequest } from '../../../services/requestService';
 
 const departments = [
   { id: 'police', name: 'Police Department' },
@@ -32,33 +37,61 @@ export const RequestForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [trackingId, setTrackingId] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [fileUploadError, setFileUploadError] = useState<string>('');
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
+    watch,
   } = useForm<RequestFormData>({
     resolver: zodResolver(requestSchema),
     defaultValues: {
       title: '',
       department: '',
       description: '',
-      timeframe: '',
+      dateRange: {
+        startDate: '',
+        endDate: '',
+        preset: '',
+      },
       contactEmail: '',
     },
   });
+
+  const handleDateRangeChange = (dateRange: DateRange) => {
+    setValue('dateRange', dateRange, { shouldValidate: true });
+  };
+
+  const currentDateRange = watch('dateRange');
+
+  const handleFilesSelected = (files: File[]) => {
+    setSelectedFiles(files);
+    setFileUploadError('');
+  };
 
   const onSubmit = async (data: RequestFormData) => {
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-      console.log('Form data:', data);
-      setSubmitSuccess(true);
+      const formDataWithFiles: RequestFormDataWithFiles = {
+        ...data,
+        files: selectedFiles,
+      };
+      
+      // Save to Firebase
+      const result = await saveRequest(formDataWithFiles);
+      
+      console.log('Request saved:', result);
+      
+      // Navigate to confirmation page
+      const confirmationUrl = `/confirmation?trackingId=${encodeURIComponent(result.trackingId)}`;
+      window.location.href = confirmationUrl;
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'An error occurred while submitting your request');
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -103,25 +136,16 @@ export const RequestForm = () => {
               )}
             />
           </Box>
+        </Box>
 
-          <Box sx={{ flex: 1 }}>
-            <Controller
-              name="timeframe"
-              control={control}
-              render={({ field }) => (
-                <FormControl fullWidth error={!!errors.timeframe}>
-                  <InputLabel>Timeframe</InputLabel>
-                  <Select {...field} label="Timeframe" disabled={isSubmitting} data-testid="timeframe-select">
-                    <MenuItem value="last-month">Last Month</MenuItem>
-                    <MenuItem value="last-quarter">Last Quarter</MenuItem>
-                    <MenuItem value="last-year">Last Year</MenuItem>
-                    <MenuItem value="custom">Custom Range</MenuItem>
-                  </Select>
-                  <FormHelperText>{errors.timeframe?.message}</FormHelperText>
-                </FormControl>
-              )}
-            />
-          </Box>
+        <Box>
+          <DateRangePicker
+            value={currentDateRange}
+            onChange={handleDateRangeChange}
+            error={errors.dateRange?.message || errors.dateRange?.startDate?.message}
+            disabled={isSubmitting}
+            label="Records Date Range"
+          />
         </Box>
 
         <Box>
@@ -162,6 +186,31 @@ export const RequestForm = () => {
         </Box>
 
         <Box>
+          <Divider sx={{ my: 2 }} />
+          <Typography variant="h6" gutterBottom>
+            Supporting Documents (Optional)
+          </Typography>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+            Upload any documents that help clarify or support your records request.
+          </Typography>
+          <FileUpload
+            onFilesSelected={handleFilesSelected}
+            maxFiles={5}
+            maxSize={10 * 1024 * 1024} // 10MB
+            acceptedFileTypes={[
+              'application/pdf', 
+              'application/msword', 
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+              'text/plain', 
+              'image/jpeg', 
+              'image/png'
+            ]}
+            isLoading={isSubmitting}
+            error={fileUploadError}
+          />
+        </Box>
+
+        <Box>
           <Button
             type="submit"
             variant="contained"
@@ -178,10 +227,11 @@ export const RequestForm = () => {
 
       <Snackbar
         open={!!submitError || submitSuccess}
-        autoHideDuration={6000}
+        autoHideDuration={submitSuccess ? null : 6000} // Keep success message open until manually closed
         onClose={() => {
           setSubmitError(null);
           setSubmitSuccess(false);
+          setTrackingId(null);
         }}
       >
         <Alert
@@ -190,9 +240,15 @@ export const RequestForm = () => {
           onClose={() => {
             setSubmitError(null);
             setSubmitSuccess(false);
+            setTrackingId(null);
           }}
         >
-          {submitError || 'Request submitted successfully!'}
+          {submitError || 
+           (trackingId 
+             ? `Request submitted successfully! Your tracking ID is: ${trackingId}. Please save this ID to track your request status.` 
+             : 'Request submitted successfully!'
+           )
+          }
         </Alert>
       </Snackbar>
     </Box>

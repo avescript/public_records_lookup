@@ -13,9 +13,12 @@ describe('RequestForm', () => {
     // Check for all input fields
     expect(screen.getByRole('textbox', { name: /request title/i })).toBeInTheDocument();
     const comboboxes = screen.getAllByRole('combobox');
-    expect(comboboxes).toHaveLength(2); // Department and Timeframe selects
+    expect(comboboxes).toHaveLength(2); // Department select and DateRangePicker preset select
     expect(screen.getByRole('textbox', { name: /request description/i })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: /contact email/i })).toBeInTheDocument();
+    
+    // Check for DateRangePicker
+    expect(screen.getByText(/date range/i)).toBeInTheDocument();
     
     // Check for submit button
     expect(screen.getByRole('button', { name: /submit request/i })).toBeInTheDocument();
@@ -31,7 +34,7 @@ describe('RequestForm', () => {
     await waitFor(() => {
       expect(screen.getByText(/title must be at least 5 characters/i)).toBeInTheDocument();
       expect(screen.getByText(/please select a department/i)).toBeInTheDocument();
-      expect(screen.getByText(/please provide a timeframe/i)).toBeInTheDocument();
+      expect(screen.getByText(/start date is required/i)).toBeInTheDocument();
       expect(screen.getByText(/description must be at least 20 characters/i)).toBeInTheDocument();
       expect(screen.getByText(/please provide a valid email/i)).toBeInTheDocument();
     });
