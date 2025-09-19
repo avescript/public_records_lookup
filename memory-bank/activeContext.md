@@ -15,15 +15,16 @@ US-024: Comprehensive Testing Suite (COMPLETED) ✅
 - ✅ **Layout Components**: PublicLayout for public features, AdminLayout for staff features
 - ✅ **Login System**: Staff login page with development credentials and session persistence
 - ✅ **Comprehensive Test Suite**: 51 tests covering authentication, layouts, routing, and forms
+- ✅ **Staff Filtering & Search**: Multi-select filters, date ranges, search functionality, and URL persistence
 
 ### Next Focus (Epic 2 Continuation)
-US-020: Staff filtering and search capabilities (NEXT)
+US-022: Request details and status management (NEXT)
 
 ### Acceptance Criteria (Next)
-- [ ] Given filtering needs, staff can filter by department, status, and date ranges
-- [ ] Given search requirements, staff can search requests and persist filters in URL
-- [ ] Given request details, staff can view complete request information and update status
-- [ ] Given workflow needs, staff can add internal notes and track request progress
+- [ ] Given request selection, staff can view complete request details in drawer/modal
+- [ ] Given status management needs, staff can update request status with proper workflow
+- [ ] Given workflow tracking, staff can add internal notes and view request history
+- [ ] Given SLA monitoring, system accurately tracks business days and deadlines
 
 ### Completed Tasks (Epic 2)
 - [x] Create StaffDashboard component with MUI Data Grid
@@ -38,13 +39,21 @@ US-020: Staff filtering and search capabilities (NEXT)
 - [x] **Create protected routes with authentication guards**
 - [x] **Build login page with session persistence**
 - [x] **Write comprehensive test suite (51 tests) covering authentication and layouts**
+- [x] **Add filtering and search capabilities with URL persistence (US-021)**
+  - [x] Department/agency multi-select filtering (Police, Fire, Finance, etc.)
+  - [x] Status multi-select filtering (submitted, processing, under_review, completed, rejected)
+  - [x] Date range filtering with MUI date pickers
+  - [x] Search functionality across titles, descriptions, tracking IDs, and emails
+  - [x] URL parameter synchronization for shareable filtered views
+  - [x] Clear all filters functionality
+  - [x] Comprehensive test coverage (17 tests) for filtering logic
 
 ### Current Focus (Epic 2 Continuation)
 **Next Tasks:**
-1. **Add filtering and search capabilities with URL persistence**
-2. Implement request details view/drawer for status management
-3. Enhance SLA tracking with business day accuracy
-4. Add internal notes and workflow management
+1. **Implement request details view/drawer for status management**
+2. Enhance SLA tracking with business day accuracy
+3. Add internal notes and workflow management
+4. Build request assignment and escalation features
 
 ## Technical Stack (Current)
 - Next.js 15+ with TypeScript (strict mode)

@@ -111,13 +111,15 @@ Priority: **HIGH** (Current Sprint)
   - [x] Implement ProtectedRoute tests (10 tests) for access control
   - [x] Develop login page tests (14 tests) for form functionality
   - [x] Total: 51 tests ensuring reliability and maintainability
-- [ ] **US-021: Filtering and search capabilities** (NEXT)
-  - [ ] Implement department/agency filtering
-  - [ ] Add status filtering (submitted/processing/under_review/completed/rejected)
-  - [ ] Create date range filtering
-  - [ ] Add search functionality across request titles/descriptions
-  - [ ] Implement URL parameter synchronization for shareable views
-- [ ] **US-022: Request details and status management**
+- [x] **US-021: Filtering and search capabilities** ✅
+  - [x] Implement department/agency multi-select filtering (Police, Fire, Finance, Public Works, Legal, Other)
+  - [x] Add status multi-select filtering (submitted/processing/under_review/completed/rejected)
+  - [x] Create date range filtering with MUI DatePicker components
+  - [x] Add search functionality across request titles, descriptions, tracking IDs, and contact emails
+  - [x] Implement URL parameter synchronization for shareable filtered views with debounced updates
+  - [x] Build comprehensive test coverage (17 tests) covering all filtering scenarios
+  - [x] Add clear all filters functionality with active filter indicators
+- [ ] **US-022: Request details and status management** (NEXT)
   - [ ] Create request details view/drawer
   - [ ] Add status update functionality for staff
   - [ ] Implement internal notes system
