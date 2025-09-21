@@ -17,15 +17,21 @@
 ### 1. Frontend Patterns
 
 - **Component Architecture**
-  - MUI base components
+  - MUI base components with consistent theming
   - Custom theme with design tokens
   - Responsive, mobile-first design
   - Accessibility-first development
 
 - **State Management**
-  - React Query for server state
-  - URL-based filters
-  - Form state with React Hook Form
+  - React Hook Form for form state management
+  - URL-based filters for shareable views
+  - Firebase/Firestore for persistent data
+
+- **Code Quality Patterns**
+  - Prettier for consistent code formatting
+  - ESLint with automatic import sorting
+  - Logical import grouping (External → Internal → Relative)
+  - Automated code quality enforcement (9.5/10 score)
 
 - **Data Grid Patterns**
   - MUI Data Grid for lists

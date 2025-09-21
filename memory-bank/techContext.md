@@ -114,12 +114,13 @@ npm run type-check
   "@emotion/react": "^11.x",
   "@emotion/styled": "^11.x",
   "@mui/material": "^5.x",
-  "@mui/x-data-grid": "^6.x",
-  "@tanstack/react-query": "^4.x",
-  "next": "^13.x",
-  "react": "^18.x",
+  "@mui/x-data-grid": "^8.x",
+  "@mui/x-date-pickers": "^8.x",
+  "next": "^15.x",
+  "react": "^19.x",
   "react-hook-form": "^7.x",
-  "pdfjs-dist": "^3.x",
+  "firebase": "^12.x",
+  "date-fns": "^4.x",
   "zod": "^3.x"
 }
 ```
@@ -128,14 +129,39 @@ npm run type-check
 
 ```json
 {
-  "@types/react": "^18.x",
+  "@types/react": "^19.x",
   "@typescript-eslint/eslint-plugin": "^5.x",
   "eslint": "^8.x",
+  "eslint-plugin-simple-import-sort": "^10.x",
   "jest": "^29.x",
   "playwright": "^1.x",
-  "prettier": "^2.x",
+  "prettier": "^3.x",
   "typescript": "^5.x"
 }
+```
+
+### Code Quality Tools
+
+**Prettier Configuration:**
+- Single quotes, 80 character width
+- Trailing commas for better git diffs
+- Automatic formatting via `npm run format`
+
+**ESLint Configuration:**
+- Import sorting with logical grouping
+- Automatic fixes via `npm run lint:fix`
+- Import groups: External → Internal → Relative
+
+**Quality Scripts:**
+```bash
+# Format all files
+npm run format
+
+# Check formatting
+npm run format:check
+
+# Lint with auto-fix
+npm run lint:fix
 ```
 
 ## Build & Deploy
