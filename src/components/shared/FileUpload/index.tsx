@@ -1,13 +1,22 @@
 'use client';
 
 import React, { useCallback, useState } from 'react';
-import { Box, Typography, Button, LinearProgress, Alert, IconButton, Card, CardContent } from '@mui/material';
-import { useDropzone, FileRejection } from 'react-dropzone';
+import { FileRejection, useDropzone } from 'react-dropzone';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ImageIcon from '@mui/icons-material/Image';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  IconButton,
+  LinearProgress,
+  Typography,
+} from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
 export interface FileUploadProps {
@@ -63,30 +72,49 @@ const FileUpload: React.FC<FileUploadProps> = ({
   onFilesSelected,
   maxFiles = 5,
   maxSize = 10 * 1024 * 1024, // 10MB default
-  acceptedFileTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'image/jpeg', 'image/png'],
+  acceptedFileTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/plain',
+    'image/jpeg',
+    'image/png',
+  ],
   isLoading = false,
   error = '',
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-    const newFiles = [...selectedFiles, ...acceptedFiles];
-    setSelectedFiles(newFiles);
-    onFilesSelected(newFiles);
-  }, [onFilesSelected, selectedFiles]);
+  const onDrop = useCallback(
+    (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+      const newFiles = [...selectedFiles, ...acceptedFiles];
+      setSelectedFiles(newFiles);
+      onFilesSelected(newFiles);
+    },
+    [onFilesSelected, selectedFiles]
+  );
 
-  const removeFile = useCallback((indexToRemove: number) => {
-    const newFiles = selectedFiles.filter((_, index) => index !== indexToRemove);
-    setSelectedFiles(newFiles);
-    onFilesSelected(newFiles);
-  }, [selectedFiles, onFilesSelected]);
+  const removeFile = useCallback(
+    (indexToRemove: number) => {
+      const newFiles = selectedFiles.filter(
+        (_, index) => index !== indexToRemove
+      );
+      setSelectedFiles(newFiles);
+      onFilesSelected(newFiles);
+    },
+    [selectedFiles, onFilesSelected]
+  );
 
-  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
-    onDrop,
-    maxFiles,
-    maxSize,
-    accept: acceptedFileTypes.reduce<Record<string, string[]>>((acc, type) => ({ ...acc, [type]: [] }), {}),
-  });
+  const { getRootProps, getInputProps, isDragActive, fileRejections } =
+    useDropzone({
+      onDrop,
+      maxFiles,
+      maxSize,
+      accept: acceptedFileTypes.reduce<Record<string, string[]>>(
+        (acc, type) => ({ ...acc, [type]: [] }),
+        {}
+      ),
+    });
 
   return (
     <Box>
@@ -109,11 +137,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         <Typography variant="caption" display="block" color="textSecondary">
           Maximum size: {formatFileSize(maxSize)}
         </Typography>
-        <Button
-          variant="contained"
-          sx={{ mt: 2 }}
-          disabled={isLoading}
-        >
+        <Button variant="contained" sx={{ mt: 2 }} disabled={isLoading}>
           Select Files
         </Button>
       </DropZone>
@@ -133,9 +157,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
       {fileRejections.length > 0 && (
         <Box sx={{ mt: 2 }}>
           {fileRejections.map(({ file, errors }, index) => (
-            <Alert 
+            <Alert
               key={`${file.name}-${index}`}
-              severity="error" 
+              severity="error"
               sx={{ mb: 1 }}
             >
               {file.name}: {errors.map(e => e.message).join(', ')}
@@ -168,7 +192,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         }}
                       />
                     ) : (
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 40,
+                          height: 40,
+                        }}
+                      >
                         {getFileIcon(file)}
                       </Box>
                     )}

@@ -1,41 +1,54 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import {
-  Box,
-  Typography,
-  Paper,
-  Chip,
-  IconButton,
-  Tooltip,
+  Clear as ClearIcon,
+  Error as ErrorIcon,
+  Search as SearchIcon,
+  Visibility as ViewIcon,
+  Warning as WarningIcon,
+} from '@mui/icons-material';
+import {
   Alert,
+  Box,
+  Chip,
   CircularProgress,
   FormControl,
+  IconButton,
   InputLabel,
-  Select,
   MenuItem,
   OutlinedInput,
+  Paper,
+  Select,
   Stack,
-  TextField
+  TextField,
+  Tooltip,
+  Typography,
 } from '@mui/material';
-import { 
-  DataGrid, 
-  GridColDef, 
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
   GridRowParams,
-  GridRenderCellParams 
 } from '@mui/x-data-grid';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { 
-  Visibility as ViewIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  Search as SearchIcon,
-  Clear as ClearIcon
-} from '@mui/icons-material';
-import { format, differenceInBusinessDays, addBusinessDays, isAfter, isBefore, startOfDay, endOfDay } from 'date-fns';
-import { StoredRequest, getAllRequests, RequestStatus } from '../../../services/requestService';
+import {
+  addBusinessDays,
+  differenceInBusinessDays,
+  endOfDay,
+  format,
+  isAfter,
+  isBefore,
+  startOfDay,
+} from 'date-fns';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
+import {
+  getAllRequests,
+  RequestStatus,
+  StoredRequest,
+} from '../../../services/requestService';
 
 // SLA Configuration (in business days)
 const SLA_DAYS = 10;
@@ -49,12 +62,12 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
+
   const [requests, setRequests] = useState<StoredRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<StoredRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Filter states
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
@@ -70,7 +83,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
     { value: 'finance', label: 'Finance Department' },
     { value: 'public_works', label: 'Public Works' },
     { value: 'legal', label: 'Legal Department' },
-    { value: 'other', label: 'Other' }
+    { value: 'other', label: 'Other' },
   ];
 
   const statusOptions = [
@@ -78,7 +91,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
     { value: 'processing', label: 'Processing' },
     { value: 'under_review', label: 'Under Review' },
     { value: 'completed', label: 'Completed' },
-    { value: 'rejected', label: 'Rejected' }
+    { value: 'rejected', label: 'Rejected' },
   ];
 
   useEffect(() => {
@@ -122,7 +135,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
   // Update URL parameters when filters change
   const updateURL = () => {
     const params = new URLSearchParams();
-    
+
     if (selectedDepartments.length > 0) {
       params.set('departments', selectedDepartments.join(','));
     }
@@ -141,7 +154,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
 
     const paramString = params.toString();
     const newURL = paramString ? `${pathname}?${paramString}` : pathname;
-    
+
     // Use replace to avoid creating history entries for every filter change
     router.replace(newURL as any);
   };
@@ -149,7 +162,14 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
   // Apply filters when requests or filter criteria change
   useEffect(() => {
     applyFilters();
-  }, [requests, selectedDepartments, selectedStatuses, startDate, endDate, searchQuery]);
+  }, [
+    requests,
+    selectedDepartments,
+    selectedStatuses,
+    startDate,
+    endDate,
+    searchQuery,
+  ]);
 
   // Update URL when filters change (debounced)
   useEffect(() => {
@@ -178,14 +198,14 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
 
     // Filter by departments
     if (selectedDepartments.length > 0) {
-      filtered = filtered.filter(request => 
+      filtered = filtered.filter(request =>
         selectedDepartments.includes(request.department)
       );
     }
 
     // Filter by statuses
     if (selectedStatuses.length > 0) {
-      filtered = filtered.filter(request => 
+      filtered = filtered.filter(request =>
         selectedStatuses.includes(request.status)
       );
     }
@@ -193,26 +213,37 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
     // Filter by date range (submission date)
     if (startDate) {
       filtered = filtered.filter(request => {
-        const requestDate = request.submittedAt.toDate ? request.submittedAt.toDate() : new Date(request.submittedAt as any);
-        return isAfter(requestDate, startOfDay(startDate)) || requestDate.toDateString() === startDate.toDateString();
+        const requestDate = request.submittedAt.toDate
+          ? request.submittedAt.toDate()
+          : new Date(request.submittedAt as any);
+        return (
+          isAfter(requestDate, startOfDay(startDate)) ||
+          requestDate.toDateString() === startDate.toDateString()
+        );
       });
     }
 
     if (endDate) {
       filtered = filtered.filter(request => {
-        const requestDate = request.submittedAt.toDate ? request.submittedAt.toDate() : new Date(request.submittedAt as any);
-        return isBefore(requestDate, endOfDay(endDate)) || requestDate.toDateString() === endDate.toDateString();
+        const requestDate = request.submittedAt.toDate
+          ? request.submittedAt.toDate()
+          : new Date(request.submittedAt as any);
+        return (
+          isBefore(requestDate, endOfDay(endDate)) ||
+          requestDate.toDateString() === endDate.toDateString()
+        );
       });
     }
 
     // Filter by search query (title, description, tracking ID, contact email)
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(request => 
-        request.title.toLowerCase().includes(query) ||
-        request.description.toLowerCase().includes(query) ||
-        request.trackingId.toLowerCase().includes(query) ||
-        request.contactEmail.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        request =>
+          request.title.toLowerCase().includes(query) ||
+          request.description.toLowerCase().includes(query) ||
+          request.trackingId.toLowerCase().includes(query) ||
+          request.contactEmail.toLowerCase().includes(query)
       );
     }
 
@@ -221,7 +252,9 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
 
   const handleDepartmentChange = (event: any) => {
     const value = event.target.value;
-    setSelectedDepartments(typeof value === 'string' ? value.split(',') : value);
+    setSelectedDepartments(
+      typeof value === 'string' ? value.split(',') : value
+    );
   };
 
   const handleStatusChange = (event: any) => {
@@ -241,14 +274,17 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
     setSearchQuery(event.target.value);
   };
 
-  const hasActiveFilters = selectedDepartments.length > 0 || 
-                          selectedStatuses.length > 0 || 
-                          startDate !== null || 
-                          endDate !== null || 
-                          searchQuery.trim() !== '';
+  const hasActiveFilters =
+    selectedDepartments.length > 0 ||
+    selectedStatuses.length > 0 ||
+    startDate !== null ||
+    endDate !== null ||
+    searchQuery.trim() !== '';
 
   const calculateDueDate = (submittedAt: any) => {
-    const submitDate = submittedAt.toDate ? submittedAt.toDate() : new Date(submittedAt);
+    const submitDate = submittedAt.toDate
+      ? submittedAt.toDate()
+      : new Date(submittedAt);
     return addBusinessDays(submitDate, SLA_DAYS);
   };
 
@@ -258,7 +294,11 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
     const daysUntilDue = differenceInBusinessDays(dueDate, today);
 
     if (daysUntilDue < 0) {
-      return { status: 'overdue', daysUntilDue: Math.abs(daysUntilDue), color: 'error' as const };
+      return {
+        status: 'overdue',
+        daysUntilDue: Math.abs(daysUntilDue),
+        color: 'error' as const,
+      };
     } else if (daysUntilDue <= DUE_SOON_THRESHOLD) {
       return { status: 'due-soon', daysUntilDue, color: 'warning' as const };
     } else {
@@ -268,24 +308,30 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
 
   const getStatusColor = (status: RequestStatus) => {
     switch (status) {
-      case 'submitted': return 'info';
-      case 'processing': return 'primary';
-      case 'under_review': return 'warning';
-      case 'completed': return 'success';
-      case 'rejected': return 'error';
-      default: return 'default';
+      case 'submitted':
+        return 'info';
+      case 'processing':
+        return 'primary';
+      case 'under_review':
+        return 'warning';
+      case 'completed':
+        return 'success';
+      case 'rejected':
+        return 'error';
+      default:
+        return 'default';
     }
   };
 
   const getDepartmentDisplayName = (department: string) => {
     const departments: Record<string, string> = {
-      'police': 'Police Department',
-      'fire': 'Fire Department',
-      'clerk': 'City Clerk',
-      'finance': 'Finance Department',
-      'public_works': 'Public Works',
-      'legal': 'Legal Department',
-      'other': 'Other'
+      police: 'Police Department',
+      fire: 'Fire Department',
+      clerk: 'City Clerk',
+      finance: 'Finance Department',
+      public_works: 'Public Works',
+      legal: 'Legal Department',
+      other: 'Other',
     };
     return departments[department] || department;
   };
@@ -300,20 +346,19 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
     {
       field: 'trackingId',
       headerName: 'Tracking ID',
-      width: 150
+      width: 150,
     },
     {
       field: 'title',
       headerName: 'Request Title',
       width: 300,
-      flex: 1
+      flex: 1,
     },
     {
       field: 'department',
       headerName: 'Department',
       width: 180,
-      valueGetter: (params: any) => 
-        getDepartmentDisplayName(params.value)
+      valueGetter: (params: any) => getDepartmentDisplayName(params.value),
     },
     {
       field: 'status',
@@ -325,14 +370,13 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
           color={getStatusColor(params.value)}
           size="small"
         />
-      )
+      ),
     },
     {
       field: 'submittedAt',
       headerName: 'Submitted',
       width: 180,
-      valueGetter: (params: any) => 
-        formatDate(params.value)
+      valueGetter: (params: any) => formatDate(params.value),
     },
     {
       field: 'dueDate',
@@ -341,7 +385,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
       valueGetter: (params: any) => {
         const dueDate = calculateDueDate(params.row.submittedAt);
         return format(dueDate, 'MMM d, yyyy');
-      }
+      },
     },
     {
       field: 'dueDateStatus',
@@ -349,10 +393,12 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
       width: 120,
       renderCell: (params: GridRenderCellParams) => {
         const dueDateStatus = getDueDateStatus(params.row.submittedAt);
-        
+
         if (dueDateStatus.status === 'overdue') {
           return (
-            <Tooltip title={`Overdue by ${dueDateStatus.daysUntilDue} business days`}>
+            <Tooltip
+              title={`Overdue by ${dueDateStatus.daysUntilDue} business days`}
+            >
               <Chip
                 icon={<ErrorIcon />}
                 label="OVERDUE"
@@ -364,7 +410,9 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
           );
         } else if (dueDateStatus.status === 'due-soon') {
           return (
-            <Tooltip title={`Due in ${dueDateStatus.daysUntilDue} business days`}>
+            <Tooltip
+              title={`Due in ${dueDateStatus.daysUntilDue} business days`}
+            >
               <Chip
                 icon={<WarningIcon />}
                 label="DUE SOON"
@@ -384,12 +432,12 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
             />
           );
         }
-      }
+      },
     },
     {
       field: 'contactEmail',
       headerName: 'Contact',
-      width: 200
+      width: 200,
     },
     {
       field: 'actions',
@@ -406,8 +454,8 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
             <ViewIcon />
           </IconButton>
         </Tooltip>
-      )
-    }
+      ),
+    },
   ];
 
   const handleRowClick = (params: GridRowParams) => {
@@ -416,7 +464,12 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="400px"
+      >
         <CircularProgress />
       </Box>
     );
@@ -445,7 +498,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
           <Typography variant="h6" gutterBottom>
             Filters & Search
           </Typography>
-          
+
           {/* Search Bar */}
           <Box sx={{ mb: 2 }}>
             <TextField
@@ -455,20 +508,24 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
               value={searchQuery}
               onChange={handleSearchChange}
               InputProps={{
-                startAdornment: <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />,
+                startAdornment: (
+                  <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
+                ),
                 endAdornment: searchQuery && (
-                  <IconButton
-                    size="small"
-                    onClick={() => setSearchQuery('')}
-                  >
+                  <IconButton size="small" onClick={() => setSearchQuery('')}>
                     <ClearIcon />
                   </IconButton>
-                )
+                ),
               }}
             />
           </Box>
 
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center" flexWrap="wrap">
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems="center"
+            flexWrap="wrap"
+          >
             <FormControl sx={{ minWidth: 200 }} size="small">
               <InputLabel>Departments</InputLabel>
               <Select
@@ -476,15 +533,17 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
                 value={selectedDepartments}
                 onChange={handleDepartmentChange}
                 input={<OutlinedInput label="Departments" />}
-                renderValue={(selected) => (
+                renderValue={selected => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map((value) => {
-                      const option = departmentOptions.find(opt => opt.value === value);
+                    {selected.map(value => {
+                      const option = departmentOptions.find(
+                        opt => opt.value === value
+                      );
                       return (
-                        <Chip 
-                          key={value} 
-                          label={option?.label || value} 
-                          size="small" 
+                        <Chip
+                          key={value}
+                          label={option?.label || value}
+                          size="small"
                           color="primary"
                           variant="outlined"
                         />
@@ -493,7 +552,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
                   </Box>
                 )}
               >
-                {departmentOptions.map((option) => (
+                {departmentOptions.map(option => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
@@ -508,15 +567,17 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
                 value={selectedStatuses}
                 onChange={handleStatusChange}
                 input={<OutlinedInput label="Status" />}
-                renderValue={(selected) => (
+                renderValue={selected => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map((value) => {
-                      const option = statusOptions.find(opt => opt.value === value);
+                    {selected.map(value => {
+                      const option = statusOptions.find(
+                        opt => opt.value === value
+                      );
                       return (
-                        <Chip 
-                          key={value} 
-                          label={option?.label || value} 
-                          size="small" 
+                        <Chip
+                          key={value}
+                          label={option?.label || value}
+                          size="small"
                           color="secondary"
                           variant="outlined"
                         />
@@ -525,7 +586,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
                   </Box>
                 )}
               >
-                {statusOptions.map((option) => (
+                {statusOptions.map(option => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
@@ -536,24 +597,24 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
             <DatePicker
               label="Start Date"
               value={startDate}
-              onChange={(newValue) => setStartDate(newValue)}
+              onChange={newValue => setStartDate(newValue)}
               slotProps={{
                 textField: {
                   size: 'small',
-                  sx: { minWidth: 150 }
-                }
+                  sx: { minWidth: 150 },
+                },
               }}
             />
 
             <DatePicker
               label="End Date"
               value={endDate}
-              onChange={(newValue) => setEndDate(newValue)}
+              onChange={newValue => setEndDate(newValue)}
               slotProps={{
                 textField: {
                   size: 'small',
-                  sx: { minWidth: 150 }
-                }
+                  sx: { minWidth: 150 },
+                },
               }}
             />
 
@@ -568,7 +629,11 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
               />
             )}
 
-            <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ ml: 'auto' }}
+            >
               Showing {filteredRequests.length} of {requests.length} requests
             </Typography>
           </Stack>
@@ -578,14 +643,14 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
           <DataGrid
             rows={filteredRequests}
             columns={columns}
-            getRowId={(row) => row.id || row.trackingId}
+            getRowId={row => row.id || row.trackingId}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 25 }
+                paginationModel: { page: 0, pageSize: 25 },
               },
               sorting: {
-                sortModel: [{ field: 'submittedAt', sort: 'desc' }]
-              }
+                sortModel: [{ field: 'submittedAt', sort: 'desc' }],
+              },
             }}
             pageSizeOptions={[10, 25, 50, 100]}
             onRowClick={handleRowClick}
@@ -594,9 +659,9 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
               '& .MuiDataGrid-row': {
                 cursor: 'pointer',
                 '&:hover': {
-                  backgroundColor: 'action.hover'
-                }
-              }
+                  backgroundColor: 'action.hover',
+                },
+              },
             }}
             disableRowSelectionOnClick
           />

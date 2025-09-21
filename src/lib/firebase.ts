@@ -3,8 +3,12 @@
  * Supports both production Firebase and local emulator for development
  */
 
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator, Firestore } from 'firebase/firestore';
+import { FirebaseApp, getApps, initializeApp } from 'firebase/app';
+import {
+  connectFirestoreEmulator,
+  Firestore,
+  getFirestore,
+} from 'firebase/firestore';
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
@@ -33,9 +37,11 @@ export const initializeFirebase = (): { app: FirebaseApp; db: Firestore } => {
     db = getFirestore(app);
 
     // Connect to Firestore emulator in development
-    const useEmulator = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true';
-    const emulatorHost = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST || 'localhost:8080';
-    
+    const useEmulator =
+      process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true';
+    const emulatorHost =
+      process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST || 'localhost:8080';
+
     if (useEmulator && typeof window !== 'undefined') {
       try {
         // Only connect to emulator on client-side and if not already connected

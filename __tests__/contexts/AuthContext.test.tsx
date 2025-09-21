@@ -19,26 +19,26 @@ Object.defineProperty(window, 'localStorage', {
 // Test component to access auth context
 function TestComponent() {
   const { user, isLoading, isAuthenticated, login, logout } = useAuth();
-  
+
   return (
     <div>
       <div data-testid="loading">{isLoading.toString()}</div>
       <div data-testid="authenticated">{isAuthenticated.toString()}</div>
       <div data-testid="user">{user ? JSON.stringify(user) : 'null'}</div>
-      <button 
-        data-testid="login-admin" 
+      <button
+        data-testid="login-admin"
         onClick={() => login('admin@records.gov', 'admin123')}
       >
         Login Admin
       </button>
-      <button 
-        data-testid="login-staff" 
+      <button
+        data-testid="login-staff"
         onClick={() => login('staff@records.gov', 'staff123')}
       >
         Login Staff
       </button>
-      <button 
-        data-testid="login-invalid" 
+      <button
+        data-testid="login-invalid"
         onClick={() => login('invalid@test.com', 'wrong')}
       >
         Login Invalid
@@ -66,7 +66,7 @@ describe('AuthContext', () => {
 
   test('initializes with no user and loading state', async () => {
     render(<TestApp />);
-    
+
     // Initially should be loading
     expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
     expect(screen.getByTestId('user')).toHaveTextContent('null');
@@ -75,7 +75,7 @@ describe('AuthContext', () => {
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
-    
+
     // Should still be unauthenticated after loading
     expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
     expect(screen.getByTestId('user')).toHaveTextContent('null');
@@ -86,24 +86,26 @@ describe('AuthContext', () => {
       id: '1',
       email: 'admin@records.gov',
       role: 'admin',
-      name: 'System Administrator'
+      name: 'System Administrator',
     };
-    
+
     mockLocalStorage.getItem.mockReturnValue(JSON.stringify(savedUser));
-    
+
     render(<TestApp />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
-      expect(screen.getByTestId('user')).toHaveTextContent(JSON.stringify(savedUser));
+      expect(screen.getByTestId('user')).toHaveTextContent(
+        JSON.stringify(savedUser)
+      );
     });
   });
 
   test('successfully logs in admin user', async () => {
     const user = userEvent.setup();
     render(<TestApp />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
@@ -114,7 +116,9 @@ describe('AuthContext', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
-      const userData = JSON.parse(screen.getByTestId('user').textContent || '{}');
+      const userData = JSON.parse(
+        screen.getByTestId('user').textContent || '{}'
+      );
       expect(userData.email).toBe('admin@records.gov');
       expect(userData.role).toBe('admin');
     });
@@ -128,7 +132,7 @@ describe('AuthContext', () => {
   test('successfully logs in staff user', async () => {
     const user = userEvent.setup();
     render(<TestApp />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
@@ -139,7 +143,9 @@ describe('AuthContext', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
-      const userData = JSON.parse(screen.getByTestId('user').textContent || '{}');
+      const userData = JSON.parse(
+        screen.getByTestId('user').textContent || '{}'
+      );
       expect(userData.email).toBe('staff@records.gov');
       expect(userData.role).toBe('staff');
     });
@@ -148,7 +154,7 @@ describe('AuthContext', () => {
   test('fails login with invalid credentials', async () => {
     const user = userEvent.setup();
     render(<TestApp />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
@@ -168,7 +174,7 @@ describe('AuthContext', () => {
   test('logs out user successfully', async () => {
     const user = userEvent.setup();
     render(<TestApp />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
@@ -193,30 +199,37 @@ describe('AuthContext', () => {
   });
 
   test('handles corrupted localStorage data gracefully', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     mockLocalStorage.getItem.mockReturnValue('invalid-json');
-    
+
     render(<TestApp />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
       expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
       expect(screen.getByTestId('user')).toHaveTextContent('null');
     });
 
-    expect(consoleSpy).toHaveBeenCalledWith('Error parsing saved user:', expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error parsing saved user:',
+      expect.any(Error)
+    );
     expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('auth_user');
-    
+
     consoleSpy.mockRestore();
   });
 
   test('useAuth throws error when used outside AuthProvider', () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
     expect(() => {
       render(<TestComponent />);
     }).toThrow('useAuth must be used within an AuthProvider');
-    
+
     consoleSpy.mockRestore();
   });
 });

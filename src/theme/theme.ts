@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles';
+
 import { tokens } from './tokens';
 
 export const theme = createTheme({

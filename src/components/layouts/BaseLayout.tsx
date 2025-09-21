@@ -1,7 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Box, AppBar, Toolbar, Typography, Container, Button } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import Link from 'next/link';
 
 interface BaseLayoutProps {
@@ -34,13 +41,11 @@ export function BaseLayout({ children }: BaseLayoutProps) {
           </Box>
         </Toolbar>
       </AppBar>
-      
+
       <Box component="main" sx={{ flexGrow: 1, py: 3 }}>
-        <Container maxWidth="lg">
-          {children}
-        </Container>
+        <Container maxWidth="lg">{children}</Container>
       </Box>
-      
+
       <Box component="footer" sx={{ py: 2, bgcolor: 'grey.100' }}>
         <Container maxWidth="lg">
           <Typography variant="body2" color="text.secondary" align="center">

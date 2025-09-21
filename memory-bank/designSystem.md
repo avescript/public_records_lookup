@@ -1,9 +1,11 @@
 # Design System & Component Library
 
 ## Overview
+
 A reusable component library that implements our design system, ensuring consistency across the application while supporting scalability and accessibility.
 
 ## Directory Structure
+
 ```
 src/
   components/
@@ -46,6 +48,7 @@ src/
 ## Design System
 
 ### 1. Design Tokens
+
 ```typescript
 export const tokens = {
   colors: {
@@ -53,7 +56,7 @@ export const tokens = {
       main: '#1976d2',
       light: '#42a5f5',
       dark: '#1565c0',
-      contrast: '#ffffff'
+      contrast: '#ffffff',
     },
     // ... other colors
   },
@@ -61,14 +64,14 @@ export const tokens = {
     fontFamilies: {
       body: '"Roboto", "Helvetica", "Arial", sans-serif',
       display: '"Roboto", "Helvetica", "Arial", sans-serif',
-      mono: '"Roboto Mono", monospace'
+      mono: '"Roboto Mono", monospace',
     },
     fontSizes: {
       xs: '0.75rem',
       sm: '0.875rem',
       md: '1rem',
       lg: '1.125rem',
-      xl: '1.25rem'
+      xl: '1.25rem',
     },
     // ... other typography tokens
   },
@@ -77,7 +80,7 @@ export const tokens = {
     sm: '0.5rem',
     md: '1rem',
     lg: '1.5rem',
-    xl: '2rem'
+    xl: '2rem',
   },
   shadows: {
     // ...shadow definitions
@@ -87,14 +90,16 @@ export const tokens = {
   },
   transitions: {
     // ...transition definitions
-  }
-}
+  },
+};
 ```
 
 ### 2. Component Patterns
 
 #### Base Components
+
 Each base component should:
+
 - Be fully typed with TypeScript
 - Support theming and design tokens
 - Include accessibility features
@@ -104,6 +109,7 @@ Each base component should:
 - Be responsive
 
 Example Button Component:
+
 ```typescript
 interface ButtonProps {
   variant: 'primary' | 'secondary' | 'text';
@@ -123,6 +129,7 @@ const Button = styled('button')<ButtonProps>`
 ```
 
 ### 3. Accessibility Patterns
+
 - ARIA labels and roles
 - Keyboard navigation
 - Focus management
@@ -131,6 +138,7 @@ const Button = styled('button')<ButtonProps>`
 - Motion reduction support
 
 ### 4. Theme Configuration
+
 ```typescript
 const theme = createTheme({
   palette: {
@@ -145,16 +153,17 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         // ... component customizations
-      }
-    }
+      },
+    },
     // ... other component overrides
-  }
+  },
 });
 ```
 
 ## Usage Guidelines
 
 ### 1. Component Implementation
+
 ```typescript
 // Example of a composite component
 export const FilterBar = ({
@@ -181,6 +190,7 @@ export const FilterBar = ({
 ```
 
 ### 2. Theme Usage
+
 ```typescript
 const StyledCard = styled(Card)`
   ${({ theme }) => `
@@ -192,6 +202,7 @@ const StyledCard = styled(Card)`
 ```
 
 ### 3. Responsive Design
+
 ```typescript
 const ResponsiveGrid = styled(Grid)`
   ${({ theme }) => `
@@ -213,6 +224,7 @@ const ResponsiveGrid = styled(Grid)`
 ## Development Workflow
 
 ### 1. Adding New Components
+
 1. Create component folder structure
 2. Implement component with TypeScript
 3. Add unit tests
@@ -222,6 +234,7 @@ const ResponsiveGrid = styled(Grid)`
 7. Add to export index
 
 ### 2. Documentation Requirements
+
 - Component API documentation
 - Usage examples
 - Accessibility notes
@@ -230,6 +243,7 @@ const ResponsiveGrid = styled(Grid)`
 - Browser support
 
 ### 3. Quality Checks
+
 - TypeScript strict mode
 - Unit test coverage
 - Accessibility testing
@@ -238,6 +252,7 @@ const ResponsiveGrid = styled(Grid)`
 - Bundle size monitoring
 
 ## Future Considerations
+
 - Component versioning
 - Theme switching
 - RTL support

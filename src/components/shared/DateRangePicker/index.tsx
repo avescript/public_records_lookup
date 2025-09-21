@@ -3,14 +3,14 @@
 import React, { useState } from 'react';
 import {
   Box,
-  TextField,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-  Typography,
   FormHelperText,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 
@@ -43,22 +43,30 @@ const calculateDateRange = (preset: string): Partial<DateRange> => {
   switch (preset) {
     case 'last-7-days':
       return {
-        startDate: formatDate(new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)),
+        startDate: formatDate(
+          new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+        ),
         endDate: formatDate(today),
       };
     case 'last-30-days':
       return {
-        startDate: formatDate(new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)),
+        startDate: formatDate(
+          new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
+        ),
         endDate: formatDate(today),
       };
     case 'last-90-days':
       return {
-        startDate: formatDate(new Date(today.getTime() - 90 * 24 * 60 * 60 * 1000)),
+        startDate: formatDate(
+          new Date(today.getTime() - 90 * 24 * 60 * 60 * 1000)
+        ),
         endDate: formatDate(today),
       };
     case 'last-year':
       return {
-        startDate: formatDate(new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000)),
+        startDate: formatDate(
+          new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000)
+        ),
         endDate: formatDate(today),
       };
     default:
@@ -96,14 +104,16 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         endDate: calculatedRange.endDate || '',
         preset: newPreset,
       };
-      
+
       setCustomStartDate(newDateRange.startDate);
       setCustomEndDate(newDateRange.endDate);
       onChange(newDateRange);
     }
   };
 
-  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStartDateChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const newStartDate = event.target.value;
     setCustomStartDate(newStartDate);
     onChange({
@@ -130,7 +140,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
       <Typography variant="subtitle2" gutterBottom>
         {label}
       </Typography>
-      
+
       <FormControl fullWidth error={!!error} sx={{ mb: 2 }}>
         <InputLabel>Time Period</InputLabel>
         <Select
@@ -140,7 +150,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           disabled={disabled}
           data-testid="date-range-preset"
         >
-          {DATE_PRESETS.map((presetOption) => (
+          {DATE_PRESETS.map(presetOption => (
             <MenuItem key={presetOption.value} value={presetOption.value}>
               {presetOption.label}
             </MenuItem>

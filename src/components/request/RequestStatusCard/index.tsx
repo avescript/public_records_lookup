@@ -1,4 +1,12 @@
-import { Paper, Typography, List, ListItem, ListItemText, Box, Chip } from '@mui/material';
+import {
+  Box,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Typography,
+} from '@mui/material';
 import { type Theme } from '@mui/material/styles';
 
 interface RequestStatus {
@@ -14,15 +22,17 @@ const mockStatus: RequestStatus[] = [
     status: 'in-progress',
     requestDate: '2023-09-01',
     lastUpdated: '2023-09-07',
-  }
+  },
 ];
 
-const getStatusColor = (status: RequestStatus['status']): "warning" | "info" | "success" | "error" => {
+const getStatusColor = (
+  status: RequestStatus['status']
+): 'warning' | 'info' | 'success' | 'error' => {
   const colors = {
-    'pending': 'warning',
+    pending: 'warning',
     'in-progress': 'info',
-    'completed': 'success',
-    'rejected': 'error',
+    completed: 'success',
+    rejected: 'error',
   } as const;
   return colors[status];
 };
@@ -34,7 +44,7 @@ export const RequestStatusCard = () => {
         Current Request Status
       </Typography>
       <List>
-        {mockStatus.map((request) => (
+        {mockStatus.map(request => (
           <ListItem key={request.id} divider>
             <ListItemText
               primary={request.id}

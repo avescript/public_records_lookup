@@ -36,25 +36,37 @@ describe('LoginPage', () => {
 
     // Check for login form elements
     expect(screen.getByText('Staff Login')).toBeInTheDocument();
-    expect(screen.getByText('Access the Public Records Management System')).toBeInTheDocument();
+    expect(
+      screen.getByText('Access the Public Records Management System')
+    ).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toBeInTheDocument();
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /sign in/i })
+    ).toBeInTheDocument();
   });
 
   test('displays development credentials', () => {
     render(<LoginPage />);
 
     expect(screen.getByText('Development Credentials:')).toBeInTheDocument();
-    expect(screen.getByText(/admin@records.gov \/ admin123/)).toBeInTheDocument();
-    expect(screen.getByText(/staff@records.gov \/ staff123/)).toBeInTheDocument();
-    expect(screen.getByText(/legal@records.gov \/ legal123/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/admin@records.gov \/ admin123/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/staff@records.gov \/ staff123/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/legal@records.gov \/ legal123/)
+    ).toBeInTheDocument();
   });
 
   test('shows back to public portal link', () => {
     render(<LoginPage />);
 
-    const backLink = screen.getByRole('link', { name: /back to public portal/i });
+    const backLink = screen.getByRole('link', {
+      name: /back to public portal/i,
+    });
     expect(backLink).toBeInTheDocument();
     expect(backLink).toHaveAttribute('href', '/');
   });
@@ -187,9 +199,11 @@ describe('LoginPage', () => {
     await user.clear(passwordInput);
     await user.type(emailInput, 'admin@records.gov');
     await user.type(passwordInput, 'admin123');
-    
+
     // Error should be cleared before submitting
-    expect(screen.queryByText('Invalid email or password')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Invalid email or password')
+    ).not.toBeInTheDocument();
   });
 
   test('disables submit button during loading', async () => {

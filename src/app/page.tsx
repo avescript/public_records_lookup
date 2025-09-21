@@ -1,6 +1,7 @@
-import { RequestForm } from '../components/request/RequestForm';
-import { PublicLayout } from '../components/layouts/PublicLayout';
 import { Box, Typography } from '@mui/material';
+
+import { PublicLayout } from '../components/layouts/PublicLayout';
+import { RequestForm } from '../components/request/RequestForm';
 
 export default function HomePage() {
   return (
@@ -9,8 +10,14 @@ export default function HomePage() {
         <Typography variant="h3" component="h1" gutterBottom align="center">
           Public Records Request
         </Typography>
-        <Typography variant="body1" paragraph align="center" color="text.secondary">
-          Submit a request for public records. Fill out the form below and we'll process your request.
+        <Typography
+          variant="body1"
+          paragraph
+          align="center"
+          color="text.secondary"
+        >
+          Submit a request for public records. Fill out the form below and we'll
+          process your request.
         </Typography>
         <RequestForm />
       </Box>

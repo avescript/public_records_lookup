@@ -1,8 +1,9 @@
 import React from 'react';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import { HeaderRoot, HeaderToolbar, HeaderActions } from './styles';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+
+import { HeaderActions, HeaderRoot, HeaderToolbar } from './styles';
 import type { HeaderProps } from './types';
 
 export const Header: React.FC<HeaderProps> = ({

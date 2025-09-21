@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+
 import FileUpload from '../index';
 
 // A reusable mock for useDropzone
@@ -47,29 +48,33 @@ describe('FileUpload', () => {
   describe('Rendering', () => {
     it('renders upload area with instructions', () => {
       render(<FileUpload {...defaultProps} />);
-      
+
       expect(screen.getByText(/drag and drop files here/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /select files/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /select files/i })
+      ).toBeInTheDocument();
     });
 
     it('shows loading state when isLoading is true', () => {
       render(<FileUpload {...defaultProps} isLoading={true} />);
-      
+
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /select files/i })).toBeDisabled();
+      expect(
+        screen.getByRole('button', { name: /select files/i })
+      ).toBeDisabled();
     });
 
     it('displays error message when error prop is provided', () => {
       const errorMessage = 'Failed to upload files';
       render(<FileUpload {...defaultProps} error={errorMessage} />);
-      
+
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
     });
 
     it('displays accepted file types and size limit', () => {
       const maxSize = 5 * 1024 * 1024; // 5MB
       const acceptedTypes = ['.pdf', '.doc'];
-      
+
       render(
         <FileUpload
           {...defaultProps}
@@ -77,15 +82,23 @@ describe('FileUpload', () => {
           acceptedFileTypes={acceptedTypes}
         />
       );
-      
-      expect(screen.getByText((text) => text.includes('.pdf, .doc'))).toBeInTheDocument();
-      expect(screen.getByText((text) => text.includes('5 MB'))).toBeInTheDocument();
+
+      expect(
+        screen.getByText(text => text.includes('.pdf, .doc'))
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(text => text.includes('5 MB'))
+      ).toBeInTheDocument();
     });
   });
 
   describe('File Handling', () => {
-    const mockFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
-    const mockRejectedFile = new File(['test content'], 'test.exe', { type: 'application/x-msdownload' });
+    const mockFile = new File(['test content'], 'test.pdf', {
+      type: 'application/pdf',
+    });
+    const mockRejectedFile = new File(['test content'], 'test.exe', {
+      type: 'application/x-msdownload',
+    });
 
     it('displays accepted files with proper formatting', () => {
       mockDropzoneHook = {
@@ -101,10 +114,12 @@ describe('FileUpload', () => {
     it('displays file rejection messages', () => {
       mockDropzoneHook = {
         ...mockDropzoneHook,
-        fileRejections: [{
-          file: mockRejectedFile,
-          errors: [{ message: 'File type not allowed' }],
-        }],
+        fileRejections: [
+          {
+            file: mockRejectedFile,
+            errors: [{ message: 'File type not allowed' }],
+          },
+        ],
       };
 
       render(<FileUpload {...defaultProps} />);
@@ -140,7 +155,9 @@ describe('FileUpload', () => {
       const files = [
         new File(['x'.repeat(500)], 'small.txt', { type: 'text/plain' }),
         new File(['x'.repeat(1500)], 'medium.txt', { type: 'text/plain' }),
-        new File(['x'.repeat(2 * 1024 * 1024)], 'large.txt', { type: 'text/plain' }),
+        new File(['x'.repeat(2 * 1024 * 1024)], 'large.txt', {
+          type: 'text/plain',
+        }),
       ];
 
       mockDropzoneHook = {
@@ -149,7 +166,7 @@ describe('FileUpload', () => {
       };
 
       render(<FileUpload {...defaultProps} />);
-      
+
       expect(screen.getByText(/small\.txt.*\(500 Bytes\)/)).toBeInTheDocument();
       expect(screen.getByText(/medium\.txt.*\(1\.46 KB\)/)).toBeInTheDocument();
       expect(screen.getByText(/large\.txt.*\(2 MB\)/)).toBeInTheDocument();

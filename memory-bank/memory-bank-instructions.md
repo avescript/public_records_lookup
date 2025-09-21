@@ -10,17 +10,16 @@ This document defines how GitHub Copilot maintains project memory and context ac
 
 **Copilot MUST read ALL memory bank files at the start of EVERY task.**
 
-* No exceptions.
-* Use this checklist before any work:
-
-  * [ ] Read `projectbrief.md`
-  * [ ] Read `productContext.md`
-  * [ ] Read `systemPatterns.md`
-  * [ ] Read `techContext.md`
-  * [ ] Read `activeContext.md`
-  * [ ] Read `progress.md`
-  * [ ] Read `copilot-rules.md`
-  * [ ] Read any additional context files in `/memory-bank/`
+- No exceptions.
+- Use this checklist before any work:
+  - [ ] Read `projectbrief.md`
+  - [ ] Read `productContext.md`
+  - [ ] Read `systemPatterns.md`
+  - [ ] Read `techContext.md`
+  - [ ] Read `activeContext.md`
+  - [ ] Read `progress.md`
+  - [ ] Read `copilot-rules.md`
+  - [ ] Read any additional context files in `/memory-bank/`
 
 ---
 
@@ -63,11 +62,11 @@ flowchart TD
 
 Add extra files/folders in `/memory-bank/` for:
 
-* Complex features
-* Integration specs
-* API docs
-* Testing strategies
-* Deployment procedures
+- Complex features
+- Integration specs
+- API docs
+- Testing strategies
+- Deployment procedures
 
 ---
 
@@ -88,9 +87,9 @@ flowchart TD
 
 **Description:**
 
-* Always start by reading all memory bank files.
-* If files are missing, create a plan and document it.
-* If files are complete, verify context and develop a strategy before acting.
+- Always start by reading all memory bank files.
+- If files are missing, create a plan and document it.
+- If files are complete, verify context and develop a strategy before acting.
 
 ### Act Mode
 
@@ -105,10 +104,10 @@ flowchart TD
 
 **Description:**
 
-* Check memory bank before any action.
-* Update documentation as you work.
-* Update `copilot-rules.md` if new patterns or rules are discovered.
-* Document all changes.
+- Check memory bank before any action.
+- Update documentation as you work.
+- Update `copilot-rules.md` if new patterns or rules are discovered.
+- Document all changes.
 
 ---
 
@@ -144,12 +143,12 @@ Focus on `activeContext.md` and `progress.md` for current state.
 
 This file is Copilot’s and the team’s learning journal for the project. It captures:
 
-* Critical implementation paths
-* User preferences and workflow
-* Project-specific patterns
-* Security requirements and known challenges
-* Evolution of project decisions
-* Tool usage patterns
+- Critical implementation paths
+- User preferences and workflow
+- Project-specific patterns
+- Security requirements and known challenges
+- Evolution of project decisions
+- Tool usage patterns
 
 **Example: Core Security Rule**
 
@@ -167,10 +166,10 @@ This file is Copilot’s and the team’s learning journal for the project. It c
 
 ## How to Use This Document
 
-* Reference this file at the start of every session.
-* Use the checklists and diagrams to guide your workflow.
-* Update the Memory Bank and `copilot-rules.md` as you learn.
-* Treat this as a living document—improve it as the project evolves.
+- Reference this file at the start of every session.
+- Use the checklists and diagrams to guide your workflow.
+- Update the Memory Bank and `copilot-rules.md` as you learn.
+- Treat this as a living document—improve it as the project evolves.
 
 ---
 
@@ -179,5 +178,5 @@ After every memory reset, Copilot begins completely fresh. The Memory Bank is th
 
 ---
 
-*Last updated: 2025-06-30*
-*Version: 1.1.0*
+_Last updated: 2025-06-30_
+_Version: 1.1.0_

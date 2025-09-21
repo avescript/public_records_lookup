@@ -1,6 +1,7 @@
 import { CircularProgress } from '@mui/material';
-import { type ButtonProps } from './types';
+
 import { StyledButton } from './styles';
+import { type ButtonProps } from './types';
 
 export const Button = ({
   children,

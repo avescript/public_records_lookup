@@ -1,23 +1,24 @@
 'use client';
 
 import React from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Chip, 
-  Grid, 
-  Button,
-  Divider,
-  Card,
-  CardContent 
-} from '@mui/material';
-import { 
+import {
   CheckCircle as CheckCircleIcon,
   ContentCopy as CopyIcon,
-  Download as DownloadIcon 
+  Download as DownloadIcon,
 } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  Grid,
+  Paper,
+  Typography,
+} from '@mui/material';
 import { format } from 'date-fns';
+
 import { StoredRequest } from '../../../services/requestService';
 
 interface RequestConfirmationProps {
@@ -26,50 +27,65 @@ interface RequestConfirmationProps {
   onStartNewRequest: () => void;
 }
 
-export function RequestConfirmation({ 
-  request, 
-  onCopyTrackingId, 
-  onStartNewRequest 
+export function RequestConfirmation({
+  request,
+  onCopyTrackingId,
+  onStartNewRequest,
 }: RequestConfirmationProps) {
   const formatDate = (timestamp: any) => {
     if (!timestamp) return '';
     // Handle Firestore Timestamp objects
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return format(date, 'MMMM d, yyyy \'at\' h:mm a');
+    return format(date, "MMMM d, yyyy 'at' h:mm a");
   };
 
   const getDepartmentDisplayName = (department: string) => {
     const departments: Record<string, string> = {
-      'police': 'Police Department',
-      'fire': 'Fire Department',
-      'clerk': 'City Clerk',
-      'finance': 'Finance Department',
-      'other': 'Other'
+      police: 'Police Department',
+      fire: 'Fire Department',
+      clerk: 'City Clerk',
+      finance: 'Finance Department',
+      other: 'Other',
     };
     return departments[department] || department;
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'submitted': return 'primary';
-      case 'processing': return 'info';
-      case 'under_review': return 'warning';
-      case 'completed': return 'success';
-      case 'rejected': return 'error';
-      default: return 'default';
+      case 'submitted':
+        return 'primary';
+      case 'processing':
+        return 'info';
+      case 'under_review':
+        return 'warning';
+      case 'completed':
+        return 'success';
+      case 'rejected':
+        return 'error';
+      default:
+        return 'default';
     }
   };
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
       {/* Success Header */}
-      <Paper elevation={3} sx={{ p: 4, mb: 3, textAlign: 'center', bgcolor: 'success.50' }}>
+      <Paper
+        elevation={3}
+        sx={{ p: 4, mb: 3, textAlign: 'center', bgcolor: 'success.50' }}
+      >
         <CheckCircleIcon sx={{ fontSize: 64, color: 'success.main', mb: 2 }} />
-        <Typography variant="h4" component="h1" gutterBottom color="success.main">
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          color="success.main"
+        >
           Request Submitted Successfully!
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Your public records request has been received and assigned a tracking number.
+          Your public records request has been received and assigned a tracking
+          number.
         </Typography>
       </Paper>
 
@@ -138,8 +154,8 @@ export function RequestConfirmation({
               <Typography variant="body2" color="text.secondary">
                 Status
               </Typography>
-              <Chip 
-                label={request.status.replace('_', ' ').toUpperCase()} 
+              <Chip
+                label={request.status.replace('_', ' ').toUpperCase()}
                 color={getStatusColor(request.status)}
                 size="small"
               />
@@ -190,7 +206,8 @@ export function RequestConfirmation({
             What Happens Next?
           </Typography>
           <Typography variant="body1" paragraph>
-            1. Your request will be reviewed by the {getDepartmentDisplayName(request.department)}
+            1. Your request will be reviewed by the{' '}
+            {getDepartmentDisplayName(request.department)}
           </Typography>
           <Typography variant="body1" paragraph>
             2. You will receive an email confirmation shortly
@@ -205,18 +222,21 @@ export function RequestConfirmation({
       </Card>
 
       {/* Action Buttons */}
-      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-        <Button
-          variant="contained"
-          onClick={onStartNewRequest}
-          size="large"
-        >
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
+        <Button variant="contained" onClick={onStartNewRequest} size="large">
           Submit Another Request
         </Button>
         <Button
           variant="outlined"
           size="large"
-          onClick={() => window.location.href = '/status'}
+          onClick={() => (window.location.href = '/status')}
         >
           Track This Request
         </Button>
@@ -233,8 +253,9 @@ export function RequestConfirmation({
       {/* Important Notice */}
       <Box sx={{ mt: 4, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
         <Typography variant="body2" color="text.secondary" align="center">
-          <strong>Important:</strong> Please save your tracking ID ({request.trackingId}) 
-          to check the status of your request. You will need this ID for any inquiries.
+          <strong>Important:</strong> Please save your tracking ID (
+          {request.trackingId}) to check the status of your request. You will
+          need this ID for any inquiries.
         </Typography>
       </Box>
     </Box>

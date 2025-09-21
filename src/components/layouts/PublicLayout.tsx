@@ -1,7 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Box, AppBar, Toolbar, Typography, Container, Button } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -21,28 +28,28 @@ export function PublicLayout({ children }: PublicLayoutProps) {
               Public Records Portal
             </Link>
           </Typography>
-          
+
           {/* Public Navigation */}
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button 
-              color="inherit" 
-              component={Link} 
+            <Button
+              color="inherit"
+              component={Link}
               href="/"
               sx={{ fontWeight: pathname === '/' ? 'bold' : 'normal' }}
             >
               Submit Request
             </Button>
-            <Button 
-              color="inherit" 
-              component={Link} 
+            <Button
+              color="inherit"
+              component={Link}
               href="/track"
               sx={{ fontWeight: pathname === '/track' ? 'bold' : 'normal' }}
             >
               Track Request
             </Button>
-            <Button 
-              color="inherit" 
-              component={Link} 
+            <Button
+              color="inherit"
+              component={Link}
               href="/admin/login"
               variant="outlined"
               sx={{ ml: 2 }}
@@ -52,13 +59,11 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           </Box>
         </Toolbar>
       </AppBar>
-      
+
       <Box component="main" sx={{ flexGrow: 1, py: 3 }}>
-        <Container maxWidth="lg">
-          {children}
-        </Container>
+        <Container maxWidth="lg">{children}</Container>
       </Box>
-      
+
       <Box component="footer" sx={{ py: 2, bgcolor: 'grey.100' }}>
         <Container maxWidth="lg">
           <Typography variant="body2" color="text.secondary" align="center">

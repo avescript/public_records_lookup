@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface AuthUser {
   id: string;
@@ -43,8 +43,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         id: '1',
         email: 'admin@records.gov',
         role: 'admin',
-        name: 'System Administrator'
-      }
+        name: 'System Administrator',
+      },
     },
     'staff@records.gov': {
       password: 'staff123',
@@ -52,8 +52,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         id: '2',
         email: 'staff@records.gov',
         role: 'staff',
-        name: 'Records Officer'
-      }
+        name: 'Records Officer',
+      },
     },
     'legal@records.gov': {
       password: 'legal123',
@@ -61,9 +61,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         id: '3',
         email: 'legal@records.gov',
         role: 'legal_reviewer',
-        name: 'Legal Reviewer'
-      }
-    }
+        name: 'Legal Reviewer',
+      },
+    },
   };
 
   useEffect(() => {
@@ -82,10 +82,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-    
+
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     const mockUser = mockUsers[email];
     if (mockUser && mockUser.password === password) {
       setUser(mockUser.user);
@@ -93,7 +93,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setIsLoading(false);
       return true;
     }
-    
+
     setIsLoading(false);
     return false;
   };
@@ -108,12 +108,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading,
     login,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

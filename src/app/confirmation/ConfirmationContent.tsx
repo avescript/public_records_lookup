@@ -1,15 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
+
 import { RequestConfirmation } from '../../components/request/RequestConfirmation';
-import { StoredRequest, getRequestByTrackingId } from '../../services/requestService';
-import { Box, CircularProgress, Alert, Typography } from '@mui/material';
+import {
+  getRequestByTrackingId,
+  StoredRequest,
+} from '../../services/requestService';
 
 export default function ConfirmationContent() {
   const searchParams = useSearchParams();
   const trackingId = searchParams.get('trackingId');
-  
+
   const [request, setRequest] = useState<StoredRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,10 +61,10 @@ export default function ConfirmationContent() {
 
   if (loading) {
     return (
-      <Box 
-        display="flex" 
-        justifyContent="center" 
-        alignItems="center" 
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
         minHeight="400px"
       >
         <CircularProgress />
@@ -75,7 +79,8 @@ export default function ConfirmationContent() {
           {error || 'Request not found'}
         </Alert>
         <Typography variant="body1">
-          Please check your tracking ID and try again, or contact support if the problem persists.
+          Please check your tracking ID and try again, or contact support if the
+          problem persists.
         </Typography>
       </Box>
     );

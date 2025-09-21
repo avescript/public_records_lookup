@@ -1,7 +1,9 @@
 import { type ReactNode } from 'react';
-import { LayoutRoot, LayoutContent } from './styles';
-import { Header } from '../Header';
+
 import { Footer } from '../Footer';
+import { Header } from '../Header';
+
+import { LayoutContent, LayoutRoot } from './styles';
 
 interface BaseLayoutProps {
   children: ReactNode;
@@ -11,9 +13,7 @@ export const BaseLayout = ({ children }: BaseLayoutProps) => {
   return (
     <LayoutRoot>
       <Header />
-      <LayoutContent>
-        {children}
-      </LayoutContent>
+      <LayoutContent>{children}</LayoutContent>
       <Footer />
     </LayoutRoot>
   );

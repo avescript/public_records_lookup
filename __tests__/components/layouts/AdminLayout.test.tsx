@@ -34,17 +34,13 @@ const mockUsePathname = usePathname as jest.MockedFunction<typeof usePathname>;
 
 // Test wrapper with AuthProvider
 function TestWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <AuthProvider>
-      {children}
-    </AuthProvider>
-  );
+  return <AuthProvider>{children}</AuthProvider>;
 }
 
 // Mock authenticated user component
 function AuthenticatedAdminLayout({ children }: { children: React.ReactNode }) {
   const { login } = useAuth();
-  
+
   React.useEffect(() => {
     login('admin@records.gov', 'admin123');
   }, [login]);
@@ -60,7 +56,7 @@ describe('AdminLayout', () => {
 
   test('renders admin header with title and navigation', async () => {
     mockUsePathname.mockReturnValue('/admin/staff');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
@@ -71,24 +67,28 @@ describe('AdminLayout', () => {
 
     // Wait for authentication to complete
     await screen.findByText('Admin Console');
-    
+
     // Check admin title
     expect(screen.getByText('Admin Console')).toBeInTheDocument();
-    
+
     // Check navigation links
-    expect(screen.getByRole('link', { name: 'Request Queue' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Admin Tools' })).toBeInTheDocument();
-    
+    expect(
+      screen.getByRole('link', { name: 'Request Queue' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Admin Tools' })
+    ).toBeInTheDocument();
+
     // Check staff access indicator
     expect(screen.getByText('Staff Access')).toBeInTheDocument();
-    
+
     // Check logout button
     expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
   });
 
   test('renders children content in admin layout', async () => {
     mockUsePathname.mockReturnValue('/admin/staff');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
@@ -103,7 +103,7 @@ describe('AdminLayout', () => {
 
   test('renders admin footer', async () => {
     mockUsePathname.mockReturnValue('/admin/staff');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
@@ -113,12 +113,14 @@ describe('AdminLayout', () => {
     );
 
     await screen.findByText('Staff Portal - Public Records Management System');
-    expect(screen.getByText('Staff Portal - Public Records Management System')).toBeInTheDocument();
+    expect(
+      screen.getByText('Staff Portal - Public Records Management System')
+    ).toBeInTheDocument();
   });
 
   test('highlights active navigation link for staff page', async () => {
     mockUsePathname.mockReturnValue('/admin/staff');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
@@ -127,16 +129,18 @@ describe('AdminLayout', () => {
       </TestWrapper>
     );
 
-    const requestQueueButton = await screen.findByRole('link', { name: 'Request Queue' });
+    const requestQueueButton = await screen.findByRole('link', {
+      name: 'Request Queue',
+    });
     expect(requestQueueButton).toHaveStyle('font-weight: bold');
-    
+
     const adminToolsButton = screen.getByRole('link', { name: 'Admin Tools' });
     expect(adminToolsButton).toHaveStyle('font-weight: normal');
   });
 
   test('highlights active navigation link for admin tools page', async () => {
     mockUsePathname.mockReturnValue('/admin/tools');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
@@ -145,16 +149,18 @@ describe('AdminLayout', () => {
       </TestWrapper>
     );
 
-    const requestQueueButton = await screen.findByRole('link', { name: 'Request Queue' });
+    const requestQueueButton = await screen.findByRole('link', {
+      name: 'Request Queue',
+    });
     expect(requestQueueButton).toHaveStyle('font-weight: normal');
-    
+
     const adminToolsButton = screen.getByRole('link', { name: 'Admin Tools' });
     expect(adminToolsButton).toHaveStyle('font-weight: bold');
   });
 
   test('contains correct navigation links', async () => {
     mockUsePathname.mockReturnValue('/admin/staff');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
@@ -163,16 +169,18 @@ describe('AdminLayout', () => {
       </TestWrapper>
     );
 
-    const requestQueueLink = await screen.findByRole('link', { name: 'Request Queue' });
+    const requestQueueLink = await screen.findByRole('link', {
+      name: 'Request Queue',
+    });
     expect(requestQueueLink).toHaveAttribute('href', '/admin/staff');
-    
+
     const adminToolsLink = screen.getByRole('link', { name: 'Admin Tools' });
     expect(adminToolsLink).toHaveAttribute('href', '/admin/tools');
   });
 
   test('admin console title links to admin home', async () => {
     mockUsePathname.mockReturnValue('/admin/staff');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
@@ -181,14 +189,16 @@ describe('AdminLayout', () => {
       </TestWrapper>
     );
 
-    const titleLink = await screen.findByRole('link', { name: 'Admin Console' });
+    const titleLink = await screen.findByRole('link', {
+      name: 'Admin Console',
+    });
     expect(titleLink).toHaveAttribute('href', '/admin');
   });
 
   test('logout button triggers logout and redirect', async () => {
     const user = userEvent.setup();
     mockUsePathname.mockReturnValue('/admin/staff');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
@@ -198,16 +208,16 @@ describe('AdminLayout', () => {
     );
 
     const logoutButton = await screen.findByRole('button', { name: /logout/i });
-    
+
     await user.click(logoutButton);
-    
+
     // Check that window.location.href was set to redirect to home
     expect(window.location.href).toBe('/');
   });
 
   test('has proper admin styling with darker header', async () => {
     mockUsePathname.mockReturnValue('/admin/staff');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
@@ -224,7 +234,7 @@ describe('AdminLayout', () => {
 
   test('layout has proper admin structure', async () => {
     mockUsePathname.mockReturnValue('/admin/staff');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
@@ -249,7 +259,7 @@ describe('AdminLayout', () => {
 
   test('staff access chip is displayed', async () => {
     mockUsePathname.mockReturnValue('/admin/staff');
-    
+
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>

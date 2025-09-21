@@ -3,24 +3,30 @@
  * Handles all Firebase operations for public records requests
  */
 
-import { 
-  collection, 
-  addDoc, 
-  doc, 
-  getDoc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
   Timestamp,
   UpdateData,
-  updateDoc 
+  updateDoc,
+  where,
 } from 'firebase/firestore';
-import firestore from '../lib/firebase';
+
 import { RequestFormDataWithFiles } from '../components/request/RequestForm/types';
+import firestore from '../lib/firebase';
 
 // Request status enum
-export type RequestStatus = 'submitted' | 'processing' | 'under_review' | 'completed' | 'rejected';
+export type RequestStatus =
+  | 'submitted'
+  | 'processing'
+  | 'under_review'
+  | 'completed'
+  | 'rejected';
 
 // Extended request type with metadata
 export interface StoredRequest {
@@ -75,7 +81,6 @@ export const saveRequest = async (
 
     // Add to Firestore
     const docRef = await addDoc(collection(firestore, 'requests'), requestDoc);
-    
     console.log('Request saved with ID:', docRef.id);
     return { id: docRef.id, trackingId };
   } catch (error) {
@@ -85,23 +90,23 @@ export const saveRequest = async (
 };
 
 // Get a request by tracking ID
-export const getRequestByTrackingId = async (trackingId: string): Promise<StoredRequest | null> => {
+export const getRequestByTrackingId = async (
+  trackingId: string
+): Promise<StoredRequest | null> => {
   try {
     const q = query(
       collection(firestore, 'requests'),
       where('trackingId', '==', trackingId)
     );
-    
     const querySnapshot = await getDocs(q);
-    
     if (querySnapshot.empty) {
       return null;
     }
-    
+
     const doc = querySnapshot.docs[0];
     return {
       id: doc.id,
-      ...doc.data() as Omit<StoredRequest, 'id'>
+      ...(doc.data() as Omit<StoredRequest, 'id'>),
     };
   } catch (error) {
     console.error('Error fetching request by tracking ID:', error);
@@ -110,18 +115,20 @@ export const getRequestByTrackingId = async (trackingId: string): Promise<Stored
 };
 
 // Get a request by document ID
-export const getRequestById = async (id: string): Promise<StoredRequest | null> => {
+export const getRequestById = async (
+  id: string
+): Promise<StoredRequest | null> => {
   try {
     const docRef = doc(firestore, 'requests', id);
     const docSnap = await getDoc(docRef);
-    
+
     if (!docSnap.exists()) {
       return null;
     }
-    
+
     return {
       id: docSnap.id,
-      ...docSnap.data() as Omit<StoredRequest, 'id'>
+      ...(docSnap.data() as Omit<StoredRequest, 'id'>),
     };
   } catch (error) {
     console.error('Error fetching request by ID:', error);
@@ -136,12 +143,12 @@ export const getAllRequests = async (): Promise<StoredRequest[]> => {
       collection(firestore, 'requests'),
       orderBy('submittedAt', 'desc')
     );
-    
+
     const querySnapshot = await getDocs(q);
-    
+
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
-      ...doc.data() as Omit<StoredRequest, 'id'>
+      ...(doc.data() as Omit<StoredRequest, 'id'>),
     }));
   } catch (error) {
     console.error('Error fetching all requests:', error);
@@ -151,16 +158,16 @@ export const getAllRequests = async (): Promise<StoredRequest[]> => {
 
 // Update request status
 export const updateRequestStatus = async (
-  id: string, 
+  id: string,
   status: RequestStatus
 ): Promise<void> => {
   try {
     const docRef = doc(firestore, 'requests', id);
     const updateData: UpdateData<StoredRequest> = {
       status,
-      updatedAt: Timestamp.now()
+      updatedAt: Timestamp.now(),
     };
-    
+
     await updateDoc(docRef, updateData);
     console.log('Request status updated:', id, status);
   } catch (error) {
@@ -170,19 +177,21 @@ export const updateRequestStatus = async (
 };
 
 // Get requests by status (for staff queues)
-export const getRequestsByStatus = async (status: RequestStatus): Promise<StoredRequest[]> => {
+export const getRequestsByStatus = async (
+  status: RequestStatus
+): Promise<StoredRequest[]> => {
   try {
     const q = query(
       collection(firestore, 'requests'),
       where('status', '==', status),
       orderBy('submittedAt', 'desc')
     );
-    
+
     const querySnapshot = await getDocs(q);
-    
+
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
-      ...doc.data() as Omit<StoredRequest, 'id'>
+      ...(doc.data() as Omit<StoredRequest, 'id'>),
     }));
   } catch (error) {
     console.error('Error fetching requests by status:', error);
@@ -191,19 +200,21 @@ export const getRequestsByStatus = async (status: RequestStatus): Promise<Stored
 };
 
 // Get requests by department (for department-specific queues)
-export const getRequestsByDepartment = async (department: string): Promise<StoredRequest[]> => {
+export const getRequestsByDepartment = async (
+  department: string
+): Promise<StoredRequest[]> => {
   try {
     const q = query(
       collection(firestore, 'requests'),
       where('department', '==', department),
       orderBy('submittedAt', 'desc')
     );
-    
+
     const querySnapshot = await getDocs(q);
-    
+
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
-      ...doc.data() as Omit<StoredRequest, 'id'>
+      ...(doc.data() as Omit<StoredRequest, 'id'>),
     }));
   } catch (error) {
     console.error('Error fetching requests by department:', error);

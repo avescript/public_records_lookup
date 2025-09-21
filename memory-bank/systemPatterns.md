@@ -15,6 +15,7 @@
 ## Core Design Patterns
 
 ### 1. Frontend Patterns
+
 - **Component Architecture**
   - MUI base components
   - Custom theme with design tokens
@@ -33,6 +34,7 @@
   - Row-level RBAC
 
 ### 2. Backend Patterns
+
 - **API Design**
   - REST endpoints for CRUD
   - GraphQL for complex queries
@@ -52,6 +54,7 @@
   - Versioned artifacts
 
 ### 3. Security Patterns
+
 - **Authentication**
   - Google Identity Platform
   - Identity-Aware Proxy
@@ -67,6 +70,7 @@
 ## Common Workflows
 
 ### 1. Request Processing
+
 ```mermaid
 flowchart LR
     Submit[Submit Request] --> Queue[Queue]
@@ -78,6 +82,7 @@ flowchart LR
 ```
 
 ### 2. Redaction Flow
+
 ```mermaid
 flowchart LR
     Load[Load Record] --> Detect[AI Detect PII]
@@ -88,6 +93,7 @@ flowchart LR
 ```
 
 ### 3. Approval Process
+
 ```mermaid
 flowchart LR
     Submit[Submit for Review] --> Check[Legal Check]
@@ -99,6 +105,7 @@ flowchart LR
 ```
 
 ## File Structure
+
 ```
 src/
   components/
@@ -117,6 +124,7 @@ src/
 ## Common Interfaces
 
 ### 1. Request Interface
+
 ```typescript
 interface Request {
   id: string;
@@ -131,6 +139,7 @@ interface Request {
 ```
 
 ### 2. Record Interface
+
 ```typescript
 interface Record {
   id: string;
@@ -145,6 +154,7 @@ interface Record {
 ```
 
 ### 3. Redaction Interface
+
 ```typescript
 interface Redaction {
   id: string;
@@ -159,24 +169,28 @@ interface Redaction {
 ## State Management
 
 ### 1. URL State
+
 - Filters
 - Sorting
 - Page numbers
 - Selected items
 
 ### 2. Server State
+
 - Request data
 - Record data
 - User preferences
 - Agency context
 
 ### 3. Form State
+
 - Validation rules
 - Error handling
 - Field dependencies
 - Submit handling
 
 ## Error Handling
+
 - Client validation
 - API error responses
 - Retry mechanisms
@@ -184,6 +198,7 @@ interface Redaction {
 - Error logging
 
 ## Performance Patterns
+
 - CDN caching
 - Image optimization
 - Code splitting

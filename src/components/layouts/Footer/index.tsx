@@ -1,7 +1,8 @@
 import React from 'react';
-import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import { FooterRoot, FooterContent, FooterLinks } from './styles';
+import Typography from '@mui/material/Typography';
+
+import { FooterContent, FooterLinks, FooterRoot } from './styles';
 import type { FooterProps } from './types';
 
 export const Footer: React.FC<FooterProps> = ({ showLinks = true }) => {

@@ -3,9 +3,11 @@
 ## Material-UI Select Testing
 
 ### Challenge
+
 Material-UI Select components render their dropdown options in a portal (outside the main DOM tree), making them difficult to test with standard React Testing Library queries.
 
 ### Current Approach
+
 For the RequestForm component tests, we've implemented a pragmatic approach that focuses on testable functionality:
 
 1. **Basic Rendering Tests**: Verify all form fields are present
@@ -16,13 +18,14 @@ For the RequestForm component tests, we've implemented a pragmatic approach that
 ### Testing Patterns Used
 
 #### Form Field Validation
+
 ```typescript
 it('displays validation errors for empty required fields on form submission', async () => {
   render(<RequestForm />);
-  
+
   // Click submit without filling out the form
   fireEvent.click(screen.getByRole('button', { name: /submit request/i }));
-  
+
   // Check for validation error messages (these appear after form submission)
   await waitFor(() => {
     expect(screen.getByText(/title must be at least 5 characters/i)).toBeInTheDocument();
@@ -33,11 +36,12 @@ it('displays validation errors for empty required fields on form submission', as
 ```
 
 #### Text Input Testing
+
 ```typescript
 it('allows typing in text fields', async () => {
   const user = userEvent.setup();
   render(<RequestForm />);
-  
+
   const titleInput = screen.getByLabelText(/request title/i);
   await user.type(titleInput, 'Test Request Title');
   expect(titleInput).toHaveValue('Test Request Title');
@@ -77,6 +81,7 @@ This affects our testing strategy and explains why field-level validation tests 
 ## Test Coverage Summary
 
 Current test coverage includes:
+
 - ✅ Form rendering and field presence
 - ✅ Form validation on submission
 - ✅ Text input functionality

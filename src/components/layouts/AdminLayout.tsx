@@ -1,10 +1,19 @@
 'use client';
 
 import React from 'react';
-import { Box, AppBar, Toolbar, Typography, Container, Button, Chip } from '@mui/material';
+import { ExitToApp } from '@mui/icons-material';
+import {
+  AppBar,
+  Box,
+  Button,
+  Chip,
+  Container,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ExitToApp } from '@mui/icons-material';
+
 import { useAuth } from '../../contexts/AuthContext';
 
 interface AdminLayoutProps {
@@ -25,38 +34,45 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <AppBar position="static" sx={{ bgcolor: 'primary.dark' }}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link href="/admin" style={{ color: 'inherit', textDecoration: 'none' }}>
+            <Link
+              href="/admin"
+              style={{ color: 'inherit', textDecoration: 'none' }}
+            >
               Admin Console
             </Link>
           </Typography>
-          
+
           {/* Admin Status Indicator */}
-          <Chip 
-            label="Staff Access" 
-            color="secondary" 
-            size="small" 
+          <Chip
+            label="Staff Access"
+            color="secondary"
+            size="small"
             sx={{ mr: 3 }}
           />
-          
+
           {/* Admin Navigation */}
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <Button 
-              color="inherit" 
-              component={Link} 
+            <Button
+              color="inherit"
+              component={Link}
               href="/admin/staff"
-              sx={{ fontWeight: pathname === '/admin/staff' ? 'bold' : 'normal' }}
+              sx={{
+                fontWeight: pathname === '/admin/staff' ? 'bold' : 'normal',
+              }}
             >
               Request Queue
             </Button>
-            <Button 
-              color="inherit" 
-              component={Link} 
+            <Button
+              color="inherit"
+              component={Link}
               href="/admin/tools"
-              sx={{ fontWeight: pathname === '/admin/tools' ? 'bold' : 'normal' }}
+              sx={{
+                fontWeight: pathname === '/admin/tools' ? 'bold' : 'normal',
+              }}
             >
               Admin Tools
             </Button>
-            <Button 
+            <Button
               color="inherit"
               onClick={handleLogout}
               startIcon={<ExitToApp />}
@@ -68,13 +84,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </Box>
         </Toolbar>
       </AppBar>
-      
+
       <Box component="main" sx={{ flexGrow: 1, py: 3, bgcolor: 'grey.50' }}>
-        <Container maxWidth="xl">
-          {children}
-        </Container>
+        <Container maxWidth="xl">{children}</Container>
       </Box>
-      
+
       <Box component="footer" sx={{ py: 2, bgcolor: 'grey.200' }}>
         <Container maxWidth="xl">
           <Typography variant="body2" color="text.secondary" align="center">

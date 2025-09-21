@@ -33,27 +33,26 @@ Object.defineProperty(window, 'localStorage', {
 
 // Test wrapper with AuthProvider
 function TestWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <AuthProvider>
-      {children}
-    </AuthProvider>
-  );
+  return <AuthProvider>{children}</AuthProvider>;
 }
 
 // Helper component to simulate authenticated user
-function AuthenticatedWrapper({ 
-  children, 
-  userRole = 'staff' 
-}: { 
+function AuthenticatedWrapper({
+  children,
+  userRole = 'staff',
+}: {
   children: React.ReactNode;
   userRole?: 'admin' | 'staff' | 'legal_reviewer';
 }) {
   const { login } = useAuth();
-  
+
   React.useEffect(() => {
-    const email = userRole === 'admin' ? 'admin@records.gov' : 
-                  userRole === 'legal_reviewer' ? 'legal@records.gov' : 
-                  'staff@records.gov';
+    const email =
+      userRole === 'admin'
+        ? 'admin@records.gov'
+        : userRole === 'legal_reviewer'
+          ? 'legal@records.gov'
+          : 'staff@records.gov';
     login(email, `${userRole}123`);
   }, [login, userRole]);
 
@@ -147,7 +146,9 @@ describe('ProtectedRoute', () => {
       expect(screen.getByText('Access Denied')).toBeInTheDocument();
     });
 
-    expect(screen.getByText("You don't have permission to access this page.")).toBeInTheDocument();
+    expect(
+      screen.getByText("You don't have permission to access this page.")
+    ).toBeInTheDocument();
     expect(screen.queryByTestId('admin-content')).not.toBeInTheDocument();
   });
 
@@ -228,9 +229,9 @@ describe('ProtectedRoute', () => {
       id: '1',
       email: 'staff@records.gov',
       role: 'staff',
-      name: 'Records Officer'
+      name: 'Records Officer',
     };
-    
+
     mockLocalStorage.getItem.mockReturnValue(JSON.stringify(savedUser));
 
     render(
@@ -250,7 +251,9 @@ describe('ProtectedRoute', () => {
 
   test('handles corrupted localStorage gracefully', async () => {
     mockLocalStorage.getItem.mockReturnValue('invalid-json');
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
 
     render(
       <TestWrapper>

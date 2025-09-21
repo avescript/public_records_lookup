@@ -1,20 +1,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  Box, 
-  Paper, 
-  TextField, 
-  Button, 
-  Typography, 
-  Alert, 
-  Container,
-  CircularProgress 
-} from '@mui/material';
 import { Login as LoginIcon } from '@mui/icons-material';
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { useRouter } from 'next/navigation';
+
 import { useAuth } from '../../../contexts/AuthContext';
 import { AuthProvider } from '../../../contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 
 function LoginPageContent() {
   const [email, setEmail] = useState('');
@@ -36,13 +37,15 @@ function LoginPageContent() {
 
   return (
     <Container maxWidth="sm">
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
-        minHeight: '100vh',
-        justifyContent: 'center'
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          minHeight: '100vh',
+          justifyContent: 'center',
+        }}
+      >
         <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400 }}>
           <Box sx={{ textAlign: 'center', mb: 3 }}>
             <LoginIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
@@ -66,7 +69,7 @@ function LoginPageContent() {
               label="Email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               margin="normal"
               required
               autoFocus
@@ -76,7 +79,7 @@ function LoginPageContent() {
               label="Password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               margin="normal"
               required
             />
@@ -86,7 +89,9 @@ function LoginPageContent() {
               variant="contained"
               size="large"
               disabled={isLoading}
-              startIcon={isLoading ? <CircularProgress size={20} /> : <LoginIcon />}
+              startIcon={
+                isLoading ? <CircularProgress size={20} /> : <LoginIcon />
+              }
               sx={{ mt: 3, mb: 2 }}
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
@@ -94,23 +99,28 @@ function LoginPageContent() {
           </Box>
 
           <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-            <Typography variant="caption" color="text.secondary" gutterBottom display="block">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              gutterBottom
+              display="block"
+            >
               Development Credentials:
             </Typography>
-            <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
-              <strong>Admin:</strong> admin@records.gov / admin123<br />
-              <strong>Staff:</strong> staff@records.gov / staff123<br />
+            <Typography
+              variant="body2"
+              sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}
+            >
+              <strong>Admin:</strong> admin@records.gov / admin123
+              <br />
+              <strong>Staff:</strong> staff@records.gov / staff123
+              <br />
               <strong>Legal:</strong> legal@records.gov / legal123
             </Typography>
           </Box>
         </Paper>
 
-        <Button
-          component="a"
-          href="/"
-          variant="text"
-          sx={{ mt: 2 }}
-        >
+        <Button component="a" href="/" variant="text" sx={{ mt: 2 }}>
           ← Back to Public Portal
         </Button>
       </Box>

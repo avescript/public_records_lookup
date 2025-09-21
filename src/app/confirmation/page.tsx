@@ -2,14 +2,15 @@
 
 import { Suspense } from 'react';
 import { Box, CircularProgress } from '@mui/material';
+
 import ConfirmationContent from './ConfirmationContent';
 
 function LoadingFallback() {
   return (
-    <Box 
-      display="flex" 
-      justifyContent="center" 
-      alignItems="center" 
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
       minHeight="400px"
     >
       <CircularProgress />

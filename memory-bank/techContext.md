@@ -3,6 +3,7 @@
 ## Technology Stack
 
 ### Frontend
+
 - **Framework:** Next.js
 - **UI Library:** MUI v5+
 - **Language:** TypeScript (strict)
@@ -13,6 +14,7 @@
 - **Testing:** Jest + RTL, Playwright
 
 ### Backend
+
 - **Platform:** Google Cloud Platform (GCP)
 - **Compute:** Cloud Run
 - **Storage:**
@@ -29,6 +31,7 @@
 - **Analytics:** BigQuery
 
 ### Infrastructure
+
 - **CDN:** Cloud CDN
 - **Security:** Cloud Armor, IAP
 - **Auth:** Google Identity Platform
@@ -38,6 +41,7 @@
 ## Development Environment
 
 ### Required Tools
+
 - Node.js 18+
 - npm/yarn
 - Git
@@ -46,6 +50,7 @@
 - Docker
 
 ### Environment Variables
+
 ```bash
 # Auth
 GOOGLE_CLOUD_PROJECT=
@@ -65,22 +70,27 @@ DLP_API_ENDPOINT=
 ```
 
 ### Local Development
+
 1. Install dependencies
+
 ```bash
 npm install
 ```
 
 2. Start emulators
+
 ```bash
 npm run emulators
 ```
 
 3. Run development server
+
 ```bash
 npm run dev
 ```
 
 ### Testing
+
 ```bash
 # Unit tests
 npm run test
@@ -98,6 +108,7 @@ npm run type-check
 ## Dependencies
 
 ### Production Dependencies
+
 ```json
 {
   "@emotion/react": "^11.x",
@@ -114,6 +125,7 @@ npm run type-check
 ```
 
 ### Development Dependencies
+
 ```json
 {
   "@types/react": "^18.x",
@@ -129,6 +141,7 @@ npm run type-check
 ## Build & Deploy
 
 ### Build Process
+
 1. Lint and type check
 2. Run tests
 3. Build Next.js
@@ -136,12 +149,14 @@ npm run type-check
 5. Push to Container Registry
 
 ### Deployment Environments
+
 - Local (emulators)
 - Development
 - Staging
 - Production
 
 ### Infrastructure as Code
+
 - Terraform for GCP resources
 - GitHub Actions for CI/CD
 - Cloud Build for container builds
@@ -149,16 +164,19 @@ npm run type-check
 ## Security Requirements
 
 ### Authentication
+
 - Google Identity Platform SSO
 - MFA requirement
 - Session management
 
 ### Authorization
+
 - Role-based access control
 - Agency-level isolation
 - Resource-level permissions
 
 ### Data Protection
+
 - us-west region only
 - End-to-end encryption
 - PII handling procedures
@@ -167,16 +185,19 @@ npm run type-check
 ## Performance Requirements
 
 ### Frontend
+
 - First Contentful Paint < 1.5s
 - Time to Interactive < 3.5s
 - Core Web Vitals pass
 
 ### API
+
 - P95 latency < 500ms
 - Search latency < 2s
 - PDF load < 3s
 
 ### Scalability
+
 - Handle 10k+ concurrent requests
 - Support multiple agencies
 - Elastic resource scaling
@@ -184,18 +205,21 @@ npm run type-check
 ## Monitoring & Observability
 
 ### Metrics
+
 - Request latency
 - Error rates
 - Resource usage
 - User actions
 
 ### Logging
+
 - Application logs
 - Audit logs
 - Error tracking
 - Usage analytics
 
 ### Alerting
+
 - SLO breaches
 - Error spikes
 - Resource constraints
@@ -204,6 +228,7 @@ npm run type-check
 ## Development Workflow
 
 ### Git Flow
+
 1. Feature branches
 2. Pull requests
 3. Code review
@@ -211,6 +236,7 @@ npm run type-check
 5. Merge to main
 
 ### Release Process
+
 1. Version bump
 2. Changelog update
 3. Tag release
@@ -218,6 +244,7 @@ npm run type-check
 5. Verify & promote
 
 ### Documentation
+
 - API documentation
 - Component documentation
 - Architecture diagrams

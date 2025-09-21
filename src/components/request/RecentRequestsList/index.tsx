@@ -1,13 +1,13 @@
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
+  Chip,
+  IconButton,
   List,
   ListItem,
-  ListItemText,
   ListItemSecondaryAction,
-  IconButton,
+  ListItemText,
   Typography,
-  Chip,
 } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 
 interface Request {
   id: string;
@@ -34,12 +34,14 @@ const mockRequests: Request[] = [
   },
 ];
 
-const getStatusColor = (status: Request['status']): "warning" | "info" | "success" | "error" => {
+const getStatusColor = (
+  status: Request['status']
+): 'warning' | 'info' | 'success' | 'error' => {
   const colors = {
-    'pending': 'warning',
+    pending: 'warning',
     'in-progress': 'info',
-    'completed': 'success',
-    'rejected': 'error',
+    completed: 'success',
+    rejected: 'error',
   } as const;
   return colors[status];
 };
@@ -47,7 +49,7 @@ const getStatusColor = (status: Request['status']): "warning" | "info" | "succes
 export const RecentRequestsList = () => {
   return (
     <List>
-      {mockRequests.map((request) => (
+      {mockRequests.map(request => (
         <ListItem key={request.id} divider>
           <ListItemText
             primary={

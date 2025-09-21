@@ -7,12 +7,9 @@ You use a persistent Memory Bank system stored at `/memory-bank/`.
 You MUST respect all slash commands. Do nothing until a relevant command is given.
 
 == SLASH COMMANDS ==
+
 - /start feature <name>
-  → Initialize folder `/memory-bank/<name>/` with:
-      - prd.md
-      - design.md
-      - tasks.md
-      - context.md
+  → Initialize folder `/memory-bank/<name>/` with: - prd.md - design.md - tasks.md - context.md
   → Confirm setup and pause for PRD intake
 
 - /approve prd
@@ -25,67 +22,52 @@ You MUST respect all slash commands. Do nothing until a relevant command is give
   → Move to PHASE 3 (Code Generation)
 
 - /implement <TASK_ID>
-  → Implement one task. Show:
-      - File plan
-      - Diffs in ```diff``` blocks
-      - Tests in ```code``` blocks
-      - Finish with `/review complete`
+  → Implement one task. Show: - File plan - Diffs in `diff` blocks - Tests in `code` blocks - Finish with `/review complete`
 
 - /review complete
   → Confirm output is done, wait for next command
 
 - /update memory bank
-  → Review and refresh all core memory files:
-      - activeContext.md
-      - progress.md
-      - copilot-rules.md
+  → Review and refresh all core memory files: - activeContext.md - progress.md - copilot-rules.md
 
 == MEMORY BANK FILES ==
 Global context (always read before any task):
-  - projectbrief.md
-  - productContext.md
-  - systemPatterns.md
-  - techContext.md
-  - activeContext.md
-  - progress.md
-  - copilot-rules.md
+
+- projectbrief.md
+- productContext.md
+- systemPatterns.md
+- techContext.md
+- activeContext.md
+- progress.md
+- copilot-rules.md
 
 Local feature context:
-  - /memory-bank/<feature>/
-      - prd.md
-      - design.md
-      - tasks.md
-      - context.md
+
+- /memory-bank/<feature>/
+  - prd.md
+  - design.md
+  - tasks.md
+  - context.md
 
 == WORKFLOW PHASES ==
 PHASE 0 – PRD_INTAKE
-  • Clarify scope with user
-  • Save structured PRD to `/memory-bank/<feature>/prd.md`
-  • Wait for `/approve prd`
+• Clarify scope with user
+• Save structured PRD to `/memory-bank/<feature>/prd.md`
+• Wait for `/approve prd`
 
 PHASE 1 – DESIGN_DOC
-  • Write `design.md` with:
-      - Overview & goals
-      - Architecture (Mermaid)
-      - Tech stack & decisions
-      - Data models / APIs
-      - Non-functional requirements
-  • Wait for `/approve design`
+• Write `design.md` with: - Overview & goals - Architecture (Mermaid) - Tech stack & decisions - Data models / APIs - Non-functional requirements
+• Wait for `/approve design`
 
 PHASE 2 – TASK_BREAKDOWN
-  • Write `tasks.md`:
-      - Unique ID
-      - Description
-      - Acceptance criteria
-      - Estimated effort (S/M/L)
-      - Files/modules affected
-  • Wait for `/approve tasks`
+• Write `tasks.md`: - Unique ID - Description - Acceptance criteria - Estimated effort (S/M/L) - Files/modules affected
+• Wait for `/approve tasks`
 
 PHASE 3 – CODE_GENERATION (reentrant)
-  • Wait for `/implement <TASK_ID>`
-  • Implement only that task
-  • Show all changes in diff + code blocks
-  • Do not start next task unless told
+• Wait for `/implement <TASK_ID>`
+• Implement only that task
+• Show all changes in diff + code blocks
+• Do not start next task unless told
 
 == RULES ==
 • Do NOT skip or assume phases
@@ -95,6 +77,7 @@ PHASE 3 – CODE_GENERATION (reentrant)
 • Confirm each step and pause
 
 == EXAMPLE SESSION FLOW ==
+
 1. User: /start feature notifications
 2. You: Created folder + prd.md
 3. User: [clarifies PRD]

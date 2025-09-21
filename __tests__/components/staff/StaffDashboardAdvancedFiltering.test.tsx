@@ -24,7 +24,7 @@ jest.mock('@mui/x-data-grid', () => ({
       <div data-testid="grid-rows-count">{rows.length} rows</div>
       <div data-testid="filtered-results">Showing {rows.length} results</div>
       {rows.map((row: any, index: number) => (
-        <div 
+        <div
           key={row.id || row.trackingId || index}
           data-testid={`grid-row-${row.trackingId}`}
           data-department={row.department}
@@ -44,11 +44,15 @@ jest.mock('@mui/x-date-pickers', () => ({
     <input
       aria-label={label}
       data-testid={`date-picker-${label.toLowerCase().replace(' ', '-')}`}
-      onChange={(e) => {
+      onChange={e => {
         const date = e.target.value ? new Date(e.target.value) : null;
         onChange && onChange(date);
       }}
-      value={value && value instanceof Date && !isNaN(value.getTime()) ? value.toISOString().split('T')[0] : ''}
+      value={
+        value && value instanceof Date && !isNaN(value.getTime())
+          ? value.toISOString().split('T')[0]
+          : ''
+      }
       type="date"
     />
   ),
@@ -156,7 +160,7 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('filters by single department', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -165,25 +169,27 @@ describe('StaffDashboard Advanced Filtering', () => {
       const departmentSelects = screen.getAllByRole('combobox');
       const departmentSelect = departmentSelects[0]; // First combobox is departments
       await user.click(departmentSelect);
-      
+
       const policeOption = screen.getByText('Police Department');
       await user.click(policeOption);
-      
+
       // Close dropdown
       await user.keyboard('{Escape}');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 2 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-001')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-006')).toBeInTheDocument();
-        expect(screen.queryByTestId('grid-row-REQ-002')).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId('grid-row-REQ-002')
+        ).not.toBeInTheDocument();
       });
     });
 
     test('filters by multiple departments', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -191,26 +197,28 @@ describe('StaffDashboard Advanced Filtering', () => {
       const departmentSelects = screen.getAllByRole('combobox');
       const departmentSelect = departmentSelects[0];
       await user.click(departmentSelect);
-      
+
       // Select multiple departments
       await user.click(screen.getByText('Police Department'));
       await user.click(screen.getByText('Fire Department'));
-      
+
       await user.keyboard('{Escape}');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-001')).toBeInTheDocument(); // police
         expect(screen.getByTestId('grid-row-REQ-002')).toBeInTheDocument(); // fire
         expect(screen.getByTestId('grid-row-REQ-006')).toBeInTheDocument(); // police
-        expect(screen.queryByTestId('grid-row-REQ-003')).not.toBeInTheDocument(); // finance
+        expect(
+          screen.queryByTestId('grid-row-REQ-003')
+        ).not.toBeInTheDocument(); // finance
       });
     });
 
     test('shows department filter chips when selected', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -220,7 +228,7 @@ describe('StaffDashboard Advanced Filtering', () => {
       await user.click(departmentSelect);
       await user.click(screen.getByText('Public Works'));
       await user.keyboard('{Escape}');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Public Works')).toBeInTheDocument();
       });
@@ -231,7 +239,7 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('filters by single status', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -241,7 +249,7 @@ describe('StaffDashboard Advanced Filtering', () => {
       await user.click(statusSelect);
       await user.click(screen.getByText('Processing'));
       await user.keyboard('{Escape}');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 2 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-002')).toBeInTheDocument();
@@ -252,7 +260,7 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('filters by multiple statuses', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -263,7 +271,7 @@ describe('StaffDashboard Advanced Filtering', () => {
       await user.click(screen.getByText('Submitted'));
       await user.click(screen.getByText('Completed'));
       await user.keyboard('{Escape}');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 2 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-001')).toBeInTheDocument(); // submitted
@@ -276,14 +284,14 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('searches by tracking ID', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'REQ-004');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 1 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-004')).toBeInTheDocument();
@@ -293,14 +301,14 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('searches by partial title match', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'Police');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 2 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-001')).toBeInTheDocument();
@@ -311,14 +319,14 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('searches by description content', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'downtown robbery');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 1 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-001')).toBeInTheDocument();
@@ -328,14 +336,14 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('searches by contact email', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'journalist@news.com');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 1 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-003')).toBeInTheDocument();
@@ -345,14 +353,14 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('search is case insensitive', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'FIRE INSPECTION');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 1 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-002')).toBeInTheDocument();
@@ -364,19 +372,23 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('filters by start date', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const startDatePicker = screen.getByTestId('date-picker-start-date');
       await user.type(startDatePicker, '2024-01-03');
-      
+
       await waitFor(() => {
         // Should show requests from 2024-01-03 onwards (REQ-003, REQ-004, REQ-005, REQ-006)
         expect(screen.getByText('Showing 4 of 6 requests')).toBeInTheDocument();
-        expect(screen.queryByTestId('grid-row-REQ-001')).not.toBeInTheDocument(); // 2024-01-01
-        expect(screen.queryByTestId('grid-row-REQ-002')).not.toBeInTheDocument(); // 2024-01-02
+        expect(
+          screen.queryByTestId('grid-row-REQ-001')
+        ).not.toBeInTheDocument(); // 2024-01-01
+        expect(
+          screen.queryByTestId('grid-row-REQ-002')
+        ).not.toBeInTheDocument(); // 2024-01-02
         expect(screen.getByTestId('grid-row-REQ-003')).toBeInTheDocument(); // 2024-01-03
       });
     });
@@ -384,46 +396,54 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('filters by end date', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const endDatePicker = screen.getByTestId('date-picker-end-date');
       await user.type(endDatePicker, '2024-01-05');
-      
+
       await waitFor(() => {
         // Should show requests up to 2024-01-05 (REQ-001, REQ-002, REQ-003, REQ-004)
         expect(screen.getByText('Showing 4 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-001')).toBeInTheDocument(); // 2024-01-01
         expect(screen.getByTestId('grid-row-REQ-004')).toBeInTheDocument(); // 2024-01-05
-        expect(screen.queryByTestId('grid-row-REQ-005')).not.toBeInTheDocument(); // 2024-01-10
-        expect(screen.queryByTestId('grid-row-REQ-006')).not.toBeInTheDocument(); // 2024-01-15
+        expect(
+          screen.queryByTestId('grid-row-REQ-005')
+        ).not.toBeInTheDocument(); // 2024-01-10
+        expect(
+          screen.queryByTestId('grid-row-REQ-006')
+        ).not.toBeInTheDocument(); // 2024-01-15
       });
     });
 
     test('filters by date range', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const startDatePicker = screen.getByTestId('date-picker-start-date');
       const endDatePicker = screen.getByTestId('date-picker-end-date');
-      
+
       await user.type(startDatePicker, '2024-01-02');
       await user.type(endDatePicker, '2024-01-05');
-      
+
       await waitFor(() => {
         // Should show requests between 2024-01-02 and 2024-01-05 (REQ-002, REQ-003, REQ-004)
         expect(screen.getByText('Showing 3 of 6 requests')).toBeInTheDocument();
-        expect(screen.queryByTestId('grid-row-REQ-001')).not.toBeInTheDocument(); // 2024-01-01
+        expect(
+          screen.queryByTestId('grid-row-REQ-001')
+        ).not.toBeInTheDocument(); // 2024-01-01
         expect(screen.getByTestId('grid-row-REQ-002')).toBeInTheDocument(); // 2024-01-02
         expect(screen.getByTestId('grid-row-REQ-003')).toBeInTheDocument(); // 2024-01-03
         expect(screen.getByTestId('grid-row-REQ-004')).toBeInTheDocument(); // 2024-01-05
-        expect(screen.queryByTestId('grid-row-REQ-005')).not.toBeInTheDocument(); // 2024-01-10
+        expect(
+          screen.queryByTestId('grid-row-REQ-005')
+        ).not.toBeInTheDocument(); // 2024-01-10
       });
     });
   });
@@ -432,7 +452,7 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('combines department and status filters', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -449,19 +469,21 @@ describe('StaffDashboard Advanced Filtering', () => {
       await user.click(statusSelect);
       await user.click(screen.getByText('Processing'));
       await user.keyboard('{Escape}');
-      
+
       await waitFor(() => {
         // Should show only police requests that are processing (REQ-006)
         expect(screen.getByText('Showing 1 of 6 requests')).toBeInTheDocument();
         expect(screen.getByTestId('grid-row-REQ-006')).toBeInTheDocument();
-        expect(screen.queryByTestId('grid-row-REQ-001')).not.toBeInTheDocument(); // police but submitted
+        expect(
+          screen.queryByTestId('grid-row-REQ-001')
+        ).not.toBeInTheDocument(); // police but submitted
       });
     });
 
     test('combines search with department filter', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -476,7 +498,7 @@ describe('StaffDashboard Advanced Filtering', () => {
       await user.click(departmentSelect);
       await user.click(screen.getByText('Public Works'));
       await user.keyboard('{Escape}');
-      
+
       await waitFor(() => {
         // Should show only public works requests containing "records" (REQ-004)
         expect(screen.getByText('Showing 1 of 6 requests')).toBeInTheDocument();
@@ -487,7 +509,7 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('combines all filter types', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -512,7 +534,7 @@ describe('StaffDashboard Advanced Filtering', () => {
       // Add date filter
       const startDatePicker = screen.getByTestId('date-picker-start-date');
       await user.type(startDatePicker, '2024-01-01');
-      
+
       await waitFor(() => {
         // Should show police requests with "Police" in title/description, submitted status, from 2024-01-01
         expect(screen.getByText('Showing 1 of 6 requests')).toBeInTheDocument();
@@ -525,7 +547,7 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('shows clear all filters button when any filter is active', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -533,7 +555,7 @@ describe('StaffDashboard Advanced Filtering', () => {
       // Add a search filter
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'test');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Clear All Filters')).toBeInTheDocument();
       });
@@ -542,7 +564,7 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('clears all filters when clear all button is clicked', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -559,17 +581,19 @@ describe('StaffDashboard Advanced Filtering', () => {
 
       const startDatePicker = screen.getByTestId('date-picker-start-date');
       await user.type(startDatePicker, '2024-01-01');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Clear All Filters')).toBeInTheDocument();
         // Adjust expectation - filtering might show more than 1 result
-        expect(screen.getByText(/Showing \d+ of 6 requests/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Showing \d+ of 6 requests/)
+        ).toBeInTheDocument();
       });
 
       // Clear all filters
       const clearButton = screen.getByText('Clear All Filters');
       await user.click(clearButton);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
         expect(searchInput).toHaveValue('');
@@ -581,19 +605,25 @@ describe('StaffDashboard Advanced Filtering', () => {
 
   describe('URL Parameter Synchronization', () => {
     test('loads filters from URL on mount', () => {
-      mockSearchParams.get.mockImplementation((key) => {
+      mockSearchParams.get.mockImplementation(key => {
         switch (key) {
-          case 'departments': return 'police,fire';
-          case 'statuses': return 'submitted,processing';
-          case 'search': return 'test query';
-          case 'startDate': return '2024-01-01';
-          case 'endDate': return '2024-01-31';
-          default: return null;
+          case 'departments':
+            return 'police,fire';
+          case 'statuses':
+            return 'submitted,processing';
+          case 'search':
+            return 'test query';
+          case 'startDate':
+            return '2024-01-01';
+          case 'endDate':
+            return '2024-01-31';
+          default:
+            return null;
         }
       });
 
       render(<StaffDashboard />);
-      
+
       // Verify that URL parameters were read
       expect(mockSearchParams.get).toHaveBeenCalledWith('departments');
       expect(mockSearchParams.get).toHaveBeenCalledWith('statuses');
@@ -605,37 +635,43 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('updates URL when filters change with debouncing', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'Police');
-      
+
       // Wait for debounced URL update (500ms)
-      await waitFor(() => {
-        expect(mockRouter.replace).toHaveBeenCalled();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(mockRouter.replace).toHaveBeenCalled();
+        },
+        { timeout: 1000 }
+      );
     });
 
     test('handles invalid date parameters gracefully', async () => {
-      mockSearchParams.get.mockImplementation((key) => {
+      mockSearchParams.get.mockImplementation(key => {
         switch (key) {
-          case 'startDate': return 'invalid-date';
-          case 'endDate': return 'another-invalid-date';
-          default: return null;
+          case 'startDate':
+            return 'invalid-date';
+          case 'endDate':
+            return 'another-invalid-date';
+          default:
+            return null;
         }
       });
 
       // Render component and verify it doesn't crash
       const { container } = render(<StaffDashboard />);
-      
+
       // Wait for the component to load successfully despite invalid dates
       await waitFor(() => {
         expect(screen.getByText('Request Queue')).toBeInTheDocument();
       });
-      
+
       // Reset search params for other tests
       mockSearchParams.get.mockReturnValue(null);
     });
@@ -645,14 +681,14 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('handles empty search queries', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, '   '); // whitespace only
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -661,25 +697,27 @@ describe('StaffDashboard Advanced Filtering', () => {
     test('handles special characters in search', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, '@example.com');
-      
+
       await waitFor(() => {
         // Should find requests with email addresses containing @example.com
         // Adjusted expectation based on our mock data that has citizen1@example.com and resident@example.com
-        expect(screen.getByText(/Showing .+ of 6 requests/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Showing .+ of 6 requests/)
+        ).toBeInTheDocument();
       });
     });
 
     test('maintains filter state during request loading', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 6 of 6 requests')).toBeInTheDocument();
       });
@@ -687,22 +725,25 @@ describe('StaffDashboard Advanced Filtering', () => {
       // Add a filter
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'Police');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 2 of 6 requests')).toBeInTheDocument();
       });
 
       // Simulate request refresh
-      (getAllRequests as jest.Mock).mockResolvedValue([...mockRequests, {
-        id: '7',
-        trackingId: 'REQ-007',
-        title: 'New Request',
-        description: 'New description',
-        department: 'other',
-        status: 'submitted',
-        contactEmail: 'new@example.com',
-        submittedAt: { toDate: () => new Date('2024-01-20') },
-      }]);
+      (getAllRequests as jest.Mock).mockResolvedValue([
+        ...mockRequests,
+        {
+          id: '7',
+          trackingId: 'REQ-007',
+          title: 'New Request',
+          description: 'New description',
+          department: 'other',
+          status: 'submitted',
+          contactEmail: 'new@example.com',
+          submittedAt: { toDate: () => new Date('2024-01-20') },
+        },
+      ]);
 
       // The search filter should still be applied even with new data
       expect(searchInput).toHaveValue('Police');

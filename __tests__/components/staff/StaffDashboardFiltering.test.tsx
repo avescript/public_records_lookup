@@ -23,7 +23,7 @@ jest.mock('@mui/x-data-grid', () => ({
     <div data-testid="data-grid">
       <div data-testid="grid-rows-count">{rows.length} rows</div>
       {rows.map((row: any, index: number) => (
-        <div 
+        <div
           key={row.id || row.trackingId || index}
           data-testid={`grid-row-${row.trackingId}`}
           onClick={() => onRowClick && onRowClick({ row })}
@@ -41,7 +41,9 @@ jest.mock('@mui/x-date-pickers', () => ({
     <input
       aria-label={label}
       data-testid={`date-picker-${label.toLowerCase().replace(' ', '-')}`}
-      onChange={(e) => onChange && onChange(e.target.value ? new Date(e.target.value) : null)}
+      onChange={e =>
+        onChange && onChange(e.target.value ? new Date(e.target.value) : null)
+      }
       value={value ? value.toISOString().split('T')[0] : ''}
       type="date"
     />
@@ -118,13 +120,17 @@ describe('StaffDashboard Filtering', () => {
   describe('Basic Functionality', () => {
     test('renders dashboard title and loads requests', async () => {
       render(<StaffDashboard />);
-      
+
       expect(screen.getByText('Request Queue')).toBeInTheDocument();
-      expect(screen.getByText('Manage and track public records requests')).toBeInTheDocument();
-      
+      expect(
+        screen.getByText('Manage and track public records requests')
+      ).toBeInTheDocument();
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
-        expect(screen.getByText('REQ-001 - Police Report Request')).toBeInTheDocument();
+        expect(
+          screen.getByText('REQ-001 - Police Report Request')
+        ).toBeInTheDocument();
       });
     });
 
@@ -135,11 +141,13 @@ describe('StaffDashboard Filtering', () => {
 
     test('displays filter controls', async () => {
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByLabelText('Departments')).toBeInTheDocument();
         expect(screen.getByLabelText('Status')).toBeInTheDocument();
-        expect(screen.getByPlaceholderText(/Search requests/)).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText(/Search requests/)
+        ).toBeInTheDocument();
       });
     });
   });
@@ -148,39 +156,45 @@ describe('StaffDashboard Filtering', () => {
     test('filters requests by search query', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'Police');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 1 of 3 requests')).toBeInTheDocument();
-        expect(screen.getByText('REQ-001 - Police Report Request')).toBeInTheDocument();
-        expect(screen.queryByText('REQ-002 - Fire Inspection Records')).not.toBeInTheDocument();
+        expect(
+          screen.getByText('REQ-001 - Police Report Request')
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByText('REQ-002 - Fire Inspection Records')
+        ).not.toBeInTheDocument();
       });
     });
 
     test('shows clear button when search has value and clears search', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'Police');
-      
+
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /clear/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /clear/i })
+        ).toBeInTheDocument();
       });
 
       const clearButton = screen.getByRole('button', { name: /clear/i });
       await user.click(clearButton);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
         expect(searchInput).toHaveValue('');
@@ -190,34 +204,38 @@ describe('StaffDashboard Filtering', () => {
     test('searches by tracking ID', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'REQ-002');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 1 of 3 requests')).toBeInTheDocument();
-        expect(screen.getByText('REQ-002 - Fire Inspection Records')).toBeInTheDocument();
+        expect(
+          screen.getByText('REQ-002 - Fire Inspection Records')
+        ).toBeInTheDocument();
       });
     });
 
     test('searches by description', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'incident report');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 1 of 3 requests')).toBeInTheDocument();
-        expect(screen.getByText('REQ-001 - Police Report Request')).toBeInTheDocument();
+        expect(
+          screen.getByText('REQ-001 - Police Report Request')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -226,14 +244,14 @@ describe('StaffDashboard Filtering', () => {
     test('displays department filter options', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByLabelText('Departments')).toBeInTheDocument();
       });
 
       const departmentSelect = screen.getByLabelText('Departments');
       await user.click(departmentSelect);
-      
+
       expect(screen.getByText('Police Department')).toBeInTheDocument();
       expect(screen.getByText('Fire Department')).toBeInTheDocument();
       expect(screen.getByText('Finance Department')).toBeInTheDocument();
@@ -244,14 +262,14 @@ describe('StaffDashboard Filtering', () => {
     test('displays status filter options', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByLabelText('Status')).toBeInTheDocument();
       });
 
       const statusSelect = screen.getByLabelText('Status');
       await user.click(statusSelect);
-      
+
       expect(screen.getByText('Submitted')).toBeInTheDocument();
       expect(screen.getByText('Processing')).toBeInTheDocument();
       expect(screen.getByText('Completed')).toBeInTheDocument();
@@ -261,9 +279,11 @@ describe('StaffDashboard Filtering', () => {
   describe('Date Range Filtering', () => {
     test('renders date picker components', async () => {
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
-        expect(screen.getByTestId('date-picker-start-date')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('date-picker-start-date')
+        ).toBeInTheDocument();
         expect(screen.getByTestId('date-picker-end-date')).toBeInTheDocument();
       });
     });
@@ -273,14 +293,14 @@ describe('StaffDashboard Filtering', () => {
     test('shows clear all filters button when search is active', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'test');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Clear All Filters')).toBeInTheDocument();
       });
@@ -289,14 +309,14 @@ describe('StaffDashboard Filtering', () => {
     test('clears all filters when clear all button is clicked', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'Police');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Clear All Filters')).toBeInTheDocument();
         expect(screen.getByText('Showing 1 of 3 requests')).toBeInTheDocument();
@@ -304,7 +324,7 @@ describe('StaffDashboard Filtering', () => {
 
       const clearAllButton = screen.getByText('Clear All Filters');
       await user.click(clearAllButton);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
         expect(searchInput).toHaveValue('');
@@ -314,7 +334,7 @@ describe('StaffDashboard Filtering', () => {
 
   describe('URL Parameter Synchronization', () => {
     test('loads filters from URL parameters on initial load', () => {
-      mockSearchParams.get.mockImplementation((key) => {
+      mockSearchParams.get.mockImplementation(key => {
         if (key === 'departments') return 'police,fire';
         if (key === 'statuses') return 'submitted';
         if (key === 'search') return 'test query';
@@ -322,7 +342,7 @@ describe('StaffDashboard Filtering', () => {
       });
 
       render(<StaffDashboard />);
-      
+
       expect(mockSearchParams.get).toHaveBeenCalledWith('departments');
       expect(mockSearchParams.get).toHaveBeenCalledWith('statuses');
       expect(mockSearchParams.get).toHaveBeenCalledWith('search');
@@ -333,18 +353,21 @@ describe('StaffDashboard Filtering', () => {
     test('updates URL when search changes', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'Police');
-      
+
       // Wait for debounced URL update
-      await waitFor(() => {
-        expect(mockRouter.replace).toHaveBeenCalled();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(mockRouter.replace).toHaveBeenCalled();
+        },
+        { timeout: 1000 }
+      );
     });
   });
 
@@ -352,26 +375,32 @@ describe('StaffDashboard Filtering', () => {
     test('calls onRequestSelect when row is clicked', async () => {
       const mockOnRequestSelect = jest.fn();
       render(<StaffDashboard onRequestSelect={mockOnRequestSelect} />);
-      
+
       await waitFor(() => {
-        expect(screen.getByText('REQ-001 - Police Report Request')).toBeInTheDocument();
+        expect(
+          screen.getByText('REQ-001 - Police Report Request')
+        ).toBeInTheDocument();
       });
 
       const row = screen.getByTestId('grid-row-REQ-001');
       fireEvent.click(row);
-      
-      expect(mockOnRequestSelect).toHaveBeenCalledWith(expect.objectContaining({
-        trackingId: 'REQ-001'
-      }));
+
+      expect(mockOnRequestSelect).toHaveBeenCalledWith(
+        expect.objectContaining({
+          trackingId: 'REQ-001',
+        })
+      );
     });
   });
 
   describe('Error Handling', () => {
     test('displays error message when request loading fails', async () => {
-      (getAllRequests as jest.Mock).mockRejectedValue(new Error('Failed to load'));
-      
+      (getAllRequests as jest.Mock).mockRejectedValue(
+        new Error('Failed to load')
+      );
+
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Failed to load')).toBeInTheDocument();
       });
@@ -382,14 +411,14 @@ describe('StaffDashboard Filtering', () => {
     test('shows no results message when search excludes all requests', async () => {
       const user = userEvent.setup();
       render(<StaffDashboard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 3 of 3 requests')).toBeInTheDocument();
       });
 
       const searchInput = screen.getByPlaceholderText(/Search requests/);
       await user.type(searchInput, 'nonexistent');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing 0 of 3 requests')).toBeInTheDocument();
       });

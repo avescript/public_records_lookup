@@ -1,15 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Button, Typography, Alert, CircularProgress } from '@mui/material';
-import { AdminLayout } from '../../../components/layouts/AdminLayout';
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Typography,
+} from '@mui/material';
+
 import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
+import { AdminLayout } from '../../../components/layouts/AdminLayout';
 import { AuthProvider } from '../../../contexts/AuthContext';
 import { seedTestData } from '../../../utils/seedTestData';
 
 function AdminToolsContent() {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   const handleSeedData = async () => {
     setLoading(true);
@@ -20,7 +30,10 @@ function AdminToolsContent() {
       setMessage({ type: 'success', text: 'Test data seeded successfully!' });
     } catch (error) {
       console.error('Error seeding data:', error);
-      setMessage({ type: 'error', text: 'Failed to seed test data. Check console for details.' });
+      setMessage({
+        type: 'error',
+        text: 'Failed to seed test data. Check console for details.',
+      });
     } finally {
       setLoading(false);
     }
@@ -33,7 +46,7 @@ function AdminToolsContent() {
           <Typography variant="h4" component="h1" gutterBottom>
             Admin Tools
           </Typography>
-          
+
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
             Development utilities for testing and data management.
           </Typography>
@@ -54,9 +67,10 @@ function AdminToolsContent() {
             >
               {loading ? 'Seeding Data...' : 'Seed Test Data'}
             </Button>
-            
+
             <Typography variant="caption" color="text.secondary">
-              This will create 7 sample requests for testing the staff dashboard.
+              This will create 7 sample requests for testing the staff
+              dashboard.
             </Typography>
           </Box>
         </Box>

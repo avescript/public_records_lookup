@@ -1,33 +1,38 @@
 # Development Progress
 
 ## Overall Status
+
 Phase 1 - Core Implementation: **EPIC 1 COMPLETED** ✅
 Phase 2 - Staff W- [x] **US-021: Filtering and search capabilities** ✅
-  - [x] Department/agency multi-select filtering (Police, Fire, Finance, Public Works, Legal)
-  - [x] Status multi-select filtering (submitted, processing, under_review, completed, rejected)
-  - [x] Date range filtering with MUI @mui/x-date-pickers
-  - [x] Search functionality across titles, descriptions, tracking IDs, and contact emails
-  - [x] URL parameter synchronization for shareable filtered views
-  - [x] Clear all filters functionality with visual indicators
-  - [x] **Comprehensive test coverage (41 tests total)**:
-    - [x] Basic filtering tests (17 tests) - `StaffDashboardFiltering.test.tsx`
-    - [x] Advanced filtering scenarios (24 tests) - `StaffDashboardAdvancedFiltering.test.tsx`
-    - [x] Edge cases, error handling, and performance scenarios
-    - [x] Multi-filter combinations and URL parameter validation
+
+- [x] Department/agency multi-select filtering (Police, Fire, Finance, Public Works, Legal)
+- [x] Status multi-select filtering (submitted, processing, under_review, completed, rejected)
+- [x] Date range filtering with MUI @mui/x-date-pickers
+- [x] Search functionality across titles, descriptions, tracking IDs, and contact emails
+- [x] URL parameter synchronization for shareable filtered views
+- [x] Clear all filters functionality with visual indicators
+- [x] **Comprehensive test coverage (41 tests total)**:
+  - [x] Basic filtering tests (17 tests) - `StaffDashboardFiltering.test.tsx`
+  - [x] Advanced filtering scenarios (24 tests) - `StaffDashboardAdvancedFiltering.test.tsx`
+  - [x] Edge cases, error handling, and performance scenarios
+  - [x] Multi-filter combinations and URL parameter validation
 - [ ] **US-022: Request details and status management** 🎯
   - [ ] Request details view/drawer with complete information display
   - [ ] Status update workflow with proper validation
   - [ ] Internal notes and workflow tracking
-  - [ ] SLA monitoring with business day accuracyPIC 2 IN PROGRESS** 🚧
+  - [ ] SLA monitoring with business day accuracyPIC 2 IN PROGRESS\*\* 🚧
 
 ## Current Sprint
+
 Sprint 2: Agency Console & Staff Workflows (Epic 2) - **IN PROGRESS**
 **Previous:** Sprint 1: Foundation & Request Intake (Epics 0-1) - COMPLETED
 
 ## Epic Progress
 
 ### Epic 0 — Foundation & Environments ✅
+
 Status: **COMPLETED**
+
 - [x] US-000: Bootstrap project (Completed)
   - [x] Create repo and Next.js + TypeScript + MUI baseline
   - [x] Add ESLint + Prettier + TS strict config
@@ -40,7 +45,9 @@ Status: **COMPLETED**
 - [ ] US-001: us-west residency guardrails (deferred to production setup)
 
 ### Epic 1 — Request Intake (Public Portal) ✅
+
 Status: **COMPLETED**
+
 - [x] **US-010: Submit a public records request** ✅
   - [x] MUI form with all required fields (name, email, description, date range, attachments)
   - [x] Client validation (Zod) with comprehensive error handling
@@ -55,6 +62,7 @@ Status: **COMPLETED**
   - [x] Navigation integration across all pages
 
 #### Detailed Component Completion:
+
 - [x] **RequestForm Component** ✅
   - [x] Form validation with Zod schema
   - [x] Integration with DateRangePicker
@@ -84,6 +92,7 @@ Status: **COMPLETED**
   - [x] User-friendly error handling
 
 #### Technical Infrastructure:
+
 - [x] **Firebase/Firestore Integration** ✅
   - [x] Environment configuration
   - [x] Request service with full CRUD operations
@@ -99,8 +108,10 @@ Status: **COMPLETED**
   - [x] Build optimization
 
 ### Epic 2 — Agency Console & SLA 🚧
-Status: **IN PROGRESS** 
+
+Status: **IN PROGRESS**
 Priority: **HIGH** (Current Sprint)
+
 - [x] **US-020: Staff request queue with data grid** ✅
   - [x] Create StaffDashboard component with MUI Data Grid
   - [x] Implement sortable columns (tracking ID, title, department, status, dates)
@@ -146,56 +157,78 @@ Priority: **HIGH** (Current Sprint)
   - [ ] SLA monitoring with business day accuracy
 
 ### Epic 3 — Search & AI Match
+
 Status: Not Started
+
 - [ ] US-030: Run AI match and view Top-N
 - [ ] US-031: Accept/Reject candidate matches
 
 ### Epic 4 — Redaction
+
 Status: Not Started
+
 - [ ] US-040: View suggested PII findings
 - [ ] US-041: Draw redactions and export rendition
 - [ ] US-042: Human approval gate
 
 ### Epic 5 — Approvals & Legal Review
+
 Status: Not Started
+
 - [ ] US-050: Request changes
 - [ ] US-051: Approve package for release
 
 ### Epic 6 — Package & Delivery
+
 Status: Not Started
+
 - [ ] US-060: Build combined package
 - [ ] US-061: Schedule mock delivery
 
 ### Epic 7 — Audit & Observability
+
 Status: Not Started
+
 - [ ] US-070: Immutable application audit log
 - [ ] US-071: BigQuery export for dashboards
 
 ### Epic 8 — Synthetic Data & Public Domain Corpus
+
 Status: Not Started
+
 - [ ] US-080: Load synthetic dataset v2
 - [ ] US-081: Import public-domain PDFs
 
 ### Epic 9 — RBAC & Multi-Agency
+
 Status: Not Started
+
 - [ ] US-090: Agency switcher & row filtering
 - [ ] US-091: Role-based UI
 
 ### Epic 10 — Non-functional & Readiness
+
 Status: Not Started
+
 - [ ] US-100: Accessibility & responsiveness
 - [ ] US-101: Performance SLOs
 
 ### Epic 11 — "Go Demo"
+
 Status: Not Started
+
 - [ ] US-110: Scripted end-to-end demo
 
 ### Cross-Epic — AI Email Drafting
+
 Status: Not Started
+
 - [ ] US-120: Generate response draft
 
 ## Recent Achievements (December 2024)
+
 ✅ **Complete Request Submission & Tracking System (Epic 1)**
+
 - End-to-end user flow: Submit → Confirm → Track
 - Firebase/Firestore integration with proper typing
 - Comprehensive form validation and error handling
@@ -207,6 +240,7 @@ Status: Not Started
 - Build optimization and deployment readiness
 
 ✅ **Public/Admin Interface Separation & Authentication (Epic 2 - Major Milestone)**
+
 - **Interface Separation**: Distinct PublicLayout and AdminLayout with professional styling
 - **Authentication System**: Mock authentication with role-based access control (admin, staff, legal_reviewer)
 - **Protected Routes**: Authentication guards for admin sections with automatic redirects
@@ -214,6 +248,7 @@ Status: Not Started
 - **Security Boundaries**: Clear separation between public and staff functionality
 
 ✅ **Comprehensive Testing Infrastructure (Epic 2)**
+
 - **92 total tests** covering authentication, layouts, routing, forms, and filtering
 - **AuthContext testing**: Login flows, session management, role validation
 - **Layout testing**: Navigation, accessibility, responsive design
@@ -222,6 +257,7 @@ Status: Not Started
 - **Integration testing**: Complete user workflows and error scenarios
 
 ✅ **Advanced Staff Console with Filtering (Epic 2 - Major Achievement)**
+
 - Advanced data grid with MUI X Data Grid for request queue management
 - **Complete filtering system** with URL persistence:
   - Multi-select department filtering (Police, Fire, Finance, Public Works, Legal)
@@ -237,15 +273,18 @@ Status: Not Started
 - Test data seeder with 7 realistic sample requests
 
 ## Known Issues
+
 None at this stage
 
 ## Next Milestones
+
 1. **Epic 2 Continuation**: Request details and status management (US-022) - **IMMEDIATE NEXT**
 2. **Epic 3**: AI matching system integration
 3. **Epic 4**: Document redaction workflow
 4. **Epic 7**: Audit logging and analytics
 
 ## Technical Debt
+
 - GitHub Actions/CI pipeline setup (deferred)
 - Comprehensive README documentation (deferred)
 - File upload to Firebase Storage (using local storage for now)
@@ -254,6 +293,7 @@ None at this stage
 - **Production authentication**: Mock system needs replacement with real authentication
 
 ## Performance Metrics
+
 - Build time: ~4-5 seconds
 - **Test suite**: 92 tests with comprehensive coverage
 - Bundle size: Optimized for production deployment

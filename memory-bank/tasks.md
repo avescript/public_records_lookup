@@ -3,6 +3,7 @@
 ## Epic 0: Foundation & Environments
 
 ### US-000: Bootstrap Project ✅
+
 - [x] Initial Setup
   - [x] Create new Next.js project with TypeScript
   - [x] Add MUI v5+ dependencies
@@ -32,6 +33,7 @@
   - [ ] Add architecture documentation
 
 ### US-001: us-west Residency Guardrails
+
 - [ ] Infrastructure Setup
   - [ ] Create Terraform configurations
   - [ ] Define us-west region variables
@@ -49,6 +51,7 @@
 ## Epic 1: Request Intake
 
 ### US-010: Public Records Request Form ✅
+
 - [x] Form Development
   - [x] Create form component structure
   - [x] Add form fields (title, department, description, email)
@@ -80,6 +83,7 @@
   - [ ] Create confirmation page
 
 ### US-011: Staff Intake Queue
+
 - [ ] Queue Interface
   - [ ] Implement MUI Data Grid
   - [ ] Add sorting functionality
@@ -97,6 +101,7 @@
 ## Epic 2: Agency Console & SLA
 
 ### US-020: Filtering System
+
 - [ ] Filter Components
   - [ ] Create agency filter
   - [ ] Add status filter
@@ -105,6 +110,7 @@
   - [ ] Create filter reset functionality
 
 ### US-021: SLA Tracking
+
 - [ ] SLA Features
   - [ ] Create business day calculator
   - [ ] Implement due date tracking
@@ -115,6 +121,7 @@
 ## Epic 3: Search & AI Match
 
 ### US-030: AI Matching System
+
 - [ ] Match Implementation
   - [ ] Create mock match service
   - [ ] Design match result interface
@@ -123,6 +130,7 @@
   - [ ] Create empty state handling
 
 ### US-031: Match Review
+
 - [ ] Review Interface
   - [ ] Create accept/reject controls
   - [ ] Implement state management
@@ -131,18 +139,21 @@
   - [ ] Implement batch actions
 
 ## Next Steps
+
 1. Complete Epic 0 tasks
 2. Set up development environment
 3. Begin form development
 4. Implement basic queue functionality
 
 ## Dependencies
+
 - Next.js and MUI setup must be complete before form development
 - Firestore emulator needed for local development
 - Region checks required before any cloud resource creation
 - Authentication system needed before staff features
 
 ## Notes
+
 - All features should follow accessibility guidelines
 - Maintain us-west region compliance
 - Include error handling and logging

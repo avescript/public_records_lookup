@@ -1,29 +1,34 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  Box,
-  TextField,
-  MenuItem,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  FormHelperText,
-  CircularProgress,
-  Alert,
-  Snackbar,
-  Grid,
-  Typography,
-  Divider,
-} from '@mui/material';
-import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { RequestFormData, RequestFormDataWithFiles, requestSchema } from './types';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import FileUpload from '../../shared/FileUpload';
-import DateRangePicker, { DateRange } from '../../shared/DateRangePicker';
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  FormControl,
+  FormHelperText,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Snackbar,
+  TextField,
+  Typography,
+} from '@mui/material';
+
 import { saveRequest } from '../../../services/requestService';
+import DateRangePicker, { DateRange } from '../../shared/DateRangePicker';
+import FileUpload from '../../shared/FileUpload';
+
+import {
+  RequestFormData,
+  RequestFormDataWithFiles,
+  requestSchema,
+} from './types';
 
 const departments = [
   { id: 'police', name: 'Police Department' },
@@ -81,17 +86,21 @@ export const RequestForm = () => {
         ...data,
         files: selectedFiles,
       };
-      
+
       // Save to Firebase
       const result = await saveRequest(formDataWithFiles);
-      
+
       console.log('Request saved:', result);
-      
+
       // Navigate to confirmation page
       const confirmationUrl = `/confirmation?trackingId=${encodeURIComponent(result.trackingId)}`;
       window.location.href = confirmationUrl;
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'An error occurred while submitting your request');
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : 'An error occurred while submitting your request'
+      );
       setIsSubmitting(false);
     }
   };
@@ -116,7 +125,13 @@ export const RequestForm = () => {
           />
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 3,
+            flexDirection: { xs: 'column', md: 'row' },
+          }}
+        >
           <Box sx={{ flex: 1 }}>
             <Controller
               name="department"
@@ -124,8 +139,13 @@ export const RequestForm = () => {
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.department}>
                   <InputLabel>Department</InputLabel>
-                  <Select {...field} label="Department" disabled={isSubmitting} data-testid="department-select">
-                    {departments.map((dept) => (
+                  <Select
+                    {...field}
+                    label="Department"
+                    disabled={isSubmitting}
+                    data-testid="department-select"
+                  >
+                    {departments.map(dept => (
                       <MenuItem key={dept.id} value={dept.id}>
                         {dept.name}
                       </MenuItem>
@@ -142,7 +162,9 @@ export const RequestForm = () => {
           <DateRangePicker
             value={currentDateRange}
             onChange={handleDateRangeChange}
-            error={errors.dateRange?.message || errors.dateRange?.startDate?.message}
+            error={
+              errors.dateRange?.message || errors.dateRange?.startDate?.message
+            }
             disabled={isSubmitting}
             label="Records Date Range"
           />
@@ -191,19 +213,20 @@ export const RequestForm = () => {
             Supporting Documents (Optional)
           </Typography>
           <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-            Upload any documents that help clarify or support your records request.
+            Upload any documents that help clarify or support your records
+            request.
           </Typography>
           <FileUpload
             onFilesSelected={handleFilesSelected}
             maxFiles={5}
             maxSize={10 * 1024 * 1024} // 10MB
             acceptedFileTypes={[
-              'application/pdf', 
-              'application/msword', 
-              'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
-              'text/plain', 
-              'image/jpeg', 
-              'image/png'
+              'application/pdf',
+              'application/msword',
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+              'text/plain',
+              'image/jpeg',
+              'image/png',
             ]}
             isLoading={isSubmitting}
             error={fileUploadError}
@@ -243,12 +266,10 @@ export const RequestForm = () => {
             setTrackingId(null);
           }}
         >
-          {submitError || 
-           (trackingId 
-             ? `Request submitted successfully! Your tracking ID is: ${trackingId}. Please save this ID to track your request status.` 
-             : 'Request submitted successfully!'
-           )
-          }
+          {submitError ||
+            (trackingId
+              ? `Request submitted successfully! Your tracking ID is: ${trackingId}. Please save this ID to track your request status.`
+              : 'Request submitted successfully!')}
         </Alert>
       </Snackbar>
     </Box>
