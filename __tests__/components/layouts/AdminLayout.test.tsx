@@ -132,7 +132,9 @@ describe('AdminLayout', () => {
     const requestQueueButton = await screen.findByRole('link', {
       name: 'Request Queue',
     });
-    expect(requestQueueButton).toHaveStyle('font-weight: bold');
+    // Accept both 'bold' and '700' as valid bold font-weight values
+    const requestQueueButtonStyle = window.getComputedStyle(requestQueueButton);
+    expect(['bold', '700'].includes(requestQueueButtonStyle.fontWeight)).toBe(true);
 
     const adminToolsButton = screen.getByRole('link', { name: 'Admin Tools' });
     expect(adminToolsButton).toHaveStyle('font-weight: normal');
@@ -155,7 +157,9 @@ describe('AdminLayout', () => {
     expect(requestQueueButton).toHaveStyle('font-weight: normal');
 
     const adminToolsButton = screen.getByRole('link', { name: 'Admin Tools' });
-    expect(adminToolsButton).toHaveStyle('font-weight: bold');
+    // Accept both 'bold' and '700' as valid bold font-weight values
+    const adminToolsButtonStyle = window.getComputedStyle(adminToolsButton);
+    expect(['bold', '700'].includes(adminToolsButtonStyle.fontWeight)).toBe(true);
   });
 
   test('contains correct navigation links', async () => {

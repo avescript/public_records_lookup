@@ -88,7 +88,9 @@ describe('PublicLayout', () => {
     );
 
     const submitButton = screen.getByRole('link', { name: 'Submit Request' });
-    expect(submitButton).toHaveStyle('font-weight: bold');
+    // Accept both 'bold' and '700' as valid bold font-weight values
+    const submitButtonStyle = window.getComputedStyle(submitButton);
+    expect(['bold', '700'].includes(submitButtonStyle.fontWeight)).toBe(true);
 
     const trackButton = screen.getByRole('link', { name: 'Track Request' });
     expect(trackButton).toHaveStyle('font-weight: normal');
@@ -107,7 +109,9 @@ describe('PublicLayout', () => {
     expect(submitButton).toHaveStyle('font-weight: normal');
 
     const trackButton = screen.getByRole('link', { name: 'Track Request' });
-    expect(trackButton).toHaveStyle('font-weight: bold');
+    // Accept both 'bold' and '700' as valid bold font-weight values
+    const trackButtonStyle = window.getComputedStyle(trackButton);
+    expect(['bold', '700'].includes(trackButtonStyle.fontWeight)).toBe(true);
   });
 
   test('contains correct navigation links', () => {

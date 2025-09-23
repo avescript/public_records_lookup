@@ -35,6 +35,16 @@ function LoginPageContent() {
     }
   };
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (error) setError(''); // Clear error when user starts typing
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (error) setError(''); // Clear error when user starts typing
+  };
+
   return (
     <Container maxWidth="sm">
       <Box
@@ -69,7 +79,7 @@ function LoginPageContent() {
               label="Email"
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               margin="normal"
               required
               autoFocus
@@ -79,7 +89,7 @@ function LoginPageContent() {
               label="Password"
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               margin="normal"
               required
             />
