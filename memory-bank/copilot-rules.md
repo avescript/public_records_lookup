@@ -28,7 +28,68 @@
 - **Full regression testing**: Required before milestone PR merges
 - **Maintain test coverage**: Ensure comprehensive coverage for critical paths
 
-## 📝 Code Quality Standards
+## � Memory Bank Management Strategy
+
+### Core Principle: Memory Bank Lives on Main
+- **Single source of truth**: Memory bank files remain on main branch as authoritative project context
+- **Clean separation**: Feature branches don't update memory bank during development
+- **Completion updates**: Memory bank updated only when features are complete and ready to merge
+
+### Feature Development Process
+1. **Start feature branch**: Read memory bank from main for current context
+2. **Track progress locally**: Use `FEATURE_PROGRESS.md` on feature branch for temporary tracking
+3. **Maintain focus**: Don't update memory bank files during feature development
+4. **Complete and merge**: Update memory bank on main, then merge feature branch
+
+### FEATURE_PROGRESS.md Template
+Create this file on each feature branch to track progress:
+```markdown
+# Feature Progress Tracker
+## US-XXX: [User Story Title]
+
+**Branch:** `feature/US-XXX-description`
+**Started:** [Date]
+**Status:** In Progress
+
+### Implementation Tasks
+- [ ] Task 1
+- [ ] Task 2
+- [ ] Unit tests
+- [ ] Integration testing
+
+### Notes
+- Key decisions and blockers
+- Dependencies and considerations
+
+### Memory Bank Updates Needed
+- [ ] Update activeContext.md with completion
+- [ ] Update progress.md with epic status
+- [ ] Document new patterns in systemPatterns.md (if applicable)
+```
+
+### Context Commands for Feature Branches
+```bash
+# Read memory bank from main while on feature branch
+git show main:memory-bank/activeContext.md
+git show main:memory-bank/progress.md
+
+# Update memory bank at completion (on main branch)
+git checkout main
+git pull origin main
+# Update memory bank files
+git add memory-bank/
+git commit -m "docs: update memory bank for US-XXX completion"
+git merge feature/US-XXX-description
+```
+
+### Benefits of This Strategy
+- ✅ **Prevents context pollution**: Main branch memory bank stays clean and accurate
+- ✅ **Enables parallel development**: Multiple features can work simultaneously
+- ✅ **Maintains continuity**: Memory bank always reflects stable, completed state
+- ✅ **Supports milestone tracking**: Clear updates at feature completion
+- ✅ **Facilitates collaboration**: Consistent process across all feature development
+
+## �📝 Code Quality Standards
 
 ### TypeScript & ESLint
 - **Strict TypeScript**: Use proper typing, avoid `any` unless absolutely necessary
