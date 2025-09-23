@@ -23,7 +23,6 @@
   - Major integration points
 
 ### Testing Requirements
-- **feature/US-031-accept-reject-candidates
 - **Unit tests required** for all new features (Demonstrated with US-031: 43 comprehensive tests)
 - **Test-driven development**: Write tests during feature development, not after
 - **Service layer testing**: Comprehensive CRUD operation coverage with edge cases
