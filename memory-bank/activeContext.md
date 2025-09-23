@@ -2,52 +2,61 @@
 
 ## Current Focus
 
-**Epic 3 — AI Search and Matching** 🚧
-Goal: Implement AI-powered record matching capabilities with explainability and staff workflow integration.
+**Epic 4 — Redaction & PII Detection** 🚧
+Goal: Implement PDF preview with PII detection, redaction capabilities, and human review workflow.
 
 ## Active User Story
 
-**US-021: Filtering and search capabilities (COMPLETED)** ✅
-**US-022: Request details and status management (COMPLETED)** ✅  
-**US-030: Run AI match and view Top‑N (COMPLETED)** ✅
-**US-031: Accept/reject match candidates (COMPLETED)** ✅
+**US-040: View suggested PII findings (COMPLETED)** ✅
+**US-041: Draw redactions and export rendition** 🎯
+**US-042: Human approval gate (100% review)** 📋
 
-### Recent Achievement (September 22-23, 2025)
+### Recent Achievement (September 23, 2025)
 
-- ✅ **US-031: Accept/Reject Match Candidates - COMPLETED** 🎉
-  - ✅ **candidateDecisionService**: Complete CRUD service for decision persistence with localStorage
-    - Accept/reject candidate decisions with timestamps and optional notes
-    - Decision history tracking and summary statistics
-    - Comprehensive error handling and validation
-    - 19/19 passing unit tests covering all operations and edge cases
-  - ✅ **Enhanced MatchResults Component**: Full UI integration with decision workflow
-    - Decision status chips (Accepted/Rejected with Material-UI colors)
-    - Accept/Reject action buttons with loading states and error handling
-    - Decision persistence and real-time state management
-    - Conditional rendering based on decision status
-    - 24/24 passing component tests covering all interactions
-  - ✅ **Enhanced Type System**: Updated interfaces for decision tracking
-    - Added decision fields to MatchCandidate interface
-    - Created CandidateDecision and DecisionHistory types
-    - Full TypeScript integration across service and component layers
-  - ✅ **Comprehensive Testing**: 43 total tests passing (100% coverage)
-    - Service layer: 19 tests covering CRUD operations, edge cases, error scenarios
-    - Component layer: 24 tests covering rendering, user interactions, state management
-    - Full test automation with Jest and React Testing Library
-
-- ✅ **Previous Achievements**:
-  - ✅ **US-021: Complete Filtering & Search System**: 41 passing tests
-  - ✅ **US-022: Request details and status management**: Full workflow implementation
-  - ✅ **US-030: Run AI match and view Top‑N**: AI matching with explainability features
+- ✅ **US-040: View suggested PII findings - COMPLETED** 🎉
+  - ✅ **PIIDetectionService**: Complete CSV-based PII detection service (Phase 0)
+    - Load and parse PII findings from redactions.csv with robust error handling
+    - Finding retrieval by record, page, confidence with statistical analysis
+    - Support for 10 PII types (SSN, Phone, Address, Names, Email, DOB, etc.)
+    - 20/20 passing unit tests covering all operations and edge cases
+  - ✅ **PDFPreview Component**: Advanced PDF viewer with PII overlay system
+    - PDF.js integration with zoom, navigation, and page controls
+    - Real-time color-coded PII overlay system with confidence indicators
+    - Toggle visibility and filter by PII type functionality
+    - Phase 0 fallback with graceful error handling
+  - ✅ **PIIFindings Component**: Comprehensive structured findings panel
+    - Multiple grouping options (type, page, confidence, file)
+    - Filtering by confidence level and high-risk PII types
+    - Accordion-style expandable sections with detailed finding information
+    - Professional Material-UI styling with accessibility support
+  - ✅ **RequestDetailsDrawer Integration**: Complete PII detection workflow
+    - "Review PII Findings" section with PDF preview integration
+    - Finding selection and navigation between PDF and structured view
+    - Seamless staff workflow integration
+  - ✅ **Mock Data System**: Comprehensive Phase 0 development setup
+    - 18 PII findings across 5 mock documents in redactions.csv
+    - 10 different PII types with confidence scoring
+    - Sample coordinate data for overlay positioning
+  - ✅ **Dependencies Setup**: PDF.js and react-pdf integration
+    - Resolved React 19 compatibility with legacy peer deps
+    - Configured PDF worker and component architecture
 
 ### Epic 3 Status: COMPLETED ✅
-**All AI Search and Matching functionality implemented with comprehensive testing**
+**All AI Search and Matching functionality implemented with comprehensive testing (43 tests)**
 
-### Next Focus (Epic 4 - Redaction & PII Detection)
+### Next Focus
 
-**US-040: View suggested PII findings** 🎯
-- **Objective**: Implement PDF preview with DLP-detected PII findings overlay
-- **Dependencies**: US-030 ✅ (completed)
+**US-041: Draw redactions and export rendition** 🎯
+- **Objective**: Implement canvas overlay drawing system for manual redaction boxes
+- **Dependencies**: US-040 ✅ (completed)
+- **Tasks**: Canvas overlay, coordinate storage, PDF export pipeline
+
+## Development Context
+
+**Current Branch**: `epic-4-redaction-pii-detection`  
+**Feature Branch Strategy**: US-040 complete, ready for US-041 development  
+**Testing Strategy**: Comprehensive unit tests for each component (20+ tests passing for US-040)  
+**Architecture Pattern**: Service layer + UI component + integration following established patterns
 - **Key Features to Implement**:
   - Accept/reject actions in MatchResults component
   - Candidate decision persistence to Firebase/Firestore

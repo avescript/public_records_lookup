@@ -2,7 +2,16 @@
 
 **Generated:** 2025-08-27  
 **Updated:** 2025-09-23  
-**Scope:** Prototype-first G-stack (Next.js + MUI, Firestore/Cloud SQL (dummy), Vertex AI Matching Engine, DLP/DocAI, Gmail API mock sends), us-west residency.
+**Scope:** Prototype-first G-sta### US-040: View suggested PII findings ✅ **(COMPLETED September 23, 2025)**
+
+**AC**
+
+- Given a record, when I open it, then I see a PDF preview plus structured PII findings (if any). ✅
+- Given no findings, then I see "No PII detected." ✅
+  **Tasks**
+- [x] PDF.js integration for preview. ✅
+- [x] Findings panel hydrate from `redactions.csv` (Phase 0). ✅
+- [x] Toggle overlays (Phase 0: stub rectangles). ✅s + MUI, Firestore/Cloud SQL (dummy), Vertex AI Matching Engine, DLP/DocAI, Gmail API mock sends), us-west residency.
 
 ## 🎉 Current Status (September 23, 2025)
 
