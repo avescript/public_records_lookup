@@ -277,6 +277,43 @@ US-030: Run AI match and view Top‑N (NEXT)
 3. Internal notes and workflow management
 4. Request assignment and escalation features
 
+## Development Workflow & Collaboration Approach
+
+**Hybrid Git Workflow** (Established September 22, 2025)
+
+### Feature Development Process
+- **Feature Branches**: Create feature branches for all user stories (`feature/US-XXX-description`)
+- **Chat-Based Reviews**: Conduct code reviews collaboratively in GitHub Copilot chat for speed and learning
+- **Unit Testing**: Always create and run unit tests for each feature before integration
+- **Incremental Development**: Merge features regularly to maintain momentum and integration
+
+### Quality Gates & Milestone Reviews
+**Copilot will prompt for formal GitHub Pull Requests at milestone moments:**
+
+1. **Epic Completions** - When completing major epics (e.g., Epic 3: AI Search & Matching)
+2. **Architecture Changes** - Major system modifications, new services, database changes
+3. **Release Candidates** - Before any potential deployment or production readiness
+4. **Security/Performance Milestones** - Audit points, optimization phases
+5. **Integration Points** - When connecting major system components
+
+### Milestone PR Process
+- **Comprehensive Testing**: Full regression test suite execution
+- **Documentation**: Complete feature documentation and API changes
+- **Code Review**: Formal GitHub PR review process
+- **Quality Assurance**: ESLint compliance, type safety, performance validation
+
+### Benefits
+- ✅ **Speed**: Daily feature development without bureaucratic overhead
+- ✅ **Quality**: Professional standards at critical junctures
+- ✅ **Learning**: Real-time collaboration and knowledge transfer
+- ✅ **Future-Proofing**: Clear project history for potential team expansion
+- ✅ **Risk Management**: Extra scrutiny for major changes
+
+### Current Branch Strategy
+- **Main Branch**: Production-ready code, always stable
+- **Feature Branches**: `feature/US-031-accept-reject-candidates`, etc.
+- **Next Feature**: US-031 will be first implementation of this new workflow
+
 ## Dependencies
 
 - Next.js 15+
