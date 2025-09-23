@@ -12,6 +12,9 @@ import {
   Person as PersonIcon,
   Save as SaveIcon,
   Search as SearchIcon,
+  Security as SecurityIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 import {
   Box,
@@ -34,6 +37,9 @@ import { format } from 'date-fns';
 
 import { MatchResult } from '../../../services/aiMatchingService';
 import { RequestStatus, StoredRequest } from '../../../services/requestService';
+import PDFPreview from '../../shared/PDFPreview';
+import PIIFindings from '../../shared/PIIFindings';
+import { PIIFinding } from '../../../services/piiDetectionService';
 
 interface RequestDetailsDrawerProps {
   open: boolean;
@@ -74,9 +80,11 @@ export function RequestDetailsDrawer({
   onFindMatches,
 }: RequestDetailsDrawerProps) {
   const [editingStatus, setEditingStatus] = useState(false);
-  const [newStatus, setNewStatus] = useState<RequestStatus>('submitted');
+  const [newStatus, setNewStatus] = useState<RequestStatus>(request?.status || 'submitted');
   const [addingNote, setAddingNote] = useState(false);
   const [newNote, setNewNote] = useState('');
+  const [showPIIPreview, setShowPIIPreview] = useState(false);
+  const [selectedPIIFile, setSelectedPIIFile] = useState<string | null>(null);
 
   const formatDate = (timestamp: any) => {
     if (!timestamp) return 'N/A';
@@ -133,6 +141,24 @@ export function RequestDetailsDrawer({
   const handleFindMatches = () => {
     if (request && onFindMatches) {
       onFindMatches(request.id!, request.description);
+    }
+  };
+
+  const handleShowPIIPreview = (fileName?: string) => {
+    setSelectedPIIFile(fileName || 'police_report_001.pdf'); // Default file for testing
+    setShowPIIPreview(true);
+  };
+
+  const handleHidePIIPreview = () => {
+    setShowPIIPreview(false);
+    setSelectedPIIFile(null);
+  };
+
+  const handlePIIFindingSelect = (finding: PIIFinding) => {
+    // Auto-select the file and show preview if not already shown
+    if (!showPIIPreview || selectedPIIFile !== finding.fileName) {
+      setSelectedPIIFile(finding.fileName);
+      setShowPIIPreview(true);
     }
   };
 
@@ -386,6 +412,64 @@ export function RequestDetailsDrawer({
                 AI matching not available in this context
               </Typography>
             )}
+          </Paper>
+
+          {/* PII Detection & Redaction */}
+          <Paper elevation={1} sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              PII Detection & Redaction
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Review documents for personally identifiable information that may need redaction
+            </Typography>
+            
+            <Stack spacing={2}>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                <Button
+                  variant="contained"
+                  startIcon={<SecurityIcon />}
+                  onClick={() => handleShowPIIPreview()}
+                  color="warning"
+                >
+                  Review PII Findings
+                </Button>
+                {showPIIPreview && (
+                  <Button
+                    variant="outlined"
+                    startIcon={<VisibilityOffIcon />}
+                    onClick={handleHidePIIPreview}
+                  >
+                    Hide Preview
+                  </Button>
+                )}
+              </Box>
+
+              {/* PII Findings Summary */}
+              {!showPIIPreview && (
+                <PIIFindings
+                  recordId={request.id!}
+                  onFindingSelect={handlePIIFindingSelect}
+                  groupBy="type"
+                  showEmptyState={true}
+                />
+              )}
+
+              {/* PDF Preview with PII Overlays */}
+              {showPIIPreview && selectedPIIFile && (
+                <Box>
+                  <Typography variant="subtitle1" gutterBottom>
+                    Document Preview: {selectedPIIFile}
+                  </Typography>
+                  <PDFPreview
+                    recordId={request.id!}
+                    fileName={selectedPIIFile}
+                    onPIIFindingsLoad={(findings) => {
+                      console.log('PII findings loaded:', findings.length);
+                    }}
+                  />
+                </Box>
+              )}
+            </Stack>
           </Paper>
 
           {/* Internal Notes */}

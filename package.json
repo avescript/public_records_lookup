@@ -25,10 +25,12 @@
     "date-fns": "^4.1.0",
     "firebase": "^12.2.1",
     "next": "^15.5.2",
+    "pdfjs-dist": "^5.4.149",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.46.1",
+    "react-pdf": "^10.1.0",
     "zod": "^3.22.2"
   },
   "devDependencies": {
