@@ -164,6 +164,50 @@ This file is Copilot’s and the team’s learning journal for the project. It c
 
 ---
 
+## Feature Branch Memory Management
+
+### Core Strategy
+The Memory Bank exists as the **single source of truth** on the main branch. Feature branches maintain their own temporary progress tracking without disrupting the main branch context.
+
+### Feature Development Workflow
+
+```mermaid
+flowchart TD
+    Start[Start Feature] --> ReadMain[Read Memory Bank from Main]
+    ReadMain --> CreateProgress[Create FEATURE_PROGRESS.md]
+    CreateProgress --> Develop[Develop Feature]
+    Develop --> Track[Update Progress File]
+    Track --> Complete{Feature Complete?}
+    Complete -->|No| Develop
+    Complete -->|Yes| SwitchMain[Switch to Main]
+    SwitchMain --> UpdateMemory[Update Memory Bank]
+    UpdateMemory --> Merge[Merge Feature Branch]
+    Merge --> Cleanup[Remove Progress File]
+```
+
+### Implementation Guidelines
+
+1. **During Feature Development:**
+   - Read memory bank from main: `git show main:memory-bank/activeContext.md`
+   - Create `FEATURE_PROGRESS.md` for local tracking
+   - Focus on implementation without updating memory bank
+   - Track progress and decisions in progress file
+
+2. **At Feature Completion:**
+   - Switch to main branch: `git checkout main`
+   - Update relevant memory bank files with completed work
+   - Commit memory bank updates: `git commit -m "docs: update memory bank for US-XXX"`
+   - Merge feature branch: `git merge feature/US-XXX-description`
+   - Remove FEATURE_PROGRESS.md as it's no longer needed
+
+3. **Benefits:**
+   - ✅ Clean separation between feature work and project context
+   - ✅ Main branch memory bank always reflects stable state
+   - ✅ Multiple features can develop in parallel without conflicts
+   - ✅ Clear audit trail of completed features
+
+---
+
 ## How to Use This Document
 
 - Reference this file at the start of every session.
