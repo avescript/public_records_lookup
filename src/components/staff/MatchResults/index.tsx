@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Article as ArticleIcon,
   Assessment as AssessmentIcon,
   Check as CheckIcon,
+  CheckCircle as CheckCircleIcon,
   Close as CloseIcon,
   Info as InfoIcon,
   Search as SearchIcon,
@@ -36,7 +37,8 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 
-import { MatchCandidate,MatchResult } from '../../../services/aiMatchingService';
+import { MatchCandidate, MatchResult } from '../../../services/aiMatchingService';
+import { candidateDecisionService, CandidateDecision } from '../../../services/candidateDecisionService';
 
 interface MatchResultsProps {
   open: boolean;
@@ -46,6 +48,7 @@ interface MatchResultsProps {
   error?: string;
   onAcceptMatch?: (candidateId: string) => void;
   onRejectMatch?: (candidateId: string) => void;
+  onViewDetails?: (candidate: MatchCandidate) => void;
 }
 
 export function MatchResults({
@@ -56,7 +59,104 @@ export function MatchResults({
   error,
   onAcceptMatch,
   onRejectMatch,
+  onViewDetails,
 }: MatchResultsProps) {
+  // State for tracking candidate decisions
+  const [decisions, setDecisions] = useState<Map<string, CandidateDecision>>(new Map());
+  const [loadingDecisions, setLoadingDecisions] = useState(false);
+  const [decisionError, setDecisionError] = useState<string | null>(null);
+
+  // Load existing decisions when matchResult changes
+  useEffect(() => {
+    const loadDecisions = async () => {
+      if (!matchResult?.requestId) return;
+
+      setLoadingDecisions(true);
+      setDecisionError(null);
+
+      try {
+        const history = await candidateDecisionService.getDecisionHistory(matchResult.requestId);
+        const decisionsMap = new Map<string, CandidateDecision>();
+        
+        if (history) {
+          history.decisions.forEach(decision => {
+            decisionsMap.set(decision.candidateId, decision);
+          });
+        }
+        
+        setDecisions(decisionsMap);
+      } catch (err) {
+        setDecisionError('Failed to load decision history');
+        console.error('Error loading decisions:', err);
+      } finally {
+        setLoadingDecisions(false);
+      }
+    };
+
+    loadDecisions();
+  }, [matchResult?.requestId]);
+
+  // Handle accept/reject with decision persistence
+  const handleAcceptCandidate = async (candidateId: string) => {
+    if (!matchResult?.requestId) return;
+
+    try {
+      setDecisionError(null);
+      await candidateDecisionService.acceptCandidate(
+        matchResult.requestId,
+        candidateId,
+        'current-user' // TODO: Get from auth context
+      );
+
+      // Update local state
+      const decision: CandidateDecision = {
+        candidateId,
+        requestId: matchResult.requestId,
+        status: 'accepted',
+        decidedBy: 'current-user',
+        decidedAt: new Date().toISOString(),
+      };
+      
+      setDecisions(prev => new Map(prev.set(candidateId, decision)));
+
+      // Call parent handler if provided
+      onAcceptMatch?.(candidateId);
+    } catch (err) {
+      setDecisionError('Failed to accept candidate');
+      console.error('Error accepting candidate:', err);
+    }
+  };
+
+  const handleRejectCandidate = async (candidateId: string) => {
+    if (!matchResult?.requestId) return;
+
+    try {
+      setDecisionError(null);
+      await candidateDecisionService.rejectCandidate(
+        matchResult.requestId,
+        candidateId,
+        'current-user' // TODO: Get from auth context
+      );
+
+      // Update local state
+      const decision: CandidateDecision = {
+        candidateId,
+        requestId: matchResult.requestId,
+        status: 'rejected',
+        decidedBy: 'current-user',
+        decidedAt: new Date().toISOString(),
+      };
+      
+      setDecisions(prev => new Map(prev.set(candidateId, decision)));
+
+      // Call parent handler if provided
+      onRejectMatch?.(candidateId);
+    } catch (err) {
+      setDecisionError('Failed to reject candidate');
+      console.error('Error rejecting candidate:', err);
+    }
+  };
+
   const getConfidenceColor = (confidence: string) => {
     switch (confidence) {
       case 'high':
@@ -153,6 +253,11 @@ export function MatchResults({
   };
 
   const renderCandidateCard = (candidate: MatchCandidate) => {
+    const decision = decisions.get(candidate.id);
+    const hasDecision = decision !== undefined;
+    const isAccepted = decision?.status === 'accepted';
+    const isRejected = decision?.status === 'rejected';
+
     return (
       <Card key={candidate.id} elevation={2} sx={{ mb: 2 }}>
         <CardContent>
@@ -161,6 +266,16 @@ export function MatchResults({
               {candidate.title}
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
+              {/* Decision Status Chip */}
+              {hasDecision && (
+                <Chip
+                  icon={isAccepted ? <CheckCircleIcon /> : <CloseIcon />}
+                  label={isAccepted ? 'Accepted' : 'Rejected'}
+                  color={isAccepted ? 'success' : 'error'}
+                  size="small"
+                  variant="filled"
+                />
+              )}
               <Chip
                 label={`${formatScore(candidate.relevanceScore)} match`}
                 color={getConfidenceColor(candidate.confidence)}
@@ -175,6 +290,26 @@ export function MatchResults({
           <Typography variant="body2" color="text.secondary" paragraph>
             {candidate.description}
           </Typography>
+
+          {/* Show decision details if available */}
+          {hasDecision && decision.decidedAt && (
+            <Alert 
+              severity={isAccepted ? 'success' : 'info'} 
+              sx={{ mb: 2 }}
+              variant="outlined"
+            >
+              <Typography variant="body2">
+                {isAccepted ? 'Accepted' : 'Rejected'} by {decision.decidedBy} on{' '}
+                {format(new Date(decision.decidedAt), 'MMM d, yyyy \'at\' h:mm a')}
+                {decision.notes && (
+                  <>
+                    <br />
+                    <em>Notes: {decision.notes}</em>
+                  </>
+                )}
+              </Typography>
+            </Alert>
+          )}
 
           <Grid container spacing={2} sx={{ mb: 2 }}>
             <Grid item xs={12} sm={6}>
@@ -232,38 +367,77 @@ export function MatchResults({
           )}
         </CardContent>
 
-        <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
+                <CardActions sx={{ px: 2, pb: 2 }}>
           <Button
+            variant="outlined"
             startIcon={<VisibilityIcon />}
-            size="small"
-            disabled
+            onClick={() => onViewDetails && onViewDetails(candidate)}
+            sx={{ mr: 1 }}
           >
-            Preview
+            View Details
           </Button>
-          <Box>
-            {onRejectMatch && (
+          
+          {!hasDecision ? (
+            // Show accept/reject buttons if no decision made
+            <>
               <Button
-                startIcon={<CloseIcon />}
-                size="small"
-                color="error"
-                onClick={() => onRejectMatch(candidate.id)}
-                sx={{ mr: 1 }}
-              >
-                Reject
-              </Button>
-            )}
-            {onAcceptMatch && (
-              <Button
-                startIcon={<CheckIcon />}
-                size="small"
-                color="success"
                 variant="contained"
-                onClick={() => onAcceptMatch(candidate.id)}
+                color="success"
+                startIcon={<CheckIcon />}
+                onClick={() => handleAcceptCandidate(candidate.id)}
+                disabled={loading}
+                sx={{ mr: 1 }}
               >
                 Accept
               </Button>
-            )}
-          </Box>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<CloseIcon />}
+                onClick={() => handleRejectCandidate(candidate.id)}
+                disabled={loading}
+              >
+                Reject
+              </Button>
+            </>
+          ) : (
+            // Show decision status and allow changing decision
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {isAccepted ? (
+                <>
+                  <Typography variant="body2" color="success.main" sx={{ mr: 1 }}>
+                    Accepted
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    startIcon={<CloseIcon />}
+                    onClick={() => handleRejectCandidate(candidate.id)}
+                    disabled={loading}
+                  >
+                    Reject Instead
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Typography variant="body2" color="error.main" sx={{ mr: 1 }}>
+                    Rejected
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    color="success"
+                    size="small"
+                    startIcon={<CheckIcon />}
+                    onClick={() => handleAcceptCandidate(candidate.id)}
+                    disabled={loading}
+                  >
+                    Accept Instead
+                  </Button>
+                </>
+              )}
+            </Box>
+          )}
         </CardActions>
       </Card>
     );

@@ -19,6 +19,13 @@ export interface MatchCandidate {
     lastModified?: string;
     classification?: string;
   };
+  // Decision tracking for US-031
+  decision?: {
+    status: 'pending' | 'accepted' | 'rejected';
+    decidedBy?: string; // Staff member who made the decision
+    decidedAt?: string; // ISO timestamp
+    notes?: string; // Optional decision notes
+  };
 }
 
 export interface MatchExplanation {

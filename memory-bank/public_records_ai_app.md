@@ -1,7 +1,23 @@
 # Public Records AI Assistant — Full Backlog (Markdown)
 
 **Generated:** 2025-08-27  
-**Scope:** Prototype-first Google/GCP stack (Next.js + MUI, Firestore/Cloud SQL (dummy), Vertex AI Matching Engine, DLP/DocAI, Gmail API mock sends), us-west residency.
+**Scope:** Prototype-first G### US-031: Accept/Reject candidate matches
+
+**Status:** ✅ COMPLETED
+
+**AC**
+
+- Given a candidate, when I accept, then it's marked "selected for review"; when rejected, it's excluded.
+  **Tasks**
+- ✅ Accept/Reject controls and local store updates.
+- ✅ Persist selection state to dummy DB.
+- ✅ Audit entry ("match_decision").
+
+**Implementation Details:**
+- **Service:** `candidateDecisionService.ts` with complete CRUD operations (localStorage-based)
+- **Component:** Enhanced `MatchResults` with decision UI, status chips, and action handlers
+- **Testing:** 43 total tests passing (19 service + 24 component tests)
+- **Features:** Accept/reject workflow, decision persistence, status tracking, error handling stack (Next.js + MUI, Firestore/Cloud SQL (dummy), Vertex AI Matching Engine, DLP/DocAI, Gmail API mock sends), us-west residency.
 
 ---
 
