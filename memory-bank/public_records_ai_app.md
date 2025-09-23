@@ -1,7 +1,20 @@
 # Public Records AI Assistant — Full Backlog (Markdown)
 
 **Generated:** 2025-08-27  
-**Scope:** Prototype-first Google/GCP stack (Next.js + MUI, Firestore/Cloud SQL (dummy), Vertex AI Matching Engine, DLP/DocAI, Gmail API mock sends), us-west residency.
+**Updated:** 2025-09-23  
+**Scope:** Prototype-first G-stack (Next.js + MUI, Firestore/Cloud SQL (dummy), Vertex AI Matching Engine, DLP/DocAI, Gmail API mock sends), us-west residency.
+
+## 🎉 Current Status (September 23, 2025)
+
+**Epic 3 — AI Search & Matching: COMPLETED** ✅
+
+**Recent Achievement**: US-031 Accept/Reject Match Candidates fully implemented with comprehensive testing:
+- ✅ **candidateDecisionService**: Complete CRUD operations with localStorage persistence
+- ✅ **Enhanced MatchResults Component**: Full UI workflow with Material-UI integration  
+- ✅ **Comprehensive Testing**: 43 total tests (19 service + 24 component tests)
+- ✅ **Production Ready**: Decision persistence, audit trail, error handling
+
+**Next Focus**: Epic 4 — Redaction (DLP + Human Review)
 
 ---
 
@@ -10,6 +23,7 @@
 - **US-###** = User Story ID
 - **AC** = Acceptance Criteria (Gherkin-style)
 - **[ ]** = Task item (checklist)
+- **✅** = Completed task/user story
 
 ---
 

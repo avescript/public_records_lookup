@@ -23,6 +23,17 @@
   - Major integration points
 
 ### Testing Requirements
+- **feature/US-031-accept-reject-candidates
+- **Unit tests required** for all new features (Demonstrated with US-031: 43 comprehensive tests)
+- **Test-driven development**: Write tests during feature development, not after
+- **Service layer testing**: Comprehensive CRUD operation coverage with edge cases
+- **Component layer testing**: Full user interaction and state management coverage
+- **Error scenario testing**: Robust error handling and recovery validation
+- **100% test coverage goal**: Aim for complete coverage of critical functionality
+- **React Testing Library standards**: Use best practices for component testing
+- **Jest configuration**: Maintain consistent test environment and mocking patterns
+=======
+
 
 #### Core Testing Principles
 - **Unit tests required** for all new features - no exceptions
@@ -186,12 +197,22 @@ git merge feature/US-XXX-description
 - **Read memory bank first**: Always read all memory bank files before starting work
 - **Update active context**: Keep `activeContext.md` current with progress
 - **Track dependencies**: Document new packages and version requirements
+- **Feature completion**: Update memory bank immediately upon user story completion
 
 ### Quality Assurance
-- **Local testing**: Run tests locally before requesting review
+- **Local testing**: Run comprehensive test suites before marking features complete
 - **Browser testing**: Verify functionality across different browser environments
 - **Performance awareness**: Monitor bundle size and runtime performance
 - **Mobile testing**: Ensure proper mobile responsiveness
+- **Test automation**: Maintain and enhance automated test coverage
+
+### Established Patterns (From US-031 Implementation)
+- **Service-Component Architecture**: Separate business logic (services) from UI (components)
+- **CRUD Service Pattern**: Complete Create, Read, Update, Delete operations with error handling
+- **Material-UI Integration**: Consistent use of MUI components, themes, and styling patterns
+- **State Management**: React hooks for local state, context for shared state
+- **Error Handling**: Comprehensive error boundaries, user feedback, and recovery workflows
+- **TypeScript Best Practices**: Strong typing, interface definitions, and type safety
 
 ## 🤝 Collaboration Guidelines
 
