@@ -2,13 +2,15 @@
 
 ## Current Focus
 
-**Epic 2 — Agency Console & Staff Workflows** 🚧
-Goal: Build staff interfaces for request queue management, status updates, and workflow optimization.
+**Epic 3 — AI Search and Matching** 🚧
+Goal: Implement AI-powered record matching capabilities with explainability and staff workflow integration.
 
 ## Active User Story
 
 **US-021: Filtering and search capabilities (COMPLETED)** ✅
-**US-022: Request details and status management (NEXT)** 🎯
+**US-022: Request details and status management (COMPLETED)** ✅  
+**US-030: Run AI match and view Top‑N (COMPLETED)** ✅
+**US-031: Accept/reject match candidates (NEXT)** 🎯
 
 ### Recent Achievement (September 2025)
 
@@ -19,33 +21,30 @@ Goal: Build staff interfaces for request queue management, status updates, and w
   - ✅ URL parameter synchronization for shareable views
   - ✅ Robust test coverage including edge cases and error handling
 
-- ✅ **Code Quality Improvements**: Comprehensive code cleanup and automated tooling setup
-  - ✅ Prettier configuration for consistent code formatting
-  - ✅ ESLint enhancement with import sorting automation
-  - ✅ Empty line cleanup and import organization across all files
-  - ✅ Code quality score improved from 8.5/10 to 9.5/10
-  - ✅ Automated formatting scripts and pre-commit tooling
+- ✅ **US-022: Request details and status management (COMPLETED)** ✅
+  - ✅ RequestDetailsDrawer component with comprehensive request information display
+  - ✅ Status update workflow with proper validation and business rules
+  - ✅ Internal notes system for staff workflow tracking
+  - ✅ Integration with existing service layer and Firebase operations
+  - ✅ Test coverage for component functionality and service integration
 
-### Recent Completion (Epic 2)
+- ✅ **US-030: Run AI match and view Top‑N (COMPLETED)** ✅
+  - ✅ Complete AI matching service with mock Vertex Matching Engine simulation
+  - ✅ MatchResults component with explainability features and confidence scoring
+  - ✅ Find Matches integration in RequestDetailsDrawer
+  - ✅ Comprehensive test coverage for AI matching functionality
+  - ✅ Semantic similarity scoring and search analysis features
 
-- ✅ **Public/Admin Interface Separation**: Distinct layouts and navigation for public vs. staff interfaces
-- ✅ **Authentication System**: Mock authentication with role-based access control (admin, staff, legal_reviewer)
-- ✅ **Protected Routes**: Authentication guards for admin sections with automatic login redirects
-- ✅ **Layout Components**: PublicLayout for public features, AdminLayout for staff features
-- ✅ **Login System**: Staff login page with development credentials and session persistence
-- ✅ **Comprehensive Test Suite**: 51 tests covering authentication, layouts, routing, and forms
-- ✅ **Staff Filtering & Search**: Multi-select filters, date ranges, search functionality, and URL persistence
+### Next Focus (Epic 3 - AI Search & Match)
 
-### Next Focus (Epic 2 Continuation)
+US-030: Run AI match and view Top‑N (NEXT)
 
-US-022: Request details and status management (NEXT)
+### Acceptance Criteria (Next - US-030)
 
-### Acceptance Criteria (Next)
-
-- [ ] Given request selection, staff can view complete request details in drawer/modal
-- [ ] Given status management needs, staff can update request status with proper workflow
-- [ ] Given workflow tracking, staff can add internal notes and view request history
-- [ ] Given SLA monitoring, system accurately tracks business days and deadlines
+- [ ] Given a request selected in staff dashboard, staff can click "Find Matches" to initiate AI search
+- [ ] Given AI search results, staff see ≥5 candidate records with relevance scores and rationale
+- [ ] Given no good matches found, staff see helpful empty state with suggestions for next steps
+- [ ] Given match results, staff can view key phrases and distance scores for explainability
 
 ### Completed Tasks (Epic 2)
 

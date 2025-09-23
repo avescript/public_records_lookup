@@ -36,7 +36,7 @@ export function RequestConfirmation({
     if (!timestamp) return '';
     // Handle Firestore Timestamp objects
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return format(date, "MMMM d, yyyy 'at' h:mm a");
+    return format(date, 'MMMM d, yyyy \'at\' h:mm a');
   };
 
   const getDepartmentDisplayName = (department: string) => {

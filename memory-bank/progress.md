@@ -25,11 +25,22 @@ Phase 2 - Staff Workflows: **EPIC 2 IN PROGRESS** 🚧
   - [x] Advanced filtering scenarios (24 tests) - `StaffDashboardAdvancedFiltering.test.tsx`
   - [x] Edge cases, error handling, and performance scenarios
   - [x] Multi-filter combinations and URL parameter validation
-- [ ] **US-022: Request details and status management** 🎯
-  - [ ] Request details view/drawer with complete information display
-  - [ ] Status update workflow with proper validation
-  - [ ] Internal notes and workflow tracking
-  - [ ] SLA monitoring with business day accuracyPIC 2 IN PROGRESS\*\* 🚧
+- [x] **US-022: Request details and status management** ✅
+  - [x] Request details view/drawer with complete information display
+  - [x] Status update workflow with proper validation
+  - [x] Internal notes and workflow tracking
+  - [x] SLA monitoring with business day accuracy
+- [x] **US-030: Run AI match and view Top‑N** ✅
+  - [x] AI matching service with mock Vertex Matching Engine simulation
+  - [x] MatchResults component with explainability features
+  - [x] Find Matches integration in RequestDetailsDrawer
+  - [x] Comprehensive test coverage for AI matching functionality
+  - [x] Semantic similarity scoring and search analysis
+- [ ] **US-031: Accept/reject match candidates** 🎯
+  - [ ] Add accept/reject actions to MatchResults component
+  - [ ] Implement candidate decision persistence to database
+  - [ ] Update UI to reflect candidate status and decisions
+  - [ ] Add candidate decision history tracking
 
 ## Current Sprint
 

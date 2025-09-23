@@ -11,6 +11,7 @@ import {
   History as HistoryIcon,
   Person as PersonIcon,
   Save as SaveIcon,
+  Search as SearchIcon,
 } from '@mui/icons-material';
 import {
   Box,
@@ -31,6 +32,7 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 
+import { MatchResult } from '../../../services/aiMatchingService';
 import { RequestStatus, StoredRequest } from '../../../services/requestService';
 
 interface RequestDetailsDrawerProps {
@@ -39,6 +41,7 @@ interface RequestDetailsDrawerProps {
   request: StoredRequest | null;
   onStatusUpdate?: (requestId: string, newStatus: RequestStatus) => void;
   onNotesAdd?: (requestId: string, note: string) => void;
+  onFindMatches?: (requestId: string, description: string) => void;
 }
 
 const DRAWER_WIDTH = 600;
@@ -68,6 +71,7 @@ export function RequestDetailsDrawer({
   request,
   onStatusUpdate,
   onNotesAdd,
+  onFindMatches,
 }: RequestDetailsDrawerProps) {
   const [editingStatus, setEditingStatus] = useState(false);
   const [newStatus, setNewStatus] = useState<RequestStatus>('submitted');
@@ -124,6 +128,12 @@ export function RequestDetailsDrawer({
   const handleNoteCancel = () => {
     setAddingNote(false);
     setNewNote('');
+  };
+
+  const handleFindMatches = () => {
+    if (request && onFindMatches) {
+      onFindMatches(request.id!, request.description);
+    }
   };
 
   if (!request) {
@@ -350,6 +360,30 @@ export function RequestDetailsDrawer({
             {request.attachmentCount === 0 && (
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                 No attachments provided
+              </Typography>
+            )}
+          </Paper>
+
+          {/* AI Matching */}
+          <Paper elevation={1} sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              AI Record Search
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Use AI to find relevant records that might match this request
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<SearchIcon />}
+              onClick={handleFindMatches}
+              disabled={!onFindMatches}
+              sx={{ mr: 1 }}
+            >
+              Find Matches
+            </Button>
+            {!onFindMatches && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                AI matching not available in this context
               </Typography>
             )}
           </Paper>

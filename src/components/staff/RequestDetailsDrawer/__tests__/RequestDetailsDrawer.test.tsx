@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { createTheme,ThemeProvider } from '@mui/material/styles';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { RequestDetailsDrawer } from '../index';
-import { StoredRequest, RequestStatus, InternalNote } from '../../../../services/requestService';
 import { Timestamp } from 'firebase/firestore';
+
+import { InternalNote,RequestStatus, StoredRequest } from '../../../../services/requestService';
+import { RequestDetailsDrawer } from '../index';
 
 // Mock the request service
 jest.mock('../../../../services/requestService', () => ({
@@ -12,7 +13,7 @@ jest.mock('../../../../services/requestService', () => ({
   addInternalNote: jest.fn(),
 }));
 
-import { updateRequestStatus, addInternalNote } from '../../../../services/requestService';
+import { addInternalNote,updateRequestStatus } from '../../../../services/requestService';
 
 const theme = createTheme();
 
