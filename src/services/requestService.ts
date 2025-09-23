@@ -28,6 +28,14 @@ export type RequestStatus =
   | 'completed'
   | 'rejected';
 
+// Internal note type for staff tracking
+export interface InternalNote {
+  id: string;
+  content: string;
+  addedBy: string; // Staff member who added the note
+  addedAt: Timestamp;
+}
+
 // Extended request type with metadata
 export interface StoredRequest {
   id?: string;
@@ -46,6 +54,7 @@ export interface StoredRequest {
   updatedAt: Timestamp;
   attachmentCount: number;
   attachmentPaths?: string[]; // Paths to uploaded files in storage
+  internalNotes?: InternalNote[]; // Staff notes for workflow tracking
 }
 
 // Generate a unique tracking ID
@@ -219,5 +228,44 @@ export const getRequestsByDepartment = async (
   } catch (error) {
     console.error('Error fetching requests by department:', error);
     throw new Error('Failed to fetch requests');
+  }
+};
+
+// Add internal note to a request
+export const addInternalNote = async (
+  requestId: string,
+  content: string,
+  addedBy: string = 'Staff User'
+): Promise<void> => {
+  try {
+    const docRef = doc(firestore, 'requests', requestId);
+    
+    // Create new note
+    const newNote: InternalNote = {
+      id: generateTrackingId(), // Reuse tracking ID generator for note IDs
+      content,
+      addedBy,
+      addedAt: Timestamp.now(),
+    };
+
+    // Get current request to append note
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      throw new Error('Request not found');
+    }
+
+    const currentData = docSnap.data() as StoredRequest;
+    const currentNotes = currentData.internalNotes || [];
+
+    const updateData: UpdateData<StoredRequest> = {
+      internalNotes: [...currentNotes, newNote],
+      updatedAt: Timestamp.now(),
+    };
+
+    await updateDoc(docRef, updateData);
+    console.log('Internal note added:', requestId, content);
+  } catch (error) {
+    console.error('Error adding internal note:', error);
+    throw new Error('Failed to add internal note');
   }
 };
