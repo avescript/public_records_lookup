@@ -23,10 +23,64 @@
   - Major integration points
 
 ### Testing Requirements
-- **Unit tests required** for all new features
+
+#### Core Testing Principles
+- **Unit tests required** for all new features - no exceptions
+- **Tests merge with code**: All tests must be included in feature branch and merge to main
 - **Test-driven development**: Write tests during feature development, not after
-- **Full regression testing**: Required before milestone PR merges
-- **Maintain test coverage**: Ensure comprehensive coverage for critical paths
+- **Test coverage standards**: Maintain comprehensive coverage for critical user paths
+
+#### Testing Workflow Integration
+1. **During Feature Development**:
+   - Write unit tests alongside implementation
+   - Test files follow naming convention: `ComponentName.test.tsx` or `serviceName.test.ts`
+   - Include tests in feature branch commits
+   - Run tests locally before requesting review
+
+2. **Before Feature Completion**:
+   - All new tests must pass
+   - Existing tests must continue to pass (no regressions)
+   - Test coverage for new functionality verified
+   - Edge cases and error scenarios covered
+
+3. **At Merge Time**:
+   - Tests become permanent part of main branch
+   - Contribute to overall project test suite
+   - Enable future regression testing
+   - Support continuous integration pipelines
+
+#### Testing Types & Standards
+- **Unit Tests**: Individual component/function testing
+- **Integration Tests**: Component interaction testing  
+- **User Journey Tests**: End-to-end workflow validation
+- **Error Handling Tests**: Failure scenario coverage
+- **Edge Case Tests**: Boundary condition validation
+
+#### Quality Gates
+- **Chat Review**: Tests reviewed during feature development discussions
+- **Milestone PR**: Full regression testing before major merges
+- **Pre-deployment**: Complete test suite execution
+- **Post-deployment**: Smoke tests for critical functionality
+
+#### Test Organization
+```
+__tests__/
+├── components/
+│   ├── shared/
+│   ├── staff/
+│   └── public/
+├── services/
+├── utils/
+└── integration/
+```
+
+#### Benefits of This Approach
+- ✅ **Quality Assurance**: Continuous validation of functionality
+- ✅ **Regression Prevention**: Early detection of breaking changes
+- ✅ **Documentation**: Tests serve as usage examples
+- ✅ **Confidence**: Safe refactoring and feature additions
+- ✅ **Team Collaboration**: Clear expectations for code quality
+- ✅ **CI/CD Ready**: Foundation for automated testing pipelines
 
 ## � Memory Bank Management Strategy
 
@@ -52,19 +106,38 @@ Create this file on each feature branch to track progress:
 **Status:** In Progress
 
 ### Implementation Tasks
-- [ ] Task 1
-- [ ] Task 2
-- [ ] Unit tests
-- [ ] Integration testing
+- [ ] Core functionality implementation
+- [ ] Component development
+- [ ] Service layer integration
+- [ ] Error handling and edge cases
+
+### Testing Requirements (CRITICAL)
+- [ ] Unit tests for new components
+- [ ] Unit tests for new services/utilities  
+- [ ] Integration tests for user workflows
+- [ ] Error scenario testing
+- [ ] Edge case coverage
+- [ ] All tests passing locally
+- [ ] No regression in existing tests
+
+### Quality Checklist
+- [ ] TypeScript compliance (no `any` types)
+- [ ] ESLint checks passing
+- [ ] Component accessibility (ARIA labels, keyboard nav)
+- [ ] Mobile responsiveness verified
+- [ ] Error boundaries implemented
 
 ### Notes
 - Key decisions and blockers
 - Dependencies and considerations
+- Test coverage observations
+- Performance considerations
 
 ### Memory Bank Updates Needed
 - [ ] Update activeContext.md with completion
-- [ ] Update progress.md with epic status
+- [ ] Update progress.md with epic status  
 - [ ] Document new patterns in systemPatterns.md (if applicable)
+- [ ] Update test coverage metrics
 ```
 
 ### Context Commands for Feature Branches
