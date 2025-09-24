@@ -108,7 +108,7 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
         redactionService.getRedactionSummary(recordId, fileName),
       ]);
       
-      setVersions(versionsResult);
+      setVersions(Array.isArray(versionsResult) ? versionsResult : []);
       setSummary(summaryResult);
     } catch (err) {
       setError('Failed to load redaction data');
@@ -125,7 +125,7 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
     try {
       setLoading(true);
       const newVersion = await redactionService.saveVersion(recordId, fileName, versionNotes);
-      setVersions((prev) => [newVersion, ...prev]);
+      setVersions((prev) => [newVersion, ...(Array.isArray(prev) ? prev : [])]);
       setSaveDialogOpen(false);
       setVersionNotes('');
       await loadData(); // Refresh summary
@@ -236,8 +236,9 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
         startIcon={<HistoryIcon />}
         onClick={handleOpen}
         sx={{ ml: 1 }}
+        aria-label="Manage redactions and versions"
       >
-        <Badge badgeContent={versions.length} color="primary">
+        <Badge badgeContent={versions?.length || 0} color="primary">
           Manage Redactions
         </Badge>
       </Button>
@@ -350,7 +351,7 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
             <Stack spacing={2}>
               <Typography variant="h6">Version History</Typography>
               
-              {versions.length === 0 ? (
+              {!versions || versions.length === 0 ? (
                 <Alert severity="info">
                   No saved versions yet. Save your current redactions to create the first version.
                 </Alert>

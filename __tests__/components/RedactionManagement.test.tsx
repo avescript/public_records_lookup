@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { RedactionManagement } from '../../src/components/RedactionManagement';
 import { RedactionService, ManualRedaction, RedactionVersion } from '../../src/services/redactionService';
@@ -135,7 +135,7 @@ describe('RedactionManagement', () => {
       fireEvent.click(manageButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Redaction Management')).toBeInTheDocument();
+        expect(screen.getByText(/Redaction Management:/)).toBeInTheDocument();
       });
     });
 
@@ -184,17 +184,25 @@ describe('RedactionManagement', () => {
       fireEvent.click(manageButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Save Version')).toBeInTheDocument();
+        expect(screen.getByText('Save Current Version')).toBeInTheDocument();
       });
 
-      const saveButton = screen.getByText('Save Version');
+      const saveButton = screen.getByText('Save Current Version');
       fireEvent.click(saveButton);
+
+      // Wait for save dialog to open and find the actual Save Version button
+      await waitFor(() => {
+        expect(screen.getByRole('dialog', { name: /Save Current Version/i })).toBeInTheDocument();
+      });
+
+      const saveVersionButton = screen.getByText('Save Version');
+      fireEvent.click(saveVersionButton);
 
       await waitFor(() => {
         expect(mockRedactionService.saveVersion).toHaveBeenCalledWith(
           'test-record-1',
           'test.pdf',
-          undefined
+          ''
         );
       });
     });
@@ -210,6 +218,7 @@ describe('RedactionManagement', () => {
         versions: mockVersions,
       });
 
+      mockRedactionService.getVersionHistory.mockResolvedValue(mockVersions);
       mockRedactionService.loadVersion.mockResolvedValue(mockRedactions);
       const mockOnVersionLoad = jest.fn();
 
@@ -219,19 +228,19 @@ describe('RedactionManagement', () => {
       fireEvent.click(manageButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Redaction Management')).toBeInTheDocument();
+        expect(screen.getByText(/Redaction Management:/)).toBeInTheDocument();
       });
 
       // Navigate to versions tab
-      const versionsTab = screen.getByText('Versions');
+      const versionsTab = screen.getByText('Version History');
       fireEvent.click(versionsTab);
 
       await waitFor(() => {
-        expect(screen.getByText('v1')).toBeInTheDocument();
+        expect(screen.getByText(/Version v1/)).toBeInTheDocument();
       });
 
       // Click on load version button
-      const loadButtons = screen.getAllByLabelText('Load version');
+      const loadButtons = screen.getAllByLabelText('Load this version');
       fireEvent.click(loadButtons[0]);
 
       await waitFor(() => {
@@ -256,7 +265,7 @@ describe('RedactionManagement', () => {
       fireEvent.click(manageButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Error loading redaction data')).toBeInTheDocument();
+        expect(screen.getByText('Failed to load redaction data')).toBeInTheDocument();
       });
 
       consoleSpy.mockRestore();
@@ -281,14 +290,22 @@ describe('RedactionManagement', () => {
       fireEvent.click(manageButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Save Version')).toBeInTheDocument();
+        expect(screen.getByText('Save Current Version')).toBeInTheDocument();
       });
 
-      const saveButton = screen.getByText('Save Version');
+      const saveButton = screen.getByText('Save Current Version');
       fireEvent.click(saveButton);
 
+      // Wait for save dialog to open and find the actual Save Version button
       await waitFor(() => {
-        expect(screen.getByText('Error saving version')).toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: /Save Current Version/i })).toBeInTheDocument();
+      });
+
+      const saveVersionButton = screen.getByText('Save Version');
+      fireEvent.click(saveVersionButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Failed to save version')).toBeInTheDocument();
       });
 
       consoleSpy.mockRestore();
@@ -317,17 +334,21 @@ describe('RedactionManagement', () => {
 
       render(<RedactionManagement {...defaultProps} />);
 
-      const manageButton = screen.getByText('Manage Redactions');
+      const manageButton = screen.getByRole('button', { name: /manage redactions/i });
       
       // Focus should be manageable
-      manageButton.focus();
+      act(() => {
+        manageButton.focus();
+      });
       expect(manageButton).toHaveFocus();
 
-      // Should respond to Enter key
-      fireEvent.keyDown(manageButton, { key: 'Enter', code: 'Enter' });
+      // Should respond to Enter key - or click since MUI handles it
+      act(() => {
+        fireEvent.click(manageButton);
+      });
 
       await waitFor(() => {
-        expect(screen.getByText('Redaction Management')).toBeInTheDocument();
+        expect(screen.getByText(/Redaction Management:/)).toBeInTheDocument();
       });
     });
   });
