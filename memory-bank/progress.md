@@ -7,13 +7,14 @@ Phase 2 - Staff Workflows: **EPIC 2 COMPLETED** ✅
 Phase 3 - AI Search & Matching: **EPIC 3 COMPLETED** ✅
 Phase 4 - Redaction & PII Detection: **EPIC 4 IN PROGRESS** 🚧
 
-**Recent Major Achievement (September 23, 2025)**: ✅
-- **US-040 PII Detection System**: Complete PDF preview with PII overlay implementation
-- **Epic 4 Foundation**: PDF.js integration, PII detection service, and structured findings UI
-- **Comprehensive Architecture**: 20+ passing tests for PII detection service and components
-- **Production Ready**: Phase 0 implementation ready for enhancement to production DLP systems
+**Recent Major Achievement (September 24, 2025)**: ✅
+- **US-041 Canvas Drawing System**: Complete redaction drawing and version management implementation
+- **Epic 4 Advanced Features**: HTML5 Canvas overlay, coordinate transformations, and export capabilities
+- **Comprehensive Testing**: 76+ passing tests across redaction service, canvas components, and utilities
+- **Professional UI**: Advanced redaction management interface with version control and audit trails
 
 **Previous Achievements**:
+- **US-040 PII Detection System**: Complete PDF preview with PII overlay implementation (September 23)
 - **US-031 Accept/Reject System**: Complete implementation with 43 passing tests (September 22-23)
 - **Epic 3 Completion**: All AI search and matching features fully implemented
 - **US-030 AI Matching System**: Complete implementation with explainability features
@@ -62,7 +63,7 @@ Phase 4 - Redaction & PII Detection: **EPIC 4 IN PROGRESS** 🚧
 
 ### Epic 4 — Redaction & PII Detection 🚧
 
-Status: **IN PROGRESS** (1/3 User Stories Complete)
+Status: **IN PROGRESS** (2/3 User Stories Complete)
 
 - [x] **US-040: View suggested PII findings** ✅ **(COMPLETED September 23, 2025)**
   - [x] PIIDetectionService with CSV-based PII detection (Phase 0 implementation)
@@ -74,11 +75,17 @@ Status: **IN PROGRESS** (1/3 User Stories Complete)
   - [x] Comprehensive testing: 20+ tests covering service and component functionality
   - [x] Support for 10 PII types: SSN, Phone, Address, Names, Email, DOB, etc.
   - [x] Color-coded overlay system with confidence indicators and toggle controls
-- [ ] **US-041: Draw redactions and export rendition** 📋
-  - [ ] Canvas overlay system for mouse/touch redaction box drawing
-  - [ ] Coordinate storage for versioned redactions in localStorage/database
-  - [ ] PDF export pipeline with redaction metadata (Phase 0: placeholder implementation)
-  - [ ] Audit trail for redaction operations
+- [x] **US-041: Canvas drawing for manual redactions** ✅ **(COMPLETED September 24, 2025)**
+  - [x] RedactionService with complete CRUD operations and version management
+  - [x] RedactionCanvas component with HTML5 Canvas drawing system
+  - [x] CoordinateTransformer utilities for PDF-to-canvas coordinate mapping
+  - [x] Interactive drawing, selection, and manipulation of redaction boxes
+  - [x] Overlap detection and collision analysis with configurable thresholds
+  - [x] Version control system with draft, saved, and exported states
+  - [x] RedactionManagement UI with version history and export capabilities
+  - [x] Comprehensive testing: 76+ tests covering service, canvas, and transformations
+  - [x] Dual-mode PDF viewer (PII detection view + redaction drawing mode)
+  - [x] Professional workflow interface with metadata and audit trails
 - [ ] **US-042: Human approval gate (100% review)** 📋
   - [ ] Approval workflow UI for redaction review
   - [ ] Status transitions and approval controls

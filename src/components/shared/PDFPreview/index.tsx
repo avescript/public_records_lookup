@@ -24,9 +24,15 @@ import {
   NavigateBefore as PrevPageIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
+  Edit as EditIcon,
+  Preview as PreviewIcon,
 } from '@mui/icons-material';
 
 import { PIIFinding, PIIType, piiDetectionService } from '../../../services/piiDetectionService';
+import { ManualRedaction, RedactionCoordinates, redactionService } from '../../../services/redactionService';
+import { RedactionCanvas } from '../../RedactionCanvas';
+import { CoordinateTransformer, PDFPageDimensions, CanvasDimensions } from '../../../utils/coordinateTransformer';
+import RedactionManagement from '../../RedactionManagement';
 
 // Configure PDF.js worker
 import '../../../lib/pdf-worker';
@@ -36,6 +42,7 @@ interface PDFPreviewProps {
   fileName: string;
   filePath?: string; // Phase 0: optional, falls back to placeholder
   onPIIFindingsLoad?: (findings: PIIFinding[]) => void;
+  onRedactionsChange?: (redactions: ManualRedaction[]) => void;
 }
 
 interface PIIOverlayProps {
@@ -128,6 +135,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
   fileName,
   filePath,
   onPIIFindingsLoad,
+  onRedactionsChange,
 }) => {
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -135,8 +143,12 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [findings, setFindings] = useState<PIIFinding[]>([]);
+  const [redactions, setRedactions] = useState<ManualRedaction[]>([]);
   const [showOverlays, setShowOverlays] = useState<boolean>(true);
   const [piiTypeFilters, setPIITypeFilters] = useState<Set<PIIType>>(new Set(Object.values(PIIType)));
+  const [viewMode, setViewMode] = useState<'pii' | 'redaction'>('pii');
+  const [pageWidth, setPageWidth] = useState<number>(595); // Default PDF page width
+  const [pageHeight, setPageHeight] = useState<number>(842); // Default PDF page height
 
   // Phase 0: Use placeholder file path
   const effectiveFilePath = filePath || `/mock-data/${fileName.replace('.pdf', '.txt')}`;
@@ -155,11 +167,29 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
     loadFindings();
   }, [recordId, onPIIFindingsLoad]);
 
+  useEffect(() => {
+    const loadRedactions = async () => {
+      try {
+        const redactionsResult = await redactionService.getRedactionsForRecord(recordId, fileName);
+        setRedactions(redactionsResult);
+        onRedactionsChange?.(redactionsResult);
+      } catch (error) {
+        console.error('Error loading redactions:', error);
+      }
+    };
+
+    loadRedactions();
+  }, [recordId, fileName, onRedactionsChange]);
+
   const currentPageFindings = useMemo(() => {
     return findings.filter(
       (finding) => finding.fileName === fileName && finding.pageNumber === currentPage
     );
   }, [findings, fileName, currentPage]);
+
+  const currentPageRedactions = useMemo(() => {
+    return redactions.filter((redaction) => redaction.pageNumber === currentPage);
+  }, [redactions, currentPage]);
 
   const uniquePIITypes = useMemo(() => {
     return Array.from(new Set(findings.map((finding) => finding.piiType)));
@@ -171,9 +201,67 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
     setError(null);
   };
 
+  const handlePageLoadSuccess = (page: any) => {
+    const viewport = page.getViewport({ scale: 1 });
+    setPageWidth(viewport.width);
+    setPageHeight(viewport.height);
+  };
+
   const handleDocumentLoadError = (error: Error) => {
     setLoading(false);
     setError(`Failed to load PDF: ${error.message}`);
+  };
+
+  // Redaction handlers
+  const handleRedactionAdd = async (coordinates: RedactionCoordinates) => {
+    try {
+      const newRedaction = await redactionService.addRedaction(
+        recordId,
+        fileName,
+        currentPage,
+        coordinates
+      );
+      setRedactions((prev) => [...prev, newRedaction]);
+      onRedactionsChange?.([...redactions, newRedaction]);
+    } catch (error) {
+      console.error('Error adding redaction:', error);
+    }
+  };
+
+  const handleRedactionUpdate = async (redactionId: string, coordinates: RedactionCoordinates) => {
+    try {
+      const updatedRedaction = await redactionService.updateRedaction(
+        recordId,
+        fileName,
+        redactionId,
+        coordinates
+      );
+      if (updatedRedaction) {
+        setRedactions((prev) =>
+          prev.map((r) => (r.id === redactionId ? updatedRedaction : r))
+        );
+        onRedactionsChange?.(redactions.map((r) => (r.id === redactionId ? updatedRedaction : r)));
+      }
+    } catch (error) {
+      console.error('Error updating redaction:', error);
+    }
+  };
+
+  const handleRedactionDelete = async (redactionId: string) => {
+    try {
+      const success = await redactionService.removeRedaction(recordId, fileName, redactionId);
+      if (success) {
+        const updatedRedactions = redactions.filter((r) => r.id !== redactionId);
+        setRedactions(updatedRedactions);
+        onRedactionsChange?.(updatedRedactions);
+      }
+    } catch (error) {
+      console.error('Error deleting redaction:', error);
+    }
+  };
+
+  const handleViewModeToggle = () => {
+    setViewMode((prev) => (prev === 'pii' ? 'redaction' : 'pii'));
   };
 
   const handleZoomIn = () => {
@@ -333,7 +421,68 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
             >
               Next
             </Button>
+
+            <Divider orientation="vertical" flexItem />
+
+            {/* View Mode Toggle */}
+            <Button
+              size="small"
+              variant={viewMode === 'pii' ? 'contained' : 'outlined'}
+              startIcon={<PreviewIcon />}
+              onClick={handleViewModeToggle}
+              color={viewMode === 'pii' ? 'primary' : 'inherit'}
+            >
+              PII View
+            </Button>
+            <Button
+              size="small"
+              variant={viewMode === 'redaction' ? 'contained' : 'outlined'}
+              startIcon={<EditIcon />}
+              onClick={handleViewModeToggle}
+              color={viewMode === 'redaction' ? 'secondary' : 'inherit'}
+            >
+              Redaction Mode
+            </Button>
+
+            <RedactionManagement
+              recordId={recordId}
+              fileName={fileName}
+              currentRedactions={redactions}
+              onVersionLoad={(loadedRedactions) => {
+                setRedactions(loadedRedactions);
+                onRedactionsChange?.(loadedRedactions);
+              }}
+            />
           </Stack>
+
+          {/* View Mode Specific Controls */}
+          {viewMode === 'redaction' && (
+            <Stack spacing={1}>
+              <Typography variant="body2" color="text.secondary">
+                Click and drag to draw redaction boxes. Select boxes to resize or move them.
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography variant="body2">
+                  Redactions on this page: {currentPageRedactions.length}
+                </Typography>
+                {currentPageRedactions.length > 0 && (
+                  <Button
+                    size="small"
+                    color="warning"
+                    onClick={async () => {
+                      if (window.confirm('Clear all redactions on this page?')) {
+                        for (const redaction of currentPageRedactions) {
+                          await handleRedactionDelete(redaction.id);
+                        }
+                      }
+                    }}
+                  >
+                    Clear Page
+                  </Button>
+                )}
+              </Stack>
+            </Stack>
+          )}
 
           {/* PII Overlay Controls */}
           {findings.length > 0 && (
@@ -391,14 +540,53 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
             onLoadError={handleDocumentLoadError}
           >
             <Box sx={{ position: 'relative' }}>
-              <Page pageNumber={currentPage} scale={scale} />
-              <PIIOverlay
-                findings={findings}
-                pageNumber={currentPage}
-                scale={scale}
-                showOverlays={showOverlays}
-                piiTypeFilters={piiTypeFilters}
+              <Page 
+                pageNumber={currentPage} 
+                scale={scale} 
+                onLoadSuccess={handlePageLoadSuccess}
               />
+              
+              {/* PII Overlay - shown in PII view mode */}
+              {viewMode === 'pii' && (
+                <PIIOverlay
+                  findings={findings}
+                  pageNumber={currentPage}
+                  scale={scale}
+                  showOverlays={showOverlays}
+                  piiTypeFilters={piiTypeFilters}
+                />
+              )}
+              
+              {/* Redaction Canvas - shown in redaction mode */}
+              {viewMode === 'redaction' && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    pointerEvents: 'all',
+                    zIndex: 2,
+                  }}
+                >
+                  <RedactionCanvas
+                    width={pageWidth * scale}
+                    height={pageHeight * scale}
+                    scale={scale}
+                    redactions={currentPageRedactions}
+                    onRedactionAdd={handleRedactionAdd}
+                    onRedactionUpdate={handleRedactionUpdate}
+                    onRedactionDelete={handleRedactionDelete}
+                    isDrawingMode={true}
+                    pageNumber={currentPage}
+                    backgroundColor="transparent"
+                    redactionColor="rgba(255, 0, 0, 0.3)"
+                    selectedColor="rgba(255, 0, 0, 0.5)"
+                    showGrid={false}
+                  />
+                </Box>
+              )}
             </Box>
           </Document>
         </Box>
