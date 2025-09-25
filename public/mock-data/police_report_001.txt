@@ -1,0 +1,23 @@
+%PDF-1.4
+% This is a placeholder PDF file for Phase 0 development
+% In production, this would be a real PDF with the following content:
+
+POLICE REPORT - INCIDENT #2024-001
+
+Date: January 15, 2024
+Officer: Badge #1234
+
+INCIDENT DETAILS:
+On January 15, 2024, at approximately 14:30 hours, I responded to a call at 123 Main St, Anytown, CA 90210 
+regarding a suspicious vehicle.
+
+INVOLVED PARTIES:
+Primary Subject: John Michael Smith
+Contact: (555) 123-4567
+Email: john.smith@email.com
+SSN: 123-45-6789 (for identification purposes)
+
+NARRATIVE:
+The subject was cooperative and provided identification. No further action required.
+
+This document contains PII that should be detected and redacted before public release.
