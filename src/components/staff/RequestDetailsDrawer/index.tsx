@@ -37,6 +37,42 @@ import { format } from 'date-fns';
 
 import dynamic from 'next/dynamic';
 
+// Helper function to convert Firebase Timestamp or mock timestamp to Date
+const convertToDate = (timestamp: any): Date => {
+  try {
+    if (!timestamp) {
+      // Fallback for null/undefined
+      return new Date();
+    }
+    
+    if (typeof timestamp.toDate === 'function') {
+      // Firebase Timestamp or mock timestamp with toDate method
+      return timestamp.toDate();
+    } else if (timestamp instanceof Date) {
+      // Already a Date object
+      return timestamp;
+    } else if (typeof timestamp === 'number') {
+      // Unix timestamp
+      return new Date(timestamp);
+    } else if (typeof timestamp === 'string') {
+      // ISO string
+      return new Date(timestamp);
+    } else if (timestamp && typeof timestamp === 'object' && timestamp.seconds) {
+      // Mock Firebase timestamp object with seconds
+      return new Date(timestamp.seconds * 1000);
+    } else if (timestamp && typeof timestamp === 'object' && timestamp._isoString) {
+      // Mock timestamp with stored ISO string
+      return new Date(timestamp._isoString);
+    } else {
+      // Last resort fallback
+      return new Date(timestamp);
+    }
+  } catch (error) {
+    console.error('Error converting timestamp to date:', error, timestamp);
+    return new Date(); // Return current date as fallback
+  }
+};
+
 import { MatchResult } from '../../../services/aiMatchingService';
 import { RequestStatus, StoredRequest } from '../../../services/requestService';
 import PIIFindings from '../../shared/PIIFindings';
@@ -427,7 +463,14 @@ export function RequestDetailsDrawer({
                     </Box>
                     
                     <Typography variant="caption" color="text.secondary">
-                      Accepted by {record.acceptedBy} on {format(record.acceptedAt.toDate(), 'MMM d, yyyy \'at\' h:mm a')}
+                      Accepted by {record.acceptedBy} on {(() => {
+                        try {
+                          return format(convertToDate(record.acceptedAt), 'MMM d, yyyy \'at\' h:mm a');
+                        } catch (error) {
+                          console.error('Error formatting date:', error, record.acceptedAt);
+                          return 'unknown date';
+                        }
+                      })()}
                     </Typography>
                   </Box>
                 ))}
