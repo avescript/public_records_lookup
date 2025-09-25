@@ -361,3 +361,121 @@ export const getDatabaseStats = () => {
     }, {} as Record<RequestStatus, number>),
   };
 };
+
+// Package service mock functions for Epic 6
+
+// Package manifest interface (duplicated to avoid circular imports)
+interface PackageManifest {
+  id: string;
+  requestId: string;
+  title: string;
+  description?: string;
+  coverSheet: {
+    title: string;
+    requestorName: string;
+    requestDate: string;
+    department: string;
+    totalPages: number;
+    totalRecords: number;
+  };
+  records: Array<{
+    recordId: string;
+    title: string;
+    source: string;
+    pageCount: number;
+    order: number;
+    includeInPackage: boolean;
+  }>;
+  metadata: {
+    createdBy: string;
+    createdAt: any; // Mock timestamp
+    status: 'draft' | 'building' | 'ready' | 'sent';
+    totalPages: number;
+    estimatedDeliverySize: string;
+  };
+  auditTrail: {
+    packageBuilt?: {
+      timestamp: any;
+      byUser: string;
+    };
+    packageApproved?: {
+      timestamp: any;
+      byUser: string;
+    };
+    packageSent?: {
+      timestamp: any;
+      byUser: string;
+      method: 'email' | 'portal';
+    };
+  };
+}
+
+interface PackageBuildResult {
+  manifest: PackageManifest;
+  previewUrl?: string;
+  downloadUrl?: string;
+}
+
+// Package storage keys
+const PACKAGES_STORAGE_KEY = 'mockFirebasePackages';
+
+// Get packages database from localStorage
+const getPackagesDatabase = (): { [key: string]: PackageManifest } => {
+  if (typeof window === 'undefined') return {};
+  
+  try {
+    const stored = localStorage.getItem(PACKAGES_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch (error) {
+    console.warn('Error loading packages from localStorage:', error);
+    return {};
+  }
+};
+
+// Save packages database to localStorage
+const savePackagesDatabase = (packages: { [key: string]: PackageManifest }) => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem(PACKAGES_STORAGE_KEY, JSON.stringify(packages));
+  } catch (error) {
+    console.error('Error saving packages to localStorage:', error);
+  }
+};
+
+// Build package (mock implementation)
+export const buildPackage = async (manifest: PackageManifest): Promise<PackageBuildResult> => {
+  const packagesDatabase = getPackagesDatabase();
+  
+  const updatedManifest = {
+    ...manifest,
+    metadata: {
+      ...manifest.metadata,
+      status: 'ready' as const,
+    },
+  };
+  
+  // Save to packages database
+  packagesDatabase[manifest.id] = updatedManifest;
+  savePackagesDatabase(packagesDatabase);
+  
+  console.log(`✅ [Mock Firebase] Built package ${manifest.id} with ${manifest.records.length} records`);
+  
+  return {
+    manifest: updatedManifest,
+    previewUrl: `/mock/packages/${manifest.id}/preview.pdf`,
+    downloadUrl: `/mock/packages/${manifest.id}/download.pdf`,
+  };
+};
+
+// Get package by ID (mock implementation)
+export const getPackageById = async (packageId: string): Promise<PackageManifest | null> => {
+  const packagesDatabase = getPackagesDatabase();
+  return packagesDatabase[packageId] || null;
+};
+
+// Get packages for request (mock implementation)
+export const getPackagesForRequest = async (requestId: string): Promise<PackageManifest[]> => {
+  const packagesDatabase = getPackagesDatabase();
+  return Object.values(packagesDatabase).filter(pkg => pkg.requestId === requestId);
+};
