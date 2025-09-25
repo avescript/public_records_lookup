@@ -2,14 +2,13 @@
 
 ## Current Focus
 
-**Epic 4 — Redaction & PII Detection** 🚧
-Goal: Implement PDF preview with PII detection, redaction capabilities, and human review workflow.
+**Epic 5 — Approvals & Legal Review** �
+Goal: Implement formal review workflows, comment threading, and legal compliance features for public records processing.
 
 ## Active User Story
 
-**US-040: View suggested PII findings (COMPLETED)** ✅
-**US-041: Draw redactions and export rendition (COMPLETED)** ✅
-**US-042: Human approval gate (100% review)** 📋
+**EPIC 4 COMPLETED** ✅ - **MERGED TO MAIN September 24, 2025**
+**Next:** Epic 5 User Stories - Ready for planning and implementation
 
 ### Recent Achievement (September 23, 2025)
 
