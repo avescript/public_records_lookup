@@ -49,6 +49,28 @@ export interface InternalNote {
   addedAt: Timestamp;
 }
 
+// Associated record from accepted AI match
+export interface AssociatedRecord {
+  candidateId: string;
+  title: string;
+  description: string;
+  source: string;
+  recordType: string;
+  agency: string;
+  dateCreated: string;
+  relevanceScore: number;
+  confidence: 'high' | 'medium' | 'low';
+  keyPhrases: string[];
+  metadata: {
+    fileSize?: string;
+    pageCount?: number;
+    lastModified?: string;
+    classification?: string;
+  };
+  acceptedBy: string; // Staff member who accepted the match
+  acceptedAt: Timestamp;
+}
+
 // Extended request type with metadata
 export interface StoredRequest {
   id?: string;
@@ -68,6 +90,7 @@ export interface StoredRequest {
   attachmentCount: number;
   attachmentPaths?: string[]; // Paths to uploaded files in storage
   internalNotes?: InternalNote[]; // Staff notes for workflow tracking
+  associatedRecords?: AssociatedRecord[]; // Records added from AI match acceptance
 }
 
 // Generate a unique tracking ID
@@ -320,5 +343,80 @@ export const addInternalNote = async (
   } catch (error) {
     console.error('Error adding internal note:', error);
     throw new Error('Failed to add internal note');
+  }
+};
+
+// Add an associated record to a request (from AI match acceptance)
+export const addRecordToRequest = async (
+  requestId: string,
+  candidateId: string,
+  candidateData: {
+    title: string;
+    description: string;
+    source: string;
+    recordType: string;
+    agency: string;
+    dateCreated: string;
+    relevanceScore: number;
+    confidence: 'high' | 'medium' | 'low';
+    keyPhrases: string[];
+    metadata: {
+      fileSize?: string;
+      pageCount?: number;
+      lastModified?: string;
+      classification?: string;
+    };
+  },
+  acceptedBy: string = 'Staff User'
+): Promise<void> => {
+  console.log('📎 [Request Service] Adding record to request:', requestId, candidateId);
+  
+  // Use mock service if Firebase is unavailable
+  if (useMockService()) {
+    console.log('🔄 [Request Service] Using mock service for addRecordToRequest');
+    await mockService.addRecordToRequest(requestId, candidateId, candidateData, acceptedBy);
+    console.log('✅ [Request Service] Mock record added to request');
+    return;
+  }
+
+  try {
+    const docRef = doc(firestore, 'requests', requestId);
+    
+    // Create new associated record
+    const newRecord: AssociatedRecord = {
+      candidateId,
+      ...candidateData,
+      acceptedBy,
+      acceptedAt: Timestamp.now(),
+    };
+
+    // Get current request to append record
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      throw new Error('Request not found');
+    }
+
+    const currentData = docSnap.data() as StoredRequest;
+    const currentRecords = currentData.associatedRecords || [];
+
+    // Check if record already exists (prevent duplicates)
+    const existingRecord = currentRecords.find(record => record.candidateId === candidateId);
+    if (existingRecord) {
+      console.log('⚠️ [Request Service] Record already associated with request:', candidateId);
+      return;
+    }
+
+    const updateData: UpdateData<StoredRequest> = {
+      associatedRecords: [...currentRecords, newRecord],
+      updatedAt: Timestamp.now(),
+      // Potentially update status when first record is added
+      ...(currentRecords.length === 0 && { status: 'under_review' as RequestStatus })
+    };
+
+    await updateDoc(docRef, updateData);
+    console.log('✅ [Request Service] Record added to request:', requestId, candidateId);
+  } catch (error) {
+    console.error('❌ [Request Service] Error adding record to request:', error);
+    throw new Error('Failed to add record to request');
   }
 };

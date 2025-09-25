@@ -19,6 +19,27 @@ export interface InternalNote {
   addedAt: any; // Mock timestamp
 }
 
+export interface AssociatedRecord {
+  candidateId: string;
+  title: string;
+  description: string;
+  source: string;
+  recordType: string;
+  agency: string;
+  dateCreated: string;
+  relevanceScore: number;
+  confidence: 'high' | 'medium' | 'low';
+  keyPhrases: string[];
+  metadata: {
+    fileSize?: string;
+    pageCount?: number;
+    lastModified?: string;
+    classification?: string;
+  };
+  acceptedBy: string;
+  acceptedAt: any; // Mock timestamp
+}
+
 export interface StoredRequest {
   id?: string;
   trackingId: string;
@@ -37,6 +58,7 @@ export interface StoredRequest {
   attachmentCount: number;
   attachmentPaths?: string[];
   internalNotes?: InternalNote[];
+  associatedRecords?: AssociatedRecord[];
 }
 
 // Persistent storage keys
@@ -253,6 +275,68 @@ export const getRequestsByStatus = async (status: RequestStatus): Promise<Stored
       const bTime = b.submittedAt.toDate ? b.submittedAt.toDate().getTime() : 0;
       return bTime - aTime; // Most recent first
     });
+};
+
+// Add an associated record to a request (from AI match acceptance) - Mock version
+export const addRecordToRequest = async (
+  requestId: string,
+  candidateId: string,
+  candidateData: {
+    title: string;
+    description: string;
+    source: string;
+    recordType: string;
+    agency: string;
+    dateCreated: string;
+    relevanceScore: number;
+    confidence: 'high' | 'medium' | 'low';
+    keyPhrases: string[];
+    metadata: {
+      fileSize?: string;
+      pageCount?: number;
+      lastModified?: string;
+      classification?: string;
+    };
+  },
+  acceptedBy: string = 'Staff User'
+): Promise<void> => {
+  const mockDatabase = getMockDatabase();
+  
+  if (!mockDatabase[requestId]) {
+    throw new Error(`Request ${requestId} not found`);
+  }
+
+  const newRecord: AssociatedRecord = {
+    candidateId,
+    ...candidateData,
+    acceptedBy,
+    acceptedAt: createMockTimestamp(),
+  };
+
+  if (!mockDatabase[requestId].associatedRecords) {
+    mockDatabase[requestId].associatedRecords = [];
+  }
+
+  // Check for duplicates
+  const existingRecord = mockDatabase[requestId].associatedRecords!.find(
+    record => record.candidateId === candidateId
+  );
+  
+  if (existingRecord) {
+    console.log('⚠️ [Mock Firebase] Record already associated with request:', candidateId);
+    return;
+  }
+
+  mockDatabase[requestId].associatedRecords!.push(newRecord);
+  mockDatabase[requestId].updatedAt = createMockTimestamp();
+  
+  // Update status to under_review if this is the first record
+  if (mockDatabase[requestId].associatedRecords!.length === 1) {
+    mockDatabase[requestId].status = 'under_review';
+  }
+  
+  saveMockDatabase(mockDatabase);
+  console.log(`✅ [Mock Firebase] Added record ${candidateId} to request ${requestId}`);
 };
 
 // Clear all data (for testing)

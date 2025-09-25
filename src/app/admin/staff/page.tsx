@@ -9,8 +9,8 @@ import { MatchResults } from '../../../components/staff/MatchResults';
 import { RequestDetailsDrawer } from '../../../components/staff/RequestDetailsDrawer';
 import { StaffDashboard } from '../../../components/staff/StaffDashboard';
 import { AuthProvider } from '../../../contexts/AuthContext';
-import { findMatches, MatchResult } from '../../../services/aiMatchingService';
-import { RequestStatus,StoredRequest } from '../../../services/requestService';
+import { findMatches, MatchCandidate, MatchResult } from '../../../services/aiMatchingService';
+import { addRecordToRequest, RequestStatus, StoredRequest } from '../../../services/requestService';
 
 function StaffPageContent() {
   const [selectedRequest, setSelectedRequest] = useState<StoredRequest | null>(
@@ -67,9 +67,50 @@ function StaffPageContent() {
     setMatchError(null);
   };
 
-  const handleAcceptMatch = (candidateId: string) => {
-    console.log('Accepting match:', candidateId);
-    // TODO: Implement match acceptance logic
+  const handleAcceptMatch = async (candidateId: string) => {
+    console.log('🎯 [Staff Page] Accepting match:', candidateId);
+    
+    if (!selectedRequest || !matchResult) {
+      console.error('❌ [Staff Page] No selected request or match result available');
+      return;
+    }
+
+    try {
+      // Find the candidate data
+      const candidate = matchResult.candidates.find(c => c.id === candidateId);
+      if (!candidate) {
+        console.error('❌ [Staff Page] Candidate not found:', candidateId);
+        return;
+      }
+
+      // Add the record to the request
+      await addRecordToRequest(
+        selectedRequest.id!,
+        candidateId,
+        {
+          title: candidate.title,
+          description: candidate.description,
+          source: candidate.source,
+          recordType: candidate.recordType,
+          agency: candidate.agency,
+          dateCreated: candidate.dateCreated,
+          relevanceScore: candidate.relevanceScore,
+          confidence: candidate.confidence,
+          keyPhrases: candidate.keyPhrases,
+          metadata: candidate.metadata,
+        },
+        'Staff User' // TODO: Get actual logged-in user
+      );
+
+      console.log('✅ [Staff Page] Match accepted and record added to request');
+      
+      // Close matches view after successful acceptance
+      setMatchesOpen(false);
+      
+    } catch (error) {
+      console.error('❌ [Staff Page] Error accepting match:', error);
+      setMatchError('Failed to accept match. Please try again.');
+    }
   };
 
   const handleRejectMatch = (candidateId: string) => {
