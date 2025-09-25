@@ -40,6 +40,9 @@ import dynamic from 'next/dynamic';
 import { MatchResult } from '../../../services/aiMatchingService';
 import { RequestStatus, StoredRequest } from '../../../services/requestService';
 import PIIFindings from '../../shared/PIIFindings';
+import { CommentThreadComponent } from '../CommentThread';
+import { PackageApprovalComponent } from '../PackageApproval';
+import { CommentThread, PackageApproval } from '../../../services/legalReviewService';
 
 // Dynamically import PDFPreview to prevent SSR issues with browser-specific APIs
 const PDFPreview = dynamic(() => import('../../shared/PDFPreview/ClientWrapper'), {
@@ -507,6 +510,46 @@ export function RequestDetailsDrawer({
                 </Box>
               )}
             </Stack>
+          </Paper>
+
+          {/* Epic 5: Comment Threads (US-050) */}
+          <Paper elevation={1} sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Legal Review & Comments
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Communicate with legal reviewers about changes and approvals
+            </Typography>
+            <CommentThreadComponent
+              recordId={request.id!}
+              fileName="main_document"
+              onThreadCreated={(thread: CommentThread) => {
+                console.log('New comment thread created:', thread);
+              }}
+              onThreadUpdated={(thread: CommentThread) => {
+                console.log('Comment thread updated:', thread);
+              }}
+            />
+          </Paper>
+
+          {/* Epic 5: Package Approval (US-051) */}
+          <Paper elevation={1} sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Package Approval
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Manage package-level approvals for final delivery
+            </Typography>
+            <PackageApprovalComponent
+              requestId={request.id!}
+              recordIds={[request.id!]} // In real app, this would be the actual matched record IDs
+              onApprovalComplete={(approval: PackageApproval) => {
+                console.log('Package approval completed:', approval);
+              }}
+              onApprovalUpdated={(approval: PackageApproval) => {
+                console.log('Package approval updated:', approval);
+              }}
+            />
           </Paper>
 
           {/* Internal Notes */}
