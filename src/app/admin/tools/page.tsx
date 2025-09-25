@@ -25,6 +25,7 @@ import {
   DEMO_SCRIPT,
   TestTrackingIds 
 } from '../../../utils/testScenarios';
+import { saveRequest } from '../../../services/requestService';
 
 function AdminToolsContent() {
   const [loading, setLoading] = useState<string | null>(null);
@@ -84,6 +85,33 @@ function AdminToolsContent() {
     'completeSetup',
     setupCompleteTestScenario,
     'Complete test scenario setup finished! Check console for tracking IDs.'
+  );
+
+  const handleDirectTest = async () => {
+    console.log('🧪 [Admin Tools] Creating direct test request...');
+    
+    const testRequestData = {
+      title: 'Direct Test Request',
+      department: 'police',
+      description: 'This is a direct test request created from admin tools to debug the form submission flow.',
+      dateRange: {
+        startDate: '2024-01-01',
+        endDate: '2024-12-31',
+        preset: 'year'
+      },
+      contactEmail: 'test@example.com',
+      files: []
+    };
+
+    const result = await saveRequest(testRequestData);
+    console.log('✅ [Admin Tools] Direct test request created:', result);
+    return result.trackingId;
+  };
+
+  const handleTestDirect = () => handleAction(
+    'testDirect',
+    handleDirectTest,
+    'Direct test request created successfully!'
   );
 
   return (
@@ -194,6 +222,30 @@ function AdminToolsContent() {
                     fullWidth
                   >
                     {loading === 'completeSetup' ? 'Setting up...' : 'Complete Setup'}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Direct Test Request */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Direct Test Request
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Creates a single test request directly via saveRequest() to debug the flow.
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    color="warning"
+                    onClick={handleTestDirect}
+                    disabled={!!loading}
+                    startIcon={loading === 'testDirect' ? <CircularProgress size={20} /> : null}
+                    fullWidth
+                  >
+                    {loading === 'testDirect' ? 'Creating...' : 'Create Direct Test'}
                   </Button>
                 </CardContent>
               </Card>

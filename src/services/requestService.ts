@@ -24,8 +24,13 @@ import * as mockService from './mockFirebaseService';
 
 // Check if we should use mock service (when Firebase is unavailable)
 const useMockService = () => {
-  return process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE === 'true' || 
+  const shouldUseMock = process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE === 'true' || 
          (typeof window !== 'undefined' && window.location.hostname === 'localhost');
+  console.log('🤔 [Request Service] useMockService check:', shouldUseMock, {
+    env: process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE,
+    hostname: typeof window !== 'undefined' ? window.location.hostname : 'server-side'
+  });
+  return shouldUseMock;
 };
 
 // Request status enum
@@ -76,12 +81,18 @@ export const generateTrackingId = (): string => {
 export const saveRequest = async (
   requestData: RequestFormDataWithFiles
 ): Promise<{ id: string; trackingId: string }> => {
+  console.log('💾 [Request Service] Saving request:', requestData.title);
+  
   // Use mock service if Firebase is unavailable
   if (useMockService()) {
-    return mockService.saveRequest(requestData);
+    console.log('🔄 [Request Service] Using mock service for saveRequest');
+    const result = await mockService.saveRequest(requestData);
+    console.log('✅ [Request Service] Mock service saved request:', result.trackingId);
+    return result;
   }
 
   try {
+    console.log('🔥 [Request Service] Attempting Firebase saveRequest');
     const trackingId = generateTrackingId();
     const now = Timestamp.now();
 
@@ -108,7 +119,9 @@ export const saveRequest = async (
   } catch (error) {
     console.error('Error saving request:', error);
     console.log('🔄 Falling back to mock service due to Firebase error');
-    return mockService.saveRequest(requestData);
+    const result = await mockService.saveRequest(requestData);
+    console.log('✅ [Request Service] Mock service fallback saved request:', result.trackingId);
+    return result;
   }
 };
 
@@ -167,12 +180,18 @@ export const getRequestById = async (
 
 // Get all requests (for admin/staff views)
 export const getAllRequests = async (): Promise<StoredRequest[]> => {
+  console.log('🔍 [Request Service] Getting all requests...');
+  
   // Use mock service if Firebase is unavailable
   if (useMockService()) {
-    return mockService.getAllRequests();
+    console.log('🔄 [Request Service] Using mock service for getAllRequests');
+    const result = await mockService.getAllRequests();
+    console.log('📊 [Request Service] Mock service returned:', result.length, 'requests');
+    return result;
   }
 
   try {
+    console.log('🔥 [Request Service] Attempting Firebase getAllRequests');
     const q = query(
       collection(firestore, 'requests'),
       orderBy('submittedAt', 'desc')
@@ -187,7 +206,9 @@ export const getAllRequests = async (): Promise<StoredRequest[]> => {
   } catch (error) {
     console.error('Error fetching all requests:', error);
     console.log('🔄 Falling back to mock service due to Firebase error');
-    return mockService.getAllRequests();
+    const result = await mockService.getAllRequests();
+    console.log('📊 [Request Service] Mock service fallback returned:', result.length, 'requests');
+    return result;
   }
 };
 

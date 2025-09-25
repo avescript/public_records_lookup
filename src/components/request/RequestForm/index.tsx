@@ -90,11 +90,15 @@ export const RequestForm = () => {
       // Save to Firebase
       const result = await saveRequest(formDataWithFiles);
 
-      console.log('Request saved:', result);
+      console.log('✅ Request saved successfully:', result);
+      setTrackingId(result.trackingId);
+      setSubmitSuccess(true);
 
-      // Navigate to confirmation page
-      const confirmationUrl = `/confirmation?trackingId=${encodeURIComponent(result.trackingId)}`;
-      window.location.href = confirmationUrl;
+      // Wait a moment to let the user see the success message, then redirect
+      setTimeout(() => {
+        const confirmationUrl = `/confirmation?trackingId=${encodeURIComponent(result.trackingId)}`;
+        window.location.href = confirmationUrl;
+      }, 2000);
     } catch (error) {
       setSubmitError(
         error instanceof Error
