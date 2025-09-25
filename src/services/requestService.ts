@@ -183,20 +183,32 @@ export const getRequestByTrackingId = async (
 export const getRequestById = async (
   id: string
 ): Promise<StoredRequest | null> => {
+  console.log('🔍 [Request Service] Getting request by ID:', id);
+  
+  // Use mock service if Firebase is unavailable
+  if (useMockService()) {
+    console.log('🔄 [Request Service] Using mock service for getRequestById');
+    return await mockService.getRequestById(id);
+  }
+
   try {
+    console.log('🔥 [Request Service] Attempting Firebase getRequestById');
     const docRef = doc(firestore, 'requests', id);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
+      console.log('❌ [Request Service] Request not found:', id);
       return null;
     }
 
-    return {
+    const result = {
       id: docSnap.id,
       ...(docSnap.data() as Omit<StoredRequest, 'id'>),
     };
+    console.log('✅ [Request Service] Firebase request retrieved:', id);
+    return result;
   } catch (error) {
-    console.error('Error fetching request by ID:', error);
+    console.error('❌ [Request Service] Error fetching request by ID:', error);
     throw new Error('Failed to fetch request');
   }
 };

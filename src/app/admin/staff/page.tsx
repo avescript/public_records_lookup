@@ -10,7 +10,7 @@ import { RequestDetailsDrawer } from '../../../components/staff/RequestDetailsDr
 import { StaffDashboard } from '../../../components/staff/StaffDashboard';
 import { AuthProvider } from '../../../contexts/AuthContext';
 import { findMatches, MatchCandidate, MatchResult } from '../../../services/aiMatchingService';
-import { addRecordToRequest, RequestStatus, StoredRequest } from '../../../services/requestService';
+import { addRecordToRequest, getRequestById, RequestStatus, StoredRequest } from '../../../services/requestService';
 
 function StaffPageContent() {
   const [selectedRequest, setSelectedRequest] = useState<StoredRequest | null>(
@@ -103,6 +103,17 @@ function StaffPageContent() {
       );
 
       console.log('✅ [Staff Page] Match accepted and record added to request');
+      
+      // Refresh the request data to show the newly added record
+      try {
+        const updatedRequest = await getRequestById(selectedRequest.id!);
+        if (updatedRequest) {
+          setSelectedRequest(updatedRequest);
+          console.log('🔄 [Staff Page] Request data refreshed with new associated record');
+        }
+      } catch (refreshError) {
+        console.error('⚠️ [Staff Page] Error refreshing request data:', refreshError);
+      }
       
       // Close matches view after successful acceptance
       setMatchesOpen(false);

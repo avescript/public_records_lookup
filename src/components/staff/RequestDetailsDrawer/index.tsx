@@ -361,6 +361,80 @@ export function RequestDetailsDrawer({
             </Box>
           </Paper>
 
+          {/* Associated Records */}
+          {request.associatedRecords && request.associatedRecords.length > 0 && (
+            <Paper elevation={1} sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Associated Records ({request.associatedRecords.length})
+              </Typography>
+              <Stack spacing={2}>
+                {request.associatedRecords.map((record, index) => (
+                  <Box
+                    key={record.candidateId}
+                    sx={{
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 1,
+                      p: 2,
+                      backgroundColor: 'background.default'
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                      <Typography variant="subtitle1" fontWeight="medium">
+                        {record.title}
+                      </Typography>
+                      <Chip
+                        size="small"
+                        label={record.confidence.toUpperCase()}
+                        color={record.confidence === 'high' ? 'success' : record.confidence === 'medium' ? 'warning' : 'default'}
+                      />
+                    </Box>
+                    
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      {record.description}
+                    </Typography>
+                    
+                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 1 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        <strong>Source:</strong> {record.source}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        <strong>Agency:</strong> {record.agency}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        <strong>Score:</strong> {(record.relevanceScore * 100).toFixed(0)}%
+                      </Typography>
+                    </Box>
+                    
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
+                      {record.keyPhrases.slice(0, 3).map((phrase, phraseIndex) => (
+                        <Chip
+                          key={phraseIndex}
+                          label={phrase}
+                          size="small"
+                          variant="outlined"
+                          color="primary"
+                        />
+                      ))}
+                      {record.keyPhrases.length > 3 && (
+                        <Chip
+                          label={`+${record.keyPhrases.length - 3} more`}
+                          size="small"
+                          variant="outlined"
+                          color="default"
+                        />
+                      )}
+                    </Box>
+                    
+                    <Typography variant="caption" color="text.secondary">
+                      Accepted by {record.acceptedBy} on {format(record.acceptedAt.toDate(), 'MMM d, yyyy \'at\' h:mm a')}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            </Paper>
+          )}
+
           {/* Date Information */}
           <Paper elevation={1} sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
