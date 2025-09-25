@@ -2,6 +2,11 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
+
+// Make sure this component only runs on the client side
+if (typeof window !== 'undefined') {
+  import('../../../lib/pdf-worker');
+}
 import {
   Box,
   Card,

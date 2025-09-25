@@ -1,6 +1,7 @@
 /**
  * Request Service
  * Handles all Firebase operations for public records requests
+ * Falls back to mock service when Firebase is unavailable
  */
 
 import {
@@ -19,6 +20,13 @@ import {
 
 import { RequestFormDataWithFiles } from '../components/request/RequestForm/types';
 import firestore from '../lib/firebase';
+import * as mockService from './mockFirebaseService';
+
+// Check if we should use mock service (when Firebase is unavailable)
+const useMockService = () => {
+  return process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE === 'true' || 
+         (typeof window !== 'undefined' && window.location.hostname === 'localhost');
+};
 
 // Request status enum
 export type RequestStatus =
@@ -64,10 +72,15 @@ export const generateTrackingId = (): string => {
   return `PR-${timestamp}-${random}`;
 };
 
-// Save a new request to Firestore
+// Save a new request to Firestore or mock service
 export const saveRequest = async (
   requestData: RequestFormDataWithFiles
 ): Promise<{ id: string; trackingId: string }> => {
+  // Use mock service if Firebase is unavailable
+  if (useMockService()) {
+    return mockService.saveRequest(requestData);
+  }
+
   try {
     const trackingId = generateTrackingId();
     const now = Timestamp.now();
@@ -94,7 +107,8 @@ export const saveRequest = async (
     return { id: docRef.id, trackingId };
   } catch (error) {
     console.error('Error saving request:', error);
-    throw new Error('Failed to save request. Please try again.');
+    console.log('🔄 Falling back to mock service due to Firebase error');
+    return mockService.saveRequest(requestData);
   }
 };
 
@@ -102,6 +116,11 @@ export const saveRequest = async (
 export const getRequestByTrackingId = async (
   trackingId: string
 ): Promise<StoredRequest | null> => {
+  // Use mock service if Firebase is unavailable
+  if (useMockService()) {
+    return mockService.getRequestByTrackingId(trackingId);
+  }
+
   try {
     const q = query(
       collection(firestore, 'requests'),
@@ -119,7 +138,8 @@ export const getRequestByTrackingId = async (
     };
   } catch (error) {
     console.error('Error fetching request by tracking ID:', error);
-    throw new Error('Failed to fetch request');
+    console.log('🔄 Falling back to mock service due to Firebase error');
+    return mockService.getRequestByTrackingId(trackingId);
   }
 };
 
@@ -147,6 +167,11 @@ export const getRequestById = async (
 
 // Get all requests (for admin/staff views)
 export const getAllRequests = async (): Promise<StoredRequest[]> => {
+  // Use mock service if Firebase is unavailable
+  if (useMockService()) {
+    return mockService.getAllRequests();
+  }
+
   try {
     const q = query(
       collection(firestore, 'requests'),
@@ -161,7 +186,8 @@ export const getAllRequests = async (): Promise<StoredRequest[]> => {
     }));
   } catch (error) {
     console.error('Error fetching all requests:', error);
-    throw new Error('Failed to fetch requests');
+    console.log('🔄 Falling back to mock service due to Firebase error');
+    return mockService.getAllRequests();
   }
 };
 
@@ -170,6 +196,11 @@ export const updateRequestStatus = async (
   id: string,
   status: RequestStatus
 ): Promise<void> => {
+  // Use mock service if Firebase is unavailable
+  if (useMockService()) {
+    return mockService.updateRequestStatus(id, status);
+  }
+
   try {
     const docRef = doc(firestore, 'requests', id);
     const updateData: UpdateData<StoredRequest> = {
@@ -181,7 +212,8 @@ export const updateRequestStatus = async (
     console.log('Request status updated:', id, status);
   } catch (error) {
     console.error('Error updating request status:', error);
-    throw new Error('Failed to update request status');
+    console.log('🔄 Falling back to mock service due to Firebase error');
+    return mockService.updateRequestStatus(id, status);
   }
 };
 

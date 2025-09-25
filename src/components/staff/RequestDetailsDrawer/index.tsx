@@ -35,10 +35,17 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 
+import dynamic from 'next/dynamic';
+
 import { MatchResult } from '../../../services/aiMatchingService';
 import { RequestStatus, StoredRequest } from '../../../services/requestService';
-import PDFPreview from '../../shared/PDFPreview';
 import PIIFindings from '../../shared/PIIFindings';
+
+// Dynamically import PDFPreview to prevent SSR issues with browser-specific APIs
+const PDFPreview = dynamic(() => import('../../shared/PDFPreview/ClientWrapper'), {
+  ssr: false,
+  loading: () => <div>Loading PDF preview...</div>
+});
 import { PIIFinding } from '../../../services/piiDetectionService';
 
 interface RequestDetailsDrawerProps {
