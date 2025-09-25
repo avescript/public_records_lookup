@@ -134,6 +134,53 @@ function AdminToolsContent() {
     'All mock data cleared successfully!'
   );
 
+  const handleCreateMatchableRequests = async () => {
+    console.log('🎯 [Admin Tools] Creating requests with guaranteed AI matches...');
+    
+    // Requests specifically designed to match the AI records
+    const matchableRequests = [
+      {
+        title: 'Traffic Citations - Highway 99 Speeding',
+        department: 'police',
+        description: 'Request for traffic citation records for speeding violations on Highway 99 between Main Street and Oak Avenue in August 2025.',
+        dateRange: { startDate: '2025-08-01', endDate: '2025-08-31' },
+        contactEmail: 'test@example.com',
+        files: []
+      },
+      {
+        title: 'Use of Force Reports - July 2025',
+        department: 'police', 
+        description: 'Requesting use of force incident reports and body camera footage logs for July 2025.',
+        dateRange: { startDate: '2025-07-01', endDate: '2025-07-31' },
+        contactEmail: 'journalist@example.com',
+        files: []
+      },
+      {
+        title: 'Fire Department Response Times',
+        department: 'fire',
+        description: 'Need emergency response time data including call volumes and incident types for research.',
+        dateRange: { startDate: '2024-01-01', endDate: '2025-08-31' },
+        contactEmail: 'researcher@example.com', 
+        files: []
+      }
+    ];
+
+    const trackingIds = [];
+    for (const request of matchableRequests) {
+      const result = await saveRequest(request);
+      trackingIds.push(result.trackingId);
+      console.log('✅ Created matchable request:', result.trackingId);
+    }
+
+    return trackingIds.join(', ');
+  };
+
+  const handleCreateMatchable = () => handleAction(
+    'createMatchable',
+    handleCreateMatchableRequests,
+    'Created requests with guaranteed AI matches!'
+  );
+
   return (
     <ProtectedRoute requiredRole="admin">
       <AdminLayout>
@@ -290,6 +337,30 @@ function AdminToolsContent() {
                     fullWidth
                   >
                     {loading === 'clearData' ? 'Clearing...' : 'Clear All Data'}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Matchable Requests */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    AI-Matchable Requests
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Creates requests that are guaranteed to have AI matches for testing the record search workflow.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="info"
+                    onClick={handleCreateMatchable}
+                    disabled={!!loading}
+                    startIcon={loading === 'createMatchable' ? <CircularProgress size={20} /> : null}
+                    fullWidth
+                  >
+                    {loading === 'createMatchable' ? 'Creating...' : 'Create Matchable Requests'}
                   </Button>
                 </CardContent>
               </Card>

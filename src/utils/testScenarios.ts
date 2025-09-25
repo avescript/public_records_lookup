@@ -152,11 +152,33 @@ export const EXISTING_REQUESTS: Omit<RequestFormDataWithFiles, 'files'>[] = [
     },
     contactEmail: REQUESTER_PERSONAS.business.email,
   },
+  {
+    title: 'Body Camera Footage Index - Use of Force Incidents',
+    department: 'police',
+    description: 'Requesting index of body camera footage logs related to use of force incidents in Q3 2025. Need timestamps, incident reference numbers, and officer badge numbers (names can be redacted). This is for accountability reporting.',
+    dateRange: {
+      startDate: '2025-07-01',
+      endDate: '2025-09-30',
+      preset: 'Q3 2025',
+    },
+    contactEmail: REQUESTER_PERSONAS.journalist.email,
+  },
+  {
+    title: 'Riverside Development Project - All Records',
+    department: 'other',
+    description: 'Comprehensive request for all records related to the Riverside Development Project including environmental impact assessments, permits, public comments, consultant reports, and agency correspondence. Citizen oversight of major development.',
+    dateRange: {
+      startDate: '2023-01-01',
+      endDate: '2025-09-25',
+      preset: 'All available',
+    },
+    contactEmail: REQUESTER_PERSONAS.citizen.email,
+  },
 ];
 
-// Sample request for testing requester experience
+// Sample request for testing requester experience - guaranteed to have matches
 export const SAMPLE_REQUEST: Omit<RequestFormDataWithFiles, 'files'> = {
-  title: 'Traffic Citation Data - Speed Enforcement',
+  title: 'Traffic Citation Data - Speed Enforcement on Highway 99',
   department: 'police',
   description: 'I am requesting records of traffic citations issued for speeding violations on Highway 99 between Main Street and Oak Avenue for the month of August 2025. Please include: citation numbers, dates/times, violation codes, and fine amounts (personal information can be redacted). This request is for a community safety analysis.',
   dateRange: {
