@@ -2,7 +2,23 @@
 
 **Generated:** 2025-08-27  
 **Updated:** 2025-09-23  
-**Scope:** Prototype-first G-sta### US-04### US-040: View sug### US-041: Draw redac### US-042: Human approval gate (100% review) ✅ **(COMPLETED December 2024)**
+**Scope:** Prototype-first G-sta### US-04### US-040: View sug### US-041: Draw redac### US-042: Human approval gate (100% review) ✅ **(COMPLETED### US-060: Build combined package with cover sheet & index ✅ **(COMPLETED December 2024)**
+
+**AC**
+
+- Given selected records, when I click "Build Package," I see a preview with page order & index. ✅
+  **Tasks**
+- [x] Package builder UI (ordering, title page). ✅
+- [x] Package manifest JSON + placeholder combined PDF. ✅
+- [x] Audit entry ("package_built"). ✅
+
+**Epic 6 Technical Implementation:**
+- ✅ **PackageService**: Complete package management with manifest creation, record ordering, and build functionality
+- ✅ **PackageBuilder Component**: Full-featured UI with Material-UI integration, multi-step workflow, and drag-and-drop reordering
+- ✅ **MockFirebaseService Integration**: Enhanced with package service functions and comprehensive error handling
+- ✅ **RequestDetailsDrawer Integration**: Added "Build Package" button and PackageBuilder dialog integration
+- ✅ **Comprehensive Testing**: Package builder tests with Material-UI theme support and component validation
+- ✅ **Production Ready**: TypeScript strict mode, error handling, accessibility support 2024)**
 
 **AC**
 

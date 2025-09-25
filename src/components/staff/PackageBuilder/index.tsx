@@ -38,16 +38,15 @@ import {
   Close as CloseIcon,
   Description as DocumentIcon,
   Download as DownloadIcon,
-  DragIndicator as DragIcon,
+  KeyboardArrowUp as ArrowUpIcon,
+  KeyboardArrowDown as ArrowDownIcon,
   Email as EmailIcon,
   Folder as FolderIcon,
   Preview as PreviewIcon,
   Reorder as ReorderIcon,
 } from '@mui/icons-material';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-
-import { PackageManifest, PackageRecord, createPackageManifest, buildPackage, toggleRecordInclusion, updatePackageRecordOrder } from '../../services/packageService';
-import { AssociatedRecord } from '../../services/requestService';
+import { PackageManifest, PackageRecord, createPackageManifest, buildPackage, toggleRecordInclusion, updatePackageRecordOrder } from '../../../services/packageService';
+import { AssociatedRecord } from '../../../services/requestService';
 
 interface PackageBuilderProps {
   open: boolean;
@@ -98,17 +97,15 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
   };
 
   // Handle record reordering
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination || !manifest) return;
+  const handleMoveRecord = (recordIndex: number, direction: 'up' | 'down') => {
+    if (!manifest) return;
 
-    const sourceIndex = result.source.index;
-    const destIndex = result.destination.index;
+    const newIndex = direction === 'up' ? recordIndex - 1 : recordIndex + 1;
+    if (newIndex < 0 || newIndex >= manifest.records.length) return;
 
-    if (sourceIndex === destIndex) return;
-
-    const reorderedRecords = Array.from(manifest.records);
-    const [removed] = reorderedRecords.splice(sourceIndex, 1);
-    reorderedRecords.splice(destIndex, 0, removed);
+    const reorderedRecords = [...manifest.records];
+    const [moved] = reorderedRecords.splice(recordIndex, 1);
+    reorderedRecords.splice(newIndex, 0, moved);
 
     // Update order numbers
     const updatedRecords = reorderedRecords.map((record, index) => ({
@@ -268,63 +265,66 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
                   <Typography variant="h6">Record Order</Typography>
                   <Chip 
                     icon={<ReorderIcon />} 
-                    label="Drag to reorder" 
+                    label="Use arrow buttons to reorder" 
                     size="small" 
                     variant="outlined" 
                   />
                 </Box>
 
-                <DragDropContext onDragEnd={handleDragEnd}>
-                  <Droppable droppableId="records">
-                    {(provided) => (
-                      <List {...provided.droppableProps} ref={provided.innerRef}>
-                        {manifest.records.map((record, index) => (
-                          <Draggable key={record.recordId} draggableId={record.recordId} index={index}>
-                            {(provided, snapshot) => (
-                              <ListItem
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                sx={{
-                                  border: '1px solid',
-                                  borderColor: 'divider',
-                                  borderRadius: 1,
-                                  mb: 1,
-                                  bgcolor: snapshot.isDragging ? 'action.hover' : 'background.paper',
-                                }}
-                              >
-                                <ListItemIcon {...provided.dragHandleProps}>
-                                  <DragIcon />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                      <Typography variant="body2" color="text.secondary">
-                                        {record.order}.
-                                      </Typography>
-                                      <Typography variant="body1">{record.title}</Typography>
-                                    </Box>
-                                  }
-                                  secondary={`${record.source} • ${record.pageCount} pages`}
-                                />
-                                <FormControlLabel
-                                  control={
-                                    <Switch
-                                      checked={record.includeInPackage}
-                                      onChange={() => handleToggleRecord(record.recordId)}
-                                      size="small"
-                                    />
-                                  }
-                                  label="Include"
-                                />
-                              </ListItem>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </List>
-                    )}
-                  </Droppable>
-                </DragDropContext>
+                <List>
+                  {manifest.records.map((record, index) => (
+                    <ListItem
+                      key={record.recordId}
+                      sx={{
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 1,
+                        mb: 1,
+                        bgcolor: 'background.paper',
+                      }}
+                    >
+                      <ListItemIcon>
+                        <Stack direction="column" spacing={0}>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleMoveRecord(index, 'up')}
+                            disabled={index === 0}
+                          >
+                            <ArrowUpIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleMoveRecord(index, 'down')}
+                            disabled={index === manifest.records.length - 1}
+                          >
+                            <ArrowDownIcon fontSize="small" />
+                          </IconButton>
+                        </Stack>
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              {record.order}.
+                            </Typography>
+                            <Typography variant="body1">{record.title}</Typography>
+                          </Box>
+                        }
+                        secondary={`${record.source} • ${record.pageCount} pages`}
+                      />
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={record.includeInPackage}
+                            onChange={() => handleToggleRecord(record.recordId)}
+                            size="small"
+                          />
+                        }
+                        label="Include"
+                      />
+                    </ListItem>
+                  ))}
+                </List>
               </CardContent>
             </Card>
 

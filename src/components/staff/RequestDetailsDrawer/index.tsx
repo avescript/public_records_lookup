@@ -74,10 +74,11 @@ const convertToDate = (timestamp: any): Date => {
 };
 
 import { MatchResult } from '../../../services/aiMatchingService';
-import { RequestStatus, StoredRequest } from '../../../services/requestService';
+import { RequestStatus, StoredRequest, AssociatedRecord } from '../../../services/requestService';
 import PIIFindings from '../../shared/PIIFindings';
 import { CommentThreadComponent } from '../CommentThread';
 import { PackageApprovalComponent } from '../PackageApproval';
+import { PackageBuilder } from '../PackageBuilder';
 import { CommentThread, PackageApproval } from '../../../services/legalReviewService';
 
 // Dynamically import PDFPreview to prevent SSR issues with browser-specific APIs
@@ -131,6 +132,7 @@ export function RequestDetailsDrawer({
   const [newNote, setNewNote] = useState('');
   const [showPIIPreview, setShowPIIPreview] = useState(false);
   const [selectedPIIFile, setSelectedPIIFile] = useState<string | null>(null);
+  const [showPackageBuilder, setShowPackageBuilder] = useState(false);
 
   const formatDate = (timestamp: any) => {
     if (!timestamp) return 'N/A';
@@ -474,6 +476,19 @@ export function RequestDetailsDrawer({
                     </Typography>
                   </Box>
                 ))}
+                
+                {/* Package Builder Button */}
+                <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setShowPackageBuilder(true)}
+                    disabled={!request.associatedRecords || request.associatedRecords.length === 0}
+                    sx={{ width: '100%' }}
+                  >
+                    Build Package for Delivery
+                  </Button>
+                </Box>
               </Stack>
             </Paper>
           )}
@@ -728,6 +743,26 @@ export function RequestDetailsDrawer({
           </Paper>
         </Stack>
       </Box>
+      
+      {/* Package Builder Dialog */}
+      {request && (
+        <PackageBuilder
+          open={showPackageBuilder}
+          onClose={() => setShowPackageBuilder(false)}
+          requestId={request.id || ''}
+          associatedRecords={request.associatedRecords || []}
+          requestInfo={{
+            title: request.title,
+            contactEmail: request.contactEmail,
+            department: request.department,
+            submittedAt: request.submittedAt,
+          }}
+          onPackageBuilt={(packageId) => {
+            console.log('Package built:', packageId);
+            setShowPackageBuilder(false);
+          }}
+        />
+      )}
     </Drawer>
   );
 }
