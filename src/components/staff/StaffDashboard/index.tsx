@@ -383,6 +383,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
       headerName: 'Due Date',
       width: 180,
       valueGetter: (params: any) => {
+        if (!params || !params.row || !params.row.submittedAt) return '';
         const dueDate = calculateDueDate(params.row.submittedAt);
         return format(dueDate, 'MMM d, yyyy');
       },
@@ -392,6 +393,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
       headerName: 'Priority',
       width: 120,
       renderCell: (params: GridRenderCellParams) => {
+        if (!params || !params.row || !params.row.submittedAt) return null;
         const dueDateStatus = getDueDateStatus(params.row.submittedAt);
 
         if (dueDateStatus.status === 'overdue') {
