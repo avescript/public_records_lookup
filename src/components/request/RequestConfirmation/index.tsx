@@ -34,9 +34,38 @@ export function RequestConfirmation({
 }: RequestConfirmationProps) {
   const formatDate = (timestamp: any) => {
     if (!timestamp) return '';
-    // Handle Firestore Timestamp objects
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return format(date, 'MMMM d, yyyy \'at\' h:mm a');
+    
+    let date: Date;
+    
+    try {
+      if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+        // Firebase Timestamp or mock timestamp with toDate function
+        date = timestamp.toDate();
+      } else if (timestamp._isoString) {
+        // Mock timestamp with ISO string fallback
+        date = new Date(timestamp._isoString);
+      } else if (typeof timestamp === 'string') {
+        // ISO string
+        date = new Date(timestamp);
+      } else if (timestamp instanceof Date) {
+        // Already a Date object
+        date = timestamp;
+      } else {
+        // Fallback - try to create Date from whatever we have
+        date = new Date(timestamp);
+      }
+      
+      // Validate the date
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date in formatDate:', timestamp);
+        return 'Invalid Date';
+      }
+      
+      return format(date, 'MMMM d, yyyy \'at\' h:mm a');
+    } catch (error) {
+      console.error('Error formatting date:', error, timestamp);
+      return 'Invalid Date';
+    }
   };
 
   const getDepartmentDisplayName = (department: string) => {

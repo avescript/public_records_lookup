@@ -114,6 +114,26 @@ function AdminToolsContent() {
     'Direct test request created successfully!'
   );
 
+  const handleClearData = async () => {
+    console.log('🧹 [Admin Tools] Clearing all mock data...');
+    
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('mockFirebaseRequests');
+      localStorage.removeItem('mockFirebaseCounter');
+    }
+    
+    console.log('✅ [Admin Tools] Mock data cleared successfully');
+    
+    // Return a success message
+    return 'cleared';
+  };
+
+  const handleClearMockData = () => handleAction(
+    'clearData',
+    handleClearData,
+    'All mock data cleared successfully!'
+  );
+
   return (
     <ProtectedRoute requiredRole="admin">
       <AdminLayout>
@@ -246,6 +266,30 @@ function AdminToolsContent() {
                     fullWidth
                   >
                     {loading === 'testDirect' ? 'Creating...' : 'Create Direct Test'}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Clear Mock Data */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Clear Mock Data
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Clears all mock data from localStorage. Useful if you have corrupted data.
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={handleClearMockData}
+                    disabled={!!loading}
+                    startIcon={loading === 'clearData' ? <CircularProgress size={20} /> : null}
+                    fullWidth
+                  >
+                    {loading === 'clearData' ? 'Clearing...' : 'Clear All Data'}
                   </Button>
                 </CardContent>
               </Card>

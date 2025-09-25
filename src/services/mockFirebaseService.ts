@@ -49,7 +49,29 @@ const getMockDatabase = (): { [key: string]: StoredRequest } => {
   
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : {};
+    if (!stored) return {};
+    
+    const data = JSON.parse(stored);
+    
+    // Reconstruct timestamp functions for data loaded from localStorage
+    Object.values(data).forEach((request: any) => {
+      if (request.submittedAt && request.submittedAt._isoString) {
+        request.submittedAt.toDate = () => new Date(request.submittedAt._isoString);
+      }
+      if (request.updatedAt && request.updatedAt._isoString) {
+        request.updatedAt.toDate = () => new Date(request.updatedAt._isoString);
+      }
+      // Fix internal notes timestamps too
+      if (request.internalNotes) {
+        request.internalNotes.forEach((note: any) => {
+          if (note.addedAt && note.addedAt._isoString) {
+            note.addedAt.toDate = () => new Date(note.addedAt._isoString);
+          }
+        });
+      }
+    });
+    
+    return data;
   } catch {
     return {};
   }
@@ -81,11 +103,16 @@ const getNextRequestCounter = (): number => {
   }
 };
 
-// Mock timestamp
-const createMockTimestamp = (date: Date = new Date()) => ({
-  toDate: () => date,
-  seconds: Math.floor(date.getTime() / 1000),
-});
+// Mock timestamp - store as ISO string for localStorage compatibility
+const createMockTimestamp = (date: Date = new Date()) => {
+  const isoString = date.toISOString();
+  return {
+    toDate: () => new Date(isoString),
+    seconds: Math.floor(date.getTime() / 1000),
+    // Store the ISO string so it survives localStorage serialization
+    _isoString: isoString,
+  };
+};
 
 // Generate a unique tracking ID
 export const generateTrackingId = (): string => {
