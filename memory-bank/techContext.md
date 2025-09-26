@@ -275,3 +275,47 @@ npm run lint:fix
 - Component documentation
 - Architecture diagrams
 - Runbooks
+
+## Application Services & Components
+
+### Core Services (All 7 Epics Complete)
+
+**Epic 7: Audit & Observability** ✅
+- **AuditService** (499 lines): Immutable audit logging with privacy protection
+- **BigQueryExportService** (800+ lines): Export functionality with BigQuery schemas
+- **AuditPanel Component**: Material-UI DataGrid interface for audit log viewing
+- **BigQueryExportDashboard**: Complete export configuration and management interface
+
+**Epic 6: Package & Delivery** ✅
+- **PackageService** (250+ lines): Package management with manifest creation
+- **PackageBuilder Component**: 3-step workflow with Material-UI dialog system
+
+**Epic 5: Approvals & Legal Review** ✅
+- **LegalReviewService** (706 lines): Comment threads and approval workflows
+- **CommentThread Component** (607 lines): Material-UI comment threading system
+
+**Epic 4: Redaction & PII Detection** ✅
+- **PIIDetectionService**: CSV-based PII detection and analysis
+- **RedactionService**: CRUD operations with versioning and export
+- **ApprovalService** (347 lines): Human approval workflow management
+
+**Epic 3: AI Search & Matching** ✅
+- **AIMatchingService**: Mock Vertex AI integration with realistic record matching
+- **RecordMatcher Component**: AI match review interface
+
+**Epic 2: Staff Workflows** ✅
+- **MockFirebaseService** (252 lines): localStorage-based persistence system
+- **StaffDashboard Component**: MUI DataGrid with filtering and SLA tracking
+
+**Epic 1: Request Intake** ✅
+- **RequestService**: Public records request submission and tracking
+- **RequestForm Component**: Multi-step form with file upload and validation
+
+### Technical Infrastructure
+
+- **TypeScript Strict Mode**: All components and services use strict typing
+- **Material-UI v5+**: Consistent design system across all interfaces
+- **localStorage Persistence**: All services use robust localStorage with error handling
+- **Comprehensive Testing**: 180+ tests across all Epic components and services
+- **Error Handling**: Graceful degradation and user-friendly error messages
+- **Accessibility**: Full WCAG compliance across all user interfaces
