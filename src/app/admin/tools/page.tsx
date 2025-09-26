@@ -12,11 +12,22 @@ import {
   Grid,
   Paper,
   Typography,
+  Tabs,
+  Tab,
 } from '@mui/material';
+import {
+  Assessment as AssessmentIcon,
+  CloudDownload as CloudDownloadIcon,
+  Security as SecurityIcon,
+  Storage as StorageIcon,
+  Build as BuildIcon,
+} from '@mui/icons-material';
 
 import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
 import { AuthProvider } from '../../../contexts/AuthContext';
+import { AuditPanel } from '../../../components/staff/AuditPanel';
+import { BigQueryExportDashboard } from '../../../components/staff/BigQueryExportDashboard';
 import { seedTestData } from '../../../utils/seedTestData';
 import { 
   setupCompleteTestScenario, 
@@ -27,7 +38,32 @@ import {
 } from '../../../utils/testScenarios';
 import { saveRequest } from '../../../services/requestService';
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel({ children, value, index, ...other }: TabPanelProps) {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tools-tabpanel-${index}`}
+      aria-labelledby={`tools-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 0 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
+
 function AdminToolsContent() {
+  const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState<string | null>(null);
   const [message, setMessage] = useState<{
     type: 'success' | 'error';
@@ -37,6 +73,10 @@ function AdminToolsContent() {
     existingRequests?: TestTrackingIds;
     sampleRequest?: string;
   } | null>(null);
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setCurrentTab(newValue);
+  };
 
   const handleAction = async (actionType: string, actionFn: () => Promise<any>, successMsg: string) => {
     setLoading(actionType);
@@ -184,13 +224,13 @@ function AdminToolsContent() {
   return (
     <ProtectedRoute requiredRole="admin">
       <AdminLayout>
-        <Box sx={{ p: 4, maxWidth: 1000, mx: 'auto' }}>
+        <Box sx={{ p: 4, maxWidth: '100%', mx: 'auto' }}>
           <Typography variant="h4" component="h1" gutterBottom>
-            Admin Tools & Test Scenarios
+            Admin Tools & System Management
           </Typography>
 
           <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-            Development utilities for testing, demos, and data management.
+            Audit logging, data export, system observability, and development utilities.
           </Typography>
 
           {message && (
@@ -198,6 +238,63 @@ function AdminToolsContent() {
               {message.text}
             </Alert>
           )}
+
+          <Paper sx={{ width: '100%' }}>
+            <Tabs
+              value={currentTab}
+              onChange={handleTabChange}
+              aria-label="admin tools tabs"
+              sx={{ borderBottom: 1, borderColor: 'divider' }}
+            >
+              <Tab
+                icon={<SecurityIcon />}
+                label="Audit Log"
+                id="tools-tab-0"
+                aria-controls="tools-tabpanel-0"
+              />
+              <Tab
+                icon={<CloudDownloadIcon />}
+                label="BigQuery Export" 
+                id="tools-tab-1"
+                aria-controls="tools-tabpanel-1"
+              />
+              <Tab
+                icon={<BuildIcon />}
+                label="Development Tools"
+                id="tools-tab-2"
+                aria-controls="tools-tabpanel-2"
+              />
+              <Tab
+                icon={<AssessmentIcon />}
+                label="System Analytics"
+                id="tools-tab-3"
+                aria-controls="tools-tabpanel-3"
+              />
+            </Tabs>
+
+            <TabPanel value={currentTab} index={0}>
+              <Box sx={{ p: 3 }}>
+                <AuditPanel
+                  title="System Audit Log"
+                  maxHeight={700}
+                />
+              </Box>
+            </TabPanel>
+
+            <TabPanel value={currentTab} index={1}>
+              <Box sx={{ p: 3 }}>
+                <BigQueryExportDashboard />
+              </Box>
+            </TabPanel>
+
+            <TabPanel value={currentTab} index={2}>
+              <Box sx={{ p: 3, maxWidth: 1000, mx: 'auto' }}>
+                <Typography variant="h6" gutterBottom>
+                  Development Tools & Test Scenarios
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                  Development utilities for testing, demos, and data management.
+                </Typography>
 
           <Grid container spacing={3}>
             {/* Basic Test Data */}
@@ -436,6 +533,35 @@ function AdminToolsContent() {
               </Grid>
             )}
           </Grid>
+              </Box>
+            </TabPanel>
+
+            <TabPanel value={currentTab} index={3}>
+              <Box sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  System Analytics
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  System performance metrics, usage analytics, and operational insights.
+                  This feature will be implemented in future releases.
+                </Typography>
+                
+                <Paper variant="outlined" sx={{ p: 3, mt: 2, bgcolor: 'grey.50' }}>
+                  <Typography variant="subtitle1" gutterBottom>
+                    Planned Analytics Features:
+                  </Typography>
+                  <Box component="ul" sx={{ mt: 1 }}>
+                    <li>Request processing time trends</li>
+                    <li>AI matching accuracy metrics</li>
+                    <li>User activity patterns</li>
+                    <li>System performance monitoring</li>
+                    <li>SLA compliance tracking</li>
+                    <li>Error rate analysis</li>
+                  </Box>
+                </Paper>
+              </Box>
+            </TabPanel>
+          </Paper>
         </Box>
       </AdminLayout>
     </ProtectedRoute>

@@ -4,6 +4,7 @@
  */
 
 import { RequestFormDataWithFiles } from '../components/request/RequestForm/types';
+import { auditService } from './auditService';
 
 export type RequestStatus =
   | 'submitted'
@@ -176,6 +177,32 @@ export const saveRequest = async (
   mockDatabase[id] = newRequest;
   saveMockDatabase(mockDatabase);
   
+  // Log audit event
+  try {
+    await auditService.logEvent(
+      'MockFirebaseService',
+      'request_submitted',
+      requestData.contactEmail,
+      'Citizen',
+      'citizen',
+      'request',
+      id,
+      {
+        title: requestData.title,
+        department: requestData.department,
+        trackingId,
+        attachmentCount: requestData.files?.length || 0,
+      },
+      'info',
+      'user_action',
+      {
+        requestId: id,
+      }
+    );
+  } catch (error) {
+    console.warn('Failed to log audit event for request submission:', error);
+  }
+  
   console.log('✅ [Mock Firebase] Request saved with ID:', trackingId);
   console.log('📊 [Mock Firebase] Total requests in database:', Object.keys(mockDatabase).length);
   return { id, trackingId };
@@ -229,9 +256,36 @@ export const updateRequestStatus = async (
   const mockDatabase = getMockDatabase();
   
   if (mockDatabase[id]) {
+    const previousStatus = mockDatabase[id].status;
     mockDatabase[id].status = status;
     mockDatabase[id].updatedAt = createMockTimestamp();
     saveMockDatabase(mockDatabase);
+    
+    // Log audit event
+    try {
+      await auditService.logEvent(
+        'MockFirebaseService',
+        'request_status_updated',
+        'staff_user',
+        'Staff User',
+        'records_officer',
+        'request',
+        id,
+        {
+          previousStatus,
+          newStatus: status,
+          trackingId: mockDatabase[id].trackingId,
+        },
+        'info',
+        'user_action',
+        {
+          requestId: id,
+        }
+      );
+    } catch (error) {
+      console.warn('Failed to log audit event for status update:', error);
+    }
+    
     console.log(`✅ [Mock Firebase] Updated request ${id} status to:`, status);
   }
 };
@@ -330,12 +384,45 @@ export const addRecordToRequest = async (
   mockDatabase[requestId].associatedRecords!.push(newRecord);
   mockDatabase[requestId].updatedAt = createMockTimestamp();
   
+  const wasFirstRecord = mockDatabase[requestId].associatedRecords!.length === 1;
+  
   // Update status to under_review if this is the first record
-  if (mockDatabase[requestId].associatedRecords!.length === 1) {
+  if (wasFirstRecord) {
     mockDatabase[requestId].status = 'under_review';
   }
   
   saveMockDatabase(mockDatabase);
+  
+  // Log audit event
+  try {
+    await auditService.logEvent(
+      'MockFirebaseService',
+      'record_added_to_request',
+      acceptedBy,
+      acceptedBy,
+      'records_officer',
+      'record',
+      candidateId,
+      {
+        title: candidateData.title,
+        source: candidateData.source,
+        agency: candidateData.agency,
+        relevanceScore: candidateData.relevanceScore,
+        confidence: candidateData.confidence,
+        wasFirstRecord,
+        totalRecords: mockDatabase[requestId].associatedRecords!.length,
+      },
+      'info',
+      'user_action',
+      {
+        requestId,
+        recordId: candidateId,
+      }
+    );
+  } catch (error) {
+    console.warn('Failed to log audit event for record addition:', error);
+  }
+  
   console.log(`✅ [Mock Firebase] Added record ${candidateId} to request ${requestId}`);
 };
 

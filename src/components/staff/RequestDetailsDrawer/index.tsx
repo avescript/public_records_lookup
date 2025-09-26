@@ -36,6 +36,7 @@ import {
 import { format } from 'date-fns';
 
 import dynamic from 'next/dynamic';
+import { AuditPanel } from '@/components/staff/AuditPanel';
 
 // Helper function to convert Firebase Timestamp or mock timestamp to Date
 const convertToDate = (timestamp: any): Date => {
@@ -740,6 +741,15 @@ export function RequestDetailsDrawer({
             <Typography variant="body2" color="text.secondary">
               No internal notes yet
             </Typography>
+          </Paper>
+
+          {/* Audit Log */}
+          <Paper elevation={1} sx={{ p: 3 }}>
+            <AuditPanel
+              requestId={request.id}
+              title="Request Audit Log"
+              maxHeight={400}
+            />
           </Paper>
         </Stack>
       </Box>
