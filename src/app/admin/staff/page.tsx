@@ -22,9 +22,28 @@ function StaffPageContent() {
   const [matchLoading, setMatchLoading] = useState(false);
   const [matchError, setMatchError] = useState<string | null>(null);
 
-  const handleRequestSelect = (request: StoredRequest) => {
+  const handleRequestSelect = async (request: StoredRequest) => {
     setSelectedRequest(request);
     setDrawerOpen(true);
+    
+    // 🤖 Automatically trigger AI matching if no associated records exist yet
+    if (!request.associatedRecords || request.associatedRecords.length === 0) {
+      console.log('🤖 [Staff Page] Auto-triggering AI matching for request:', request.trackingId);
+      try {
+        setMatchLoading(true);
+        setMatchError(null);
+        setMatchesOpen(true);
+        
+        const result = await findMatches(request.id!, request.description);
+        setMatchResult(result);
+        console.log('✅ [Staff Page] Automatic AI matching completed for request:', request.trackingId);
+      } catch (error) {
+        console.error('⚠️ [Staff Page] Automatic AI matching failed for request:', request.trackingId, error);
+        setMatchError('Auto-matching failed. You can try manually finding matches.');
+      } finally {
+        setMatchLoading(false);
+      }
+    }
   };
 
   const handleDrawerClose = () => {

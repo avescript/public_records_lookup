@@ -2,7 +2,30 @@
 
 **Generated:** 2025-08-27  
 **Updated:** 2025-09-23  
+**Latest Enhancement:** Automatic AI Matching (2025-09-23)  
 **Scope:** Prototype-first G-sta### US-04### US-040: View sug### US-041: Draw redac### US-042: Human approval gate (100% review) ✅ **(COMPLETED### US-060: Build combined package with cover sheet & index ✅ **(COMPLETED December 2024)**
+
+**Epic 8: Automatic AI Matching Enhancement** ✅ **(COMPLETED September 23, 2025)**
+
+**AC**
+
+- Given a new request is created, when submitted, then AI matching runs automatically without user intervention. ✅
+- Given a staff member views a request with no matches, when opened, then AI matching runs automatically. ✅
+- Given AI matching completes, when successful, then results display automatically without manual button clicks. ✅
+
+**Tasks**
+- [x] Enhanced requestService.ts with automatic AI matching triggers on request creation. ✅
+- [x] Modified staff dashboard to auto-trigger AI matching when viewing unmatched requests. ✅
+- [x] Added comprehensive error handling to prevent request failures if AI matching fails. ✅
+- [x] Implemented detailed logging for debugging automatic AI matching flow. ✅
+
+**Epic 8 Technical Implementation:**
+- ✅ **RequestService Enhancement**: Added automatic findMatches() calls in saveRequest() for both Firebase and mock service paths
+- ✅ **Staff Dashboard Enhancement**: Modified handleRequestSelect() to automatically trigger AI matching for requests without associated records
+- ✅ **Error Resilience**: Try-catch blocks ensure AI matching failures don't break request creation or viewing
+- ✅ **Smart Triggering**: AI matching only runs automatically when no existing matches are found
+- ✅ **Comprehensive Logging**: Added detailed console logs with emojis for tracking automatic AI matching progress
+- ✅ **Production Ready**: Maintains all existing functionality while adding seamless automation
 
 **AC**
 

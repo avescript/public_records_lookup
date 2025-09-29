@@ -20,6 +20,8 @@ import {
 
 import { RequestFormDataWithFiles } from '../components/request/RequestForm/types';
 import firestore from '../lib/firebase';
+import { findMatches } from './aiMatchingService';
+import { auditService } from './auditService';
 import * as mockService from './mockFirebaseService';
 
 // Check if we should use mock service (when Firebase is unavailable)
@@ -111,6 +113,17 @@ export const saveRequest = async (
     console.log('🔄 [Request Service] Using mock service for saveRequest');
     const result = await mockService.saveRequest(requestData);
     console.log('✅ [Request Service] Mock service saved request:', result.trackingId);
+    
+    // 🤖 Automatically trigger AI matching for the new request (mock service path)
+    try {
+      console.log('🤖 [Request Service] Starting automatic AI matching for mock request:', result.trackingId);
+      await findMatches(result.id, requestData.description);
+      console.log('✅ [Request Service] Automatic AI matching completed for mock request:', result.trackingId);
+    } catch (matchError) {
+      console.warn('⚠️ [Request Service] Automatic AI matching failed for mock request:', result.trackingId, matchError);
+      // Don't fail the request creation if AI matching fails
+    }
+    
     return result;
   }
 
@@ -138,12 +151,34 @@ export const saveRequest = async (
     // Add to Firestore
     const docRef = await addDoc(collection(firestore, 'requests'), requestDoc);
     console.log('Request saved with ID:', docRef.id);
+    
+    // 🤖 Automatically trigger AI matching for the new request
+    try {
+      console.log('🤖 [Request Service] Starting automatic AI matching for request:', trackingId);
+      await findMatches(docRef.id, requestData.description);
+      console.log('✅ [Request Service] Automatic AI matching completed for request:', trackingId);
+    } catch (matchError) {
+      console.warn('⚠️ [Request Service] Automatic AI matching failed for request:', trackingId, matchError);
+      // Don't fail the request creation if AI matching fails
+    }
+    
     return { id: docRef.id, trackingId };
   } catch (error) {
     console.error('Error saving request:', error);
     console.log('🔄 Falling back to mock service due to Firebase error');
     const result = await mockService.saveRequest(requestData);
     console.log('✅ [Request Service] Mock service fallback saved request:', result.trackingId);
+    
+    // 🤖 Also trigger AI matching for mock service requests
+    try {
+      console.log('🤖 [Request Service] Starting automatic AI matching for mock request:', result.trackingId);
+      await findMatches(result.id, requestData.description);
+      console.log('✅ [Request Service] Automatic AI matching completed for mock request:', result.trackingId);
+    } catch (matchError) {
+      console.warn('⚠️ [Request Service] Automatic AI matching failed for mock request:', result.trackingId, matchError);
+      // Don't fail the request creation if AI matching fails
+    }
+    
     return result;
   }
 };
