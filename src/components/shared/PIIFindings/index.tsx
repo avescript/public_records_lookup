@@ -103,14 +103,16 @@ const PIIFindingItem: React.FC<PIIFindingItemProps> = ({
         '&:hover': onClick ? {
           backgroundColor: 'action.hover',
         } : {},
+        flexDirection: 'column',
+        alignItems: 'flex-start',
       }}
     >
-      <ListItemIcon>
-        {getConfidenceIcon(finding.confidence)}
-      </ListItemIcon>
-      <ListItemText
-        primary={
-          <Stack direction="row" alignItems="center" spacing={1}>
+      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+        <ListItemIcon>
+          {getConfidenceIcon(finding.confidence)}
+        </ListItemIcon>
+        <Box sx={{ flexGrow: 1 }}>
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: showDetails ? 1 : 0 }}>
             <Chip
               label={finding.piiType}
               size="small"
@@ -130,23 +132,21 @@ const PIIFindingItem: React.FC<PIIFindingItemProps> = ({
               color={finding.confidence >= 0.8 ? 'success' : 'warning'}
             />
           </Stack>
-        }
-        secondary={
-          showDetails && (
-            <Stack spacing={0.5} sx={{ mt: 1 }}>
-              <Typography variant="caption" color="text.secondary">
+          {showDetails && (
+            <Box sx={{ pl: 0 }}>
+              <Typography variant="caption" color="text.secondary" component="div">
                 {finding.reasoning}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="text.secondary" component="div">
                 Location: Page {finding.pageNumber}, {finding.fileName}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="text.secondary" component="div">
                 Coordinates: ({finding.x}, {finding.y}) - {finding.width} × {finding.height}
               </Typography>
-            </Stack>
-          )
-        }
-      />
+            </Box>
+          )}
+        </Box>
+      </Box>
     </ListItem>
   );
 };
