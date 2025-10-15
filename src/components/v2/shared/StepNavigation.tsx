@@ -11,10 +11,8 @@ import {
 import {
   Box,
   Breadcrumbs,
-  Button,
   Chip,
   LinearProgress,
-  Paper,
   Step,
   StepConnector,
   stepConnectorClasses,
@@ -26,6 +24,15 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
+import { Button } from '@/components/core/Button';
+
+import { 
+  StyledBreadcrumbContainer, 
+  StyledNavigationPaper, 
+  StyledProgressContainer, 
+  StyledStepperContainer, 
+} from './StepNavigation.styles';
 
 export type WorkflowStep = 'locate' | 'redact' | 'respond' | 'review';
 
@@ -161,15 +168,16 @@ export function StepNavigation({
   };
 
   return (
-    <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
+    <StyledNavigationPaper>
       {/* Breadcrumbs */}
-      <Box sx={{ mb: 3 }}>
+      <StyledBreadcrumbContainer>
         <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />}>
           <Button
             startIcon={<DashboardIcon />}
             onClick={handleDashboardClick}
-            color="inherit"
-            sx={{ minWidth: 'auto' }}
+            variant="text"
+            size="sm"
+            className="breadcrumb-button"
           >
             Dashboard
           </Button>
@@ -182,71 +190,67 @@ export function StepNavigation({
             size="small"
           />
         </Breadcrumbs>
-      </Box>
+      </StyledBreadcrumbContainer>
 
       {/* Progress Bar */}
       {showProgress && (
-        <Box sx={{ mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-            <Typography variant="body2" color="text.secondary">
+        <StyledProgressContainer>
+          <Box className="progress-header">
+            <Typography className="progress-label">
               Workflow Progress
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography className="progress-label">
               {Math.round(progress)}% Complete
             </Typography>
           </Box>
           <LinearProgress 
             variant="determinate" 
             value={progress}
-            sx={{ height: 8, borderRadius: 4 }}
+            className="progress-bar"
           />
-        </Box>
+        </StyledProgressContainer>
       )}
 
       {/* Step Navigation */}
-      <Stepper
-        activeStep={currentStepIndex}
-        connector={<StyledStepConnector />}
-        alternativeLabel
-      >
-        {steps.map((step, index) => {
-          const isCompleted = isStepCompleted(step.key);
-          const isActive = step.key === currentStep;
-          const isAccessible = isStepAccessible(step.key, index);
+      <StyledStepperContainer>
+        <Stepper
+          activeStep={currentStepIndex}
+          connector={<StyledStepConnector />}
+          alternativeLabel
+        >
+          {steps.map((step, index) => {
+            const isCompleted = isStepCompleted(step.key);
+            const isActive = step.key === currentStep;
+            const isAccessible = isStepAccessible(step.key, index);
 
-          return (
-            <Step key={step.key} completed={isCompleted}>
-              <StepLabel
-                StepIconComponent={(props) => (
-                  <StepIconComponent
-                    {...props}
-                    completed={isCompleted}
-                    active={isActive}
-                  />
-                )}
-                sx={{
-                  cursor: isAccessible && !disabled ? 'pointer' : 'default',
-                  opacity: disabled ? 0.6 : 1,
-                  '& .MuiStepLabel-label': {
-                    color: isActive ? 'primary.main' : 
-                           isCompleted ? 'success.main' : 
-                           'text.secondary',
-                    fontWeight: isActive ? 600 : 500,
-                  },
-                }}
-                onClick={() => handleStepClick(step.key, index)}
-              >
-                <Typography variant="body1" component="div">
-                  {step.label}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {step.description}
-                </Typography>
-              </StepLabel>
-            </Step>
-          );
-        })}
-      </Stepper>
-    </Paper>
+            return (
+              <Step key={step.key} completed={isCompleted} className={!isAccessible || disabled ? 'step-disabled' : ''}>
+                <StepLabel
+                  StepIconComponent={(props) => (
+                    <StepIconComponent
+                      {...props}
+                      completed={isCompleted}
+                      active={isActive}
+                    />
+                  )}
+                  onClick={() => handleStepClick(step.key, index)}
+                >
+                  <Typography 
+                    variant="body1" 
+                    component="div"
+                    className={isActive ? 'step-active' : isCompleted ? 'step-completed' : ''}
+                  >
+                    {step.label}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" className="step-description">
+                    {step.description}
+                  </Typography>
+                </StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
+      </StyledStepperContainer>
+    </StyledNavigationPaper>
   );
 }

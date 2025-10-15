@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { V2WorkflowLayout } from '@/components/v2/shared/V2WorkflowLayout';
 import { RedactStep } from '@/components/v2/steps/RedactStep';
 

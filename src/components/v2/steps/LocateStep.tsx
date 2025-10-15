@@ -9,7 +9,6 @@ import {
 import {
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
   Chip,
@@ -21,7 +20,9 @@ import {
   Typography,
 } from '@mui/material';
 
+import { Button } from '@/components/core/Button';
 import { getRequestById, StoredRequest } from '@/services/requestService';
+
 import { StepNavigation, WorkflowStep } from '../shared/StepNavigation';
 
 interface LocateStepProps {
@@ -162,9 +163,9 @@ export function LocateStep({ requestId }: LocateStepProps) {
                   }}
                 />
                 <Button
-                  variant="contained"
+                  variant="primary"
                   startIcon={<AutoAwesomeIcon />}
-                  sx={{ minWidth: 200 }}
+                  size="md"
                 >
                   AI Search
                 </Button>
@@ -189,7 +190,7 @@ export function LocateStep({ requestId }: LocateStepProps) {
                 <Typography variant="body1" color="text.secondary" gutterBottom>
                   Upload records directly if you have them available
                 </Typography>
-                <Button variant="outlined" startIcon={<UploadIcon />}>
+                <Button variant="outline" startIcon={<UploadIcon />}>
                   Choose Files
                 </Button>
               </Box>

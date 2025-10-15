@@ -14,7 +14,6 @@ import {
 } from '@mui/icons-material';
 import {
   Box,
-  Button,
   Card,
   CardContent,
   Chip,
@@ -29,7 +28,15 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
+import { Button } from '@/components/core/Button';
 import { getAllRequests, StoredRequest } from '@/services/requestService';
+import { tokens } from '@/theme/tokens';
+
+import { 
+  StyledDashboardHeader, 
+  StyledMetricCard, 
+  StyledRequestCard, 
+  StyledSearchContainer} from './styles';
 
 // Quick stats interface
 interface DashboardStats {
@@ -73,17 +80,7 @@ function RequestCard({ request, onSelect }: RequestCardProps) {
   };
 
   return (
-    <Card 
-      sx={{ 
-        cursor: 'pointer',
-        transition: 'all 0.2s ease-in-out',
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: theme.shadows[4],
-        }
-      }}
-      onClick={() => onSelect(request)}
-    >
+    <StyledRequestCard onClick={() => onSelect(request)}>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Typography variant="h6" component="h3" noWrap sx={{ flexGrow: 1, mr: 2 }}>
@@ -111,7 +108,7 @@ function RequestCard({ request, onSelect }: RequestCardProps) {
             new Date(request.submittedAt.seconds * 1000).toLocaleDateString()}
         </Typography>
       </CardContent>
-    </Card>
+    </StyledRequestCard>
   );
 }
 
@@ -211,92 +208,94 @@ export function V2Dashboard() {
   return (
     <Box>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <DashboardIcon color="primary" fontSize="large" />
-            Request Dashboard
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            AI-powered guided workflow for public records management
-          </Typography>
+      <StyledDashboardHeader>
+        <Box className="header-content">
+          <DashboardIcon color="primary" fontSize="large" />
+          <Box>
+            <Typography variant="h4" component="h1" className="header-title">
+              Request Dashboard
+            </Typography>
+            <Typography variant="body1" color="text.secondary" className="header-subtitle">
+              AI-powered guided workflow for public records management
+            </Typography>
+          </Box>
         </Box>
         <Button
-          variant="contained"
+          variant="primary"
           startIcon={<AddIcon />}
           onClick={handleNewRequest}
-          size="large"
+          size="lg"
         >
           New Request
         </Button>
-      </Box>
+      </StyledDashboardHeader>
 
       {/* Quick Stats */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={2}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h3" color="primary.main" fontWeight="bold">
+          <StyledMetricCard>
+            <Typography className="metric-value" color="primary.main">
               {stats.total}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography className="metric-label">
               Total Requests
             </Typography>
-          </Paper>
+          </StyledMetricCard>
         </Grid>
         <Grid item xs={12} sm={6} md={2}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h3" color="info.main" fontWeight="bold">
+          <StyledMetricCard>
+            <Typography className="metric-value" color="info.main">
               {stats.submitted}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography className="metric-label">
               Submitted
             </Typography>
-          </Paper>
+          </StyledMetricCard>
         </Grid>
         <Grid item xs={12} sm={6} md={2}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h3" color="warning.main" fontWeight="bold">
+          <StyledMetricCard>
+            <Typography className="metric-value" color="warning.main">
               {stats.processing}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography className="metric-label">
               Processing
             </Typography>
-          </Paper>
+          </StyledMetricCard>
         </Grid>
         <Grid item xs={12} sm={6} md={2}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h3" color="secondary.main" fontWeight="bold">
+          <StyledMetricCard>
+            <Typography className="metric-value" color="secondary.main">
               {stats.underReview}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography className="metric-label">
               Under Review
             </Typography>
-          </Paper>
+          </StyledMetricCard>
         </Grid>
         <Grid item xs={12} sm={6} md={2}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h3" color="success.main" fontWeight="bold">
+          <StyledMetricCard>
+            <Typography className="metric-value" color="success.main">
               {stats.completed}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography className="metric-label">
               Completed
             </Typography>
-          </Paper>
+          </StyledMetricCard>
         </Grid>
         <Grid item xs={12} sm={6} md={2}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h3" color="error.main" fontWeight="bold">
+          <StyledMetricCard>
+            <Typography className="metric-value" color="error.main">
               {stats.overdue}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography className="metric-label">
               Overdue
             </Typography>
-          </Paper>
+          </StyledMetricCard>
         </Grid>
       </Grid>
 
       {/* Search and Filters */}
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <StyledSearchContainer>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="center">
           <TextField
             placeholder="Search requests, requesters, or departments..."
@@ -315,7 +314,7 @@ export function V2Dashboard() {
             <FilterListIcon />
           </IconButton>
         </Stack>
-      </Paper>
+      </StyledSearchContainer>
 
       {/* Request Cards */}
       {loading ? (
