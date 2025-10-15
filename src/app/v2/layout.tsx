@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
   title: 'Public Records Request Manager V2',
@@ -13,5 +14,9 @@ export default function V2Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return children;
+  return (
+    <AuthProvider>
+      {children}
+    </AuthProvider>
+  );
 }
