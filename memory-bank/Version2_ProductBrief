@@ -1,0 +1,121 @@
+# Public Records Request Manager — Version 2 (V2)
+
+## Overview
+V2 of the *Public Records Request Manager* introduces a guided, stepped process to streamline how government staff locate, redact, and respond to public records requests. The goal is to simplify the end-to-end workflow while improving accuracy, transparency, and efficiency through AI-assisted features.  
+
+This version focuses on breaking the request response workflow into distinct, auditable steps — **Locate**, **Redact**, **Respond**, and **Review & Send** — with a redesigned **Request Landing Page** for easy navigation and task management.
+
+---
+
+## Objectives
+- Simplify the request response process through a structured, step-by-step workflow.  
+- Leverage AI to automate and accelerate record search, summarization, and redaction.  
+- Provide transparency and accountability through audit trails, approval tracking, and clear status visibility.  
+- Improve collaboration across agency staff, approvers, and records officers.  
+- Establish the foundation for integrations with real data sources and communications in future releases.  
+
+---
+
+## Key Features by Step
+
+### Request Landing Page
+**Purpose:** Provide a centralized view for managing all records requests.  
+
+**Capabilities:**
+- View all requests with filters by **status** (Open, In Process, Closed) and **assignment** (“Assigned to Me”).  
+- Search and sort requests by keywords, requester name, or date.  
+- Select a specific request to open and begin the stepped workflow.  
+- Quick metrics: request counts by status, due dates, and pending approvals.
+
+---
+
+### Step 1: Locate
+**Purpose:** Identify and select records relevant to the request.  
+
+**Capabilities:**
+- View full **request details** (requester info, date received, due date, subject, etc.).  
+- Display **AI-matched records** with confidence scores and preview snippets.  
+- **AI Chatbot Search Assistant** to:
+  - Search across all available records and metadata.  
+  - Summarize or answer questions about matched documents.  
+  - Suggest additional relevant records.  
+- **Record Review Panel** to:
+  - View record content and metadata (author, date, tags, etc.).  
+  - Select and attach chosen records to the request response package.  
+
+---
+
+### Step 2: Redact
+**Purpose:** Automate and refine the redaction of sensitive information.  
+
+**Capabilities:**
+- AI automatically redacts personally identifiable information (PII), legal exemptions, or sensitive data.  
+- User can **review**, **add**, **edit**, or **remove** redactions manually.  
+- User can **regenerate redactions** by specifying:
+  - Type of information to redact (PII, confidential legal text, etc.).  
+  - Degree of redaction (light, standard, strict).  
+- Visual diff highlighting before/after redaction.  
+- Export or download redacted versions for audit or recordkeeping.
+
+---
+
+### Step 3: Respond
+**Purpose:** Draft and refine a professional response to the requester.  
+
+**Capabilities:**
+- AI auto-generates a **draft response** based on the request details and attached records.  
+- **Smart text editor** allows:
+  - Tone adjustment (e.g., Friendly, Professional, Legal, Formal).  
+  - Length adjustments (“Shorten,” “Expand,” “Simplify”).  
+  - Regeneration of sections or full drafts.  
+- Manual editing and formatting tools (links, attachments, headers).  
+- Saved versions of drafts and edit history.
+
+---
+
+### Step 4: Review & Send
+**Purpose:** Ensure response quality, compliance, and appropriate approvals before release.  
+
+**Capabilities:**
+- Email notifications sent automatically to designated **approvers**.  
+- Staff responder can choose **send timing**:
+  - Immediately upon final approval.  
+  - Next business day.  
+  - Custom scheduled date/time.  
+- Approvers can **approve** or **reject** with mandatory comments on rejection.  
+- View **approval log** with timestamps, reviewer names, and comments.  
+- Once approved, response is automatically sent and logged as “Completed.”  
+- Full audit trail for transparency and compliance.  
+
+---
+
+## Technical Direction
+- **Frontend:** React (MUI components), AI chatbot using Vertex AI or OpenAI API.  
+- **Backend:** Node.js + Express (mock database in V2; Cloud SQL planned for production).  
+- **AI Functions:** Matching, summarization, redaction, and drafting via LLM endpoints.  
+- **Storage:** Cloud Storage or simulated storage for records and redacted copies.  
+- **Integration Targets:** Google Workspace (Docs, Gmail, Drive) and BigQuery for analytics.  
+
+---
+
+## User Roles
+- **Staff Responder:** Manages requests end-to-end through all steps.  
+- **Approver:** Reviews and approves responses before release.  
+- **Administrator:** Configures AI parameters, manages roles, and oversees audit logs.
+
+---
+
+## Success Metrics
+- Average time to complete a request reduced by ≥ 40%.  
+- ≥ 90% accuracy in AI-matched records (compared to manual review baseline).  
+- ≥ 80% of users report improved ease of use vs. prior version.  
+- ≥ 95% approval compliance tracking completion rate.  
+
+---
+
+## Next Steps / Future Enhancements (V3+)
+- Integration with actual document repositories (e.g., Google Drive, SharePoint).  
+- Automated requester notifications and delivery tracking.  
+- Advanced analytics dashboard in BigQuery (e.g., response times, common exemptions).  
+- Role-based access controls and agency-specific workflows.  
+- Training mode and audit-ready exports for compliance reviews.  

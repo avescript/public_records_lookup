@@ -39,7 +39,7 @@ A responsive web application that enables state agencies to intake, manage, and 
 
 ## Timeline
 
-**Sprint Plan:**
+**Sprint Plan - V1 (COMPLETED):**
 
 1. ✅ Foundation & Request Intake (Epics 0-1) - **COMPLETED**
 2. ✅ Staff Workflows & AI Matching (Epics 2-3) - **COMPLETED**
@@ -47,7 +47,17 @@ A responsive web application that enables state agencies to intake, manage, and 
 4. ✅ Approvals & Legal Review (Epic 5) - **COMPLETED**
 5. ✅ Package & Delivery (Epic 6) - **COMPLETED**
 6. ✅ Audit & Observability (Epic 7) - **COMPLETED September 26, 2025**
-7. 🚀 Next Phase: Synthetic Data (Epic 8), RBAC (Epic 9), or Performance (Epic 10)
+
+**V2 Development Plan (16-20 weeks):**
+
+7. 🚀 **V2 Foundation & Migration** (Epic V2-0) - Weeks 1-2
+8. 🎯 **Enhanced Request Dashboard** (Epic V2-1) - Weeks 3-5
+9. 🔍 **AI-Enhanced Record Discovery** (Epic V2-2) - Weeks 6-8
+10. ✏️ **Advanced AI Redaction** (Epic V2-3) - Weeks 9-11
+11. 📝 **AI Response Generation** (Epic V2-4) - Weeks 12-14
+12. ✅ **Enhanced Approval Workflow** (Epic V2-5) - Weeks 15-16
+13. 🤖 **Unified AI Integration** (Epic V2-6) - Weeks 17-18
+14. 📊 **Advanced Analytics & UX** (Epic V2-7/8) - Weeks 19-20
 
 **Current Status: All 7 Core Epics Complete - Production Ready** ✅
 
