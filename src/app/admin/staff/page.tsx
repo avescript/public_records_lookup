@@ -7,7 +7,7 @@ import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
 import { MatchResults } from '../../../components/staff/MatchResults';
 import { RequestDetailsDrawer } from '../../../components/staff/RequestDetailsDrawer';
-import { StaffDashboard } from '../../../components/staff/StaffDashboard';
+import { EnhancedDashboard } from '../../../components/staff/EnhancedDashboard';
 import { AuthProvider } from '../../../contexts/AuthContext';
 import { findMatches, MatchCandidate, MatchResult } from '../../../services/aiMatchingService';
 import { addRecordToRequest, getRequestById, RequestStatus, StoredRequest } from '../../../services/requestService';
@@ -152,7 +152,7 @@ function StaffPageContent() {
     <ProtectedRoute>
       <AdminLayout>
         <Box>
-          <StaffDashboard onRequestSelect={handleRequestSelect} />
+          <EnhancedDashboard onRequestSelect={handleRequestSelect} />
           <RequestDetailsDrawer
             open={drawerOpen}
             onClose={handleDrawerClose}

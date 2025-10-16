@@ -22,7 +22,6 @@ import {
   styled,
   Typography,
 } from '@mui/material';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/core/Button';
@@ -31,12 +30,12 @@ import {
   StyledBreadcrumbContainer, 
   StyledNavigationPaper, 
   StyledProgressContainer, 
-  StyledStepperContainer, 
-} from './StepNavigation.styles';
+  StyledStepperContainer 
+} from './WorkflowNavigation.styles';
 
 export type WorkflowStep = 'locate' | 'redact' | 'respond' | 'review';
 
-export interface StepNavigationProps {
+export interface WorkflowNavigationProps {
   requestId: string;
   currentStep: WorkflowStep;
   completedSteps: WorkflowStep[];
@@ -98,7 +97,7 @@ interface StepIconComponentProps extends StepIconProps {
   active: boolean;
 }
 
-function StepIconComponent({ active, completed, icon }: StepIconComponentProps) {
+function StepIconComponent({ active, completed }: StepIconComponentProps) {
   if (completed) {
     return (
       <CheckCircleIcon
@@ -131,13 +130,13 @@ function StepIconComponent({ active, completed, icon }: StepIconComponentProps) 
   );
 }
 
-export function StepNavigation({
+export function WorkflowNavigation({
   requestId,
   currentStep,
   completedSteps,
   disabled = false,
   showProgress = true,
-}: StepNavigationProps) {
+}: WorkflowNavigationProps) {
   const router = useRouter();
   
   const currentStepIndex = steps.findIndex(step => step.key === currentStep);
@@ -160,11 +159,11 @@ export function StepNavigation({
   const handleStepClick = (stepKey: WorkflowStep, index: number) => {
     if (disabled || !isStepAccessible(stepKey, index)) return;
     
-    router.push(`/v2/request/${requestId}/${stepKey}` as any);
+    router.push(`/admin/request/${requestId}/workflow/${stepKey}` as any);
   };
 
   const handleDashboardClick = () => {
-    router.push('/v2/dashboard' as any);
+    router.push('/admin/staff' as any);
   };
 
   return (
