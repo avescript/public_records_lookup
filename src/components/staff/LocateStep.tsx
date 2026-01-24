@@ -18,6 +18,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/core/Button';
 import { WorkflowStep } from '@/components/staff/WorkflowNavigation';
@@ -84,6 +85,7 @@ function getRelevanceColor(score: number): 'success' | 'warning' | 'error' {
 }
 
 export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
+  const router = useRouter();
   const [records, setRecords] = useState<PublicRecord[]>(mockRecords.map(r => ({ ...r, selected: false })));
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -105,6 +107,8 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
 
   const handleProceedToRedact = () => {
     console.log('Proceeding to redact with selected records:', selectedRecords);
+    // Navigate to the redact step in the workflow
+    router.push(`/admin/request/${requestId}/workflow/redact`);
   };
 
   return (
