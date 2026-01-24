@@ -2,24 +2,52 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AgencyProvider } from '../../src/contexts/AgencyContext';
-import { AgencySwitcher, AgencyIndicator } from '../../src/components/AgencySwitcher';
+import { AgencySwitcher, AgencyIndicator } from '../../src/components/shared/AgencySwitcher';
 import { theme } from '../../src/theme';
 
 // Mock AgencyContext to control test scenarios
 const mockSwitchAgency = jest.fn();
 const mockAgencyContext = {
   currentAgency: {
-    id: 'pdx-police',
-    name: 'Portland Police Bureau',
-    color: '#1976d2',
-    icon: 'Shield'
+    id: 'police',
+    name: 'Police Department',
+    departments: ['patrol', 'investigations'],
+    commonRequestTypes: ['incident_reports'],
+    documentTypes: ['incident_report'],
+    averageResponseTime: 15,
+    complexityWeight: 0.8,
   },
-  agencies: [
-    { id: 'pdx-police', name: 'Portland Police Bureau', color: '#1976d2', icon: 'Shield' },
-    { id: 'seattle-police', name: 'Seattle Police Department', color: '#388e3c', icon: 'Shield' },
-    { id: 'eugene-police', name: 'Eugene Police Department', color: '#f57c00', icon: 'Shield' },
+  availableAgencies: [
+    {
+      id: 'police',
+      name: 'Police Department',
+      departments: ['patrol', 'investigations'],
+      commonRequestTypes: ['incident_reports'],
+      documentTypes: ['incident_report'],
+      averageResponseTime: 15,
+      complexityWeight: 0.8,
+    },
+    {
+      id: 'fire',
+      name: 'Fire Department',
+      departments: ['emergency_response'],
+      commonRequestTypes: ['emergency_response'],
+      documentTypes: ['incident_report'],
+      averageResponseTime: 10,
+      complexityWeight: 0.6,
+    },
+    {
+      id: 'finance',
+      name: 'Finance Department',
+      departments: ['accounting'],
+      commonRequestTypes: ['budget_reports'],
+      documentTypes: ['financial_report'],
+      averageResponseTime: 12,
+      complexityWeight: 0.4,
+    },
   ],
   switchAgency: mockSwitchAgency,
+  isLoading: false,
 };
 
 jest.mock('../../src/contexts/AgencyContext', () => ({
@@ -42,7 +70,7 @@ describe('AgencySwitcher', () => {
   });
 
   describe('Compact Variant', () => {
-    it('should render compact variant with current agency icon', () => {
+    it('should render compact variant with current agency', () => {
       render(
         <TestWrapper>
           <AgencySwitcher variant="compact" />
@@ -51,7 +79,7 @@ describe('AgencySwitcher', () => {
 
       const button = screen.getByRole('button');
       expect(button).toBeInTheDocument();
-      expect(button).toHaveAttribute('aria-label', 'Switch Agency');
+      expect(screen.getByText('POLICE')).toBeInTheDocument();
     });
 
     it('should open menu when compact variant is clicked', async () => {
@@ -65,7 +93,7 @@ describe('AgencySwitcher', () => {
       fireEvent.click(button);
 
       await waitFor(() => {
-        expect(screen.getByRole('menu')).toBeInTheDocument();
+        expect(screen.getByText('Switch Agency Context')).toBeInTheDocument();
       });
     });
 
@@ -80,9 +108,9 @@ describe('AgencySwitcher', () => {
       fireEvent.click(button);
 
       await waitFor(() => {
-        expect(screen.getByText('Portland Police Bureau')).toBeInTheDocument();
-        expect(screen.getByText('Seattle Police Department')).toBeInTheDocument();
-        expect(screen.getByText('Eugene Police Department')).toBeInTheDocument();
+        expect(screen.getByText('Police Department')).toBeInTheDocument();
+        expect(screen.getByText('Fire Department')).toBeInTheDocument();
+        expect(screen.getByText('Finance Department')).toBeInTheDocument();
       });
     });
 
@@ -97,11 +125,11 @@ describe('AgencySwitcher', () => {
       fireEvent.click(button);
 
       await waitFor(() => {
-        const seattleOption = screen.getByText('Seattle Police Department');
-        fireEvent.click(seattleOption);
+        const fireOption = screen.getByText('Fire Department');
+        fireEvent.click(fireOption);
       });
 
-      expect(mockSwitchAgency).toHaveBeenCalledWith('seattle-police');
+      expect(mockSwitchAgency).toHaveBeenCalledWith('fire');
     });
 
     it('should close menu after agency selection', async () => {
@@ -126,27 +154,17 @@ describe('AgencySwitcher', () => {
   });
 
   describe('Full Variant', () => {
-    it('should render full variant with agency name and dropdown', () => {
+    it('should render full variant with agency name and expand icon', () => {
       render(
         <TestWrapper>
           <AgencySwitcher variant="full" />
         </TestWrapper>
       );
 
-      const select = screen.getByRole('combobox');
-      expect(select).toBeInTheDocument();
-      expect(screen.getByText('Portland Police Bureau')).toBeInTheDocument();
-    });
-
-    it('should display current agency as selected value', () => {
-      render(
-        <TestWrapper>
-          <AgencySwitcher variant="full" />
-        </TestWrapper>
-      );
-
-      const select = screen.getByDisplayValue('Portland Police Bureau');
-      expect(select).toBeInTheDocument();
+      const button = screen.getByRole('button');
+      expect(button).toBeInTheDocument();
+      expect(screen.getByText('Police Department')).toBeInTheDocument();
+      expect(screen.getByText('2 departments')).toBeInTheDocument();
     });
 
     it('should call switchAgency when different option is selected', async () => {
@@ -156,15 +174,15 @@ describe('AgencySwitcher', () => {
         </TestWrapper>
       );
 
-      const select = screen.getByRole('combobox');
-      fireEvent.mouseDown(select);
+      const button = screen.getByRole('button');
+      fireEvent.click(button);
 
       await waitFor(() => {
-        const seattleOption = screen.getByText('Seattle Police Department');
-        fireEvent.click(seattleOption);
+        const financeOption = screen.getByText('Finance Department');
+        fireEvent.click(financeOption);
       });
 
-      expect(mockSwitchAgency).toHaveBeenCalledWith('seattle-police');
+      expect(mockSwitchAgency).toHaveBeenCalledWith('finance');
     });
 
     it('should show all agencies as options', async () => {
@@ -174,11 +192,11 @@ describe('AgencySwitcher', () => {
         </TestWrapper>
       );
 
-      const select = screen.getByRole('combobox');
-      fireEvent.mouseDown(select);
+      const button = screen.getByRole('button');
+      fireEvent.click(button);
 
       await waitFor(() => {
-        mockAgencyContext.agencies.forEach(agency => {
+        mockAgencyContext.availableAgencies.forEach(agency => {
           expect(screen.getByText(agency.name)).toBeInTheDocument();
         });
       });
@@ -186,71 +204,52 @@ describe('AgencySwitcher', () => {
   });
 
   describe('Default Props', () => {
-    it('should use compact variant as default', () => {
+    it('should use full variant as default', () => {
       render(
         <TestWrapper>
           <AgencySwitcher />
         </TestWrapper>
       );
 
-      // Should render as IconButton (compact variant)
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('aria-label', 'Switch Agency');
+      // Should render as Button with agency name (full variant)
+      expect(screen.getByText('Police Department')).toBeInTheDocument();
+      expect(screen.getByText('2 departments')).toBeInTheDocument();
     });
   });
 
-  describe('Agency Color Integration', () => {
-    it('should apply agency color to compact variant icon', () => {
+  describe('Loading State', () => {
+    it('should show loading skeleton when loading', () => {
+      const loadingContext = { ...mockAgencyContext, isLoading: true, currentAgency: null };
+      jest.mocked(require('../../src/contexts/AgencyContext').useAgency).mockReturnValue(loadingContext);
+
       render(
         <TestWrapper>
-          <AgencySwitcher variant="compact" />
+          <AgencySwitcher />
         </TestWrapper>
       );
 
-      const button = screen.getByRole('button');
-      // The icon should inherit the agency color through theme/styling
-      expect(button).toBeInTheDocument();
+      // Loading skeletons should be rendered
+      const skeletons = screen.getAllByTestId('skeleton');
+      expect(skeletons.length).toBeGreaterThan(0);
     });
   });
 
-  describe('Accessibility', () => {
-    it('should have proper ARIA labels for compact variant', () => {
+  describe('Disabled State', () => {
+    it('should not open menu when disabled', async () => {
       render(
         <TestWrapper>
-          <AgencySwitcher variant="compact" />
+          <AgencySwitcher disabled />
         </TestWrapper>
       );
 
       const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('aria-label', 'Switch Agency');
-    });
-
-    it('should have proper ARIA labels for full variant', () => {
-      render(
-        <TestWrapper>
-          <AgencySwitcher variant="full" />
-        </TestWrapper>
-      );
-
-      const select = screen.getByRole('combobox');
-      expect(select).toHaveAccessibleName();
-    });
-
-    it('should support keyboard navigation', async () => {
-      render(
-        <TestWrapper>
-          <AgencySwitcher variant="compact" />
-        </TestWrapper>
-      );
-
-      const button = screen.getByRole('button');
+      expect(button).toBeDisabled();
       
-      // Focus and activate with keyboard
-      button.focus();
-      fireEvent.keyDown(button, { key: 'Enter' });
-
+      fireEvent.click(button);
+      
+      // Menu should not open
       await waitFor(() => {
-        expect(screen.getByRole('menu')).toBeInTheDocument();
+        expect(screen.queryByText('Switch Agency Context')).not.toBeInTheDocument();
       });
     });
   });
