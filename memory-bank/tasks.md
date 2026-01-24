@@ -248,6 +248,102 @@
   - [x] Create SQL query examples for Looker Studio
   - [x] Add export history and file download
 
+## Epic 8: Synthetic Data & Public Domain Corpus 🚀 **STARTING JANUARY 23, 2026**
+
+### US-080: Load Synthetic Dataset v2 ⏳
+
+- [ ] **Multi-Agency Dataset Creation**
+  - [ ] Create realistic synthetic data for 5+ agencies (Police, Fire, Finance, Public Works, Legal, Parks)
+  - [ ] Generate 100+ requests across different departments and complexity levels
+  - [ ] Add varied request types (incident reports, financial records, permits, correspondence)
+  - [ ] Include edge cases (partial redactions, legal exemptions, multi-department requests)
+  - [ ] Create realistic requester profiles and contact information
+
+- [ ] **Enhanced Record Corpus**
+  - [ ] Expand record database to 500+ documents across agencies
+  - [ ] Add document variety (PDFs, emails, spreadsheets, images, forms)
+  - [ ] Include metadata-rich records (dates, departments, classifications, file sizes)
+  - [ ] Create realistic document relationships and cross-references
+  - [ ] Add documents with varying PII density and redaction complexity
+
+- [ ] **Data Quality & Testing**
+  - [ ] Implement data validation and consistency checks
+  - [ ] Create test scenarios for edge cases and error conditions
+  - [ ] Add performance testing data (large files, bulk operations)
+  - [ ] Generate realistic timeline data with business day calculations
+  - [ ] Create audit trail data for comprehensive testing
+
+### US-081: Import Public-Domain PDFs ⏳
+
+- [ ] **Public Domain Document Integration**
+  - [ ] Source and curate public domain government documents
+  - [ ] Create document classification system (reports, forms, correspondence)
+  - [ ] Implement document processing pipeline for ingestion
+  - [ ] Add realistic metadata and tagging system
+  - [ ] Create document preview and thumbnail generation
+
+- [ ] **Content Enhancement**
+  - [ ] Add OCR processing for scanned documents
+  - [ ] Implement text extraction and searchability
+  - [ ] Create document summary and keyword extraction
+  - [ ] Add document versioning and revision tracking
+  - [ ] Implement full-text search capabilities across corpus
+
+- [ ] **Integration & Testing**
+  - [ ] Integrate document corpus with existing AI matching system
+  - [ ] Test search and retrieval performance with large document sets
+  - [ ] Validate redaction and PII detection across document types
+  - [ ] Create realistic search scenarios and test cases
+  - [ ] Implement document access logging and usage analytics
+
+## Epic 9: RBAC & Multi-Agency 🎯 **NEXT AFTER EPIC 8**
+
+### US-090: Agency Switcher & Row Filtering ⏳
+
+- [ ] **Multi-Tenant Architecture**
+  - [ ] Design agency-based data segregation model
+  - [ ] Implement agency context switching in UI
+  - [ ] Create agency-specific routing and navigation
+  - [ ] Add agency branding and customization support
+  - [ ] Implement cross-agency request handling workflows
+
+- [ ] **Agency Management Interface**
+  - [ ] Create agency selection dropdown in main navigation
+  - [ ] Implement agency-filtered data views across all components
+  - [ ] Add agency-specific dashboards and metrics
+  - [ ] Create agency configuration and settings management
+  - [ ] Implement agency-based notification and communication systems
+
+- [ ] **Data Filtering & Security**
+  - [ ] Implement row-level security based on agency membership
+  - [ ] Add agency-based data encryption and isolation
+  - [ ] Create audit logging with agency context tracking
+  - [ ] Implement agency-specific backup and data retention policies
+  - [ ] Add cross-agency data sharing controls and permissions
+
+### US-091: Role-Based UI & Permissions ⏳
+
+- [ ] **Role Definition System**
+  - [ ] Create role hierarchy (Admin, Manager, Staff, Reviewer, Read-Only)
+  - [ ] Define granular permissions (create, read, update, delete, approve)
+  - [ ] Implement feature-based access control (redaction, AI matching, approvals)
+  - [ ] Add time-based and context-based permissions
+  - [ ] Create role inheritance and delegation capabilities
+
+- [ ] **UI Permission Integration**
+  - [ ] Implement role-based component visibility and interaction
+  - [ ] Add permission-aware navigation and menu systems
+  - [ ] Create role-specific dashboards and workflows
+  - [ ] Implement field-level permissions for sensitive data
+  - [ ] Add permission validation across all user actions
+
+- [ ] **Administration Interface**
+  - [ ] Create user management interface with role assignment
+  - [ ] Implement permission audit and compliance reporting
+  - [ ] Add bulk user operations and role management
+  - [ ] Create permission testing and validation tools
+  - [ ] Implement emergency access and override capabilities
+
 - [x] Production Readiness
   - [x] Create production BigQuery integration points
   - [x] Add comprehensive error handling

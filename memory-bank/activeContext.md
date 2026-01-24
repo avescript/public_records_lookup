@@ -2,14 +2,14 @@
 
 ## Current Focus
 
-**V2 FOUNDATION & MIGRATION COMPLETED** ✅ - **October 16, 2025**
-**Status:** V2 system successfully refactored into natural V1 evolution with enhanced guided workflow capabilities.
+**EPIC 8 - SYNTHETIC DATA & PUBLIC DOMAIN CORPUS** 🚀 - **Starting January 23, 2026**
+**Status:** Ready to implement enhanced data management and multi-agency testing capabilities.
 
 ## Active User Story
 
-**EPIC V2-0 — FOUNDATION & MIGRATION COMPLETED** ✅ - **October 16, 2025**
-**Status:** Complete refactor from separate V2 system to natural product evolution with dual-view dashboard and guided workflow integration.
-Goal: Enhanced staff workflow system that builds upon V1 foundation rather than replacing it.
+**EPIC 8 — SYNTHETIC DATA & PUBLIC DOMAIN CORPUS** 🚀 - **Starting January 23, 2026**
+**Status:** Building comprehensive synthetic dataset and public domain document corpus for realistic testing and multi-agency scenarios.
+Goal: Enhance system with realistic data foundation for advanced testing and demonstration capabilities.
 
 ## Most Recent Achievement
 
@@ -53,35 +53,37 @@ Goal: Enhanced staff workflow system that builds upon V1 foundation rather than 
 - ✅ **User Stories**: US-050 (Request changes) and US-051 (Approve package) fully implemented
 - ✅ **Test Coverage**: 767+ lines of comprehensive testing
 
-## Next Phase Options
+## Development Roadmap - January 2026
 
-**V2 Foundation Complete - Guided Workflow Development Ready** 🚀
+**New Priority Order Established** 🎯
 
-### Immediate Next Steps
-1. **Complete Remaining Workflow Steps**: Implement redact, respond, and review steps
-2. **Data Integration**: Connect workflow to real request data and state management
-3. **End-to-End Testing**: Validate complete workflow from card selection to completion
+### Phase 1: V1 Enhancement Epics (Epic 8-9) 🚀
+**Current Focus:** Building foundational data and multi-agency capabilities
 
-### Available Development Paths
-- **V2 Workflow Completion**: Build out the full guided workflow system
-- **Advanced Features**: Add workflow customization, automation, and analytics
-- **Performance & Polish**: Mobile optimization, accessibility improvements
-- **Additional Integrations**: Enhanced AI matching, document processing
-
-### Option A: Epic 8 — Synthetic Data & Public Domain Corpus
+**Epic 8: Synthetic Data & Public Domain Corpus** - **IN PROGRESS**
 - **US-080**: Load synthetic dataset v2 for multi-agency testing
 - **US-081**: Import public-domain PDFs for realistic record corpus
+- **Goal**: Comprehensive testing data foundation
 
-### Option B: Epic 9 — RBAC & Multi-Agency
+**Epic 9: RBAC & Multi-Agency** - **NEXT**
 - **US-090**: Agency switcher & row filtering for multi-tenant support
 - **US-091**: Role-based UI with granular permissions
+- **Goal**: Multi-tenant production readiness
 
-### Option C: Epic 10 — Non-functional & Readiness
-- **US-100**: Accessibility & responsiveness compliance
-- **US-101**: Performance SLOs and optimization
-  - Define BigQuery schema for events, deliveries, errors, and performance metrics
-  - Mock exporter from CSV/JSON to BigQuery-compatible schema
-  - Dashboard-ready data structure for compliance and operational monitoring
+### Phase 2: V2 Guided Workflow Completion 🔄
+**After Epic 8-9:** Complete the step-based workflow system
+
+- **Step 2: Redact** - Enhanced AI redaction with manual refinement
+- **Step 3: Respond** - AI-powered response drafting and editing
+- **Step 4: Review & Send** - Final approval workflow and delivery
+- **Goal**: Full guided workflow experience
+
+### Phase 3: Production Polish & Optimization ✨
+**Final Phase:** Performance, accessibility, and deployment readiness
+
+- **Epic 10**: Accessibility & responsiveness compliance
+- **Performance optimization** with SLOs and monitoring
+- **Mobile optimization** and advanced UI polish
 
 ## Active Technical Context
 
