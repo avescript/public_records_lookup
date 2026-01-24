@@ -4,51 +4,51 @@
  * Part of Epic 5: Approvals & Legal Review
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  TextField,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Avatar,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Alert,
-  Divider,
-  IconButton,
-  Tooltip,
-  Grid,
-  Paper,
-} from '@mui/material';
-import {
-  Comment as CommentIcon,
   Add as AddIcon,
   CheckCircle as ResolveIcon,
   Close as CloseIcon,
+  Comment as CommentIcon,
   Person as PersonIcon,
-  Schedule as TimeIcon,
   PriorityHigh as PriorityIcon,
   Reply as ReplyIcon,
+  Schedule as TimeIcon,
 } from '@mui/icons-material';
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  MenuItem,
+  Paper,
+  Select,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+
 import { 
-  legalReviewService, 
-  CommentThread, 
   Comment,
-  type CommentThread as CommentThreadType 
-} from '../../../services/legalReviewService';
+  CommentThread, 
+  type CommentThread as CommentThreadType, 
+  legalReviewService} from '../../../services/legalReviewService';
 
 interface CommentThreadProps {
   recordId: string;
@@ -175,7 +175,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, isLatest }) => {
         py: 2,
         backgroundColor: isLatest ? '#f8f9fa' : 'transparent',
         borderRadius: 1,
-        mb: 1
+        mb: 1,
       }}
     >
       <ListItemAvatar>
@@ -229,7 +229,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({
   thread, 
   onAddComment, 
   onResolveThread, 
-  onCloseThread 
+  onCloseThread, 
 }) => {
   const [newComment, setNewComment] = useState('');
   const [isAddingComment, setIsAddingComment] = useState(false);
@@ -289,7 +289,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({
               label={thread.priority.toUpperCase()} 
               style={{ 
                 backgroundColor: getPriorityColor(thread.priority),
-                color: 'white'
+                color: 'white',
               }}
               size="small"
               icon={<PriorityIcon />}

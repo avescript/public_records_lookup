@@ -4,60 +4,61 @@
  * Part of Epic 5: Approvals & Legal Review
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import {
-  Box,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  Cancel as RejectIcon,
+  CheckCircle as ApproveIcon,
+  Description as DocumentIcon,
+  Edit as ChangesIcon,
+  History as HistoryIcon,
+  Inventory as PackageIcon,
+  Lock as LockIcon,
+  LockOpen as UnlockIcon,
+  Person as PersonIcon,
+  Schedule as TimeIcon,
+  Security as SecurityIcon,
+  Visibility as ViewIcon,
+} from '@mui/icons-material';
+import {
   Alert,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  LinearProgress,
   List,
   ListItem,
-  ListItemText,
   ListItemIcon,
-  Grid,
+  ListItemText,
+  MenuItem,
   Paper,
-  LinearProgress,
-  Divider,
-  IconButton,
-  Tooltip,
+  Select,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
+  Tooltip,
+  Typography,
 } from '@mui/material';
-import {
-  Lock as LockIcon,
-  LockOpen as UnlockIcon,
-  CheckCircle as ApproveIcon,
-  Cancel as RejectIcon,
-  Edit as ChangesIcon,
-  Visibility as ViewIcon,
-  History as HistoryIcon,
-  Inventory as PackageIcon,
-  Security as SecurityIcon,
-  Schedule as TimeIcon,
-  Person as PersonIcon,
-  Description as DocumentIcon,
-} from '@mui/icons-material';
+
 import { 
   legalReviewService, 
   PackageApproval,
-  type PackageApproval as PackageApprovalType 
+  type PackageApproval as PackageApprovalType, 
 } from '../../../services/legalReviewService';
 
 interface PackageApprovalProps {
@@ -83,7 +84,7 @@ const ApprovalDialog: React.FC<ApprovalDialogProps> = ({
   open, 
   packageApproval, 
   onClose, 
-  onSubmit 
+  onSubmit, 
 }) => {
   const [decision, setDecision] = useState<'approved' | 'rejected' | 'changes_requested'>('approved');
   const [reason, setReason] = useState('');
@@ -234,7 +235,7 @@ interface PackageCardProps {
 const PackageCard: React.FC<PackageCardProps> = ({ 
   packageApproval, 
   onApprove, 
-  onViewDetails 
+  onViewDetails, 
 }) => {
   const getStatusColor = (status: PackageApprovalType['status']) => {
     switch (status) {
@@ -269,7 +270,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
     <Card sx={{ 
       mb: 2, 
       border: packageApproval.status === 'pending' ? '2px solid #ed6c02' : undefined,
-      opacity: packageApproval.isLocked ? 0.8 : 1
+      opacity: packageApproval.isLocked ? 0.8 : 1,
     }}>
       <CardContent>
         {/* Header */}

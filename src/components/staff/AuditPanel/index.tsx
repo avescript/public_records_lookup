@@ -5,53 +5,54 @@
  * for the Public Records AI Assistant application.
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo,useState } from 'react';
 import {
+  Download as DownloadIcon,
+  Error as ErrorIcon,
+  ExpandMore as ExpandMoreIcon,
+  FilterList as FilterIcon,
+  Info as InfoIcon,
+  Refresh as RefreshIcon,
+  Security as SecurityIcon,
+  Visibility as ViewIcon,
+  Warning as WarningIcon,
+} from '@mui/icons-material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Alert,
   Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
-  Typography,
+  Select,
+  SelectChangeEvent,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
   TablePagination,
+  TableRow,
   TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Chip,
   Tooltip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  Alert,
-  CircularProgress,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  SelectChangeEvent,
+  Typography,
 } from '@mui/material';
-import {
-  FilterList as FilterIcon,
-  ExpandMore as ExpandMoreIcon,
-  Visibility as ViewIcon,
-  Download as DownloadIcon,
-  Refresh as RefreshIcon,
-  Security as SecurityIcon,
-  Error as ErrorIcon,
-  Warning as WarningIcon,
-  Info as InfoIcon,
-} from '@mui/icons-material';
-import { auditService, AuditEvent, AuditFilter, AuditSummary } from '@/services/auditService';
+
+import { AuditEvent, AuditFilter, auditService, AuditSummary } from '@/services/auditService';
 
 interface AuditPanelProps {
   requestId?: string;
@@ -202,7 +203,7 @@ const EventDetailsDialog: React.FC<EventDetailsDialogProps> = ({ event, open, on
                   overflow: 'auto',
                   backgroundColor: '#f5f5f5',
                   padding: '8px',
-                  borderRadius: '4px'
+                  borderRadius: '4px',
                 }}>
                   {JSON.stringify(event.details, null, 2)}
                 </pre>
@@ -267,7 +268,7 @@ export const AuditPanel: React.FC<AuditPanelProps> = ({
   requestId,
   recordId,
   packageId,
-  title = "Audit Log",
+  title = 'Audit Log',
   maxHeight = 600,
 }) => {
   const [events, setEvents] = useState<AuditEvent[]>([]);

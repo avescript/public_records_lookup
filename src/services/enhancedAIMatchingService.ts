@@ -7,8 +7,8 @@
  * with support for multiple agencies and document types
  */
 
-import SyntheticDataGenerator, { GeneratedDocument, SyntheticDataSet } from './syntheticDataGenerator';
 import { MatchCandidate, MatchExplanation, MatchResult } from './aiMatchingService';
+import SyntheticDataGenerator, { GeneratedDocument, SyntheticDataSet } from './syntheticDataGenerator';
 
 class EnhancedAIMatchingService {
   private syntheticData: SyntheticDataSet | null = null;
@@ -275,7 +275,7 @@ class EnhancedAIMatchingService {
       'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with',
       'by', 'from', 'all', 'any', 'some', 'this', 'that', 'these', 'those', 'is', 'are',
       'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
-      'will', 'would', 'should', 'could', 'can', 'may', 'might', 'must', 'shall'
+      'will', 'would', 'should', 'could', 'can', 'may', 'might', 'must', 'shall',
     ]);
     
     const terms = query.toLowerCase()

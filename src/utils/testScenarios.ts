@@ -302,49 +302,49 @@ export const resetTestScenario = async () => {
  * Quick demo script data
  */
 export const DEMO_SCRIPT = {
-  title: "Public Records System Demo",
+  title: 'Public Records System Demo',
   steps: [
     {
       step: 1,
-      role: "Requester",
-      action: "Submit new request",
-      url: "localhost:3000",
+      role: 'Requester',
+      action: 'Submit new request',
+      url: 'localhost:3000',
       data: SAMPLE_REQUEST,
-      expectedOutcome: "Get tracking ID and confirmation"
+      expectedOutcome: 'Get tracking ID and confirmation',
     },
     {
       step: 2,
-      role: "Requester", 
-      action: "Check request status",
-      url: "localhost:3000/status",
-      data: "Use tracking ID from step 1",
-      expectedOutcome: "See current status and details"
+      role: 'Requester', 
+      action: 'Check request status',
+      url: 'localhost:3000/status',
+      data: 'Use tracking ID from step 1',
+      expectedOutcome: 'See current status and details',
     },
     {
       step: 3,
-      role: "Admin/Staff",
-      action: "Review staff dashboard",
-      url: "localhost:3000/admin/staff",
-      data: "View all pending requests",
-      expectedOutcome: "See request queue with filters and details"
+      role: 'Admin/Staff',
+      action: 'Review staff dashboard',
+      url: 'localhost:3000/admin/staff',
+      data: 'View all pending requests',
+      expectedOutcome: 'See request queue with filters and details',
     },
     {
       step: 4,
-      role: "Admin/Staff",
-      action: "Process sample request",
-      url: "localhost:3000/admin/staff",
-      data: "Select sample request, update status, add notes",
-      expectedOutcome: "Demonstrate Epic 4 features: PII detection, redaction, approval workflow"
+      role: 'Admin/Staff',
+      action: 'Process sample request',
+      url: 'localhost:3000/admin/staff',
+      data: 'Select sample request, update status, add notes',
+      expectedOutcome: 'Demonstrate Epic 4 features: PII detection, redaction, approval workflow',
     },
     {
       step: 5,
-      role: "Admin/Staff",
-      action: "Complete request workflow",
-      url: "localhost:3000/admin/staff", 
-      data: "Update status to completed",
-      expectedOutcome: "Show complete audit trail and process"
-    }
-  ]
+      role: 'Admin/Staff',
+      action: 'Complete request workflow',
+      url: 'localhost:3000/admin/staff', 
+      data: 'Update status to completed',
+      expectedOutcome: 'Show complete audit trail and process',
+    },
+  ],
 };
 
 export default {

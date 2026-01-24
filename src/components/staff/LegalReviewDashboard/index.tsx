@@ -4,47 +4,48 @@
  * Provides overview of comment threads, change requests, and package approvals
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import {
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  Tabs,
-  Tab,
-  Alert,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Chip,
-  Button,
-  IconButton,
-  Tooltip,
-  LinearProgress,
-  Divider,
-} from '@mui/material';
-import {
-  Dashboard as DashboardIcon,
-  Comment as CommentIcon,
-  Inventory as PackageIcon,
-  ChangeCircle as ChangeIcon,
-  Schedule as TimeIcon,
-  TrendingUp as TrendingIcon,
-  Notifications as NotificationIcon,
   Assignment as TaskIcon,
+  ChangeCircle as ChangeIcon,
   CheckCircle as CompleteIcon,
-  Warning as WarningIcon,
+  Comment as CommentIcon,
+  Dashboard as DashboardIcon,
   Error as ErrorIcon,
   Info as InfoIcon,
+  Inventory as PackageIcon,
+  Notifications as NotificationIcon,
+  Schedule as TimeIcon,
+  TrendingUp as TrendingIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  Grid,
+  IconButton,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Tab,
+  Tabs,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+
 import { 
+  ChangeRequest,
+  CommentThread,
   legalReviewService, 
   LegalReviewSummary,
-  CommentThread,
-  ChangeRequest,
   PackageApproval,
 } from '../../../services/legalReviewService';
 
@@ -97,7 +98,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon, color, tr
                   fontSize="small" 
                   color={trend.direction === 'up' ? 'error' : 'success'}
                   sx={{ 
-                    transform: trend.direction === 'down' ? 'rotate(180deg)' : 'none'
+                    transform: trend.direction === 'down' ? 'rotate(180deg)' : 'none',
                   }}
                 />
                 <Typography 

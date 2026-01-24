@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo,useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 // Make sure this component only runs on the client side
@@ -8,39 +8,39 @@ if (typeof window !== 'undefined') {
   import('../../../lib/pdf-worker');
 }
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Stack,
-  CircularProgress,
-  Alert,
-  Chip,
-  FormControlLabel,
-  Switch,
-  Divider,
-} from '@mui/material';
-import {
-  ZoomIn as ZoomInIcon,
-  ZoomOut as ZoomOutIcon,
+  Edit as EditIcon,
   FullscreenExit as FitToWidthIcon,
-  NavigateNext as NextPageIcon,
   NavigateBefore as PrevPageIcon,
+  NavigateNext as NextPageIcon,
+  Preview as PreviewIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
-  Edit as EditIcon,
-  Preview as PreviewIcon,
+  ZoomIn as ZoomInIcon,
+  ZoomOut as ZoomOutIcon,
 } from '@mui/icons-material';
-
-import { PIIFinding, PIIType, piiDetectionService } from '../../../services/piiDetectionService';
-import { ManualRedaction, RedactionCoordinates, redactionService } from '../../../services/redactionService';
-import { RedactionCanvas } from '../../RedactionCanvas';
-import { CoordinateTransformer, PDFPageDimensions, CanvasDimensions } from '../../../utils/coordinateTransformer';
-import RedactionManagement from '../../RedactionManagement';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Divider,
+  FormControlLabel,
+  Stack,
+  Switch,
+  Typography,
+} from '@mui/material';
 
 // Configure PDF.js worker
 import '../../../lib/pdf-worker';
+
+import { piiDetectionService,PIIFinding, PIIType } from '../../../services/piiDetectionService';
+import { ManualRedaction, RedactionCoordinates, redactionService } from '../../../services/redactionService';
+import { CanvasDimensions,CoordinateTransformer, PDFPageDimensions } from '../../../utils/coordinateTransformer';
+import { RedactionCanvas } from '../../RedactionCanvas';
+import RedactionManagement from '../../RedactionManagement';
 
 interface PDFPreviewProps {
   recordId: string;

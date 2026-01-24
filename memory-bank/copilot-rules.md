@@ -36,6 +36,7 @@
 
 #### Core Testing Principles
 - **Unit tests required** for all new features - no exceptions
+- **Write tests immediately after building feature**: Always create unit tests for new components, services, and contexts after implementation
 - **Tests merge with code**: All tests must be included in feature branch and merge to main
 - **Test-driven development**: Write tests during feature development, not after
 - **Test coverage standards**: Maintain comprehensive coverage for critical user paths

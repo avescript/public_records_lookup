@@ -2,6 +2,12 @@
 
 import React, { useState } from 'react';
 import {
+  FilterList as FilterIcon,
+  Search as SearchIcon,
+  ViewList as TableViewIcon,
+  ViewModule as CardViewIcon,
+} from '@mui/icons-material';
+import {
   Box,
   Card,
   CardContent,
@@ -12,12 +18,6 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import {
-  ViewList as TableViewIcon,
-  ViewModule as CardViewIcon,
-  Search as SearchIcon,
-  FilterList as FilterIcon,
-} from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/core/Button';
@@ -25,13 +25,13 @@ import { StaffDashboard } from '@/components/staff/StaffDashboard';
 import { StoredRequest } from '@/services/requestService';
 
 import {
+  StyledControlsContainer,
   StyledDashboardContainer,
   StyledDashboardHeader,
-  StyledMetricsContainer,
   StyledMetricCard,
-  StyledControlsContainer,
-  StyledRequestsGrid,
+  StyledMetricsContainer,
   StyledRequestCard,
+  StyledRequestsGrid,
 } from './EnhancedDashboard.styles';
 
 export interface EnhancedDashboardProps {

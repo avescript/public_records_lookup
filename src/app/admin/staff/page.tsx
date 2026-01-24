@@ -5,14 +5,14 @@ import { Box } from '@mui/material';
 
 import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
+import { EnhancedDashboard } from '../../../components/staff/EnhancedDashboard';
 import { MatchResults } from '../../../components/staff/MatchResults';
 import { RequestDetailsDrawer } from '../../../components/staff/RequestDetailsDrawer';
-import { EnhancedDashboard } from '../../../components/staff/EnhancedDashboard';
-import { AuthProvider } from '../../../contexts/AuthContext';
 import { findMatches, MatchCandidate, MatchResult } from '../../../services/aiMatchingService';
 import { addRecordToRequest, getRequestById, RequestStatus, StoredRequest } from '../../../services/requestService';
+import { ClientProviders } from '../../../components/providers/ClientProviders';
 
-function StaffPageContent() {
+export default function StaffPage() {
   const [selectedRequest, setSelectedRequest] = useState<StoredRequest | null>(
     null
   );
@@ -149,8 +149,9 @@ function StaffPageContent() {
   };
 
   return (
-    <ProtectedRoute>
-      <AdminLayout>
+    <ClientProviders>
+      <ProtectedRoute>
+        <AdminLayout>
         <Box>
           <EnhancedDashboard onRequestSelect={handleRequestSelect} />
           <RequestDetailsDrawer
@@ -173,13 +174,6 @@ function StaffPageContent() {
         </Box>
       </AdminLayout>
     </ProtectedRoute>
-  );
-}
-
-export default function StaffPage() {
-  return (
-    <AuthProvider>
-      <StaffPageContent />
-    </AuthProvider>
+    </ClientProviders>
   );
 }

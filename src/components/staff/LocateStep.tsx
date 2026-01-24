@@ -2,26 +2,26 @@
 
 import React, { useState } from 'react';
 import { 
+  Description as DocumentIcon,
+  FilterList as FilterIcon,
+  Folder as FolderIcon,
+  Search as SearchIcon,
+} from '@mui/icons-material';
+import { 
+  Alert,
   Box, 
   Card,
   CardContent,
   Checkbox,
-  FormControlLabel,
-  Typography,
-  Alert,
   Chip,
+  FormControlLabel,
   Stack,
+  Typography,
 } from '@mui/material';
-import { 
-  Search as SearchIcon,
-  FilterList as FilterIcon,
-  Folder as FolderIcon,
-  Description as DocumentIcon,
-} from '@mui/icons-material';
 
 import { Button } from '@/components/core/Button';
-import { WorkflowPage } from '@/components/staff/WorkflowPage';
 import { WorkflowStep } from '@/components/staff/WorkflowNavigation';
+import { WorkflowPage } from '@/components/staff/WorkflowPage';
 
 export interface LocateStepProps {
   requestId: string;
@@ -175,7 +175,7 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
               '&:hover': {
                 boxShadow: 4,
                 transform: 'translateY(-2px)',
-              }
+              },
             }}>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>

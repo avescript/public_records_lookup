@@ -1,6 +1,6 @@
 import { findMatches } from '../aiMatchingService';
-import { saveRequest } from '../requestService';
 import * as mockService from '../mockFirebaseService';
+import { saveRequest } from '../requestService';
 
 // Mock the AI matching service
 jest.mock('../aiMatchingService');
@@ -20,14 +20,14 @@ describe('Automatic AI Matching Integration', () => {
         semanticSimilarity: 0.8,
         keywordOverlap: 0.6,
         contextualRelevance: 0.7,
-        reasoningSummary: 'Test auto-matching'
+        reasoningSummary: 'Test auto-matching',
       },
       searchMetadata: {
         totalCandidatesScanned: 0,
         processingTimeMs: 100,
         confidenceThreshold: 0.7,
-        searchTimestamp: new Date().toISOString()
-      }
+        searchTimestamp: new Date().toISOString(),
+      },
     });
   });
 
@@ -44,10 +44,10 @@ describe('Automatic AI Matching Integration', () => {
       description: 'Testing automatic AI matching functionality',
       dateRange: {
         startDate: '2024-01-01',
-        endDate: '2024-01-31'
+        endDate: '2024-01-31',
       },
       contactEmail: 'test@example.com',
-      files: []
+      files: [],
     };
 
     // Create a new request - this should automatically trigger AI matching
@@ -77,10 +77,10 @@ describe('Automatic AI Matching Integration', () => {
       description: 'Testing error handling in automatic AI matching',
       dateRange: {
         startDate: '2024-02-01',
-        endDate: '2024-02-28'
+        endDate: '2024-02-28',
       },
       contactEmail: 'test@example.com',
-      files: []
+      files: [],
     };
 
     // Create a new request - AI matching should fail but request creation should succeed
@@ -112,10 +112,10 @@ describe('Automatic AI Matching Integration', () => {
       description: 'This is a detailed description for testing parameter passing to automatic AI matching',
       dateRange: {
         startDate: '2024-03-01',
-        endDate: '2024-03-31'
+        endDate: '2024-03-31',
       },
       contactEmail: 'params@example.com',
-      files: []
+      files: [],
     };
 
     const result = await saveRequest(requestData);

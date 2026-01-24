@@ -2,6 +2,14 @@
 
 import { useState } from 'react';
 import {
+  Assessment as AssessmentIcon,
+  Build as BuildIcon,
+  CloudDownload as CloudDownloadIcon,
+  Science as ScienceIcon,
+  Security as SecurityIcon,
+  Storage as StorageIcon,
+} from '@mui/icons-material';
+import {
   Alert,
   Box,
   Button,
@@ -11,34 +19,26 @@ import {
   Divider,
   Grid,
   Paper,
-  Typography,
-  Tabs,
   Tab,
+  Tabs,
+  Typography,
 } from '@mui/material';
-import {
-  Assessment as AssessmentIcon,
-  CloudDownload as CloudDownloadIcon,
-  Security as SecurityIcon,
-  Storage as StorageIcon,
-  Build as BuildIcon,
-  Science as ScienceIcon,
-} from '@mui/icons-material';
 
+import EnhancedDataManagement from '../../../components/admin/EnhancedDataManagement';
 import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';
-import { AuthProvider } from '../../../contexts/AuthContext';
+import { ClientProviders } from '../../../components/providers/ClientProviders';
 import { AuditPanel } from '../../../components/staff/AuditPanel';
 import { BigQueryExportDashboard } from '../../../components/staff/BigQueryExportDashboard';
-import EnhancedDataManagement from '../../../components/admin/EnhancedDataManagement';
+import { saveRequest } from '../../../services/requestService';
 import { seedTestData } from '../../../utils/seedTestData';
 import { 
-  setupCompleteTestScenario, 
-  seedExistingRequests,
   createSampleRequest,
   DEMO_SCRIPT,
-  TestTrackingIds 
+  seedExistingRequests,
+  setupCompleteTestScenario, 
+  TestTrackingIds, 
 } from '../../../utils/testScenarios';
-import { saveRequest } from '../../../services/requestService';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -64,7 +64,7 @@ function TabPanel({ children, value, index, ...other }: TabPanelProps) {
   );
 }
 
-function AdminToolsContent() {
+export default function AdminToolsPage() {
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState<string | null>(null);
   const [message, setMessage] = useState<{
@@ -139,10 +139,10 @@ function AdminToolsContent() {
       dateRange: {
         startDate: '2024-01-01',
         endDate: '2024-12-31',
-        preset: 'year'
+        preset: 'year',
       },
       contactEmail: 'test@example.com',
-      files: []
+      files: [],
     };
 
     const result = await saveRequest(testRequestData);
@@ -187,7 +187,7 @@ function AdminToolsContent() {
         description: 'Request for traffic citation records for speeding violations on Highway 99 between Main Street and Oak Avenue in August 2025.',
         dateRange: { startDate: '2025-08-01', endDate: '2025-08-31' },
         contactEmail: 'test@example.com',
-        files: []
+        files: [],
       },
       {
         title: 'Use of Force Reports - July 2025',
@@ -195,7 +195,7 @@ function AdminToolsContent() {
         description: 'Requesting use of force incident reports and body camera footage logs for July 2025.',
         dateRange: { startDate: '2025-07-01', endDate: '2025-07-31' },
         contactEmail: 'journalist@example.com',
-        files: []
+        files: [],
       },
       {
         title: 'Fire Department Response Times',
@@ -203,8 +203,8 @@ function AdminToolsContent() {
         description: 'Need emergency response time data including call volumes and incident types for research.',
         dateRange: { startDate: '2024-01-01', endDate: '2025-08-31' },
         contactEmail: 'researcher@example.com', 
-        files: []
-      }
+        files: [],
+      },
     ];
 
     const trackingIds = [];
@@ -224,8 +224,9 @@ function AdminToolsContent() {
   );
 
   return (
-    <ProtectedRoute requiredRole="admin">
-      <AdminLayout>
+    <ClientProviders>
+      <ProtectedRoute requiredRole="admin">
+        <AdminLayout>
         <Box sx={{ p: 4, maxWidth: '100%', mx: 'auto' }}>
           <Typography variant="h4" component="h1" gutterBottom>
             Admin Tools & System Management
@@ -579,13 +580,6 @@ function AdminToolsContent() {
         </Box>
       </AdminLayout>
     </ProtectedRoute>
-  );
-}
-
-export default function AdminToolsPage() {
-  return (
-    <AuthProvider>
-      <AdminToolsContent />
-    </AuthProvider>
+    </ClientProviders>
   );
 }

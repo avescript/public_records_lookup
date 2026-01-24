@@ -1,8 +1,9 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MatchResults } from '../index';
-import { MatchResult, MatchCandidate } from '../../../../services/aiMatchingService';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+
+import { MatchCandidate,MatchResult } from '../../../../services/aiMatchingService';
 import { candidateDecisionService } from '../../../../services/candidateDecisionService';
+import { MatchResults } from '../index';
 
 // Mock the decision service
 jest.mock('../../../../services/candidateDecisionService', () => ({

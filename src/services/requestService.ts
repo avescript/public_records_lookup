@@ -20,6 +20,7 @@ import {
 
 import { RequestFormDataWithFiles } from '../components/request/RequestForm/types';
 import firestore from '../lib/firebase';
+
 import { findMatches } from './aiMatchingService';
 import { auditService } from './auditService';
 import * as mockService from './mockFirebaseService';
@@ -30,7 +31,7 @@ const useMockService = () => {
          (typeof window !== 'undefined' && window.location.hostname === 'localhost');
   console.log('🤔 [Request Service] useMockService check:', shouldUseMock, {
     env: process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE,
-    hostname: typeof window !== 'undefined' ? window.location.hostname : 'server-side'
+    hostname: typeof window !== 'undefined' ? window.location.hostname : 'server-side',
   });
   return shouldUseMock;
 };
@@ -457,7 +458,7 @@ export const addRecordToRequest = async (
       associatedRecords: [...currentRecords, newRecord],
       updatedAt: Timestamp.now(),
       // Potentially update status when first record is added
-      ...(currentRecords.length === 0 && { status: 'under_review' as RequestStatus })
+      ...(currentRecords.length === 0 && { status: 'under_review' as RequestStatus }),
     };
 
     await updateDoc(docRef, updateData);

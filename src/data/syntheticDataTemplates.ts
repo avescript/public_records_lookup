@@ -70,7 +70,7 @@ export const SYNTHETIC_AGENCIES: SyntheticAgency[] = [
     departments: ['patrol', 'investigations', 'traffic', 'community_relations', 'internal_affairs'],
     commonRequestTypes: [
       'incident_reports', 'arrest_records', 'traffic_citations', 'use_of_force', 
-      'officer_training', 'complaint_investigations', 'body_camera_footage'
+      'officer_training', 'complaint_investigations', 'body_camera_footage',
     ],
     documentTypes: ['incident_report', 'arrest_report', 'citation', 'training_record', 'complaint_file'],
     averageResponseTime: 15,
@@ -82,7 +82,7 @@ export const SYNTHETIC_AGENCIES: SyntheticAgency[] = [
     departments: ['emergency_response', 'fire_prevention', 'hazmat', 'training', 'administration'],
     commonRequestTypes: [
       'emergency_response', 'fire_inspections', 'hazmat_incidents', 'training_records',
-      'equipment_maintenance', 'personnel_records', 'budget_reports'
+      'equipment_maintenance', 'personnel_records', 'budget_reports',
     ],
     documentTypes: ['incident_report', 'inspection_report', 'training_certificate', 'maintenance_log'],
     averageResponseTime: 10,
@@ -94,7 +94,7 @@ export const SYNTHETIC_AGENCIES: SyntheticAgency[] = [
     departments: ['accounting', 'budget', 'payroll', 'procurement', 'audit'],
     commonRequestTypes: [
       'budget_reports', 'expenditure_records', 'contract_documents', 'payroll_data',
-      'audit_reports', 'vendor_payments', 'capital_projects'
+      'audit_reports', 'vendor_payments', 'capital_projects',
     ],
     documentTypes: ['financial_report', 'contract', 'invoice', 'audit_report', 'budget_document'],
     averageResponseTime: 12,
@@ -106,7 +106,7 @@ export const SYNTHETIC_AGENCIES: SyntheticAgency[] = [
     departments: ['streets', 'water', 'sewer', 'parks', 'facilities', 'engineering'],
     commonRequestTypes: [
       'infrastructure_reports', 'maintenance_records', 'construction_permits', 'environmental_studies',
-      'project_plans', 'inspection_reports', 'contractor_records'
+      'project_plans', 'inspection_reports', 'contractor_records',
     ],
     documentTypes: ['engineering_report', 'permit', 'inspection_report', 'maintenance_record', 'project_plan'],
     averageResponseTime: 14,
@@ -118,7 +118,7 @@ export const SYNTHETIC_AGENCIES: SyntheticAgency[] = [
     departments: ['litigation', 'contracts', 'compliance', 'claims', 'advisory'],
     commonRequestTypes: [
       'legal_opinions', 'litigation_documents', 'contract_records', 'settlement_agreements',
-      'compliance_reports', 'insurance_claims', 'advisory_memos'
+      'compliance_reports', 'insurance_claims', 'advisory_memos',
     ],
     documentTypes: ['legal_opinion', 'contract', 'litigation_file', 'settlement_agreement', 'memo'],
     averageResponseTime: 20,
@@ -130,7 +130,7 @@ export const SYNTHETIC_AGENCIES: SyntheticAgency[] = [
     departments: ['parks_maintenance', 'recreation_programs', 'facilities', 'events', 'aquatics'],
     commonRequestTypes: [
       'facility_usage', 'program_records', 'maintenance_reports', 'event_permits',
-      'safety_incidents', 'budget_reports', 'staff_records'
+      'safety_incidents', 'budget_reports', 'staff_records',
     ],
     documentTypes: ['usage_report', 'permit', 'incident_report', 'program_record', 'maintenance_log'],
     averageResponseTime: 8,

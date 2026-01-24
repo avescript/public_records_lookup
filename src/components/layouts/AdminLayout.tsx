@@ -15,6 +15,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { useAuth } from '../../contexts/AuthContext';
+import { ClientProviders } from '../providers/ClientProviders';
+import { AgencySwitcher } from '../shared/AgencySwitcher';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -22,7 +24,7 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -42,9 +44,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </Link>
           </Typography>
 
+          {/* Agency Switcher */}
+          <Box sx={{ mr: 3 }}>
+            <AgencySwitcher variant="compact" showDepartmentCount={false} />
+          </Box>
+
           {/* Admin Status Indicator */}
           <Chip
-            label="Staff Access"
+            label={user?.role === 'admin' ? 'Admin Access' : user?.role === 'legal_reviewer' ? 'Legal Reviewer' : 'Staff Access'}
             color="secondary"
             size="small"
             sx={{ mr: 3 }}

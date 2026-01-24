@@ -5,7 +5,7 @@
  * with BigQuery-compatible schema and mock exporter functionality.
  */
 
-import { auditService, AuditEvent, AuditFilter } from './auditService';
+import { AuditEvent, AuditFilter,auditService } from './auditService';
 
 // BigQuery Schema Definitions
 export interface BigQueryEvent {

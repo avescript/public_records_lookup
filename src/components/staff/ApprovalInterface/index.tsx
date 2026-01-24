@@ -4,42 +4,43 @@
  * Material-UI dialog system with comprehensive approval controls
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
-  Box,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Chip,
+  Cancel,
+  CheckCircle,
+  Close,
+  Description,
+  Edit,
+  Info,
+  Person,
+  Schedule,
+  Warning,
+} from '@mui/icons-material';
+import {
   Alert,
-  CircularProgress,
+  Box,
+  Button,
   Card,
   CardContent,
-  Grid,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
+  FormControl,
+  Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
   Tooltip,
+  Typography,
 } from '@mui/material';
-import {
-  CheckCircle,
-  Cancel,
-  Edit,
-  Schedule,
-  Person,
-  Description,
-  Close,
-  Warning,
-  Info,
-} from '@mui/icons-material';
-import { approvalService, ApprovalWorkflow, ApprovalDecision } from '../../../services/approvalService';
+
+import { ApprovalDecision,approvalService, ApprovalWorkflow } from '../../../services/approvalService';
 
 interface ApprovalInterfaceProps {
   open: boolean;
@@ -173,7 +174,7 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: { minHeight: '500px' }
+        sx: { minHeight: '500px' },
       }}
     >
       <DialogTitle>

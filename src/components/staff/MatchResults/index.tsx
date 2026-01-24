@@ -38,7 +38,7 @@ import {
 import { format } from 'date-fns';
 
 import { MatchCandidate, MatchResult } from '../../../services/aiMatchingService';
-import { candidateDecisionService, CandidateDecision } from '../../../services/candidateDecisionService';
+import { CandidateDecision,candidateDecisionService } from '../../../services/candidateDecisionService';
 
 interface MatchResultsProps {
   open: boolean;

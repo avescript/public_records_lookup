@@ -34,8 +34,8 @@ import {
   Typography,
 } from '@mui/material';
 import { format } from 'date-fns';
-
 import dynamic from 'next/dynamic';
+
 import { AuditPanel } from '@/components/staff/AuditPanel';
 
 // Helper function to convert Firebase Timestamp or mock timestamp to Date
@@ -75,17 +75,17 @@ const convertToDate = (timestamp: any): Date => {
 };
 
 import { MatchResult } from '../../../services/aiMatchingService';
-import { RequestStatus, StoredRequest, AssociatedRecord } from '../../../services/requestService';
+import { CommentThread, PackageApproval } from '../../../services/legalReviewService';
+import { AssociatedRecord,RequestStatus, StoredRequest } from '../../../services/requestService';
 import PIIFindings from '../../shared/PIIFindings';
 import { CommentThreadComponent } from '../CommentThread';
 import { PackageApprovalComponent } from '../PackageApproval';
 import { PackageBuilder } from '../PackageBuilder';
-import { CommentThread, PackageApproval } from '../../../services/legalReviewService';
 
 // Dynamically import PDFPreview to prevent SSR issues with browser-specific APIs
 const PDFPreview = dynamic(() => import('../../shared/PDFPreview/ClientWrapper'), {
   ssr: false,
-  loading: () => <div>Loading PDF preview...</div>
+  loading: () => <div>Loading PDF preview...</div>,
 });
 import { PIIFinding } from '../../../services/piiDetectionService';
 
@@ -415,7 +415,7 @@ export function RequestDetailsDrawer({
                       borderColor: 'divider',
                       borderRadius: 1,
                       p: 2,
-                      backgroundColor: 'background.default'
+                      backgroundColor: 'background.default',
                     }}
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>

@@ -4,8 +4,8 @@
  * Comprehensive test suite for synthetic data generation and validation
  */
 
-import SyntheticDataGenerator, { GeneratedRequest, GeneratedDocument, SyntheticDataSet } from '../syntheticDataGenerator';
-import { SYNTHETIC_AGENCIES, REQUEST_TEMPLATES, DOCUMENT_TEMPLATES, SYNTHETIC_PERSONAS } from '../../data/syntheticDataTemplates';
+import { DOCUMENT_TEMPLATES, REQUEST_TEMPLATES, SYNTHETIC_AGENCIES, SYNTHETIC_PERSONAS } from '../../data/syntheticDataTemplates';
+import SyntheticDataGenerator, { GeneratedDocument, GeneratedRequest, SyntheticDataSet } from '../syntheticDataGenerator';
 
 describe('SyntheticDataGenerator', () => {
   let generator: SyntheticDataGenerator;

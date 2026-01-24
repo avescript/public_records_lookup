@@ -1,7 +1,7 @@
 'use client';
 
+import { Box,CircularProgress } from '@mui/material';
 import dynamic from 'next/dynamic';
-import { CircularProgress, Box } from '@mui/material';
 
 // Client-only wrapper for PDFPreview to prevent SSR issues
 const PDFPreviewComponent = dynamic(() => import('./index'), {

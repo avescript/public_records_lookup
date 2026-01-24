@@ -6,8 +6,8 @@ import { Box, Paper, Typography } from '@mui/material';
 import { WorkflowNavigation, WorkflowStep } from '@/components/staff/WorkflowNavigation';
 
 import { 
-  StyledPageContainer,
   StyledContentPaper,
+  StyledPageContainer,
   StyledStepHeader,
 } from './WorkflowPage.styles';
 

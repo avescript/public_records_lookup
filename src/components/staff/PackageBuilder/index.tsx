@@ -9,6 +9,18 @@
 
 import React, { useState } from 'react';
 import {
+  Build as BuildIcon,
+  Close as CloseIcon,
+  Description as DocumentIcon,
+  Download as DownloadIcon,
+  Email as EmailIcon,
+  Folder as FolderIcon,
+  KeyboardArrowDown as ArrowDownIcon,
+  KeyboardArrowUp as ArrowUpIcon,
+  Preview as PreviewIcon,
+  Reorder as ReorderIcon,
+} from '@mui/icons-material';
+import {
   Box,
   Button,
   Card,
@@ -29,23 +41,12 @@ import {
   ListItemText,
   Paper,
   Stack,
+  Switch,
   TextField,
   Typography,
-  Switch,
 } from '@mui/material';
-import {
-  Build as BuildIcon,
-  Close as CloseIcon,
-  Description as DocumentIcon,
-  Download as DownloadIcon,
-  KeyboardArrowUp as ArrowUpIcon,
-  KeyboardArrowDown as ArrowDownIcon,
-  Email as EmailIcon,
-  Folder as FolderIcon,
-  Preview as PreviewIcon,
-  Reorder as ReorderIcon,
-} from '@mui/icons-material';
-import { PackageManifest, PackageRecord, createPackageManifest, buildPackage, toggleRecordInclusion, updatePackageRecordOrder } from '../../../services/packageService';
+
+import { buildPackage, createPackageManifest, PackageManifest, PackageRecord, toggleRecordInclusion, updatePackageRecordOrder } from '../../../services/packageService';
 import { AssociatedRecord } from '../../../services/requestService';
 
 interface PackageBuilderProps {

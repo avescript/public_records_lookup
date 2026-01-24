@@ -11,18 +11,18 @@
  */
 
 import { RequestFormDataWithFiles } from '../components/request/RequestForm/types';
-import { MatchCandidate } from '../services/aiMatchingService';
 import { 
-  SYNTHETIC_AGENCIES, 
-  REQUEST_TEMPLATES, 
   DOCUMENT_TEMPLATES, 
+  REQUEST_TEMPLATES, 
+  SYNTHETIC_AGENCIES, 
   SYNTHETIC_PERSONAS, 
-  TEMPLATE_VARIABLES,
   SyntheticAgency,
-  SyntheticRequestTemplate,
   SyntheticDocumentTemplate,
   SyntheticPersona,
+  SyntheticRequestTemplate,
+  TEMPLATE_VARIABLES,
 } from '../data/syntheticDataTemplates';
+import { MatchCandidate } from '../services/aiMatchingService';
 
 export interface GeneratedRequest extends RequestFormDataWithFiles {
   id?: string;

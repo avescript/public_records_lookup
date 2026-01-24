@@ -4,8 +4,8 @@
  * Tests for the enhanced AI matching with synthetic data integration
  */
 
-import { EnhancedAIMatchingService } from '../enhancedAIMatchingService';
 import { SYNTHETIC_AGENCIES } from '../../data/syntheticDataTemplates';
+import { EnhancedAIMatchingService } from '../enhancedAIMatchingService';
 
 // Mock the singleton for testing
 jest.mock('../enhancedAIMatchingService', () => {

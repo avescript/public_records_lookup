@@ -4,56 +4,56 @@
  * Admin interface for managing synthetic datasets and enhanced AI matching
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import {
+  Analytics as AnalyticsIcon,
+  Assessment as AssessmentIcon,
+  Download as DownloadIcon,
+  ExpandMore as ExpandMoreIcon,
+  Refresh as RefreshIcon,
+  Science as ScienceIcon,
+  Storage as StorageIcon,
+  Upload as UploadIcon,
+  Visibility as VisibilityIcon,
+} from '@mui/icons-material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Alert,
   Box,
+  Button,
   Card,
   CardContent,
-  Typography,
-  Button,
-  Grid,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  Paper,
+  Switch,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  LinearProgress,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  Switch,
   TextField,
-  FormControlLabel,
-  Divider,
-  IconButton,
   Tooltip,
+  Typography,
 } from '@mui/material';
-import {
-  ExpandMore as ExpandMoreIcon,
-  Refresh as RefreshIcon,
-  Assessment as AssessmentIcon,
-  Storage as StorageIcon,
-  Science as ScienceIcon,
-  Analytics as AnalyticsIcon,
-  Download as DownloadIcon,
-  Upload as UploadIcon,
-  Visibility as VisibilityIcon,
-} from '@mui/icons-material';
 
-import enhancedAIMatchingService from '../../services/enhancedAIMatchingService';
 import { SYNTHETIC_AGENCIES } from '../../data/syntheticDataTemplates';
+import enhancedAIMatchingService from '../../services/enhancedAIMatchingService';
 
 interface DatasetStats {
   metadata: {
@@ -472,7 +472,7 @@ export default function EnhancedDataManagement() {
             value={generateOptions.requestCount}
             onChange={(e) => setGenerateOptions(prev => ({ 
               ...prev, 
-              requestCount: parseInt(e.target.value) || 100 
+              requestCount: parseInt(e.target.value) || 100, 
             }))}
             fullWidth
             sx={{ mb: 2 }}
@@ -484,7 +484,7 @@ export default function EnhancedDataManagement() {
             value={generateOptions.documentsPerAgency}
             onChange={(e) => setGenerateOptions(prev => ({ 
               ...prev, 
-              documentsPerAgency: parseInt(e.target.value) || 85 
+              documentsPerAgency: parseInt(e.target.value) || 85, 
             }))}
             fullWidth
             sx={{ mb: 2 }}
@@ -496,7 +496,7 @@ export default function EnhancedDataManagement() {
                 checked={generateOptions.includeEdgeCases}
                 onChange={(e) => setGenerateOptions(prev => ({ 
                   ...prev, 
-                  includeEdgeCases: e.target.checked 
+                  includeEdgeCases: e.target.checked, 
                 }))}
               />
             }
@@ -510,7 +510,7 @@ export default function EnhancedDataManagement() {
                 checked={generateOptions.includePerformanceData}
                 onChange={(e) => setGenerateOptions(prev => ({ 
                   ...prev, 
-                  includePerformanceData: e.target.checked 
+                  includePerformanceData: e.target.checked, 
                 }))}
               />
             }

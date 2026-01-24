@@ -14,14 +14,24 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
+import { ClientProviders } from '../../../components/providers/ClientProviders';
 import { useAuth } from '../../../contexts/AuthContext';
-import { AuthProvider } from '../../../contexts/AuthContext';
+
+export default function LoginPage() {
+  return (
+    <ClientProviders>
+      <LoginPageContent />
+    </ClientProviders>
+  );
+}
 
 function LoginPageContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
+
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,13 +145,5 @@ function LoginPageContent() {
         </Button>
       </Box>
     </Container>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <AuthProvider>
-      <LoginPageContent />
-    </AuthProvider>
   );
 }

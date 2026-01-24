@@ -1,48 +1,48 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo,useState } from 'react';
 import {
+  CheckCircle as CheckCircleIcon,
+  Error as ErrorIcon,
+  ExpandMore as ExpandMoreIcon,
+  Info as InfoIcon,
+  Security as SecurityIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+  Warning as WarningIcon,
+} from '@mui/icons-material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Alert,
   Box,
   Card,
   CardContent,
-  Typography,
+  Chip,
+  Collapse,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  IconButton,
+  InputLabel,
+  LinearProgress,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Chip,
-  Stack,
-  Alert,
-  Collapse,
-  IconButton,
-  Divider,
-  LinearProgress,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  FormControl,
-  InputLabel,
-  Select,
   MenuItem,
-  FormControlLabel,
+  Select,
+  Stack,
   Switch,
+  Typography,
 } from '@mui/material';
-import {
-  ExpandMore as ExpandMoreIcon,
-  Security as SecurityIcon,
-  Warning as WarningIcon,
-  Info as InfoIcon,
-  CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
-} from '@mui/icons-material';
 
 import {
-  PIIFinding,
-  PIIType,
-  PIIFindingsResult,
   piiDetectionService,
+  PIIFinding,
+  PIIFindingsResult,
+  PIIType,
 } from '../../../services/piiDetectionService';
 
 interface PIIFindingsProps {

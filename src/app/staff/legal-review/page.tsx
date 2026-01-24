@@ -6,7 +6,8 @@
 'use client';
 
 import React from 'react';
-import { Container, Box } from '@mui/material';
+import { Box,Container } from '@mui/material';
+
 import { LegalReviewDashboard } from '../../../components/staff/LegalReviewDashboard';
 
 export default function LegalReviewPage() {

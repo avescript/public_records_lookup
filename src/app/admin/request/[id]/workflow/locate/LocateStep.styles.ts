@@ -88,7 +88,7 @@ export const StyledRecordCard = styled(Box)(({ theme }) => ({
   
   '& .record-card': {
     height: '100%',
-    border: `2px solid transparent`,
+    border: '2px solid transparent',
     transition: 'all 0.2s ease-in-out',
     cursor: 'pointer',
     

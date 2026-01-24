@@ -2,49 +2,49 @@
 // Provides interface for viewing, editing, and managing redaction versions
 // Includes save/export capabilities and version history
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Stack,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Alert,
-  Tabs,
-  Tab,
-  Divider,
-  Badge,
-  Tooltip,
-  LinearProgress,
-} from '@mui/material';
-import {
-  Save as SaveIcon,
-  Download as ExportIcon,
-  History as HistoryIcon,
   Delete as DeleteIcon,
-  Visibility as ViewIcon,
+  Download as ExportIcon,
   Edit as EditIcon,
+  History as HistoryIcon,
   Info as InfoIcon,
+  Save as SaveIcon,
+  Visibility as ViewIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
+import {
+  Alert,
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  Stack,
+  Tab,
+  Tabs,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 
 import {
   ManualRedaction,
-  RedactionVersion,
-  RedactionSummary,
   redactionService,
+  RedactionSummary,
+  RedactionVersion,
 } from '../services/redactionService';
 
 interface RedactionManagementProps {

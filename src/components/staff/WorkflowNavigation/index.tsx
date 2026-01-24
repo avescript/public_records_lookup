@@ -30,7 +30,7 @@ import {
   StyledBreadcrumbContainer, 
   StyledNavigationPaper, 
   StyledProgressContainer, 
-  StyledStepperContainer 
+  StyledStepperContainer, 
 } from './WorkflowNavigation.styles';
 
 export type WorkflowStep = 'locate' | 'redact' | 'respond' | 'review';

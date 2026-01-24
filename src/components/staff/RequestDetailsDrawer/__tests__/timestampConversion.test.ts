@@ -37,7 +37,7 @@ describe('Timestamp conversion', () => {
     const mockTimestamp = {
       toDate: () => new Date('2024-01-15T10:30:00Z'),
       seconds: 1705316600,
-      _isoString: '2024-01-15T10:30:00.000Z'
+      _isoString: '2024-01-15T10:30:00.000Z',
     };
 
     const result = convertToDate(mockTimestamp);
@@ -76,7 +76,7 @@ describe('Timestamp conversion', () => {
     const mockTimestamp = {
       toDate: () => new Date('2024-01-15T10:30:00Z'),
       seconds: 1705316600,
-      _isoString: '2024-01-15T10:30:00.000Z'
+      _isoString: '2024-01-15T10:30:00.000Z',
     };
 
     const result = convertToDate(mockTimestamp);

@@ -6,6 +6,7 @@
  */
 
 import { Timestamp } from 'firebase/firestore';
+
 import * as mockService from './mockFirebaseService';
 
 // Check if we should use mock service

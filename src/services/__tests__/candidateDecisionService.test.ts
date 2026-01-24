@@ -1,4 +1,4 @@
-import { candidateDecisionService, CandidateDecision } from '../candidateDecisionService';
+import { CandidateDecision,candidateDecisionService } from '../candidateDecisionService';
 
 describe('candidateDecisionService', () => {
   const mockRequestId = 'request-123';

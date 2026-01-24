@@ -2,7 +2,8 @@
 // Provides HTML5 Canvas overlay for drawing redaction boxes
 // Handles mouse interactions, coordinate transformations, and visual feedback
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useCallback,useEffect, useRef, useState } from 'react';
+
 import { ManualRedaction, RedactionCoordinates } from '../services/redactionService';
 
 export interface RedactionCanvasProps {
