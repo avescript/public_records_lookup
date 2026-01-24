@@ -21,6 +21,7 @@ import {
   Security as SecurityIcon,
   Storage as StorageIcon,
   Build as BuildIcon,
+  Science as ScienceIcon,
 } from '@mui/icons-material';
 
 import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
@@ -28,6 +29,7 @@ import { AdminLayout } from '../../../components/layouts/AdminLayout';
 import { AuthProvider } from '../../../contexts/AuthContext';
 import { AuditPanel } from '../../../components/staff/AuditPanel';
 import { BigQueryExportDashboard } from '../../../components/staff/BigQueryExportDashboard';
+import EnhancedDataManagement from '../../../components/admin/EnhancedDataManagement';
 import { seedTestData } from '../../../utils/seedTestData';
 import { 
   setupCompleteTestScenario, 
@@ -259,16 +261,22 @@ function AdminToolsContent() {
                 aria-controls="tools-tabpanel-1"
               />
               <Tab
-                icon={<BuildIcon />}
-                label="Development Tools"
+                icon={<ScienceIcon />}
+                label="Enhanced Data v2"
                 id="tools-tab-2"
                 aria-controls="tools-tabpanel-2"
               />
               <Tab
-                icon={<AssessmentIcon />}
-                label="System Analytics"
+                icon={<BuildIcon />}
+                label="Development Tools"
                 id="tools-tab-3"
                 aria-controls="tools-tabpanel-3"
+              />
+              <Tab
+                icon={<AssessmentIcon />}
+                label="System Analytics"
+                id="tools-tab-4"
+                aria-controls="tools-tabpanel-4"
               />
             </Tabs>
 
@@ -288,6 +296,12 @@ function AdminToolsContent() {
             </TabPanel>
 
             <TabPanel value={currentTab} index={2}>
+              <Box sx={{ p: 3 }}>
+                <EnhancedDataManagement />
+              </Box>
+            </TabPanel>
+
+            <TabPanel value={currentTab} index={3}>
               <Box sx={{ p: 3, maxWidth: 1000, mx: 'auto' }}>
                 <Typography variant="h6" gutterBottom>
                   Development Tools & Test Scenarios
@@ -536,7 +550,7 @@ function AdminToolsContent() {
               </Box>
             </TabPanel>
 
-            <TabPanel value={currentTab} index={3}>
+            <TabPanel value={currentTab} index={4}>
               <Box sx={{ p: 3 }}>
                 <Typography variant="h6" gutterBottom>
                   System Analytics
