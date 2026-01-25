@@ -17,6 +17,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
 import { ClientProviders } from '../providers/ClientProviders';
 import { AgencySwitcher } from '../shared/AgencySwitcher';
+import { RoleChip, AdminButton, PermissionButton } from '../auth';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -50,12 +51,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </Box>
 
           {/* Admin Status Indicator */}
-          <Chip
-            label={user?.role === 'admin' ? 'Admin Access' : user?.role === 'legal_reviewer' ? 'Legal Reviewer' : 'Staff Access'}
-            color="secondary"
-            size="small"
-            sx={{ mr: 3 }}
-          />
+          <RoleChip sx={{ mr: 3 }} />
 
           {/* Admin Navigation */}
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -69,7 +65,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             >
               Request Queue
             </Button>
-            <Button
+            
+            {/* Admin Tools - Admin Only */}
+            <PermissionButton
+              requiredRoles={['admin']}
               color="inherit"
               component={Link}
               href="/admin/tools"
@@ -78,7 +77,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               }}
             >
               Admin Tools
-            </Button>
+            </PermissionButton>
+            
             <Button
               color="inherit"
               onClick={handleLogout}

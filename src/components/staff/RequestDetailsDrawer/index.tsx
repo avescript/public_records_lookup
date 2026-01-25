@@ -37,6 +37,7 @@ import { format } from 'date-fns';
 import dynamic from 'next/dynamic';
 
 import { AuditPanel } from '@/components/staff/AuditPanel';
+import { StaffButton, LegalButton, PermissionButton, RoleGuard } from '../../auth';
 
 // Helper function to convert Firebase Timestamp or mock timestamp to Date
 const convertToDate = (timestamp: any): Date => {
@@ -339,11 +340,13 @@ export function RequestDetailsDrawer({
               }}
             >
               <Typography variant="h6">Status</Typography>
-              {!editingStatus && (
-                <IconButton size="small" onClick={handleStatusEdit}>
-                  <EditIcon />
-                </IconButton>
-              )}
+              <RoleGuard permissions={['edit_request']}>
+                {!editingStatus && (
+                  <IconButton size="small" onClick={handleStatusEdit}>
+                    <EditIcon />
+                  </IconButton>
+                )}
+              </RoleGuard>
             </Box>
 
             {editingStatus ? (
@@ -363,14 +366,15 @@ export function RequestDetailsDrawer({
                   </Select>
                 </FormControl>
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button
+                  <PermissionButton
+                    requiredPermissions={['edit_request']}
                     variant="contained"
                     size="small"
                     startIcon={<SaveIcon />}
                     onClick={handleStatusSave}
                   >
                     Save
-                  </Button>
+                  </PermissionButton>
                   <Button
                     variant="outlined"
                     size="small"
@@ -646,44 +650,56 @@ export function RequestDetailsDrawer({
           </Paper>
 
           {/* Epic 5: Comment Threads (US-050) */}
-          <Paper elevation={1} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Legal Review & Comments
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Communicate with legal reviewers about changes and approvals
-            </Typography>
-            <CommentThreadComponent
-              recordId={request.id!}
-              fileName="main_document"
-              onThreadCreated={(thread: CommentThread) => {
-                console.log('New comment thread created:', thread);
-              }}
-              onThreadUpdated={(thread: CommentThread) => {
-                console.log('Comment thread updated:', thread);
-              }}
-            />
-          </Paper>
+          <RoleGuard 
+            roles={['admin', 'legal_reviewer', 'staff']}
+            showAccessDenied={true}
+            accessDeniedMessage="Legal review and comment features require staff access or above."
+          >
+            <Paper elevation={1} sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Legal Review & Comments
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Communicate with legal reviewers about changes and approvals
+              </Typography>
+              <CommentThreadComponent
+                recordId={request.id!}
+                fileName="main_document"
+                onThreadCreated={(thread: CommentThread) => {
+                  console.log('New comment thread created:', thread);
+                }}
+                onThreadUpdated={(thread: CommentThread) => {
+                  console.log('Comment thread updated:', thread);
+                }}
+              />
+            </Paper>
+          </RoleGuard>
 
           {/* Epic 5: Package Approval (US-051) */}
-          <Paper elevation={1} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Package Approval
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Manage package-level approvals for final delivery
-            </Typography>
-            <PackageApprovalComponent
-              requestId={request.id!}
-              recordIds={[request.id!]} // In real app, this would be the actual matched record IDs
-              onApprovalComplete={(approval: PackageApproval) => {
-                console.log('Package approval completed:', approval);
-              }}
-              onApprovalUpdated={(approval: PackageApproval) => {
-                console.log('Package approval updated:', approval);
-              }}
-            />
-          </Paper>
+          <RoleGuard 
+            permissions={['approve_request', 'final_approval']}
+            showAccessDenied={true}
+            accessDeniedMessage="Package approval features require approval permissions."
+          >
+            <Paper elevation={1} sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Package Approval
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Manage package-level approvals for final delivery
+              </Typography>
+              <PackageApprovalComponent
+                requestId={request.id!}
+                recordIds={[request.id!]} // In real app, this would be the actual matched record IDs
+                onApprovalComplete={(approval: PackageApproval) => {
+                  console.log('Package approval completed:', approval);
+                }}
+                onApprovalUpdated={(approval: PackageApproval) => {
+                  console.log('Package approval updated:', approval);
+                }}
+              />
+            </Paper>
+          </RoleGuard>
 
           {/* Internal Notes */}
           <Paper elevation={1} sx={{ p: 3 }}>
@@ -696,15 +712,14 @@ export function RequestDetailsDrawer({
               }}
             >
               <Typography variant="h6">Internal Notes</Typography>
-              {!addingNote && (
-                <Button
-                  size="small"
-                  startIcon={<AssignmentIcon />}
-                  onClick={handleNoteAdd}
-                >
-                  Add Note
-                </Button>
-              )}
+              <StaffButton
+                size="small"
+                startIcon={<AssignmentIcon />}
+                onClick={handleNoteAdd}
+                style={{ display: addingNote ? 'none' : 'flex' }}
+              >
+                Add Note
+              </StaffButton>
             </Box>
 
             {addingNote && (
@@ -718,7 +733,7 @@ export function RequestDetailsDrawer({
                   onChange={e => setNewNote(e.target.value)}
                 />
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button
+                  <StaffButton
                     variant="contained"
                     size="small"
                     startIcon={<SaveIcon />}
@@ -726,7 +741,7 @@ export function RequestDetailsDrawer({
                     disabled={!newNote.trim()}
                   >
                     Add Note
-                  </Button>
+                  </StaffButton>
                   <Button
                     variant="outlined"
                     size="small"
