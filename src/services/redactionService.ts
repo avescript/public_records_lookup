@@ -1,6 +1,9 @@
 // Redaction Service
 // Handles manual redaction storage, versioning, and management
 // Provides CRUD operations for user-drawn redaction boxes
+// Integrates with agency-specific redaction rules
+
+import { SensitivityLevel, RedactionConfig } from './agencyTypes';
 
 export interface ManualRedaction {
   id: string;
@@ -14,7 +17,13 @@ export interface ManualRedaction {
   createdAt: string;
   createdBy: string; // User ID or email
   reason?: string; // Optional reason for redaction
-  type: 'manual' | 'ai-assisted'; // Distinguish from AI suggestions
+  type: 'manual' | 'ai-assisted' | 'agency-rule'; // Distinguish from AI suggestions and agency rules
+  agencyId?: string; // Agency that applied this redaction
+  ruleId?: string; // Rule ID if applied via agency rule
+  sensitivityLevel?: SensitivityLevel; // Sensitivity level from agency rule
+  requiresApproval?: boolean; // Whether this redaction needs approval
+  approvedBy?: string; // Who approved this redaction
+  approvedAt?: string; // When this redaction was approved
 }
 
 export interface RedactionVersion {
@@ -69,6 +78,239 @@ export class RedactionService {
   private getCurrentUser(): string {
     // Phase 0: Return placeholder user
     return 'staff_user_001';
+  }
+
+  /**
+   * Apply agency-specific redaction rules to a record
+   */
+  async applyAgencyRules(
+    recordId: string,
+    fileName: string,
+    agencyId: string,
+    piiFindings: any[] = [], // PII findings from detection service
+    pageNumber?: number
+  ): Promise<ManualRedaction[]> {
+    try {
+      // Import here to avoid circular dependency
+      const { agencyRedactionRulesService } = await import('./agencyRedactionRulesService');
+      
+      const config = await agencyRedactionRulesService.getRedactionConfig(agencyId);
+      if (!config) {
+        console.warn(`No redaction config found for agency: ${agencyId}`);
+        return [];
+      }
+
+      const autoApplyRules = await agencyRedactionRulesService.getAutoApplyRules(agencyId);
+      const appliedRedactions: ManualRedaction[] = [];
+
+      // Apply auto-apply rules to PII findings
+      for (const rule of autoApplyRules) {
+        // Find PII findings that match this rule's types
+        const matchingFindings = piiFindings.filter(finding => 
+          rule.piiTypes.some(type => type === finding.piiType) &&
+          (pageNumber === undefined || finding.pageNumber === pageNumber)
+        );
+
+        for (const finding of matchingFindings) {
+          const redaction = await this.addAgencyRuleRedaction(
+            recordId,
+            fileName,
+            finding.pageNumber,
+            {
+              x: finding.x,
+              y: finding.y,
+              width: finding.width,
+              height: finding.height,
+            },
+            agencyId,
+            rule.id,
+            rule.sensitivityLevel,
+            rule.requiresApproval,
+            `Applied by agency rule: ${rule.name}`
+          );
+          
+          appliedRedactions.push(redaction);
+        }
+      }
+
+      return appliedRedactions;
+    } catch (error) {
+      console.error('Failed to apply agency rules:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Add a redaction based on agency rule
+   */
+  async addAgencyRuleRedaction(
+    recordId: string,
+    fileName: string,
+    pageNumber: number,
+    coordinates: RedactionCoordinates,
+    agencyId: string,
+    ruleId: string,
+    sensitivityLevel: SensitivityLevel,
+    requiresApproval: boolean,
+    reason?: string
+  ): Promise<ManualRedaction> {
+    const redaction: ManualRedaction = {
+      id: this.generateRedactionId(),
+      recordId,
+      fileName,
+      pageNumber,
+      x: coordinates.x,
+      y: coordinates.y,
+      width: coordinates.width,
+      height: coordinates.height,
+      createdAt: new Date().toISOString(),
+      createdBy: 'agency-rule-system',
+      reason,
+      type: 'agency-rule',
+      agencyId,
+      ruleId,
+      sensitivityLevel,
+      requiresApproval,
+    };
+
+    // Get existing redactions
+    const existingRedactions = await this.getRedactionsForRecord(recordId, fileName);
+    existingRedactions.push(redaction);
+
+    // Save updated redactions
+    const storageKey = `${this.STORAGE_KEY_PREFIX}_${recordId}_${fileName}`;
+    localStorage.setItem(storageKey, JSON.stringify(existingRedactions));
+
+    // Create/update version
+    await this.createVersion(recordId, fileName, existingRedactions, 'draft', `Applied agency rule: ${ruleId}`);
+
+    return redaction;
+  }
+
+  /**
+   * Get redactions that require approval for an agency
+   */
+  async getRedactionsRequiringApproval(agencyId: string): Promise<ManualRedaction[]> {
+    const allRedactions = await this.getAllRedactions();
+    return allRedactions.filter(redaction => 
+      redaction.agencyId === agencyId && 
+      redaction.requiresApproval && 
+      !redaction.approvedBy
+    );
+  }
+
+  /**
+   * Approve a redaction
+   */
+  async approveRedaction(redactionId: string, approverId: string): Promise<boolean> {
+    try {
+      const allRedactions = await this.getAllRedactions();
+      const redactionIndex = allRedactions.findIndex(r => r.id === redactionId);
+      
+      if (redactionIndex === -1) {
+        return false;
+      }
+
+      const redaction = allRedactions[redactionIndex];
+      redaction.approvedBy = approverId;
+      redaction.approvedAt = new Date().toISOString();
+
+      // Update storage
+      const storageKey = `${this.STORAGE_KEY_PREFIX}_${redaction.recordId}_${redaction.fileName}`;
+      const recordRedactions = await this.getRedactionsForRecord(redaction.recordId, redaction.fileName);
+      const recordRedactionIndex = recordRedactions.findIndex(r => r.id === redactionId);
+      
+      if (recordRedactionIndex >= 0) {
+        recordRedactions[recordRedactionIndex] = redaction;
+        localStorage.setItem(storageKey, JSON.stringify(recordRedactions));
+        
+        // Update version
+        await this.createVersion(
+          redaction.recordId, 
+          redaction.fileName, 
+          recordRedactions, 
+          'saved',
+          `Approved redaction: ${redactionId}`
+        );
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Failed to approve redaction:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get all redactions across all records (for approval workflow)
+   */
+  private async getAllRedactions(): Promise<ManualRedaction[]> {
+    const allRedactions: ManualRedaction[] = [];
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith(this.STORAGE_KEY_PREFIX)) {
+        try {
+          const redactions = JSON.parse(localStorage.getItem(key)!);
+          if (Array.isArray(redactions)) {
+            allRedactions.push(...redactions);
+          }
+        } catch (error) {
+          console.warn(`Failed to parse redactions from ${key}:`, error);
+        }
+      }
+    }
+    
+    return allRedactions;
+  }
+
+  /**
+   * Get redaction statistics by agency
+   */
+  async getAgencyRedactionStats(agencyId: string): Promise<{
+    totalRedactions: number;
+    pendingApproval: number;
+    approvedRedactions: number;
+    bySensitivity: Record<SensitivityLevel, number>;
+    byRule: Record<string, number>;
+  }> {
+    const allRedactions = await this.getAllRedactions();
+    const agencyRedactions = allRedactions.filter(r => r.agencyId === agencyId);
+
+    const bySensitivity = {
+      [SensitivityLevel.LOW]: 0,
+      [SensitivityLevel.MEDIUM]: 0,
+      [SensitivityLevel.HIGH]: 0,
+      [SensitivityLevel.CRITICAL]: 0,
+    };
+
+    const byRule: Record<string, number> = {};
+    let pendingApproval = 0;
+    let approvedRedactions = 0;
+
+    agencyRedactions.forEach(redaction => {
+      if (redaction.sensitivityLevel) {
+        bySensitivity[redaction.sensitivityLevel]++;
+      }
+
+      if (redaction.ruleId) {
+        byRule[redaction.ruleId] = (byRule[redaction.ruleId] || 0) + 1;
+      }
+
+      if (redaction.requiresApproval && !redaction.approvedBy) {
+        pendingApproval++;
+      } else if (redaction.approvedBy) {
+        approvedRedactions++;
+      }
+    });
+
+    return {
+      totalRedactions: agencyRedactions.length,
+      pendingApproval,
+      approvedRedactions,
+      bySensitivity,
+      byRule,
+    };
   }
 
   /**

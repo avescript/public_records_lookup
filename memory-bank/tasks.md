@@ -353,12 +353,12 @@
 
 ### US-092: Agency-Specific Features ⏳
 
-- [ ] **Agency-Specific Redaction Rules**
-  - [ ] Implement different PII sensitivity levels per agency
-  - [ ] Create agency-specific redaction templates
-  - [ ] Add configurable redaction rules and policies
-  - [ ] Implement agency-based approval workflows
-  - [ ] Create agency-specific audit and compliance reporting
+- [x] **Agency-Specific Redaction Rules** ✅ **COMPLETED January 28, 2026**
+  - [x] Implement different PII sensitivity levels per agency
+  - [x] Create agency-specific redaction templates
+  - [x] Add configurable redaction rules and policies
+  - [x] Implement agency-based approval workflows
+  - [x] Create agency-specific audit and compliance reporting
 
 - [ ] **RBAC Integration Testing**
   - [ ] Test role-based access control across all user types
