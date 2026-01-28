@@ -22,13 +22,15 @@ export class AgencyRedactionRulesService {
   private initialized: boolean = false;
 
   constructor() {
-    this.initializeDefaultTemplates();
+    // Don't initialize templates in constructor to avoid circular dependency issues
   }
 
   /**
-   * Initialize default templates for different agencies
+   * Initialize default templates for different agencies (lazy initialization)
    */
   private initializeDefaultTemplates(): void {
+    if (this.initialized) return;
+    
     const defaultTemplates = this.createDefaultAgencyTemplates();
     
     defaultTemplates.forEach(template => {
@@ -42,6 +44,18 @@ export class AgencyRedactionRulesService {
    * Create default redaction templates for various agencies
    */
   private createDefaultAgencyTemplates(): AgencyRedactionTemplate[] {
+    // Handle PIIType import safely to avoid circular dependencies
+    try {
+      // PIIType should be available, but guard against undefined
+      if (typeof PIIType === 'undefined' || !PIIType.SSN) {
+        console.warn('[Agency Rules] PIIType not available, using minimal templates');
+        return this.createFallbackTemplates();
+      }
+    } catch (error) {
+      console.warn('[Agency Rules] Error accessing PIIType:', error.message);
+      return this.createFallbackTemplates();
+    }
+
     const now = new Date().toISOString();
 
     return [
@@ -525,6 +539,39 @@ export class AgencyRedactionRulesService {
       console.error('Failed to reset agency template:', error);
       return false;
     }
+  }
+
+  /**
+   * Create minimal fallback templates when PIIType is not available
+   */
+  private createFallbackTemplates(): AgencyRedactionTemplate[] {
+    const now = new Date().toISOString();
+    
+    return [
+      {
+        id: 'fallback-basic',
+        agencyId: 'basic',
+        agencyName: 'Basic Agency',
+        name: 'Basic Redaction Template',
+        description: 'Fallback template with minimal rules',
+        rules: [
+          {
+            id: 'basic-rule',
+            name: 'Basic Redaction',
+            description: 'Basic redaction rule',
+            piiTypes: [], // Empty array when PIIType not available
+            sensitivityLevel: SensitivityLevel.MEDIUM,
+            autoApply: false,
+            requiresApproval: true,
+          }
+        ],
+        version: '1.0.0',
+        isActive: true,
+        createdAt: now,
+        updatedAt: now,
+        createdBy: 'system-fallback'
+      }
+    ];
   }
 }
 

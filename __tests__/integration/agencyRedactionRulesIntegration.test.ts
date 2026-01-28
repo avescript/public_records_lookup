@@ -9,10 +9,22 @@ import { redactionService, ManualRedaction } from '../../src/services/redactionS
 import { 
   agencyRedactionRulesService,
   RedactionRule,
-  SensitivityLevel,
-  PIIType,
+  SensitivityLevel
 } from '../../src/services/agencyRedactionRulesService';
-import { piiDetectionService, PIIFinding } from '../../src/services/piiDetectionService';
+import { piiDetectionService, PIIFinding, PIIType } from '../../src/services/piiDetectionService';
+
+// Define PIIType values for testing (in case of import issues)
+const TestPIIType = {
+  SSN: 'SSN' as const,
+  PHONE: 'PHONE' as const,
+  ADDRESS: 'ADDRESS' as const,
+  PERSON_NAME: 'PERSON_NAME' as const,
+  EMAIL: 'EMAIL' as const,
+  DOB: 'DOB' as const,
+  DRIVERS_LICENSE: 'DRIVERS_LICENSE' as const,
+  MEDICAL_ID: 'MEDICAL_ID' as const,
+  BADGE_NUMBER: 'BADGE_NUMBER' as const,
+} as const;
 
 // Mock localStorage
 const mockLocalStorage = {
@@ -58,14 +70,14 @@ describe('Redaction Service - Agency Rules Integration', () => {
       const mockPIIFindings: PIIFinding[] = [
         {
           id: 'pii-1',
-          type: PIIType.SSN,
+          type: TestPIIType.SSN,
           text: '123-45-6789',
           confidence: 0.95,
           location: { x: 100, y: 50, width: 80, height: 20 },
         },
         {
           id: 'pii-2',
-          type: PIIType.PHONE,
+          type: TestPIIType.PHONE,
           text: '(555) 123-4567',
           confidence: 0.90,
           location: { x: 200, y: 100, width: 100, height: 20 },
@@ -96,7 +108,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
       const mockPIIFindings: PIIFinding[] = [
         {
           id: 'pii-ssn',
-          type: PIIType.SSN,
+          type: TestPIIType.SSN,
           text: '987-65-4321',
           confidence: 0.98,
           location: { x: 50, y: 75, width: 90, height: 18 },
@@ -134,7 +146,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
       const mockPIIFindings: PIIFinding[] = [
         {
           id: 'pii-critical',
-          type: PIIType.MEDICAL_RECORD,
+          type: TestPIIType.MEDICAL_ID,
           text: 'Patient ID: 12345',
           confidence: 0.92,
           location: { x: 150, y: 200, width: 120, height: 22 },
@@ -192,7 +204,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
       const mockPIIFindings: PIIFinding[] = [
         {
           id: 'pii-approval-test',
-          type: PIIType.SSN,
+          type: TestPIIType.SSN,
           text: '111-22-3333',
           confidence: 0.95,
           location: { x: 75, y: 125, width: 85, height: 20 },
@@ -236,7 +248,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
       const mockPIIFindings: PIIFinding[] = [
         {
           id: 'pii-rejection-test',
-          type: PIIType.EMAIL,
+          type: TestPIIType.EMAIL,
           text: 'test@example.com',
           confidence: 0.88,
           location: { x: 125, y: 175, width: 120, height: 18 },
@@ -281,14 +293,14 @@ describe('Redaction Service - Agency Rules Integration', () => {
       const mockPIIFindings: PIIFinding[] = [
         {
           id: 'pii-pending-1',
-          type: PIIType.SSN,
+          type: TestPIIType.SSN,
           text: '444-55-6666',
           confidence: 0.96,
           location: { x: 100, y: 100, width: 80, height: 20 },
         },
         {
           id: 'pii-pending-2',
-          type: PIIType.PHONE,
+          type: TestPIIType.PHONE,
           text: '(555) 987-6543',
           confidence: 0.91,
           location: { x: 200, y: 200, width: 100, height: 20 },
@@ -321,14 +333,14 @@ describe('Redaction Service - Agency Rules Integration', () => {
       const mockPIIFindings: PIIFinding[] = [
         {
           id: 'stats-pii-1',
-          type: PIIType.SSN,
+          type: TestPIIType.SSN,
           text: '777-88-9999',
           confidence: 0.97,
           location: { x: 50, y: 50, width: 80, height: 20 },
         },
         {
           id: 'stats-pii-2',
-          type: PIIType.EMAIL,
+          type: TestPIIType.EMAIL,
           text: 'stats@test.com',
           confidence: 0.89,
           location: { x: 150, y: 150, width: 110, height: 18 },
@@ -362,7 +374,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
       const mockPIIFindings: PIIFinding[] = [
         {
           id: 'stats-multi-1',
-          type: PIIType.SSN,
+          type: TestPIIType.SSN,
           text: '123-45-6789',
           confidence: 0.95,
           location: { x: 100, y: 100, width: 80, height: 20 },
@@ -456,7 +468,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
       // Generate many PII findings
       const manyPIIFindings: PIIFinding[] = Array.from({ length: 50 }, (_, i) => ({
         id: `perf-pii-${i}`,
-        type: i % 2 === 0 ? PIIType.SSN : PIIType.EMAIL,
+        type: i % 2 === 0 ? TestPIIType.SSN : TestPIIType.EMAIL,
         text: i % 2 === 0 ? `${i}${i}${i}-${i}${i}-${i}${i}${i}${i}` : `test${i}@example.com`,
         confidence: 0.8 + (i % 20) * 0.01,
         location: { x: (i % 10) * 50, y: Math.floor(i / 10) * 30, width: 80, height: 20 },
@@ -483,7 +495,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
       // Setup multiple pending redactions
       const mockPIIFindings: PIIFinding[] = Array.from({ length: 5 }, (_, i) => ({
         id: `concurrent-pii-${i}`,
-        type: PIIType.SSN,
+        type: TestPIIType.SSN,
         text: `${i}${i}${i}-${i}${i}-${i}${i}${i}${i}`,
         confidence: 0.95,
         location: { x: i * 100, y: 50, width: 80, height: 20 },

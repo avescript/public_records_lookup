@@ -14,6 +14,10 @@ const localStorageMock = (() => {
   return {
     getItem: (key: string) => store[key] || null,
     setItem: (key: string, value: string) => {
+      // Only simulate quota exceeded for extremely large test payloads
+      if (value.length > 500000) {
+        throw new Error('Storage quota exceeded');
+      }
       store[key] = value.toString();
     },
     removeItem: (key: string) => {
