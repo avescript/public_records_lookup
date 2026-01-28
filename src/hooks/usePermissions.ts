@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export type UserRole = 'admin' | 'staff' | 'legal_reviewer';
 export type Permission = 
