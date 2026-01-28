@@ -48,6 +48,7 @@ export interface StoredRequest {
   title: string;
   department: string;
   description: string;
+  agency?: string; // Agency identifier for multi-agency support
   dateRange: {
     startDate: string;
     endDate: string;
@@ -148,6 +149,56 @@ export const generateTrackingId = (): string => {
 // Initialize with some log output
 console.log('🔧 [Mock Firebase] Mock Firebase service initialized');
 
+// Map department to agency for multi-agency support
+const mapDepartmentToAgency = (department: string): string => {
+  const departmentAgencyMap: { [key: string]: string } = {
+    // Police Department
+    'police': 'police',
+    'patrol': 'police',
+    'investigations': 'police',
+    'traffic': 'police',
+    'community_relations': 'police',
+    'internal_affairs': 'police',
+    
+    // Fire Department
+    'fire': 'fire',
+    'emergency_response': 'fire',
+    'fire_prevention': 'fire',
+    'hazmat': 'fire',
+    
+    // Finance Department
+    'finance': 'finance',
+    'accounting': 'finance',
+    'budget': 'finance',
+    'payroll': 'finance',
+    'procurement': 'finance',
+    'audit': 'finance',
+    
+    // Public Works
+    'public_works': 'public_works',
+    'transportation': 'public_works',
+    'utilities': 'public_works',
+    'engineering': 'public_works',
+    
+    // Legal Department
+    'legal': 'legal',
+    'city_attorney': 'legal',
+    'contracts': 'legal',
+    'litigation': 'legal',
+    
+    // Parks Department
+    'parks': 'parks',
+    'recreation': 'parks',
+    'facilities': 'parks',
+    
+    // Clerk/Other
+    'clerk': 'clerk',
+    'other': 'clerk', // Default fallback
+  };
+  
+  return departmentAgencyMap[department] || 'clerk'; // Default to clerk if not found
+};
+
 // Save a new request
 export const saveRequest = async (
   requestData: RequestFormDataWithFiles
@@ -158,12 +209,16 @@ export const saveRequest = async (
   const requestCounter = getNextRequestCounter();
   const id = `req_${requestCounter}_${Date.now()}`;
   
+  // Determine agency based on department
+  const agency = mapDepartmentToAgency(requestData.department);
+  
   const newRequest: StoredRequest = {
     id,
     trackingId,
     title: requestData.title,
     department: requestData.department,
     description: requestData.description,
+    agency, // Add agency field based on department
     dateRange: requestData.dateRange,
     contactEmail: requestData.contactEmail,
     status: 'submitted',
@@ -178,6 +233,8 @@ export const saveRequest = async (
   mockDatabase[id] = newRequest;
   saveMockDatabase(mockDatabase);
   
+  console.log('✅ [Mock Firebase] Request saved with agency assignment:', { id, trackingId, agency });
+  
   // Log audit event
   try {
     await auditService.logEvent(
@@ -191,6 +248,7 @@ export const saveRequest = async (
       {
         title: requestData.title,
         department: requestData.department,
+        agency,
         trackingId,
         attachmentCount: requestData.files?.length || 0,
       },
@@ -566,4 +624,50 @@ export const getPackageById = async (packageId: string): Promise<PackageManifest
 export const getPackagesForRequest = async (requestId: string): Promise<PackageManifest[]> => {
   const packagesDatabase = getPackagesDatabase();
   return Object.values(packagesDatabase).filter(pkg => pkg.requestId === requestId);
+};
+
+// Cross-agency request routing (mock implementation)
+export const routeRequestToAgency = async (
+  requestId: string, 
+  targetAgency: string, 
+  reason: string,
+  routedBy: string
+): Promise<void> => {
+  console.log('🔄 [Mock Firebase] Routing request to agency:', { requestId, targetAgency, reason });
+  
+  const database = getMockDatabase();
+  
+  if (!database[requestId]) {
+    throw new Error('Request not found');
+  }
+
+  const request = database[requestId];
+  
+  // Create routing internal note
+  const routingNote = {
+    id: generateId(),
+    content: `Request routed to ${targetAgency}. Reason: ${reason}`,
+    addedBy: routedBy,
+    addedAt: createMockTimestamp(new Date()),
+  };
+
+  // Update request with new agency and routing note
+  database[requestId] = {
+    ...request,
+    agency: targetAgency,
+    updatedAt: createMockTimestamp(new Date()),
+    internalNotes: [...(request.internalNotes || []), routingNote],
+  };
+
+  saveMockDatabase(database);
+  
+  // Log audit event
+  auditService.logEvent({
+    service: 'MockFirebaseService',
+    action: 'routeRequestToAgency',
+    severity: 'info',
+    details: { requestId, targetAgency, reason, routedBy }
+  });
+
+  console.log('✅ [Mock Firebase] Request routed to agency:', targetAgency);
 };

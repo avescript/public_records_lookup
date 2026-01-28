@@ -38,6 +38,8 @@ import dynamic from 'next/dynamic';
 
 import { AuditPanel } from '@/components/staff/AuditPanel';
 import { StaffButton, LegalButton, PermissionButton, RoleGuard } from '../../auth';
+import { SYNTHETIC_AGENCIES } from '../../../data/syntheticDataTemplates';
+import { routeRequestToAgency } from '../../../services/requestService';
 
 // Helper function to convert Firebase Timestamp or mock timestamp to Date
 const convertToDate = (timestamp: any): Date => {
@@ -325,6 +327,20 @@ export function RequestDetailsDrawer({
                 <Typography variant="body1">
                   {getDepartmentDisplayName(request.department)}
                 </Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  Agency
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                  <Chip
+                    label={SYNTHETIC_AGENCIES.find(a => a.id === request.agency)?.name || request.agency || 'Unknown'}
+                    color="primary"
+                    size="small"
+                    variant="outlined"
+                  />
+                </Box>
               </Box>
             </Stack>
           </Paper>

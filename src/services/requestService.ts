@@ -81,6 +81,7 @@ export interface StoredRequest {
   title: string;
   department: string;
   description: string;
+  agency?: string; // Agency identifier for multi-agency support
   dateRange: {
     startDate: string;
     endDate: string;
@@ -249,36 +250,61 @@ export const getRequestById = async (
   }
 };
 
-// Get all requests (for admin/staff views)
-export const getAllRequests = async (): Promise<StoredRequest[]> => {
-  console.log('🔍 [Request Service] Getting all requests...');
+// Get all requests (for admin/staff views) with optional agency filtering
+export const getAllRequests = async (agencyFilter?: string): Promise<StoredRequest[]> => {
+  console.log('🔍 [Request Service] Getting all requests...', { agencyFilter });
   
   // Use mock service if Firebase is unavailable
   if (useMockService()) {
     console.log('🔄 [Request Service] Using mock service for getAllRequests');
     const result = await mockService.getAllRequests();
     console.log('📊 [Request Service] Mock service returned:', result.length, 'requests');
+    
+    // Apply agency filtering for mock service
+    if (agencyFilter) {
+      const filtered = result.filter(request => request.agency === agencyFilter);
+      console.log('🔍 [Request Service] Agency filtered results:', filtered.length, 'requests for agency:', agencyFilter);
+      return filtered;
+    }
     return result;
   }
 
   try {
     console.log('🔥 [Request Service] Attempting Firebase getAllRequests');
-    const q = query(
+    let q = query(
       collection(firestore, 'requests'),
       orderBy('submittedAt', 'desc')
     );
+    
+    // Add agency filter if specified
+    if (agencyFilter) {
+      q = query(
+        collection(firestore, 'requests'),
+        where('agency', '==', agencyFilter),
+        orderBy('submittedAt', 'desc')
+      );
+    }
 
     const querySnapshot = await getDocs(q);
-
-    return querySnapshot.docs.map(doc => ({
+    const results = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...(doc.data() as Omit<StoredRequest, 'id'>),
     }));
+    
+    console.log('📊 [Request Service] Firebase returned:', results.length, 'requests', { agencyFilter });
+    return results;
   } catch (error) {
     console.error('Error fetching all requests:', error);
     console.log('🔄 Falling back to mock service due to Firebase error');
     const result = await mockService.getAllRequests();
     console.log('📊 [Request Service] Mock service fallback returned:', result.length, 'requests');
+    
+    // Apply agency filtering for fallback as well
+    if (agencyFilter) {
+      const filtered = result.filter(request => request.agency === agencyFilter);
+      console.log('🔍 [Request Service] Agency filtered fallback results:', filtered.length, 'requests for agency:', agencyFilter);
+      return filtered;
+    }
     return result;
   }
 };
@@ -466,5 +492,63 @@ export const addRecordToRequest = async (
   } catch (error) {
     console.error('❌ [Request Service] Error adding record to request:', error);
     throw new Error('Failed to add record to request');
+  }
+};
+
+// Cross-agency request routing - reassign request to different agency
+export const routeRequestToAgency = async (
+  requestId: string, 
+  targetAgency: string, 
+  reason: string,
+  routedBy: string
+): Promise<void> => {
+  console.log('🔄 [Request Service] Routing request to agency:', { requestId, targetAgency, reason });
+  
+  if (useMockService()) {
+    console.log('🔄 [Request Service] Using mock service for routeRequestToAgency');
+    await mockService.routeRequestToAgency(requestId, targetAgency, reason, routedBy);
+    console.log('✅ [Request Service] Mock request routed to agency');
+    return;
+  }
+
+  try {
+    const docRef = doc(firestore, 'requests', requestId);
+    const updateData: UpdateData<StoredRequest> = {
+      agency: targetAgency,
+      updatedAt: Timestamp.fromDate(new Date()),
+    };
+
+    // Add routing note to internal notes
+    const request = await getRequestById(requestId);
+    if (request) {
+      const routingNote: InternalNote = {
+        id: generateTrackingId(),
+        content: `Request routed to ${targetAgency}. Reason: ${reason}`,
+        addedBy: routedBy,
+        addedAt: Timestamp.fromDate(new Date()),
+      };
+      
+      updateData.internalNotes = [...(request.internalNotes || []), routingNote];
+    }
+
+    await updateDoc(docRef, updateData);
+    
+    auditService.logEvent({
+      service: 'RequestService',
+      action: 'routeRequestToAgency',
+      severity: 'info',
+      details: { requestId, targetAgency, reason, routedBy }
+    });
+    
+    console.log('✅ [Request Service] Successfully routed request to agency');
+  } catch (error) {
+    console.error('❌ [Request Service] Error routing request to agency:', error);
+    auditService.logEvent({
+      service: 'RequestService',
+      action: 'routeRequestToAgency',
+      severity: 'error',
+      details: { error: error instanceof Error ? error.message : 'Unknown error', requestId, targetAgency }
+    });
+    throw error;
   }
 };

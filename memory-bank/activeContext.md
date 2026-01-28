@@ -3,18 +3,26 @@
 ## Current Focus
 
 **EPIC 9 - RBAC & MULTI-AGENCY SUPPORT** 🚀 - **IN PROGRESS January 25, 2026**
-**Status:** Role-Based UI Components completed with comprehensive RBAC system and 51 passing tests. Ready to implement multi-agency request management.
+**Status:** Multi-Agency Request Management completed with comprehensive cross-agency routing and filtering. Ready to implement agency-specific redaction rules.
 
 ## Active User Story
 
 **EPIC 9 — RBAC & MULTI-AGENCY SUPPORT** 🚀 - **IN PROGRESS January 25, 2026**
-**Status:** Ready to implement multi-agency request management interfaces. Update request management to handle multi-agency scenarios with agency filtering, cross-agency request routing, and agency-specific workflows.
-**Current Task:** Implement Multi-Agency Request Management (Epic 9 Task 3)
-Goal: Enable secure multi-agency operations with proper role-based access control and agency-specific workflows.
+**Status:** Ready to implement agency-specific redaction rules and templates. Different agencies require different PII sensitivity levels and redaction requirements.
+**Current Task:** Implement Agency-Specific Redaction Rules (Epic 9 Task 4)
+Goal: Enable configurable redaction policies per agency with varying PII sensitivity levels and rule templates.
 
 ## Most Recent Achievement
 
-**COMPLETED January 25, 2026** - **Epic 9 Task 2: Role-Based UI Components & RBAC System** ✅
+**COMPLETED January 25, 2026** - **Epic 9 Task 3: Multi-Agency Request Management** ✅
+- ✅ **Enhanced Request Service**: Added agency filtering to getAllRequests(), implemented routeRequestToAgency() for cross-agency workflows
+- ✅ **StaffDashboard Multi-Agency Features**: Agency context integration, "Show All Agencies" toggle, cross-agency routing dialog with validation
+- ✅ **Cross-Agency Routing**: Complete workflow for reassigning requests between agencies with reason tracking and internal notes
+- ✅ **Agency Display Integration**: Added agency information to RequestDetailsDrawer, agency chips with current/other agency styling
+- ✅ **Mock Service Enhancement**: Department-to-agency mapping for automatic assignment, mock routing functionality
+- ✅ **Service Tests**: 12/12 passing tests covering agency filtering, cross-agency routing, error handling, and edge cases
+- ✅ **Agency Column**: Data grid column showing agency assignments with current agency highlighting
+- ✅ **URL Persistence**: Agency filter state preserved in URL parameters for bookmarking and sharing
 - ✅ **usePermissions Hook**: Comprehensive permission system with 15 distinct permissions and role-based access control
 - ✅ **Permission Matrix**: Admin (15 permissions), Staff (5 permissions), Legal Reviewer (7 permissions) with hierarchical access
 - ✅ **RoleGuard Component**: Flexible access control with role-based, permission-based, and combined access checking
