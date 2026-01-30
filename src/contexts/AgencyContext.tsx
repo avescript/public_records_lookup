@@ -2,7 +2,10 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { SYNTHETIC_AGENCIES, SyntheticAgency } from '../data/syntheticDataTemplates';
+import {
+  SYNTHETIC_AGENCIES,
+  SyntheticAgency,
+} from '../data/syntheticDataTemplates';
 
 interface AgencyContextType {
   currentAgency: SyntheticAgency | null;
@@ -26,7 +29,9 @@ interface AgencyProviderProps {
 }
 
 export function AgencyProvider({ children }: AgencyProviderProps) {
-  const [currentAgency, setCurrentAgency] = useState<SyntheticAgency | null>(null);
+  const [currentAgency, setCurrentAgency] = useState<SyntheticAgency | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const availableAgencies = SYNTHETIC_AGENCIES;
 
@@ -55,13 +60,13 @@ export function AgencyProvider({ children }: AgencyProviderProps) {
     if (agency) {
       setCurrentAgency(agency);
       localStorage.setItem('selected_agency', agencyId);
-      
+
       // Trigger custom event for other components to listen to agency changes
-      const event = new CustomEvent('agencyChanged', { 
-        detail: { 
+      const event = new CustomEvent('agencyChanged', {
+        detail: {
           previousAgency: currentAgency,
-          newAgency: agency, 
-        }, 
+          newAgency: agency,
+        },
       });
       window.dispatchEvent(event);
     }
@@ -75,8 +80,6 @@ export function AgencyProvider({ children }: AgencyProviderProps) {
   };
 
   return (
-    <AgencyContext.Provider value={value}>
-      {children}
-    </AgencyContext.Provider>
+    <AgencyContext.Provider value={value}>{children}</AgencyContext.Provider>
   );
 }

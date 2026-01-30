@@ -6,7 +6,10 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { RedactionCanvas, RedactionCanvasProps } from '../../src/components/RedactionCanvas';
+import {
+  RedactionCanvas,
+  RedactionCanvasProps,
+} from '../../src/components/RedactionCanvas';
 import { ManualRedaction } from '../../src/services/redactionService';
 
 // Mock HTML5 Canvas
@@ -79,7 +82,7 @@ describe('RedactionCanvas', () => {
   describe('Rendering', () => {
     test('should render canvas with correct dimensions', () => {
       render(<RedactionCanvas {...defaultProps} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
       expect(canvas).toBeInTheDocument();
       expect(canvas).toHaveAttribute('width', '800');
@@ -94,7 +97,7 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
       expect(canvas).toBeInTheDocument();
     });
@@ -106,7 +109,7 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       // Verify that the canvas context methods are called for drawing
       expect(mockCanvas.getContext).toHaveBeenCalled();
     });
@@ -120,7 +123,7 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
       expect(canvas).toHaveAttribute('width', '1600');
       expect(canvas).toHaveAttribute('height', '1200');
@@ -136,9 +139,9 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       fireEvent.mouseDown(canvas, {
         clientX: 150,
         clientY: 150,
@@ -156,9 +159,9 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       // Start drawing
       fireEvent.mouseDown(canvas, {
         clientX: 100,
@@ -183,9 +186,9 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       // Start drawing
       fireEvent.mouseDown(canvas, {
         clientX: 100,
@@ -218,9 +221,9 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       // Draw a very small box
       fireEvent.mouseDown(canvas, {
         clientX: 100,
@@ -249,9 +252,9 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       // Click on the redaction (within its bounds)
       fireEvent.mouseDown(canvas, {
         clientX: 150, // Within mockRedaction bounds
@@ -270,9 +273,9 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       // Click outside the redaction
       fireEvent.mouseDown(canvas, {
         clientX: 50,
@@ -293,9 +296,9 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       // Select redaction first
       fireEvent.mouseDown(canvas, {
         clientX: 150,
@@ -338,9 +341,9 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       // Select redaction
       fireEvent.mouseDown(canvas, {
         clientX: 150,
@@ -362,9 +365,9 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       // Select redaction
       fireEvent.mouseDown(canvas, {
         clientX: 150,
@@ -386,7 +389,7 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       // Verify context methods are called for grid drawing
       expect(mockCanvas.getContext).toHaveBeenCalled();
     });
@@ -398,7 +401,7 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       // Grid lines should not be drawn
       expect(mockCanvas.getContext).toHaveBeenCalled();
     });
@@ -407,7 +410,7 @@ describe('RedactionCanvas', () => {
   describe('Cursor Management', () => {
     test('should set crosshair cursor in drawing mode', () => {
       render(<RedactionCanvas {...defaultProps} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
       expect(canvas.style.cursor).toBe('crosshair');
     });
@@ -419,7 +422,7 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
       expect(canvas.style.cursor).toBe('default');
     });
@@ -432,9 +435,9 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...props} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       // Hover over redaction
       fireEvent.mouseMove(canvas, {
         clientX: 150,
@@ -464,7 +467,7 @@ describe('RedactionCanvas', () => {
       };
 
       render(<RedactionCanvas {...minimalProps} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
       expect(canvas).toBeInTheDocument();
     });
@@ -484,24 +487,30 @@ describe('RedactionCanvas', () => {
   describe('Performance and Cleanup', () => {
     test('should add and remove event listeners properly', () => {
       const { unmount } = render(<RedactionCanvas {...defaultProps} />);
-      
+
       // Verify event listeners are added
       const canvas = screen.getByTestId('redaction-canvas');
-      expect(canvas.addEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
-      
+      expect(canvas.addEventListener).toHaveBeenCalledWith(
+        'keydown',
+        expect.any(Function)
+      );
+
       // Cleanup
       unmount();
-      
+
       // Verify event listeners are removed
-      expect(canvas.removeEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
+      expect(canvas.removeEventListener).toHaveBeenCalledWith(
+        'keydown',
+        expect.any(Function)
+      );
     });
 
     test('should handle canvas ref changes', () => {
       const { rerender } = render(<RedactionCanvas {...defaultProps} />);
-      
+
       // Re-render with different props
       rerender(<RedactionCanvas {...defaultProps} width={1000} height={800} />);
-      
+
       // Should update canvas dimensions
       const canvas = screen.getByTestId('redaction-canvas');
       expect(canvas).toHaveAttribute('width', '1000');
@@ -512,16 +521,16 @@ describe('RedactionCanvas', () => {
   describe('Accessibility', () => {
     test('should set canvas tabIndex for keyboard navigation', () => {
       render(<RedactionCanvas {...defaultProps} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
       expect(canvas).toHaveAttribute('tabindex', '0');
     });
 
     test('should handle focus for keyboard events', () => {
       render(<RedactionCanvas {...defaultProps} />);
-      
+
       const canvas = screen.getByTestId('redaction-canvas');
-      
+
       // Focus the canvas
       act(() => {
         canvas.focus();

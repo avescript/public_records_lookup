@@ -4,7 +4,7 @@
  * Part of Epic 5: Approvals & Legal Review
  */
 
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Cancel as RejectIcon,
   CheckCircle as ApproveIcon,
@@ -55,10 +55,10 @@ import {
   Typography,
 } from '@mui/material';
 
-import { 
-  legalReviewService, 
+import {
+  legalReviewService,
   PackageApproval,
-  type PackageApproval as PackageApprovalType, 
+  type PackageApproval as PackageApprovalType,
 } from '../../../services/legalReviewService';
 
 interface PackageApprovalProps {
@@ -80,13 +80,15 @@ interface ApprovalDialogProps {
   ) => void;
 }
 
-const ApprovalDialog: React.FC<ApprovalDialogProps> = ({ 
-  open, 
-  packageApproval, 
-  onClose, 
-  onSubmit, 
+const ApprovalDialog: React.FC<ApprovalDialogProps> = ({
+  open,
+  packageApproval,
+  onClose,
+  onSubmit,
 }) => {
-  const [decision, setDecision] = useState<'approved' | 'rejected' | 'changes_requested'>('approved');
+  const [decision, setDecision] = useState<
+    'approved' | 'rejected' | 'changes_requested'
+  >('approved');
   const [reason, setReason] = useState('');
   const [comments, setComments] = useState('');
 
@@ -101,22 +103,22 @@ const ApprovalDialog: React.FC<ApprovalDialogProps> = ({
   if (!packageApproval) return null;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
       <DialogTitle>
-        <Box display="flex" alignItems="center" gap={1}>
+        <Box display='flex' alignItems='center' gap={1}>
           <PackageIcon />
           Package Approval Decision
         </Box>
       </DialogTitle>
       <DialogContent>
         <Box sx={{ mb: 3 }}>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography variant='body2' color='text.secondary' gutterBottom>
             Package: {packageApproval.packageId}
           </Typography>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography variant='body2' color='text.secondary' gutterBottom>
             Request: {packageApproval.requestId}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant='body2' color='text.secondary'>
             Records: {packageApproval.totalRecords} documents
           </Typography>
         </Box>
@@ -127,24 +129,24 @@ const ApprovalDialog: React.FC<ApprovalDialogProps> = ({
               <InputLabel>Decision</InputLabel>
               <Select
                 value={decision}
-                onChange={(e) => setDecision(e.target.value as any)}
-                label="Decision"
+                onChange={e => setDecision(e.target.value as any)}
+                label='Decision'
               >
-                <MenuItem value="approved">
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <ApproveIcon color="success" />
+                <MenuItem value='approved'>
+                  <Box display='flex' alignItems='center' gap={1}>
+                    <ApproveIcon color='success' />
                     Approve for Release
                   </Box>
                 </MenuItem>
-                <MenuItem value="changes_requested">
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <ChangesIcon color="warning" />
+                <MenuItem value='changes_requested'>
+                  <Box display='flex' alignItems='center' gap={1}>
+                    <ChangesIcon color='warning' />
                     Request Changes
                   </Box>
                 </MenuItem>
-                <MenuItem value="rejected">
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <RejectIcon color="error" />
+                <MenuItem value='rejected'>
+                  <Box display='flex' alignItems='center' gap={1}>
+                    <RejectIcon color='error' />
                     Reject Package
                   </Box>
                 </MenuItem>
@@ -156,13 +158,13 @@ const ApprovalDialog: React.FC<ApprovalDialogProps> = ({
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Reason for Rejection"
+                label='Reason for Rejection'
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={e => setReason(e.target.value)}
                 required
                 multiline
                 rows={3}
-                helperText="Please explain why this package is being rejected"
+                helperText='Please explain why this package is being rejected'
               />
             </Grid>
           )}
@@ -171,13 +173,13 @@ const ApprovalDialog: React.FC<ApprovalDialogProps> = ({
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Required Changes"
+                label='Required Changes'
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={e => setReason(e.target.value)}
                 required
                 multiline
                 rows={3}
-                helperText="Specify what changes are needed before approval"
+                helperText='Specify what changes are needed before approval'
               />
             </Grid>
           )}
@@ -185,22 +187,23 @@ const ApprovalDialog: React.FC<ApprovalDialogProps> = ({
           <Grid item xs={12}>
             <TextField
               fullWidth
-              label="Additional Comments (Optional)"
+              label='Additional Comments (Optional)'
               value={comments}
-              onChange={(e) => setComments(e.target.value)}
+              onChange={e => setComments(e.target.value)}
               multiline
               rows={2}
-              helperText="Any additional notes about your decision"
+              helperText='Any additional notes about your decision'
             />
           </Grid>
 
           {decision === 'approved' && (
             <Grid item xs={12}>
-              <Alert severity="warning" sx={{ mt: 2 }}>
-                <Typography variant="body2">
+              <Alert severity='warning' sx={{ mt: 2 }}>
+                <Typography variant='body2'>
                   <SecurityIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-                  <strong>Important:</strong> Approving this package will lock it for delivery. 
-                  This action cannot be undone without administrator intervention.
+                  <strong>Important:</strong> Approving this package will lock
+                  it for delivery. This action cannot be undone without
+                  administrator intervention.
                 </Typography>
               </Alert>
             </Grid>
@@ -209,12 +212,19 @@ const ApprovalDialog: React.FC<ApprovalDialogProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button 
-          onClick={handleSubmit} 
-          variant="contained"
-          color={decision === 'approved' ? 'success' : decision === 'rejected' ? 'error' : 'warning'}
+        <Button
+          onClick={handleSubmit}
+          variant='contained'
+          color={
+            decision === 'approved'
+              ? 'success'
+              : decision === 'rejected'
+                ? 'error'
+                : 'warning'
+          }
           disabled={
-            (decision === 'rejected' || decision === 'changes_requested') && !reason.trim()
+            (decision === 'rejected' || decision === 'changes_requested') &&
+            !reason.trim()
           }
         >
           {decision === 'approved' && 'Approve & Lock'}
@@ -232,28 +242,38 @@ interface PackageCardProps {
   onViewDetails: () => void;
 }
 
-const PackageCard: React.FC<PackageCardProps> = ({ 
-  packageApproval, 
-  onApprove, 
-  onViewDetails, 
+const PackageCard: React.FC<PackageCardProps> = ({
+  packageApproval,
+  onApprove,
+  onViewDetails,
 }) => {
   const getStatusColor = (status: PackageApprovalType['status']) => {
     switch (status) {
-      case 'pending': return 'warning';
-      case 'under_review': return 'info';
-      case 'approved': return 'success';
-      case 'rejected': return 'error';
-      case 'changes_requested': return 'warning';
-      default: return 'default';
+      case 'pending':
+        return 'warning';
+      case 'under_review':
+        return 'info';
+      case 'approved':
+        return 'success';
+      case 'rejected':
+        return 'error';
+      case 'changes_requested':
+        return 'warning';
+      default:
+        return 'default';
     }
   };
 
   const getStatusIcon = (status: PackageApprovalType['status']) => {
     switch (status) {
-      case 'approved': return <ApproveIcon />;
-      case 'rejected': return <RejectIcon />;
-      case 'changes_requested': return <ChangesIcon />;
-      default: return <PackageIcon />;
+      case 'approved':
+        return <ApproveIcon />;
+      case 'rejected':
+        return <RejectIcon />;
+      case 'changes_requested':
+        return <ChangesIcon />;
+      default:
+        return <PackageIcon />;
     }
   };
 
@@ -262,39 +282,46 @@ const PackageCard: React.FC<PackageCardProps> = ({
   };
 
   const getDaysOld = (dateString: string) => {
-    const days = Math.floor((Date.now() - new Date(dateString).getTime()) / (1000 * 60 * 60 * 24));
+    const days = Math.floor(
+      (Date.now() - new Date(dateString).getTime()) / (1000 * 60 * 60 * 24)
+    );
     return days;
   };
 
   return (
-    <Card sx={{ 
-      mb: 2, 
-      border: packageApproval.status === 'pending' ? '2px solid #ed6c02' : undefined,
-      opacity: packageApproval.isLocked ? 0.8 : 1,
-    }}>
+    <Card
+      sx={{
+        mb: 2,
+        border:
+          packageApproval.status === 'pending'
+            ? '2px solid #ed6c02'
+            : undefined,
+        opacity: packageApproval.isLocked ? 0.8 : 1,
+      }}
+    >
       <CardContent>
         {/* Header */}
-        <Box display="flex" alignItems="center" justifyContent="between" mb={2}>
-          <Box display="flex" alignItems="center" gap={1}>
+        <Box display='flex' alignItems='center' justifyContent='between' mb={2}>
+          <Box display='flex' alignItems='center' gap={1}>
             {packageApproval.isLocked ? (
-              <LockIcon color="error" />
+              <LockIcon color='error' />
             ) : (
-              <UnlockIcon color="success" />
+              <UnlockIcon color='success' />
             )}
-            <Typography variant="h6">
+            <Typography variant='h6'>
               Package: {packageApproval.packageId}
             </Typography>
-            <Chip 
-              label={packageApproval.status.replace('_', ' ').toUpperCase()} 
+            <Chip
+              label={packageApproval.status.replace('_', ' ').toUpperCase()}
               color={getStatusColor(packageApproval.status)}
               icon={getStatusIcon(packageApproval.status)}
-              size="small"
+              size='small'
             />
             {packageApproval.isLocked && (
-              <Chip 
-                label="LOCKED FOR DELIVERY" 
-                color="error"
-                size="small"
+              <Chip
+                label='LOCKED FOR DELIVERY'
+                color='error'
+                size='small'
                 icon={<LockIcon />}
               />
             )}
@@ -304,28 +331,30 @@ const PackageCard: React.FC<PackageCardProps> = ({
         {/* Package Details */}
         <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={12} sm={6}>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant='body2' color='text.secondary'>
               <strong>Request ID:</strong> {packageApproval.requestId}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant='body2' color='text.secondary'>
               <strong>Total Records:</strong> {packageApproval.totalRecords}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant='body2' color='text.secondary'>
               <strong>Created:</strong> {formatDate(packageApproval.createdAt)}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Typography variant="body2" color="text.secondary">
-              <strong>Days Old:</strong> {getDaysOld(packageApproval.createdAt)} days
+            <Typography variant='body2' color='text.secondary'>
+              <strong>Days Old:</strong> {getDaysOld(packageApproval.createdAt)}{' '}
+              days
             </Typography>
             {packageApproval.reviewerName && (
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 <strong>Reviewer:</strong> {packageApproval.reviewerName}
               </Typography>
             )}
             {packageApproval.approvedAt && (
-              <Typography variant="body2" color="text.secondary">
-                <strong>Approved:</strong> {formatDate(packageApproval.approvedAt)}
+              <Typography variant='body2' color='text.secondary'>
+                <strong>Approved:</strong>{' '}
+                {formatDate(packageApproval.approvedAt)}
               </Typography>
             )}
           </Grid>
@@ -333,21 +362,28 @@ const PackageCard: React.FC<PackageCardProps> = ({
 
         {/* Status-specific Info */}
         {packageApproval.reason && (
-          <Alert 
-            severity={packageApproval.status === 'approved' ? 'success' : 'error'} 
+          <Alert
+            severity={
+              packageApproval.status === 'approved' ? 'success' : 'error'
+            }
             sx={{ mb: 2 }}
           >
-            <Typography variant="body2">
+            <Typography variant='body2'>
               <strong>
-                {packageApproval.status === 'approved' ? 'Approval Notes:' : 'Issue:'}
-              </strong> {packageApproval.reason}
+                {packageApproval.status === 'approved'
+                  ? 'Approval Notes:'
+                  : 'Issue:'}
+              </strong>{' '}
+              {packageApproval.reason}
             </Typography>
           </Alert>
         )}
 
         {packageApproval.comments && (
-          <Box sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
-            <Typography variant="body2">
+          <Box
+            sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}
+          >
+            <Typography variant='body2'>
               <strong>Comments:</strong> {packageApproval.comments}
             </Typography>
           </Box>
@@ -356,28 +392,24 @@ const PackageCard: React.FC<PackageCardProps> = ({
         {/* Progress Bar for pending packages */}
         {packageApproval.status === 'pending' && (
           <Box sx={{ mb: 2 }}>
-            <Typography variant="caption" color="text.secondary" gutterBottom>
+            <Typography variant='caption' color='text.secondary' gutterBottom>
               Awaiting Legal Review
             </Typography>
-            <LinearProgress color="warning" />
+            <LinearProgress color='warning' />
           </Box>
         )}
       </CardContent>
 
       <CardActions>
-        <Button
-          size="small"
-          startIcon={<ViewIcon />}
-          onClick={onViewDetails}
-        >
+        <Button size='small' startIcon={<ViewIcon />} onClick={onViewDetails}>
           View Details
         </Button>
-        
+
         {packageApproval.status === 'pending' && !packageApproval.isLocked && (
           <Button
-            size="small"
-            variant="contained"
-            color="primary"
+            size='small'
+            variant='contained'
+            color='primary'
             startIcon={<ApproveIcon />}
             onClick={onApprove}
           >
@@ -386,10 +418,10 @@ const PackageCard: React.FC<PackageCardProps> = ({
         )}
 
         {packageApproval.isLocked && packageApproval.deliveryApproved && (
-          <Chip 
-            label="APPROVED FOR DELIVERY" 
-            color="success"
-            size="small"
+          <Chip
+            label='APPROVED FOR DELIVERY'
+            color='success'
+            size='small'
             icon={<SecurityIcon />}
           />
         )}
@@ -405,11 +437,14 @@ export const PackageApprovalComponent: React.FC<PackageApprovalProps> = ({
   onApprovalComplete,
   onApprovalUpdated,
 }) => {
-  const [packageApprovals, setPackageApprovals] = useState<PackageApprovalType[]>([]);
+  const [packageApprovals, setPackageApprovals] = useState<
+    PackageApprovalType[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [approvalDialogOpen, setApprovalDialogOpen] = useState(false);
-  const [selectedPackageApproval, setSelectedPackageApproval] = useState<PackageApprovalType | null>(null);
+  const [selectedPackageApproval, setSelectedPackageApproval] =
+    useState<PackageApprovalType | null>(null);
 
   // Mock current user - in real app this would come from auth context
   const currentUser = {
@@ -425,7 +460,8 @@ export const PackageApprovalComponent: React.FC<PackageApprovalProps> = ({
   const loadPackageApprovals = async () => {
     try {
       setLoading(true);
-      const approvals = await legalReviewService.getPackageApprovalsByRequest(requestId);
+      const approvals =
+        await legalReviewService.getPackageApprovalsByRequest(requestId);
       setPackageApprovals(approvals);
       setError(null);
     } catch (err) {
@@ -472,7 +508,7 @@ export const PackageApprovalComponent: React.FC<PackageApprovalProps> = ({
         reason,
         comments
       );
-      
+
       await loadPackageApprovals();
       onApprovalUpdated?.(updatedApproval);
     } catch (err) {
@@ -497,13 +533,18 @@ export const PackageApprovalComponent: React.FC<PackageApprovalProps> = ({
   return (
     <Box>
       {/* Header */}
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
-        <Typography variant="h6">
+      <Box
+        display='flex'
+        alignItems='center'
+        justifyContent='space-between'
+        mb={3}
+      >
+        <Typography variant='h6'>
           Package Approvals ({packageApprovals.length})
         </Typography>
         {packageApprovals.length === 0 && (
           <Button
-            variant="contained"
+            variant='contained'
             startIcon={<PackageIcon />}
             onClick={handleCreatePackageApproval}
           >
@@ -514,7 +555,7 @@ export const PackageApprovalComponent: React.FC<PackageApprovalProps> = ({
 
       {/* Error Alert */}
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+        <Alert severity='error' sx={{ mb: 2 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
@@ -525,34 +566,43 @@ export const PackageApprovalComponent: React.FC<PackageApprovalProps> = ({
           <Grid container spacing={2}>
             <Grid item xs={6} sm={3}>
               <Paper sx={{ p: 2, textAlign: 'center' }}>
-                <Typography variant="h4" color="warning.main">
-                  {packageApprovals.filter(pa => pa.status === 'pending').length}
+                <Typography variant='h4' color='warning.main'>
+                  {
+                    packageApprovals.filter(pa => pa.status === 'pending')
+                      .length
+                  }
                 </Typography>
-                <Typography variant="caption">Pending</Typography>
+                <Typography variant='caption'>Pending</Typography>
               </Paper>
             </Grid>
             <Grid item xs={6} sm={3}>
               <Paper sx={{ p: 2, textAlign: 'center' }}>
-                <Typography variant="h4" color="success.main">
-                  {packageApprovals.filter(pa => pa.status === 'approved').length}
+                <Typography variant='h4' color='success.main'>
+                  {
+                    packageApprovals.filter(pa => pa.status === 'approved')
+                      .length
+                  }
                 </Typography>
-                <Typography variant="caption">Approved</Typography>
+                <Typography variant='caption'>Approved</Typography>
               </Paper>
             </Grid>
             <Grid item xs={6} sm={3}>
               <Paper sx={{ p: 2, textAlign: 'center' }}>
-                <Typography variant="h4" color="error.main">
+                <Typography variant='h4' color='error.main'>
                   {packageApprovals.filter(pa => pa.isLocked).length}
                 </Typography>
-                <Typography variant="caption">Locked</Typography>
+                <Typography variant='caption'>Locked</Typography>
               </Paper>
             </Grid>
             <Grid item xs={6} sm={3}>
               <Paper sx={{ p: 2, textAlign: 'center' }}>
-                <Typography variant="h4" color="primary.main">
-                  {packageApprovals.reduce((sum, pa) => sum + pa.totalRecords, 0)}
+                <Typography variant='h4' color='primary.main'>
+                  {packageApprovals.reduce(
+                    (sum, pa) => sum + pa.totalRecords,
+                    0
+                  )}
                 </Typography>
-                <Typography variant="caption">Total Records</Typography>
+                <Typography variant='caption'>Total Records</Typography>
               </Paper>
             </Grid>
           </Grid>
@@ -563,14 +613,15 @@ export const PackageApprovalComponent: React.FC<PackageApprovalProps> = ({
       {packageApprovals.length === 0 ? (
         <Paper sx={{ p: 4, textAlign: 'center' }}>
           <PackageIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary" gutterBottom>
+          <Typography variant='h6' color='text.secondary' gutterBottom>
             No Package Approvals
           </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            Create a package approval to begin the legal review process for this request.
+          <Typography variant='body2' color='text.secondary' paragraph>
+            Create a package approval to begin the legal review process for this
+            request.
           </Typography>
           <Button
-            variant="contained"
+            variant='contained'
             startIcon={<PackageIcon />}
             onClick={handleCreatePackageApproval}
           >
@@ -578,7 +629,7 @@ export const PackageApprovalComponent: React.FC<PackageApprovalProps> = ({
           </Button>
         </Paper>
       ) : (
-        packageApprovals.map((packageApproval) => (
+        packageApprovals.map(packageApproval => (
           <PackageCard
             key={packageApproval.id}
             packageApproval={packageApproval}

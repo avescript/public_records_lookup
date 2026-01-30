@@ -21,10 +21,10 @@ afterAll(() => {
 
 describe('addRecordToRequest', () => {
   let requestId: string;
-  
+
   beforeEach(async () => {
     mockService.clearAllData();
-    
+
     // Create a test request
     const result = await saveRequest({
       title: 'Test Request',
@@ -38,7 +38,7 @@ describe('addRecordToRequest', () => {
       contactEmail: 'test@example.com',
       files: [],
     });
-    
+
     requestId = result.id;
   });
 
@@ -62,7 +62,12 @@ describe('addRecordToRequest', () => {
     };
 
     // Add record to request
-    await addRecordToRequest(requestId, candidateId, candidateData, 'Test Staff');
+    await addRecordToRequest(
+      requestId,
+      candidateId,
+      candidateData,
+      'Test Staff'
+    );
 
     // Verify record was added
     const request = await mockService.getRequestById(requestId);

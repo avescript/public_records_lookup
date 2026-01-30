@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
-import { 
-  PermissionButton, 
+import {
+  PermissionButton,
   PermissionIconButton,
   PermissionMenuItem,
   RoleChip,
@@ -11,7 +11,7 @@ import {
   StaffButton,
   LegalButton,
   ApprovalButton,
-  RejectButton
+  RejectButton,
 } from '../../../src/components/auth/PermissionComponents';
 import { usePermissions } from '../../../src/hooks/usePermissions';
 
@@ -20,7 +20,9 @@ jest.mock('../../../src/hooks/usePermissions', () => ({
   usePermissions: jest.fn(),
 }));
 
-const mockUsePermissions = usePermissions as jest.MockedFunction<typeof usePermissions>;
+const mockUsePermissions = usePermissions as jest.MockedFunction<
+  typeof usePermissions
+>;
 
 // Test theme
 const theme = createTheme();
@@ -38,9 +40,14 @@ describe('Permission Components', () => {
   describe('PermissionButton', () => {
     it('should render button when user has required role', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
-        hasRole: jest.fn((role) => role === 'admin'),
-        hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
+        hasRole: jest.fn(role => role === 'admin'),
+        hasAnyRole: jest.fn(roles => roles.includes('admin')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -58,14 +65,21 @@ describe('Permission Components', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByRole('button', { name: 'Admin Action' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Admin Action' })
+      ).toBeInTheDocument();
     });
 
     it('should not render button when user lacks required role', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '2', email: 'staff@test.com', role: 'staff', name: 'Staff' },
-        hasRole: jest.fn((role) => role === 'staff'),
-        hasAnyRole: jest.fn((roles) => roles.includes('staff')),
+        user: {
+          id: '2',
+          email: 'staff@test.com',
+          role: 'staff',
+          name: 'Staff',
+        },
+        hasRole: jest.fn(role => role === 'staff'),
+        hasAnyRole: jest.fn(roles => roles.includes('staff')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -88,11 +102,18 @@ describe('Permission Components', () => {
 
     it('should render button when user has required permission', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
-        hasPermission: jest.fn((permission) => permission === 'manage_users'),
-        hasAnyPermission: jest.fn((permissions) => permissions.includes('manage_users')),
+        hasPermission: jest.fn(permission => permission === 'manage_users'),
+        hasAnyPermission: jest.fn(permissions =>
+          permissions.includes('manage_users')
+        ),
         hasAllPermissions: jest.fn(() => false),
         getUserPermissions: jest.fn(() => ['manage_users']),
         isAdmin: true,
@@ -108,12 +129,19 @@ describe('Permission Components', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByRole('button', { name: 'Manage Users' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Manage Users' })
+      ).toBeInTheDocument();
     });
 
     it('should show access denied message when showAccessDenied is true', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '2', email: 'staff@test.com', role: 'staff', name: 'Staff' },
+        user: {
+          id: '2',
+          email: 'staff@test.com',
+          role: 'staff',
+          name: 'Staff',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
         hasPermission: jest.fn(() => false),
@@ -127,25 +155,29 @@ describe('Permission Components', () => {
 
       render(
         <TestWrapper>
-          <PermissionButton 
-            requiredRoles={['admin']} 
-            showAccessDenied={true}
-          >
+          <PermissionButton requiredRoles={['admin']} showAccessDenied={true}>
             Admin Action
           </PermissionButton>
         </TestWrapper>
       );
 
       expect(screen.queryByRole('button')).not.toBeInTheDocument();
-      expect(screen.getByText("You don't have permission for this action.")).toBeInTheDocument();
+      expect(
+        screen.getByText("You don't have permission for this action.")
+      ).toBeInTheDocument();
     });
 
     it('should handle button clicks correctly', () => {
       const mockClick = jest.fn();
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
-        hasRole: jest.fn((role) => role === 'admin'),
-        hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
+        hasRole: jest.fn(role => role === 'admin'),
+        hasAnyRole: jest.fn(roles => roles.includes('admin')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -171,9 +203,14 @@ describe('Permission Components', () => {
   describe('PermissionIconButton', () => {
     it('should render icon button when user has permission', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
-        hasRole: jest.fn((role) => role === 'admin'),
-        hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
+        hasRole: jest.fn(role => role === 'admin'),
+        hasAnyRole: jest.fn(roles => roles.includes('admin')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -185,20 +222,30 @@ describe('Permission Components', () => {
 
       render(
         <TestWrapper>
-          <PermissionIconButton requiredRoles={['admin']} aria-label="admin-action">
+          <PermissionIconButton
+            requiredRoles={['admin']}
+            aria-label='admin-action'
+          >
             <span>Icon</span>
           </PermissionIconButton>
         </TestWrapper>
       );
 
-      expect(screen.getByRole('button', { name: 'admin-action' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'admin-action' })
+      ).toBeInTheDocument();
     });
 
     it('should not render icon button when user lacks permission', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '2', email: 'staff@test.com', role: 'staff', name: 'Staff' },
-        hasRole: jest.fn((role) => role === 'staff'),
-        hasAnyRole: jest.fn((roles) => roles.includes('staff')),
+        user: {
+          id: '2',
+          email: 'staff@test.com',
+          role: 'staff',
+          name: 'Staff',
+        },
+        hasRole: jest.fn(role => role === 'staff'),
+        hasAnyRole: jest.fn(roles => roles.includes('staff')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -210,7 +257,10 @@ describe('Permission Components', () => {
 
       render(
         <TestWrapper>
-          <PermissionIconButton requiredRoles={['admin']} aria-label="admin-action">
+          <PermissionIconButton
+            requiredRoles={['admin']}
+            aria-label='admin-action'
+          >
             <span>Icon</span>
           </PermissionIconButton>
         </TestWrapper>
@@ -223,7 +273,12 @@ describe('Permission Components', () => {
   describe('RoleChip', () => {
     it('should render admin role chip correctly', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
         hasPermission: jest.fn(() => false),
@@ -249,7 +304,12 @@ describe('Permission Components', () => {
 
     it('should render staff role chip correctly', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '2', email: 'staff@test.com', role: 'staff', name: 'Staff' },
+        user: {
+          id: '2',
+          email: 'staff@test.com',
+          role: 'staff',
+          name: 'Staff',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
         hasPermission: jest.fn(() => false),
@@ -274,7 +334,12 @@ describe('Permission Components', () => {
 
     it('should render legal reviewer role chip correctly', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '3', email: 'legal@test.com', role: 'legal_reviewer', name: 'Legal' },
+        user: {
+          id: '3',
+          email: 'legal@test.com',
+          role: 'legal_reviewer',
+          name: 'Legal',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
         hasPermission: jest.fn(() => false),
@@ -299,7 +364,12 @@ describe('Permission Components', () => {
 
     it('should render chip without icon when showIcon is false', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
         hasPermission: jest.fn(() => false),
@@ -350,9 +420,14 @@ describe('Permission Components', () => {
   describe('Convenience Components', () => {
     it('AdminButton should work for admin users', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
-        hasRole: jest.fn((role) => role === 'admin'),
-        hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
+        hasRole: jest.fn(role => role === 'admin'),
+        hasAnyRole: jest.fn(roles => roles.includes('admin')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -368,14 +443,21 @@ describe('Permission Components', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByRole('button', { name: 'Admin Action' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Admin Action' })
+      ).toBeInTheDocument();
     });
 
     it('StaffButton should work for staff users', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '2', email: 'staff@test.com', role: 'staff', name: 'Staff' },
-        hasRole: jest.fn((role) => role === 'staff'),
-        hasAnyRole: jest.fn((roles) => roles.includes('staff')),
+        user: {
+          id: '2',
+          email: 'staff@test.com',
+          role: 'staff',
+          name: 'Staff',
+        },
+        hasRole: jest.fn(role => role === 'staff'),
+        hasAnyRole: jest.fn(roles => roles.includes('staff')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -391,14 +473,21 @@ describe('Permission Components', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByRole('button', { name: 'Staff Action' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Staff Action' })
+      ).toBeInTheDocument();
     });
 
     it('LegalButton should work for legal reviewer users', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '3', email: 'legal@test.com', role: 'legal_reviewer', name: 'Legal' },
-        hasRole: jest.fn((role) => role === 'legal_reviewer'),
-        hasAnyRole: jest.fn((roles) => roles.includes('legal_reviewer')),
+        user: {
+          id: '3',
+          email: 'legal@test.com',
+          role: 'legal_reviewer',
+          name: 'Legal',
+        },
+        hasRole: jest.fn(role => role === 'legal_reviewer'),
+        hasAnyRole: jest.fn(roles => roles.includes('legal_reviewer')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -414,16 +503,25 @@ describe('Permission Components', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByRole('button', { name: 'Legal Action' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Legal Action' })
+      ).toBeInTheDocument();
     });
 
     it('ApprovalButton should work when user has approve permission', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
-        hasPermission: jest.fn((permission) => permission === 'approve_request'),
-        hasAnyPermission: jest.fn((permissions) => permissions.includes('approve_request')),
+        hasPermission: jest.fn(permission => permission === 'approve_request'),
+        hasAnyPermission: jest.fn(permissions =>
+          permissions.includes('approve_request')
+        ),
         hasAllPermissions: jest.fn(() => false),
         getUserPermissions: jest.fn(() => ['approve_request']),
         isAdmin: true,
@@ -437,16 +535,25 @@ describe('Permission Components', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByRole('button', { name: 'Approve' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Approve' })
+      ).toBeInTheDocument();
     });
 
     it('RejectButton should work when user has reject permission', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
-        hasPermission: jest.fn((permission) => permission === 'reject_request'),
-        hasAnyPermission: jest.fn((permissions) => permissions.includes('reject_request')),
+        hasPermission: jest.fn(permission => permission === 'reject_request'),
+        hasAnyPermission: jest.fn(permissions =>
+          permissions.includes('reject_request')
+        ),
         hasAllPermissions: jest.fn(() => false),
         getUserPermissions: jest.fn(() => ['reject_request']),
         isAdmin: true,
@@ -460,7 +567,9 @@ describe('Permission Components', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByRole('button', { name: 'Reject' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Reject' })
+      ).toBeInTheDocument();
     });
   });
 });

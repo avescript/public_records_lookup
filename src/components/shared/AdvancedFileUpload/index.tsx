@@ -1,13 +1,26 @@
 /**
  * Advanced Document Upload Component
- * 
+ *
  * Enhanced file upload with OCR processing, batch handling, and agency-specific workflows.
  * Supports multiple file formats with real-time processing progress.
  */
 
 'use client';
 
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FileRejection, useDropzone } from 'react-dropzone';
+import {
+  Business as AgencyIcon,
+  CheckCircle as SuccessIcon,
+  CloudUpload as UploadIcon,
+  Delete as DeleteIcon,
+  Error as ErrorIcon,
+  GetApp as DownloadIcon,
+  Schedule as ProcessingIcon,
+  Search as OCRIcon,
+  Security as PIIIcon,
+  Visibility as ViewIcon,
+} from '@mui/icons-material';
 import {
   Alert,
   Box,
@@ -36,30 +49,17 @@ import {
   Select,
   Stack,
   Switch,
-  Typography,
   Tooltip,
+  Typography,
 } from '@mui/material';
-import {
-  CloudUpload as UploadIcon,
-  Delete as DeleteIcon,
-  Visibility as ViewIcon,
-  GetApp as DownloadIcon,
-  CheckCircle as SuccessIcon,
-  Error as ErrorIcon,
-  Schedule as ProcessingIcon,
-  Search as OCRIcon,
-  Security as PIIIcon,
-  Business as AgencyIcon,
-} from '@mui/icons-material';
-import { FileRejection, useDropzone } from 'react-dropzone';
 
 import { useAgency } from '../../../contexts/AgencyContext';
-import { 
+import {
   advancedDocumentProcessingService,
+  BatchProgress,
+  DocumentFileType,
   DocumentProcessingResult,
   ProcessingStatus,
-  DocumentFileType,
-  BatchProgress
 } from '../../../services/advancedDocumentProcessingService';
 
 interface AdvancedFileUploadProps {
@@ -90,16 +90,16 @@ const formatFileSize = (bytes: number): string => {
 const getStatusIcon = (status: ProcessingStatus) => {
   switch (status) {
     case ProcessingStatus.COMPLETED:
-      return <SuccessIcon color="success" />;
+      return <SuccessIcon color='success' />;
     case ProcessingStatus.FAILED:
-      return <ErrorIcon color="error" />;
+      return <ErrorIcon color='error' />;
     case ProcessingStatus.PROCESSING:
     case ProcessingStatus.OCR_EXTRACTING:
     case ProcessingStatus.PII_DETECTING:
     case ProcessingStatus.AGENCY_VALIDATING:
-      return <ProcessingIcon color="primary" />;
+      return <ProcessingIcon color='primary' />;
     default:
-      return <ProcessingIcon color="disabled" />;
+      return <ProcessingIcon color='disabled' />;
   }
 };
 
@@ -147,12 +147,16 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
   enableOCR = true,
   enablePIIDetection = true,
   enableAgencyValidation = true,
-  showBatchProgress = true
+  showBatchProgress = true,
 }) => {
   const { currentAgency } = useAgency();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [processingResults, setProcessingResults] = useState<Map<string, DocumentProcessingResult>>(new Map());
-  const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
+  const [processingResults, setProcessingResults] = useState<
+    Map<string, DocumentProcessingResult>
+  >(new Map());
+  const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(
+    null
+  );
   const [isProcessing, setIsProcessing] = useState(false);
   const [showConfigDialog, setShowConfigDialog] = useState(false);
   const [error, setError] = useState<string>('');
@@ -161,7 +165,7 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
     enableOCR,
     enablePIIDetection,
     enableAgencyValidation,
-    maxConcurrent: 3
+    maxConcurrent: 3,
   });
 
   // Accepted file types for document processing
@@ -173,7 +177,7 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
     'text/plain',
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/rtf'
+    'application/rtf',
   ];
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -183,19 +187,23 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
       'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
       'text/plain': ['.txt'],
       'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'application/rtf': ['.rtf']
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        ['.docx'],
+      'application/rtf': ['.rtf'],
     },
     maxFiles,
     maxSize: maxFileSize,
-    disabled: isProcessing
+    disabled: isProcessing,
   });
 
   function onFileDrop(acceptedFiles: File[], rejectedFiles: FileRejection[]) {
     if (rejectedFiles.length > 0) {
-      const errors = rejectedFiles.map(rejection => 
-        `${rejection.file.name}: ${rejection.errors.map(e => e.message).join(', ')}`
-      ).join('; ');
+      const errors = rejectedFiles
+        .map(
+          rejection =>
+            `${rejection.file.name}: ${rejection.errors.map(e => e.message).join(', ')}`
+        )
+        .join('; ');
       setError(errors);
       return;
     }
@@ -206,7 +214,9 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
   }
 
   const removeFile = (indexToRemove: number) => {
-    const newFiles = selectedFiles.filter((_, index) => index !== indexToRemove);
+    const newFiles = selectedFiles.filter(
+      (_, index) => index !== indexToRemove
+    );
     setSelectedFiles(newFiles);
   };
 
@@ -220,48 +230,54 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
     setError('');
 
     try {
-      console.log(`🚀 [Advanced Upload] Starting batch processing of ${selectedFiles.length} files`);
+      console.log(
+        `🚀 [Advanced Upload] Starting batch processing of ${selectedFiles.length} files`
+      );
 
       // Start batch processing
-      const batchId = await advancedDocumentProcessingService.batchProcessDocuments(
-        selectedFiles,
-        {
-          agencyId: currentAgency?.id,
-          enablePIIDetection: config.enablePIIDetection,
-          enableAgencyValidation: config.enableAgencyValidation,
-          maxConcurrent: config.maxConcurrent,
-          ocrConfig: {
-            language: 'eng',
-            confidence: 0.6
+      const batchId =
+        await advancedDocumentProcessingService.batchProcessDocuments(
+          selectedFiles,
+          {
+            agencyId: currentAgency?.id,
+            enablePIIDetection: config.enablePIIDetection,
+            enableAgencyValidation: config.enableAgencyValidation,
+            maxConcurrent: config.maxConcurrent,
+            ocrConfig: {
+              language: 'eng',
+              confidence: 0.6,
+            },
           }
-        }
-      );
+        );
 
       // Poll for batch progress
       const progressInterval = setInterval(() => {
-        const progress = advancedDocumentProcessingService.getBatchProgress(batchId);
+        const progress =
+          advancedDocumentProcessingService.getBatchProgress(batchId);
         if (progress) {
           setBatchProgress(progress);
-          
+
           if (progress.percentage >= 100) {
             clearInterval(progressInterval);
             setIsProcessing(false);
-            
+
             // Get final results
-            const results = advancedDocumentProcessingService.getAllProcessingResults();
+            const results =
+              advancedDocumentProcessingService.getAllProcessingResults();
             const resultsMap = new Map<string, DocumentProcessingResult>();
             results.forEach(result => resultsMap.set(result.id, result));
             setProcessingResults(resultsMap);
-            
+
             if (onProcessingComplete) {
               onProcessingComplete(results);
             }
-            
-            console.log(`✅ [Advanced Upload] Batch processing completed: ${progress.completed} successful, ${progress.failed} failed`);
+
+            console.log(
+              `✅ [Advanced Upload] Batch processing completed: ${progress.completed} successful, ${progress.failed} failed`
+            );
           }
         }
       }, 1000);
-
     } catch (error) {
       console.error('❌ [Advanced Upload] Batch processing failed:', error);
       setError(error instanceof Error ? error.message : 'Processing failed');
@@ -283,7 +299,7 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
 
   const downloadResult = (result: DocumentProcessingResult) => {
     if (!result.extractedText) return;
-    
+
     const blob = new Blob([result.extractedText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -301,14 +317,18 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
         <CardContent>
           <Stack spacing={3}>
             {/* Header */}
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="h5" component="h2">
+            <Box
+              display='flex'
+              justifyContent='space-between'
+              alignItems='center'
+            >
+              <Typography variant='h5' component='h2'>
                 Advanced Document Processing
               </Typography>
-              <Stack direction="row" spacing={1}>
+              <Stack direction='row' spacing={1}>
                 <Button
-                  variant="outlined"
-                  size="small"
+                  variant='outlined'
+                  size='small'
                   onClick={() => setShowConfigDialog(true)}
                   disabled={isProcessing}
                 >
@@ -316,9 +336,9 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
                 </Button>
                 {processingResults.size > 0 && (
                   <Button
-                    variant="outlined"
-                    size="small"
-                    color="secondary"
+                    variant='outlined'
+                    size='small'
+                    color='secondary'
                     onClick={clearResults}
                     disabled={isProcessing}
                   >
@@ -330,31 +350,32 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
 
             {/* Agency Info */}
             {currentAgency && (
-              <Alert severity="info" icon={<AgencyIcon />}>
+              <Alert severity='info' icon={<AgencyIcon />}>
                 Processing documents for <strong>{currentAgency.name}</strong>
-                {config.enableAgencyValidation && ' with agency-specific validation rules'}
+                {config.enableAgencyValidation &&
+                  ' with agency-specific validation rules'}
               </Alert>
             )}
 
             {/* Processing Configuration Summary */}
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Stack direction='row' spacing={1} flexWrap='wrap' useFlexGap>
               <Chip
                 icon={<OCRIcon />}
                 label={`OCR: ${config.enableOCR ? 'Enabled' : 'Disabled'}`}
                 color={config.enableOCR ? 'primary' : 'default'}
-                size="small"
+                size='small'
               />
               <Chip
                 icon={<PIIIcon />}
                 label={`PII Detection: ${config.enablePIIDetection ? 'Enabled' : 'Disabled'}`}
                 color={config.enablePIIDetection ? 'primary' : 'default'}
-                size="small"
+                size='small'
               />
               <Chip
                 icon={<AgencyIcon />}
                 label={`Agency Rules: ${config.enableAgencyValidation ? 'Enabled' : 'Disabled'}`}
                 color={config.enableAgencyValidation ? 'primary' : 'default'}
-                size="small"
+                size='small'
               />
             </Stack>
 
@@ -370,25 +391,31 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
                 textAlign: 'center',
                 cursor: isProcessing ? 'not-allowed' : 'pointer',
                 bgcolor: isDragActive ? 'action.hover' : 'background.paper',
-                opacity: isProcessing ? 0.6 : 1
+                opacity: isProcessing ? 0.6 : 1,
               }}
             >
               <input {...getInputProps()} />
-              <UploadIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-              <Typography variant="h6" gutterBottom>
-                {isDragActive ? 'Drop files here...' : 'Drop files or click to select'}
+              <UploadIcon
+                sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }}
+              />
+              <Typography variant='h6' gutterBottom>
+                {isDragActive
+                  ? 'Drop files here...'
+                  : 'Drop files or click to select'}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Supports PDF, images (PNG, JPEG, GIF), Word documents, and text files
+              <Typography variant='body2' color='text.secondary'>
+                Supports PDF, images (PNG, JPEG, GIF), Word documents, and text
+                files
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Maximum file size: {formatFileSize(maxFileSize)} • Maximum files: {maxFiles}
+              <Typography variant='body2' color='text.secondary'>
+                Maximum file size: {formatFileSize(maxFileSize)} • Maximum
+                files: {maxFiles}
               </Typography>
             </Paper>
 
             {/* Error Display */}
             {error && (
-              <Alert severity="error" onClose={() => setError('')}>
+              <Alert severity='error' onClose={() => setError('')}>
                 {error}
               </Alert>
             )}
@@ -396,7 +423,7 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
             {/* Selected Files */}
             {selectedFiles.length > 0 && (
               <Box>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Selected Files ({selectedFiles.length})
                 </Typography>
                 <List>
@@ -408,7 +435,7 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
                       />
                       <ListItemSecondaryAction>
                         <IconButton
-                          edge="end"
+                          edge='end'
                           onClick={() => removeFile(index)}
                           disabled={isProcessing}
                         >
@@ -418,17 +445,19 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
                     </ListItem>
                   ))}
                 </List>
-                
+
                 <Box mt={2}>
                   <Button
-                    variant="contained"
-                    size="large"
+                    variant='contained'
+                    size='large'
                     onClick={processFiles}
                     disabled={isProcessing}
                     startIcon={<UploadIcon />}
                     fullWidth
                   >
-                    {isProcessing ? 'Processing...' : `Process ${selectedFiles.length} File${selectedFiles.length !== 1 ? 's' : ''}`}
+                    {isProcessing
+                      ? 'Processing...'
+                      : `Process ${selectedFiles.length} File${selectedFiles.length !== 1 ? 's' : ''}`}
                   </Button>
                 </Box>
               </Box>
@@ -437,43 +466,48 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
             {/* Batch Progress */}
             {showBatchProgress && batchProgress && (
               <Box>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Processing Progress
                 </Typography>
                 <LinearProgress
-                  variant="determinate"
+                  variant='determinate'
                   value={batchProgress.percentage}
                   sx={{ height: 8, borderRadius: 4, mb: 1 }}
                 />
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="body2" color="text.secondary">
-                    {batchProgress.completed + batchProgress.failed} of {batchProgress.total} files processed
+                <Stack
+                  direction='row'
+                  justifyContent='space-between'
+                  alignItems='center'
+                >
+                  <Typography variant='body2' color='text.secondary'>
+                    {batchProgress.completed + batchProgress.failed} of{' '}
+                    {batchProgress.total} files processed
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     {batchProgress.percentage}%
                   </Typography>
                 </Stack>
                 {batchProgress.currentFile && (
-                  <Typography variant="body2" color="text.secondary" mt={1}>
+                  <Typography variant='body2' color='text.secondary' mt={1}>
                     Currently processing: {batchProgress.currentFile}
                   </Typography>
                 )}
-                <Stack direction="row" spacing={2} mt={1}>
+                <Stack direction='row' spacing={2} mt={1}>
                   <Chip
                     label={`${batchProgress.completed} Completed`}
-                    color="success"
-                    size="small"
+                    color='success'
+                    size='small'
                   />
                   <Chip
                     label={`${batchProgress.processing} Processing`}
-                    color="primary"
-                    size="small"
+                    color='primary'
+                    size='small'
                   />
                   {batchProgress.failed > 0 && (
                     <Chip
                       label={`${batchProgress.failed} Failed`}
-                      color="error"
-                      size="small"
+                      color='error'
+                      size='small'
                     />
                   )}
                 </Stack>
@@ -483,11 +517,11 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
             {/* Processing Results */}
             {processingResults.size > 0 && (
               <Box>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Processing Results ({processingResults.size})
                 </Typography>
                 <List>
-                  {Array.from(processingResults.values()).map((result) => (
+                  {Array.from(processingResults.values()).map(result => (
                     <ListItem key={result.id} divider>
                       <ListItemIcon>
                         {getStatusIcon(result.status)}
@@ -496,30 +530,46 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
                         primary={result.fileName}
                         secondary={
                           <Stack spacing={0.5}>
-                            <Stack direction="row" spacing={1} alignItems="center">
+                            <Stack
+                              direction='row'
+                              spacing={1}
+                              alignItems='center'
+                            >
                               <Chip
                                 label={getStatusText(result.status)}
                                 color={getStatusColor(result.status) as any}
-                                size="small"
+                                size='small'
                               />
                               {result.processingTime && (
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography
+                                  variant='body2'
+                                  color='text.secondary'
+                                >
                                   {result.processingTime}ms
                                 </Typography>
                               )}
                             </Stack>
                             {result.ocrData && (
-                              <Typography variant="body2" color="text.secondary">
-                                OCR Confidence: {Math.round(result.ocrData.confidence * 100)}%
+                              <Typography
+                                variant='body2'
+                                color='text.secondary'
+                              >
+                                OCR Confidence:{' '}
+                                {Math.round(result.ocrData.confidence * 100)}%
                               </Typography>
                             )}
-                            {result.piiFindings && result.piiFindings.length > 0 && (
-                              <Typography variant="body2" color="text.secondary">
-                                PII Findings: {result.piiFindings.length} items detected
-                              </Typography>
-                            )}
+                            {result.piiFindings &&
+                              result.piiFindings.length > 0 && (
+                                <Typography
+                                  variant='body2'
+                                  color='text.secondary'
+                                >
+                                  PII Findings: {result.piiFindings.length}{' '}
+                                  items detected
+                                </Typography>
+                              )}
                             {result.error && (
-                              <Typography variant="body2" color="error.main">
+                              <Typography variant='body2' color='error.main'>
                                 Error: {result.error}
                               </Typography>
                             )}
@@ -527,15 +577,21 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
                         }
                       />
                       <ListItemSecondaryAction>
-                        <Stack direction="row" spacing={1}>
-                          <Tooltip title="View Details">
-                            <IconButton size="small" onClick={() => viewResult(result)}>
+                        <Stack direction='row' spacing={1}>
+                          <Tooltip title='View Details'>
+                            <IconButton
+                              size='small'
+                              onClick={() => viewResult(result)}
+                            >
                               <ViewIcon />
                             </IconButton>
                           </Tooltip>
                           {result.extractedText && (
-                            <Tooltip title="Download Extracted Text">
-                              <IconButton size="small" onClick={() => downloadResult(result)}>
+                            <Tooltip title='Download Extracted Text'>
+                              <IconButton
+                                size='small'
+                                onClick={() => downloadResult(result)}
+                              >
                                 <DownloadIcon />
                               </IconButton>
                             </Tooltip>
@@ -552,7 +608,12 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
       </Card>
 
       {/* Configuration Dialog */}
-      <Dialog open={showConfigDialog} onClose={() => setShowConfigDialog(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={showConfigDialog}
+        onClose={() => setShowConfigDialog(false)}
+        maxWidth='sm'
+        fullWidth
+      >
         <DialogTitle>Processing Configuration</DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>
@@ -560,32 +621,47 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
               control={
                 <Switch
                   checked={config.enableOCR}
-                  onChange={(e) => setConfig(prev => ({ ...prev, enableOCR: e.target.checked }))}
+                  onChange={e =>
+                    setConfig(prev => ({
+                      ...prev,
+                      enableOCR: e.target.checked,
+                    }))
+                  }
                 />
               }
-              label="Enable OCR Processing"
+              label='Enable OCR Processing'
               disabled={isProcessing}
             />
-            
+
             <FormControlLabel
               control={
                 <Switch
                   checked={config.enablePIIDetection}
-                  onChange={(e) => setConfig(prev => ({ ...prev, enablePIIDetection: e.target.checked }))}
+                  onChange={e =>
+                    setConfig(prev => ({
+                      ...prev,
+                      enablePIIDetection: e.target.checked,
+                    }))
+                  }
                 />
               }
-              label="Enable PII Detection"
+              label='Enable PII Detection'
               disabled={isProcessing}
             />
-            
+
             <FormControlLabel
               control={
                 <Switch
                   checked={config.enableAgencyValidation}
-                  onChange={(e) => setConfig(prev => ({ ...prev, enableAgencyValidation: e.target.checked }))}
+                  onChange={e =>
+                    setConfig(prev => ({
+                      ...prev,
+                      enableAgencyValidation: e.target.checked,
+                    }))
+                  }
                 />
               }
-              label="Enable Agency-Specific Validation"
+              label='Enable Agency-Specific Validation'
               disabled={isProcessing || !currentAgency}
             />
 
@@ -593,8 +669,13 @@ export const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
               <InputLabel>Max Concurrent Processing</InputLabel>
               <Select
                 value={config.maxConcurrent}
-                label="Max Concurrent Processing"
-                onChange={(e) => setConfig(prev => ({ ...prev, maxConcurrent: Number(e.target.value) }))}
+                label='Max Concurrent Processing'
+                onChange={e =>
+                  setConfig(prev => ({
+                    ...prev,
+                    maxConcurrent: Number(e.target.value),
+                  }))
+                }
                 disabled={isProcessing}
               >
                 <MenuItem value={1}>1 (Sequential)</MenuItem>

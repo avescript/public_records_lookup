@@ -152,7 +152,7 @@ describe('AgencyContext', () => {
 
     it('should not dispatch event if switching to current agency', () => {
       const { result } = renderHook(() => useAgency(), { wrapper });
-      
+
       // Clear any previous dispatch events
       jest.clearAllMocks();
 
@@ -190,11 +190,7 @@ describe('AgencyContext', () => {
     it('should have all required agencies', () => {
       const { result } = renderHook(() => useAgency(), { wrapper });
 
-      const expectedIds = [
-        'police',
-        'fire',
-        'finance'
-      ];
+      const expectedIds = ['police', 'fire', 'finance'];
 
       const actualIds = result.current.availableAgencies.map(a => a.id);
       expect(actualIds).toEqual(expectedIds);
@@ -215,7 +211,7 @@ describe('AgencyContext', () => {
   describe('Hook Usage Outside Provider', () => {
     it('should throw error when useAgency is used without AgencyProvider', () => {
       const consoleError = jest.spyOn(console, 'error').mockImplementation();
-      
+
       expect(() => {
         renderHook(() => useAgency());
       }).toThrow('useAgency must be used within an AgencyProvider');

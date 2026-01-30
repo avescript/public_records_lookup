@@ -42,7 +42,11 @@ export interface ChangeRequest {
   fileName: string;
   requestedBy: string;
   requestedByName: string;
-  requestType: 'additional_redaction' | 'remove_redaction' | 'clarification' | 'other';
+  requestType:
+    | 'additional_redaction'
+    | 'remove_redaction'
+    | 'clarification'
+    | 'other';
   description: string;
   specificLocation?: {
     page: number;
@@ -60,7 +64,12 @@ export interface PackageApproval {
   id: string;
   requestId: string;
   packageId: string;
-  status: 'pending' | 'under_review' | 'approved' | 'rejected' | 'changes_requested';
+  status:
+    | 'pending'
+    | 'under_review'
+    | 'approved'
+    | 'rejected'
+    | 'changes_requested';
   recordIds: string[];
   totalRecords: number;
   reviewerId?: string;
@@ -111,21 +120,23 @@ class LegalReviewService {
     try {
       const threadId = `thread_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const commentId = `comment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       const thread: CommentThread = {
         id: threadId,
         recordId,
         fileName,
         threadType,
-        comments: [{
-          id: commentId,
-          threadId,
-          authorId,
-          authorName,
-          authorRole,
-          content: initialComment,
-          timestamp: new Date().toISOString(),
-        }],
+        comments: [
+          {
+            id: commentId,
+            threadId,
+            authorId,
+            authorName,
+            authorRole,
+            content: initialComment,
+            timestamp: new Date().toISOString(),
+          },
+        ],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         status: 'open',
@@ -216,7 +227,10 @@ class LegalReviewService {
   /**
    * Get comment threads for a specific record
    */
-  async getCommentThreadsForRecord(recordId: string, fileName?: string): Promise<CommentThread[]> {
+  async getCommentThreadsForRecord(
+    recordId: string,
+    fileName?: string
+  ): Promise<CommentThread[]> {
     try {
       const threads = await this.getCommentThreads();
       let results = Object.values(threads).filter(t => t.recordId === recordId);
@@ -225,7 +239,10 @@ class LegalReviewService {
         results = results.filter(t => t.fileName === fileName);
       }
 
-      return results.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      return results.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
     } catch (error) {
       console.error('Failed to get comment threads:', error);
       return [];
@@ -235,7 +252,10 @@ class LegalReviewService {
   /**
    * Update thread status
    */
-  async updateThreadStatus(threadId: string, status: CommentThread['status']): Promise<CommentThread> {
+  async updateThreadStatus(
+    threadId: string,
+    status: CommentThread['status']
+  ): Promise<CommentThread> {
     try {
       const threads = await this.getCommentThreads();
       const thread = threads[threadId];
@@ -337,7 +357,7 @@ class LegalReviewService {
       changeRequest.status = status;
       if (assignedTo) changeRequest.assignedTo = assignedTo;
       if (resolutionNotes) changeRequest.resolutionNotes = resolutionNotes;
-      
+
       if (status === 'completed' || status === 'rejected') {
         changeRequest.resolvedAt = new Date().toISOString();
       }
@@ -364,16 +384,24 @@ class LegalReviewService {
   /**
    * Get change requests for a record
    */
-  async getChangeRequestsForRecord(recordId: string, fileName?: string): Promise<ChangeRequest[]> {
+  async getChangeRequestsForRecord(
+    recordId: string,
+    fileName?: string
+  ): Promise<ChangeRequest[]> {
     try {
       const changeRequests = await this.getChangeRequests();
-      let results = Object.values(changeRequests).filter(cr => cr.recordId === recordId);
+      let results = Object.values(changeRequests).filter(
+        cr => cr.recordId === recordId
+      );
 
       if (fileName) {
         results = results.filter(cr => cr.fileName === fileName);
       }
 
-      return results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      return results.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
     } catch (error) {
       console.error('Failed to get change requests:', error);
       return [];
@@ -482,7 +510,9 @@ class LegalReviewService {
   /**
    * Get package approval by ID
    */
-  async getPackageApproval(packageApprovalId: string): Promise<PackageApproval | null> {
+  async getPackageApproval(
+    packageApprovalId: string
+  ): Promise<PackageApproval | null> {
     try {
       const packageApprovals = await this.getPackageApprovals();
       return packageApprovals[packageApprovalId] || null;
@@ -495,12 +525,17 @@ class LegalReviewService {
   /**
    * Get package approvals by request ID
    */
-  async getPackageApprovalsByRequest(requestId: string): Promise<PackageApproval[]> {
+  async getPackageApprovalsByRequest(
+    requestId: string
+  ): Promise<PackageApproval[]> {
     try {
       const packageApprovals = await this.getPackageApprovals();
       return Object.values(packageApprovals)
         .filter(pa => pa.requestId === requestId)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
     } catch (error) {
       console.error('Failed to get package approvals by request:', error);
       return [];
@@ -515,7 +550,10 @@ class LegalReviewService {
       const packageApprovals = await this.getPackageApprovals();
       return Object.values(packageApprovals)
         .filter(pa => pa.status === 'pending' || pa.status === 'under_review')
-        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        .sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
     } catch (error) {
       console.error('Failed to get pending package approvals:', error);
       return [];
@@ -578,14 +616,22 @@ class LegalReviewService {
       return {
         totalThreads: threadsList.length,
         openThreads: threadsList.filter(t => t.status === 'open').length,
-        resolvedThreads: threadsList.filter(t => t.status === 'resolved').length,
-        pendingChangeRequests: changeRequestsList.filter(cr => cr.status === 'pending').length,
-        completedChangeRequests: changeRequestsList.filter(cr => cr.status === 'completed').length,
-        packagesAwaitingApproval: packageApprovalsList.filter(pa => 
-          pa.status === 'pending' || pa.status === 'under_review'
+        resolvedThreads: threadsList.filter(t => t.status === 'resolved')
+          .length,
+        pendingChangeRequests: changeRequestsList.filter(
+          cr => cr.status === 'pending'
         ).length,
-        approvedPackages: packageApprovalsList.filter(pa => pa.status === 'approved').length,
-        averageReviewTime: this.calculateAverageReviewTime(packageApprovalsList),
+        completedChangeRequests: changeRequestsList.filter(
+          cr => cr.status === 'completed'
+        ).length,
+        packagesAwaitingApproval: packageApprovalsList.filter(
+          pa => pa.status === 'pending' || pa.status === 'under_review'
+        ).length,
+        approvedPackages: packageApprovalsList.filter(
+          pa => pa.status === 'approved'
+        ).length,
+        averageReviewTime:
+          this.calculateAverageReviewTime(packageApprovalsList),
       };
     } catch (error) {
       console.error('Failed to get legal review summary:', error);
@@ -632,15 +678,22 @@ class LegalReviewService {
     }
   }
 
-  private saveChangeRequests(changeRequests: Record<string, ChangeRequest>): void {
+  private saveChangeRequests(
+    changeRequests: Record<string, ChangeRequest>
+  ): void {
     try {
-      localStorage.setItem(this.CHANGE_REQUESTS_KEY, JSON.stringify(changeRequests));
+      localStorage.setItem(
+        this.CHANGE_REQUESTS_KEY,
+        JSON.stringify(changeRequests)
+      );
     } catch (error) {
       console.error('Failed to save change requests:', error);
     }
   }
 
-  private async getPackageApprovals(): Promise<Record<string, PackageApproval>> {
+  private async getPackageApprovals(): Promise<
+    Record<string, PackageApproval>
+  > {
     try {
       const stored = localStorage.getItem(this.PACKAGE_APPROVALS_KEY);
       return stored ? JSON.parse(stored) : {};
@@ -650,17 +703,25 @@ class LegalReviewService {
     }
   }
 
-  private savePackageApprovals(packageApprovals: Record<string, PackageApproval>): void {
+  private savePackageApprovals(
+    packageApprovals: Record<string, PackageApproval>
+  ): void {
     try {
-      localStorage.setItem(this.PACKAGE_APPROVALS_KEY, JSON.stringify(packageApprovals));
+      localStorage.setItem(
+        this.PACKAGE_APPROVALS_KEY,
+        JSON.stringify(packageApprovals)
+      );
     } catch (error) {
       console.error('Failed to save package approvals:', error);
     }
   }
 
-  private calculateAverageReviewTime(packageApprovals: PackageApproval[]): number {
-    const completedApprovals = packageApprovals.filter(pa => 
-      pa.approvedAt && (pa.status === 'approved' || pa.status === 'rejected')
+  private calculateAverageReviewTime(
+    packageApprovals: PackageApproval[]
+  ): number {
+    const completedApprovals = packageApprovals.filter(
+      pa =>
+        pa.approvedAt && (pa.status === 'approved' || pa.status === 'rejected')
     );
 
     if (completedApprovals.length === 0) return 0;

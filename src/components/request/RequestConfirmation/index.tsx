@@ -34,9 +34,9 @@ export function RequestConfirmation({
 }: RequestConfirmationProps) {
   const formatDate = (timestamp: any) => {
     if (!timestamp) return '';
-    
+
     let date: Date;
-    
+
     try {
       if (timestamp.toDate && typeof timestamp.toDate === 'function') {
         // Firebase Timestamp or mock timestamp with toDate function
@@ -54,13 +54,13 @@ export function RequestConfirmation({
         // Fallback - try to create Date from whatever we have
         date = new Date(timestamp);
       }
-      
+
       // Validate the date
       if (isNaN(date.getTime())) {
         console.warn('Invalid date in formatDate:', timestamp);
         return 'Invalid Date';
       }
-      
+
       return format(date, 'MMMM d, yyyy \'at\' h:mm a');
     } catch (error) {
       console.error('Error formatting date:', error, timestamp);
@@ -105,14 +105,14 @@ export function RequestConfirmation({
       >
         <CheckCircleIcon sx={{ fontSize: 64, color: 'success.main', mb: 2 }} />
         <Typography
-          variant="h4"
-          component="h1"
+          variant='h4'
+          component='h1'
           gutterBottom
-          color="success.main"
+          color='success.main'
         >
           Request Submitted Successfully!
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant='body1' color='text.secondary'>
           Your public records request has been received and assigned a tracking
           number.
         </Typography>
@@ -121,25 +121,25 @@ export function RequestConfirmation({
       {/* Tracking Information */}
       <Card elevation={2} sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             Tracking Information
           </Typography>
-          <Grid container spacing={2} alignItems="center">
+          <Grid container spacing={2} alignItems='center'>
             <Grid item xs={12} sm={8}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Tracking ID
               </Typography>
-              <Typography variant="h5" fontWeight="bold" color="primary.main">
+              <Typography variant='h5' fontWeight='bold' color='primary.main'>
                 {request.trackingId}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={4}>
               <Button
-                variant="outlined"
+                variant='outlined'
                 startIcon={<CopyIcon />}
                 onClick={onCopyTrackingId}
                 fullWidth
-                size="small"
+                size='small'
               >
                 Copy ID
               </Button>
@@ -151,76 +151,76 @@ export function RequestConfirmation({
       {/* Request Details */}
       <Card elevation={2} sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             Request Details
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Request Title
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant='body1' gutterBottom>
                 {request.title}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Department
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant='body1' gutterBottom>
                 {getDepartmentDisplayName(request.department)}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Contact Email
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant='body1' gutterBottom>
                 {request.contactEmail}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Status
               </Typography>
               <Chip
                 label={request.status.replace('_', ' ').toUpperCase()}
                 color={getStatusColor(request.status)}
-                size="small"
+                size='small'
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Date Range
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant='body1' gutterBottom>
                 {request.dateRange.startDate} to {request.dateRange.endDate}
                 {request.dateRange.preset && ` (${request.dateRange.preset})`}
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Description
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant='body1' gutterBottom>
                 {request.description}
               </Typography>
             </Grid>
             {request.attachmentCount > 0 && (
               <Grid item xs={12}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant='body2' color='text.secondary'>
                   Attachments
                 </Typography>
-                <Typography variant="body1" gutterBottom>
+                <Typography variant='body1' gutterBottom>
                   {request.attachmentCount} file(s) uploaded
                 </Typography>
               </Grid>
             )}
             <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Submitted
               </Typography>
-              <Typography variant="body1">
+              <Typography variant='body1'>
                 {formatDate(request.submittedAt)}
               </Typography>
             </Grid>
@@ -231,20 +231,20 @@ export function RequestConfirmation({
       {/* Next Steps */}
       <Card elevation={2} sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             What Happens Next?
           </Typography>
-          <Typography variant="body1" paragraph>
+          <Typography variant='body1' paragraph>
             1. Your request will be reviewed by the{' '}
             {getDepartmentDisplayName(request.department)}
           </Typography>
-          <Typography variant="body1" paragraph>
+          <Typography variant='body1' paragraph>
             2. You will receive an email confirmation shortly
           </Typography>
-          <Typography variant="body1" paragraph>
+          <Typography variant='body1' paragraph>
             3. Processing typically takes 5-10 business days
           </Typography>
-          <Typography variant="body1" paragraph>
+          <Typography variant='body1' paragraph>
             4. You can track your request status using the tracking ID above
           </Typography>
         </CardContent>
@@ -259,20 +259,20 @@ export function RequestConfirmation({
           flexWrap: 'wrap',
         }}
       >
-        <Button variant="contained" onClick={onStartNewRequest} size="large">
+        <Button variant='contained' onClick={onStartNewRequest} size='large'>
           Submit Another Request
         </Button>
         <Button
-          variant="outlined"
-          size="large"
+          variant='outlined'
+          size='large'
           onClick={() => (window.location.href = '/status')}
         >
           Track This Request
         </Button>
         <Button
-          variant="outlined"
+          variant='outlined'
           startIcon={<DownloadIcon />}
-          size="large"
+          size='large'
           onClick={() => window.print()}
         >
           Print Confirmation
@@ -281,7 +281,7 @@ export function RequestConfirmation({
 
       {/* Important Notice */}
       <Box sx={{ mt: 4, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-        <Typography variant="body2" color="text.secondary" align="center">
+        <Typography variant='body2' color='text.secondary' align='center'>
           <strong>Important:</strong> Please save your tracking ID (
           {request.trackingId}) to check the status of your request. You will
           need this ID for any inquiries.

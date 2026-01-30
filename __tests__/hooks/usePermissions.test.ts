@@ -5,7 +5,9 @@ jest.mock('../../src/hooks/usePermissions', () => ({
   usePermissions: jest.fn(),
 }));
 
-const mockUsePermissions = usePermissions as jest.MockedFunction<typeof usePermissions>;
+const mockUsePermissions = usePermissions as jest.MockedFunction<
+  typeof usePermissions
+>;
 
 describe('usePermissions Hook', () => {
   beforeEach(() => {
@@ -22,26 +24,48 @@ describe('usePermissions Hook', () => {
 
     mockUsePermissions.mockReturnValue({
       user: mockAdmin,
-      hasPermission: jest.fn((permission) => {
+      hasPermission: jest.fn(permission => {
         const adminPermissions = [
-          'view_all_requests', 'create_request', 'edit_request', 
-          'delete_request', 'approve_request', 'reject_request',
-          'redact_documents', 'review_redactions', 'generate_reports',
-          'manage_users', 'manage_agencies', 'export_data',
-          'audit_logs', 'system_settings', 'legal_review', 'final_approval'
+          'view_all_requests',
+          'create_request',
+          'edit_request',
+          'delete_request',
+          'approve_request',
+          'reject_request',
+          'redact_documents',
+          'review_redactions',
+          'generate_reports',
+          'manage_users',
+          'manage_agencies',
+          'export_data',
+          'audit_logs',
+          'system_settings',
+          'legal_review',
+          'final_approval',
         ];
         return adminPermissions.includes(permission);
       }),
-      hasAnyPermission: jest.fn((permissions) => permissions.some(p => true)), // Admin has all permissions
-      hasAllPermissions: jest.fn((permissions) => permissions.every(p => true)), // Admin has all permissions
-      hasRole: jest.fn((role) => role === 'admin'),
-      hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+      hasAnyPermission: jest.fn(permissions => permissions.some(p => true)), // Admin has all permissions
+      hasAllPermissions: jest.fn(permissions => permissions.every(p => true)), // Admin has all permissions
+      hasRole: jest.fn(role => role === 'admin'),
+      hasAnyRole: jest.fn(roles => roles.includes('admin')),
       getUserPermissions: jest.fn(() => [
-        'view_all_requests', 'create_request', 'edit_request', 
-        'delete_request', 'approve_request', 'reject_request',
-        'redact_documents', 'review_redactions', 'generate_reports',
-        'manage_users', 'manage_agencies', 'export_data',
-        'audit_logs', 'system_settings', 'legal_review', 'final_approval'
+        'view_all_requests',
+        'create_request',
+        'edit_request',
+        'delete_request',
+        'approve_request',
+        'reject_request',
+        'redact_documents',
+        'review_redactions',
+        'generate_reports',
+        'manage_users',
+        'manage_agencies',
+        'export_data',
+        'audit_logs',
+        'system_settings',
+        'legal_review',
+        'final_approval',
       ]),
       isAdmin: true,
       isStaff: false,
@@ -49,7 +73,7 @@ describe('usePermissions Hook', () => {
     });
 
     const result = mockUsePermissions();
-    
+
     expect(result.isAdmin).toBe(true);
     expect(result.hasRole('admin')).toBe(true);
     expect(result.hasPermission('manage_users')).toBe(true);
@@ -67,24 +91,46 @@ describe('usePermissions Hook', () => {
 
     mockUsePermissions.mockReturnValue({
       user: mockStaff,
-      hasPermission: jest.fn((permission) => {
+      hasPermission: jest.fn(permission => {
         const staffPermissions = [
-          'view_own_requests', 'create_request', 'edit_request',
-          'redact_documents', 'export_data'
+          'view_own_requests',
+          'create_request',
+          'edit_request',
+          'redact_documents',
+          'export_data',
         ];
         return staffPermissions.includes(permission);
       }),
-      hasAnyPermission: jest.fn((permissions) => 
-        permissions.some(p => ['view_own_requests', 'create_request', 'edit_request', 'redact_documents', 'export_data'].includes(p))
+      hasAnyPermission: jest.fn(permissions =>
+        permissions.some(p =>
+          [
+            'view_own_requests',
+            'create_request',
+            'edit_request',
+            'redact_documents',
+            'export_data',
+          ].includes(p)
+        )
       ),
-      hasAllPermissions: jest.fn((permissions) => 
-        permissions.every(p => ['view_own_requests', 'create_request', 'edit_request', 'redact_documents', 'export_data'].includes(p))
+      hasAllPermissions: jest.fn(permissions =>
+        permissions.every(p =>
+          [
+            'view_own_requests',
+            'create_request',
+            'edit_request',
+            'redact_documents',
+            'export_data',
+          ].includes(p)
+        )
       ),
-      hasRole: jest.fn((role) => role === 'staff'),
-      hasAnyRole: jest.fn((roles) => roles.includes('staff')),
+      hasRole: jest.fn(role => role === 'staff'),
+      hasAnyRole: jest.fn(roles => roles.includes('staff')),
       getUserPermissions: jest.fn(() => [
-        'view_own_requests', 'create_request', 'edit_request',
-        'redact_documents', 'export_data'
+        'view_own_requests',
+        'create_request',
+        'edit_request',
+        'redact_documents',
+        'export_data',
       ]),
       isAdmin: false,
       isStaff: true,
@@ -92,7 +138,7 @@ describe('usePermissions Hook', () => {
     });
 
     const result = mockUsePermissions();
-    
+
     expect(result.isStaff).toBe(true);
     expect(result.hasRole('staff')).toBe(true);
     expect(result.hasPermission('edit_request')).toBe(true);
@@ -110,24 +156,54 @@ describe('usePermissions Hook', () => {
 
     mockUsePermissions.mockReturnValue({
       user: mockLegalReviewer,
-      hasPermission: jest.fn((permission) => {
+      hasPermission: jest.fn(permission => {
         const legalPermissions = [
-          'view_all_requests', 'legal_review', 'review_redactions',
-          'approve_request', 'reject_request', 'final_approval', 'generate_reports'
+          'view_all_requests',
+          'legal_review',
+          'review_redactions',
+          'approve_request',
+          'reject_request',
+          'final_approval',
+          'generate_reports',
         ];
         return legalPermissions.includes(permission);
       }),
-      hasAnyPermission: jest.fn((permissions) => 
-        permissions.some(p => ['view_all_requests', 'legal_review', 'review_redactions', 'approve_request', 'reject_request', 'final_approval', 'generate_reports'].includes(p))
+      hasAnyPermission: jest.fn(permissions =>
+        permissions.some(p =>
+          [
+            'view_all_requests',
+            'legal_review',
+            'review_redactions',
+            'approve_request',
+            'reject_request',
+            'final_approval',
+            'generate_reports',
+          ].includes(p)
+        )
       ),
-      hasAllPermissions: jest.fn((permissions) => 
-        permissions.every(p => ['view_all_requests', 'legal_review', 'review_redactions', 'approve_request', 'reject_request', 'final_approval', 'generate_reports'].includes(p))
+      hasAllPermissions: jest.fn(permissions =>
+        permissions.every(p =>
+          [
+            'view_all_requests',
+            'legal_review',
+            'review_redactions',
+            'approve_request',
+            'reject_request',
+            'final_approval',
+            'generate_reports',
+          ].includes(p)
+        )
       ),
-      hasRole: jest.fn((role) => role === 'legal_reviewer'),
-      hasAnyRole: jest.fn((roles) => roles.includes('legal_reviewer')),
+      hasRole: jest.fn(role => role === 'legal_reviewer'),
+      hasAnyRole: jest.fn(roles => roles.includes('legal_reviewer')),
       getUserPermissions: jest.fn(() => [
-        'view_all_requests', 'legal_review', 'review_redactions',
-        'approve_request', 'reject_request', 'final_approval', 'generate_reports'
+        'view_all_requests',
+        'legal_review',
+        'review_redactions',
+        'approve_request',
+        'reject_request',
+        'final_approval',
+        'generate_reports',
       ]),
       isAdmin: false,
       isStaff: false,
@@ -135,7 +211,7 @@ describe('usePermissions Hook', () => {
     });
 
     const result = mockUsePermissions();
-    
+
     expect(result.isLegalReviewer).toBe(true);
     expect(result.hasRole('legal_reviewer')).toBe(true);
     expect(result.hasPermission('legal_review')).toBe(true);
@@ -159,7 +235,7 @@ describe('usePermissions Hook', () => {
     });
 
     const result = mockUsePermissions();
-    
+
     expect(result.user).toBe(null);
     expect(result.isAdmin).toBe(false);
     expect(result.hasPermission('view_all_requests')).toBe(false);
@@ -175,10 +251,10 @@ describe('usePermissions Hook', () => {
         name: 'Admin User',
       },
       hasPermission: jest.fn(() => true),
-      hasAnyPermission: jest.fn((permissions) => permissions.length > 0),
+      hasAnyPermission: jest.fn(permissions => permissions.length > 0),
       hasAllPermissions: jest.fn(() => true),
-      hasRole: jest.fn((role) => role === 'admin'),
-      hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+      hasRole: jest.fn(role => role === 'admin'),
+      hasAnyRole: jest.fn(roles => roles.includes('admin')),
       getUserPermissions: jest.fn(() => ['manage_users', 'approve_request']),
       isAdmin: true,
       isStaff: false,
@@ -186,9 +262,13 @@ describe('usePermissions Hook', () => {
     });
 
     const result = mockUsePermissions();
-    
-    expect(result.hasAnyPermission(['manage_users', 'unknown_permission'])).toBe(true);
-    expect(result.hasAllPermissions(['manage_users', 'approve_request'])).toBe(true);
+
+    expect(
+      result.hasAnyPermission(['manage_users', 'unknown_permission'])
+    ).toBe(true);
+    expect(result.hasAllPermissions(['manage_users', 'approve_request'])).toBe(
+      true
+    );
     expect(result.hasAnyRole(['admin', 'staff'])).toBe(true);
   });
 });

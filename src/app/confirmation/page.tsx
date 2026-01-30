@@ -8,10 +8,10 @@ import ConfirmationContent from './ConfirmationContent';
 function LoadingFallback() {
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="400px"
+      display='flex'
+      justifyContent='center'
+      alignItems='center'
+      minHeight='400px'
     >
       <CircularProgress />
     </Box>

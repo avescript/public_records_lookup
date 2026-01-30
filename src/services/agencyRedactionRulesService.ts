@@ -1,18 +1,18 @@
 /**
  * Agency-Specific Redaction Rules Service
  * Epic 9 Task 4: Agency-Specific Redaction Rules
- * 
+ *
  * Manages redaction rules and templates specific to different agencies.
  * Different agencies may have different PII sensitivity levels and redaction requirements.
  */
 
-import { PIIType } from './piiDetectionService';
-import { 
-  SensitivityLevel, 
-  RedactionConfig, 
-  AgencyRedactionTemplate, 
-  RedactionRule 
+import {
+  AgencyRedactionTemplate,
+  RedactionConfig,
+  RedactionRule,
+  SensitivityLevel,
 } from './agencyTypes';
+import { PIIType } from './piiDetectionService';
 
 /**
  * Agency-Specific Redaction Rules Service
@@ -30,13 +30,13 @@ export class AgencyRedactionRulesService {
    */
   private initializeDefaultTemplates(): void {
     if (this.initialized) return;
-    
+
     const defaultTemplates = this.createDefaultAgencyTemplates();
-    
+
     defaultTemplates.forEach(template => {
       this.templates.set(template.agencyId, template);
     });
-    
+
     this.initialized = true;
   }
 
@@ -48,7 +48,9 @@ export class AgencyRedactionRulesService {
     try {
       // PIIType should be available, but guard against undefined
       if (typeof PIIType === 'undefined' || !PIIType.SSN) {
-        console.warn('[Agency Rules] PIIType not available, using minimal templates');
+        console.warn(
+          '[Agency Rules] PIIType not available, using minimal templates'
+        );
         return this.createFallbackTemplates();
       }
     } catch (error) {
@@ -64,13 +66,20 @@ export class AgencyRedactionRulesService {
         agencyId: 'police',
         agencyName: 'Police Department',
         name: 'Standard Police Redaction Template',
-        description: 'Standard redaction rules for police records with high sensitivity for personal information',
+        description:
+          'Standard redaction rules for police records with high sensitivity for personal information',
         rules: [
           {
             id: 'police-personal-info',
             name: 'Personal Information',
             description: 'Redact all personal identifying information',
-            piiTypes: [PIIType.SSN, PIIType.DOB, PIIType.DRIVERS_LICENSE, PIIType.ADDRESS, PIIType.PHONE],
+            piiTypes: [
+              PIIType.SSN,
+              PIIType.DOB,
+              PIIType.DRIVERS_LICENSE,
+              PIIType.ADDRESS,
+              PIIType.PHONE,
+            ],
             sensitivityLevel: SensitivityLevel.HIGH,
             autoApply: true,
             requiresApproval: false,
@@ -114,13 +123,20 @@ export class AgencyRedactionRulesService {
         agencyId: 'fire',
         agencyName: 'Fire Department',
         name: 'Standard Fire Department Redaction Template',
-        description: 'Standard redaction rules for fire department records focusing on medical privacy',
+        description:
+          'Standard redaction rules for fire department records focusing on medical privacy',
         rules: [
           {
             id: 'fire-personal-info',
             name: 'Personal Information',
             description: 'Redact personal identifying information',
-            piiTypes: [PIIType.SSN, PIIType.DOB, PIIType.DRIVERS_LICENSE, PIIType.ADDRESS, PIIType.PHONE],
+            piiTypes: [
+              PIIType.SSN,
+              PIIType.DOB,
+              PIIType.DRIVERS_LICENSE,
+              PIIType.ADDRESS,
+              PIIType.PHONE,
+            ],
             sensitivityLevel: SensitivityLevel.HIGH,
             autoApply: true,
             requiresApproval: false,
@@ -137,7 +153,8 @@ export class AgencyRedactionRulesService {
           {
             id: 'fire-incident-details',
             name: 'Incident Details',
-            description: 'Redact sensitive incident numbers and case references',
+            description:
+              'Redact sensitive incident numbers and case references',
             piiTypes: [PIIType.INCIDENT_NUMBER, PIIType.CASE_NUMBER],
             sensitivityLevel: SensitivityLevel.MEDIUM,
             autoApply: false,
@@ -155,13 +172,19 @@ export class AgencyRedactionRulesService {
         agencyId: 'finance',
         agencyName: 'Finance Department',
         name: 'Standard Finance Redaction Template',
-        description: 'Financial records redaction template with emphasis on financial privacy',
+        description:
+          'Financial records redaction template with emphasis on financial privacy',
         rules: [
           {
             id: 'finance-personal-info',
             name: 'Personal Information',
             description: 'Redact personal identifying information',
-            piiTypes: [PIIType.SSN, PIIType.DOB, PIIType.ADDRESS, PIIType.PHONE],
+            piiTypes: [
+              PIIType.SSN,
+              PIIType.DOB,
+              PIIType.ADDRESS,
+              PIIType.PHONE,
+            ],
             sensitivityLevel: SensitivityLevel.HIGH,
             autoApply: true,
             requiresApproval: false,
@@ -197,7 +220,8 @@ export class AgencyRedactionRulesService {
         agencyId: 'parks',
         agencyName: 'Parks & Recreation',
         name: 'Standard Parks Redaction Template',
-        description: 'Parks department redaction template with lower sensitivity requirements',
+        description:
+          'Parks department redaction template with lower sensitivity requirements',
         rules: [
           {
             id: 'parks-personal-info',
@@ -229,13 +253,20 @@ export class AgencyRedactionRulesService {
         agencyId: 'health',
         agencyName: 'Health Department',
         name: 'Standard Health Redaction Template',
-        description: 'Health department template with strict medical privacy requirements',
+        description:
+          'Health department template with strict medical privacy requirements',
         rules: [
           {
             id: 'health-personal-info',
             name: 'Personal Information',
             description: 'Redact personal identifying information',
-            piiTypes: [PIIType.SSN, PIIType.DOB, PIIType.DRIVERS_LICENSE, PIIType.ADDRESS, PIIType.PHONE],
+            piiTypes: [
+              PIIType.SSN,
+              PIIType.DOB,
+              PIIType.DRIVERS_LICENSE,
+              PIIType.ADDRESS,
+              PIIType.PHONE,
+            ],
             sensitivityLevel: SensitivityLevel.HIGH,
             autoApply: true,
             requiresApproval: false,
@@ -243,7 +274,8 @@ export class AgencyRedactionRulesService {
           {
             id: 'health-medical-info',
             name: 'Medical Information',
-            description: 'Strict protection for all medical data and patient information',
+            description:
+              'Strict protection for all medical data and patient information',
             piiTypes: [PIIType.MEDICAL_ID, PIIType.PERSON_NAME],
             sensitivityLevel: SensitivityLevel.CRITICAL,
             autoApply: true,
@@ -271,7 +303,9 @@ export class AgencyRedactionRulesService {
   /**
    * Get redaction template for a specific agency
    */
-  async getAgencyTemplate(agencyId: string): Promise<AgencyRedactionTemplate | null> {
+  async getAgencyTemplate(
+    agencyId: string
+  ): Promise<AgencyRedactionTemplate | null> {
     if (!this.initialized) {
       this.initializeDefaultTemplates();
     }
@@ -317,7 +351,10 @@ export class AgencyRedactionRulesService {
   /**
    * Get rules by sensitivity level for an agency
    */
-  async getRulesBySensitivity(agencyId: string, level: SensitivityLevel): Promise<RedactionRule[]> {
+  async getRulesBySensitivity(
+    agencyId: string,
+    level: SensitivityLevel
+  ): Promise<RedactionRule[]> {
     const rules = await this.getAgencyRules(agencyId);
     return rules.filter(rule => rule.sensitivityLevel === level);
   }
@@ -325,9 +362,12 @@ export class AgencyRedactionRulesService {
   /**
    * Get rules that apply to specific PII types
    */
-  async getRulesForPIITypes(agencyId: string, piiTypes: PIIType[]): Promise<RedactionRule[]> {
+  async getRulesForPIITypes(
+    agencyId: string,
+    piiTypes: PIIType[]
+  ): Promise<RedactionRule[]> {
     const rules = await this.getAgencyRules(agencyId);
-    return rules.filter(rule => 
+    return rules.filter(rule =>
       rule.piiTypes.some(type => piiTypes.includes(type))
     );
   }
@@ -335,17 +375,19 @@ export class AgencyRedactionRulesService {
   /**
    * Create or update a custom redaction template for an agency
    */
-  async saveAgencyTemplate(template: AgencyRedactionTemplate): Promise<boolean> {
+  async saveAgencyTemplate(
+    template: AgencyRedactionTemplate
+  ): Promise<boolean> {
     try {
       template.updatedAt = new Date().toISOString();
       this.templates.set(template.agencyId, template);
-      
+
       // In a real implementation, this would persist to a database
       localStorage.setItem(
         `agency_redaction_template_${template.agencyId}`,
         JSON.stringify(template)
       );
-      
+
       return true;
     } catch (error) {
       console.error('Failed to save agency template:', error);
@@ -356,7 +398,10 @@ export class AgencyRedactionRulesService {
   /**
    * Add a custom rule to an agency template
    */
-  async addRuleToAgency(agencyId: string, rule: RedactionRule): Promise<boolean> {
+  async addRuleToAgency(
+    agencyId: string,
+    rule: RedactionRule
+  ): Promise<boolean> {
     try {
       const template = await this.getAgencyTemplate(agencyId);
       if (!template) {
@@ -365,7 +410,7 @@ export class AgencyRedactionRulesService {
 
       // Check if rule already exists
       const existingRuleIndex = template.rules.findIndex(r => r.id === rule.id);
-      
+
       if (existingRuleIndex >= 0) {
         // Update existing rule
         template.rules[existingRuleIndex] = rule;
@@ -384,7 +429,10 @@ export class AgencyRedactionRulesService {
   /**
    * Remove a rule from an agency template
    */
-  async removeRuleFromAgency(agencyId: string, ruleId: string): Promise<boolean> {
+  async removeRuleFromAgency(
+    agencyId: string,
+    ruleId: string
+  ): Promise<boolean> {
     try {
       const template = await this.getAgencyTemplate(agencyId);
       if (!template) {
@@ -402,7 +450,10 @@ export class AgencyRedactionRulesService {
   /**
    * Get redaction configuration for a specific agency and context
    */
-  async getRedactionConfig(agencyId: string, overrides?: Partial<RedactionRule>[]): Promise<RedactionConfig | null> {
+  async getRedactionConfig(
+    agencyId: string,
+    overrides?: Partial<RedactionRule>[]
+  ): Promise<RedactionConfig | null> {
     const template = await this.getAgencyTemplate(agencyId);
     if (!template) {
       return null;
@@ -418,43 +469,63 @@ export class AgencyRedactionRulesService {
   /**
    * Validate if a rule is compatible with an agency's requirements
    */
-  validateRuleForAgency(agencyId: string, rule: RedactionRule): { isValid: boolean; issues: string[] } {
+  validateRuleForAgency(
+    agencyId: string,
+    rule: RedactionRule
+  ): { isValid: boolean; issues: string[] } {
     const issues: string[] = [];
 
     // Basic validation
-    if (!rule.id || !rule.name || !rule.piiTypes || rule.piiTypes.length === 0) {
+    if (
+      !rule.id ||
+      !rule.name ||
+      !rule.piiTypes ||
+      rule.piiTypes.length === 0
+    ) {
       issues.push('Rule must have id, name, and at least one PII type');
     }
 
     // Agency-specific validation
     switch (agencyId) {
       case 'police':
-        if (rule.sensitivityLevel === SensitivityLevel.LOW && 
-            rule.piiTypes.includes(PIIType.CONFIDENTIAL_SOURCE)) {
-          issues.push('Confidential source information cannot have low sensitivity');
+        if (
+          rule.sensitivityLevel === SensitivityLevel.LOW &&
+          rule.piiTypes.includes(PIIType.CONFIDENTIAL_SOURCE)
+        ) {
+          issues.push(
+            'Confidential source information cannot have low sensitivity'
+          );
         }
         break;
-      
+
       case 'health':
-        if (rule.piiTypes.includes(PIIType.MEDICAL_ID) && 
-            !rule.requiresApproval && 
-            rule.sensitivityLevel !== SensitivityLevel.CRITICAL) {
-          issues.push('Medical information must be critical sensitivity or require approval');
+        if (
+          rule.piiTypes.includes(PIIType.MEDICAL_ID) &&
+          !rule.requiresApproval &&
+          rule.sensitivityLevel !== SensitivityLevel.CRITICAL
+        ) {
+          issues.push(
+            'Medical information must be critical sensitivity or require approval'
+          );
         }
         break;
 
       case 'finance':
-        if ((rule.piiTypes.includes(PIIType.ACCOUNT_NUMBER) || 
-             rule.piiTypes.includes(PIIType.ROUTING_NUMBER)) &&
-            rule.sensitivityLevel !== SensitivityLevel.CRITICAL) {
-          issues.push('Financial account information must have critical sensitivity');
+        if (
+          (rule.piiTypes.includes(PIIType.ACCOUNT_NUMBER) ||
+            rule.piiTypes.includes(PIIType.ROUTING_NUMBER)) &&
+          rule.sensitivityLevel !== SensitivityLevel.CRITICAL
+        ) {
+          issues.push(
+            'Financial account information must have critical sensitivity'
+          );
         }
         break;
     }
 
     return {
       isValid: issues.length === 0,
-      issues
+      issues,
     };
   }
 
@@ -478,10 +549,13 @@ export class AgencyRedactionRulesService {
       [SensitivityLevel.CRITICAL]: 0,
     };
 
-    const byPIIType: Record<PIIType, number> = Object.values(PIIType).reduce((acc, type) => {
-      acc[type] = 0;
-      return acc;
-    }, {} as Record<PIIType, number>);
+    const byPIIType: Record<PIIType, number> = Object.values(PIIType).reduce(
+      (acc, type) => {
+        acc[type] = 0;
+        return acc;
+      },
+      {} as Record<PIIType, number>
+    );
 
     let autoApplyRules = 0;
     let approvalRequiredRules = 0;
@@ -489,9 +563,9 @@ export class AgencyRedactionRulesService {
     rules.forEach(rule => {
       if (rule.autoApply) autoApplyRules++;
       if (rule.requiresApproval) approvalRequiredRules++;
-      
+
       bySensitivity[rule.sensitivityLevel]++;
-      
+
       rule.piiTypes.forEach(piiType => {
         byPIIType[piiType]++;
       });
@@ -530,10 +604,10 @@ export class AgencyRedactionRulesService {
     try {
       // Remove custom template from localStorage
       localStorage.removeItem(`agency_redaction_template_${agencyId}`);
-      
+
       // Reinitialize default templates
       this.initializeDefaultTemplates();
-      
+
       return true;
     } catch (error) {
       console.error('Failed to reset agency template:', error);
@@ -546,7 +620,7 @@ export class AgencyRedactionRulesService {
    */
   private createFallbackTemplates(): AgencyRedactionTemplate[] {
     const now = new Date().toISOString();
-    
+
     return [
       {
         id: 'fallback-basic',
@@ -563,14 +637,14 @@ export class AgencyRedactionRulesService {
             sensitivityLevel: SensitivityLevel.MEDIUM,
             autoApply: false,
             requiresApproval: true,
-          }
+          },
         ],
         version: '1.0.0',
         isActive: true,
         createdAt: now,
         updatedAt: now,
-        createdBy: 'system-fallback'
-      }
+        createdBy: 'system-fallback',
+      },
     ];
   }
 }
@@ -580,9 +654,9 @@ export const agencyRedactionRulesService = new AgencyRedactionRulesService();
 export default agencyRedactionRulesService;
 
 // Re-export types for convenience
-export { 
-  SensitivityLevel, 
-  RedactionConfig, 
-  AgencyRedactionTemplate, 
-  RedactionRule 
+export {
+  AgencyRedactionTemplate,
+  RedactionConfig,
+  RedactionRule,
+  SensitivityLevel,
 } from './agencyTypes';

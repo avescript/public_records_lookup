@@ -1,9 +1,9 @@
 /**
  * Advanced Document Processing Service
- * 
+ *
  * Enhanced document processing capabilities with OCR integration, multi-format support,
  * and batch processing for agency workflows.
- * 
+ *
  * Features:
  * - OCR text extraction from images and scanned documents
  * - Multi-format support (PDF, Word, images, etc.)
@@ -12,9 +12,14 @@
  * - Performance optimization for large document sets
  */
 
-import Tesseract, { createWorker, createScheduler } from 'tesseract.js';
-import { PIIFinding, PIIType, piiDetectionService } from './piiDetectionService';
+import Tesseract, { createScheduler, createWorker } from 'tesseract.js';
+
 import { agencyRedactionRulesService } from './agencyRedactionRulesService';
+import {
+  piiDetectionService,
+  PIIFinding,
+  PIIType,
+} from './piiDetectionService';
 import { ManualRedaction, redactionService } from './redactionService';
 
 // OCR Configuration
@@ -87,7 +92,7 @@ export enum ProcessingStatus {
   PII_DETECTING = 'pii_detecting',
   AGENCY_VALIDATING = 'agency_validating',
   COMPLETED = 'completed',
-  FAILED = 'failed'
+  FAILED = 'failed',
 }
 
 // Document File Types
@@ -99,7 +104,7 @@ export enum DocumentFileType {
   DOC = 'application/msword',
   DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   TXT = 'text/plain',
-  RTF = 'application/rtf'
+  RTF = 'application/rtf',
 }
 
 // Batch Processing Configuration
@@ -159,19 +164,18 @@ export class AdvancedDocumentProcessingService {
   private async initializeOCR(): Promise<void> {
     try {
       console.log('⚙️ [OCR] Initializing Tesseract.js workers...');
-      
+
       this.ocrScheduler = createScheduler();
-      
+
       // Create 2 workers for concurrent processing
       const worker1 = await createWorker('eng');
       const worker2 = await createWorker('eng');
-      
+
       this.ocrScheduler.addWorker(worker1);
       this.ocrScheduler.addWorker(worker2);
-      
+
       this.isOCRInitialized = true;
       console.log('✅ [OCR] Tesseract.js workers initialized successfully');
-      
     } catch (error) {
       console.error('❌ [OCR] Failed to initialize OCR workers:', error);
       this.isOCRInitialized = false;
@@ -213,7 +217,7 @@ export class AdvancedDocumentProcessingService {
       size: file.size,
       status: ProcessingStatus.QUEUED,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.processingQueue.set(processId, result);
@@ -243,7 +247,10 @@ export class AdvancedDocumentProcessingService {
 
       // Step 3: Agency-specific validation
       if (agencyId && config?.enableAgencyValidation !== false) {
-        this.updateProcessingStatus(processId, ProcessingStatus.AGENCY_VALIDATING);
+        this.updateProcessingStatus(
+          processId,
+          ProcessingStatus.AGENCY_VALIDATING
+        );
         result.agencyRules = await this.validateAgencyRules(agencyId, result);
       }
 
@@ -252,15 +259,20 @@ export class AdvancedDocumentProcessingService {
       result.updatedAt = new Date();
       this.updateProcessingStatus(processId, ProcessingStatus.COMPLETED);
 
-      console.log(`✅ [Document Processing] Completed ${file.name} in ${result.processingTime}ms`);
-
+      console.log(
+        `✅ [Document Processing] Completed ${file.name} in ${result.processingTime}ms`
+      );
     } catch (error) {
-      result.error = error instanceof Error ? error.message : 'Unknown processing error';
+      result.error =
+        error instanceof Error ? error.message : 'Unknown processing error';
       result.processingTime = Date.now() - startTime;
       result.updatedAt = new Date();
       this.updateProcessingStatus(processId, ProcessingStatus.FAILED);
-      
-      console.error(`❌ [Document Processing] Failed to process ${file.name}:`, error);
+
+      console.error(
+        `❌ [Document Processing] Failed to process ${file.name}:`,
+        error
+      );
     }
 
     return result;
@@ -275,24 +287,26 @@ export class AdvancedDocumentProcessingService {
   ): Promise<string> {
     const batchId = this.generateBatchId();
     const maxConcurrent = config?.maxConcurrent || 3;
-    
+
     const progress: BatchProgress = {
       total: files.length,
       completed: 0,
       failed: 0,
       processing: 0,
-      percentage: 0
+      percentage: 0,
     };
 
     this.batchProcesses.set(batchId, progress);
 
-    console.log(`🚀 [Batch Processing] Started batch ${batchId} with ${files.length} files`);
+    console.log(
+      `🚀 [Batch Processing] Started batch ${batchId} with ${files.length} files`
+    );
 
     // Process files in batches
     const batches = this.createBatches(files, maxConcurrent);
-    
+
     for (const batch of batches) {
-      const promises = batch.map(async (file) => {
+      const promises = batch.map(async file => {
         progress.processing++;
         progress.currentFile = file.name;
         this.updateBatchProgress(batchId, progress);
@@ -302,7 +316,7 @@ export class AdvancedDocumentProcessingService {
             enableOCR: true,
             enablePIIDetection: config?.enablePIIDetection ?? true,
             enableAgencyValidation: config?.enableAgencyValidation ?? true,
-            ocrConfig: config?.ocrConfig
+            ocrConfig: config?.ocrConfig,
           });
 
           if (result.status === ProcessingStatus.COMPLETED) {
@@ -311,11 +325,16 @@ export class AdvancedDocumentProcessingService {
             progress.failed++;
           }
         } catch (error) {
-          console.error(`❌ [Batch Processing] Failed to process ${file.name}:`, error);
+          console.error(
+            `❌ [Batch Processing] Failed to process ${file.name}:`,
+            error
+          );
           progress.failed++;
         } finally {
           progress.processing--;
-          progress.percentage = Math.round((progress.completed + progress.failed) / progress.total * 100);
+          progress.percentage = Math.round(
+            ((progress.completed + progress.failed) / progress.total) * 100
+          );
           this.updateBatchProgress(batchId, progress);
         }
       });
@@ -323,7 +342,9 @@ export class AdvancedDocumentProcessingService {
       await Promise.all(promises);
     }
 
-    console.log(`✅ [Batch Processing] Completed batch ${batchId}: ${progress.completed} successful, ${progress.failed} failed`);
+    console.log(
+      `✅ [Batch Processing] Completed batch ${batchId}: ${progress.completed} successful, ${progress.failed} failed`
+    );
     return batchId;
   }
 
@@ -353,7 +374,10 @@ export class AdvancedDocumentProcessingService {
    */
   clearCompletedProcesses(): void {
     for (const [id, result] of this.processingQueue.entries()) {
-      if (result.status === ProcessingStatus.COMPLETED || result.status === ProcessingStatus.FAILED) {
+      if (
+        result.status === ProcessingStatus.COMPLETED ||
+        result.status === ProcessingStatus.FAILED
+      ) {
         this.processingQueue.delete(id);
       }
     }
@@ -371,7 +395,7 @@ export class AdvancedDocumentProcessingService {
 
   private getFileType(file: File): DocumentFileType {
     const mimeType = file.type.toLowerCase();
-    
+
     switch (mimeType) {
       case 'application/pdf':
         return DocumentFileType.PDF;
@@ -394,7 +418,8 @@ export class AdvancedDocumentProcessingService {
         // Check file extension as fallback
         const extension = file.name.split('.').pop()?.toLowerCase();
         if (extension === 'pdf') return DocumentFileType.PDF;
-        if (['jpg', 'jpeg'].includes(extension || '')) return DocumentFileType.IMAGE_JPEG;
+        if (['jpg', 'jpeg'].includes(extension || ''))
+          return DocumentFileType.IMAGE_JPEG;
         if (extension === 'png') return DocumentFileType.IMAGE_PNG;
         if (extension === 'gif') return DocumentFileType.IMAGE_GIF;
         return DocumentFileType.TXT; // Default fallback
@@ -406,34 +431,38 @@ export class AdvancedDocumentProcessingService {
     return [
       DocumentFileType.IMAGE_PNG,
       DocumentFileType.IMAGE_JPEG,
-      DocumentFileType.IMAGE_GIF
+      DocumentFileType.IMAGE_GIF,
     ].includes(fileType);
   }
 
   private async performOCR(file: File, config?: OCRConfig): Promise<OCRResult> {
     console.log(`📝 [OCR] Processing ${file.name} with Tesseract.js...`);
-    
+
     try {
       // Use initialized scheduler if available, otherwise create a single worker
       let result: Tesseract.RecognizeResult;
-      
+
       if (this.isOCRInitialized && this.ocrScheduler) {
         result = await this.ocrScheduler.addJob('recognize', file, {
-          logger: (m) => {
+          logger: m => {
             if (m.status === 'recognizing text') {
-              console.log(`📝 [OCR] Progress: ${Math.round(m.progress * 100)}%`);
+              console.log(
+                `📝 [OCR] Progress: ${Math.round(m.progress * 100)}%`
+              );
             }
-          }
+          },
         });
       } else {
         // Fallback to single worker if scheduler not available
         console.warn('⚠️ [OCR] Scheduler not available, using single worker');
         result = await Tesseract.recognize(file, 'eng', {
-          logger: (m) => {
+          logger: m => {
             if (m.status === 'recognizing text') {
-              console.log(`📝 [OCR] Progress: ${Math.round(m.progress * 100)}%`);
+              console.log(
+                `📝 [OCR] Progress: ${Math.round(m.progress * 100)}%`
+              );
             }
-          }
+          },
         });
       }
 
@@ -448,8 +477,8 @@ export class AdvancedDocumentProcessingService {
             x: word.bbox.x0,
             y: word.bbox.y0,
             width: word.bbox.x1 - word.bbox.x0,
-            height: word.bbox.y1 - word.bbox.y0
-          }
+            height: word.bbox.y1 - word.bbox.y0,
+          },
         })),
         lines: result.data.lines.map(line => ({
           text: line.text,
@@ -458,7 +487,7 @@ export class AdvancedDocumentProcessingService {
             x: line.bbox.x0,
             y: line.bbox.y0,
             width: line.bbox.x1 - line.bbox.x0,
-            height: line.bbox.y1 - line.bbox.y0
+            height: line.bbox.y1 - line.bbox.y0,
           },
           words: line.words.map(word => ({
             text: word.text,
@@ -467,9 +496,9 @@ export class AdvancedDocumentProcessingService {
               x: word.bbox.x0,
               y: word.bbox.y0,
               width: word.bbox.x1 - word.bbox.x0,
-              height: word.bbox.y1 - word.bbox.y0
-            }
-          }))
+              height: word.bbox.y1 - word.bbox.y0,
+            },
+          })),
         })),
         paragraphs: result.data.paragraphs.map(para => ({
           text: para.text,
@@ -478,7 +507,7 @@ export class AdvancedDocumentProcessingService {
             x: para.bbox.x0,
             y: para.bbox.y0,
             width: para.bbox.x1 - para.bbox.x0,
-            height: para.bbox.y1 - para.bbox.y0
+            height: para.bbox.y1 - para.bbox.y0,
           },
           lines: para.lines.map(line => ({
             text: line.text,
@@ -487,7 +516,7 @@ export class AdvancedDocumentProcessingService {
               x: line.bbox.x0,
               y: line.bbox.y0,
               width: line.bbox.x1 - line.bbox.x0,
-              height: line.bbox.y1 - line.bbox.y0
+              height: line.bbox.y1 - line.bbox.y0,
             },
             words: line.words.map(word => ({
               text: word.text,
@@ -496,20 +525,21 @@ export class AdvancedDocumentProcessingService {
                 x: word.bbox.x0,
                 y: word.bbox.y0,
                 width: word.bbox.x1 - word.bbox.x0,
-                height: word.bbox.y1 - word.bbox.y0
-              }
-            }))
-          }))
+                height: word.bbox.y1 - word.bbox.y0,
+              },
+            })),
+          })),
         })),
-        pages: 1
+        pages: 1,
       };
 
-      console.log(`✅ [OCR] Successfully processed ${file.name} - Confidence: ${Math.round(ocrResult.confidence)}%`);
+      console.log(
+        `✅ [OCR] Successfully processed ${file.name} - Confidence: ${Math.round(ocrResult.confidence)}%`
+      );
       return ocrResult;
-
     } catch (error) {
       console.error(`❌ [OCR] Failed to process ${file.name}:`, error);
-      
+
       // Return fallback mock result on error
       const mockText = this.generateMockOCRText(file.name);
       return {
@@ -518,21 +548,23 @@ export class AdvancedDocumentProcessingService {
         words: this.generateMockWords(mockText),
         lines: this.generateMockLines(mockText),
         paragraphs: this.generateMockParagraphs(mockText),
-        pages: 1
+        pages: 1,
       };
     }
   }
 
   private async extractTextContent(file: File): Promise<string> {
     const fileType = this.getFileType(file);
-    
+
     switch (fileType) {
       case DocumentFileType.TXT:
         return await this.extractTextFromPlainText(file);
       case DocumentFileType.PDF:
         return await this.extractTextFromPDF(file);
       default:
-        console.warn(`[Document Processing] Text extraction not implemented for ${fileType}`);
+        console.warn(
+          `[Document Processing] Text extraction not implemented for ${fileType}`
+        );
         return '';
     }
   }
@@ -540,8 +572,8 @@ export class AdvancedDocumentProcessingService {
   private async extractTextFromPlainText(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as string || '');
-      reader.onerror = (e) => reject(new Error('Failed to read text file'));
+      reader.onload = e => resolve((e.target?.result as string) || '');
+      reader.onerror = e => reject(new Error('Failed to read text file'));
       reader.readAsText(file);
     });
   }
@@ -554,7 +586,10 @@ export class AdvancedDocumentProcessingService {
     return this.generateMockPDFText(file.name);
   }
 
-  private async detectPII(text: string, documentId: string): Promise<PIIFinding[]> {
+  private async detectPII(
+    text: string,
+    documentId: string
+  ): Promise<PIIFinding[]> {
     try {
       return await piiDetectionService.detectPII(text, documentId);
     } catch (error) {
@@ -568,8 +603,9 @@ export class AdvancedDocumentProcessingService {
     result: DocumentProcessingResult
   ): Promise<ProcessedAgencyRules> {
     try {
-      const template = await agencyRedactionRulesService.getAgencyTemplate(agencyId);
-      
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate(agencyId);
+
       if (!template) {
         return {
           agencyId,
@@ -577,18 +613,20 @@ export class AdvancedDocumentProcessingService {
           autoApplyRules: [],
           approvalRequiredRules: [],
           sensitivityLevel: 'medium',
-          validationResults: [{
-            ruleId: 'no-template',
-            passed: false,
-            message: `No template found for agency ${agencyId}`,
-            severity: 'warning'
-          }]
+          validationResults: [
+            {
+              ruleId: 'no-template',
+              passed: false,
+              message: `No template found for agency ${agencyId}`,
+              severity: 'warning',
+            },
+          ],
         };
       }
 
       const applicableRules = template.rules.filter(rule => {
         if (!result.piiFindings) return false;
-        return result.piiFindings.some(finding => 
+        return result.piiFindings.some(finding =>
           rule.piiTypes.includes(finding.type)
         );
       });
@@ -597,9 +635,14 @@ export class AdvancedDocumentProcessingService {
         agencyId,
         applicableRules: applicableRules.map(r => r.id),
         autoApplyRules: applicableRules.filter(r => r.autoApply).map(r => r.id),
-        approvalRequiredRules: applicableRules.filter(r => r.requiresApproval).map(r => r.id),
+        approvalRequiredRules: applicableRules
+          .filter(r => r.requiresApproval)
+          .map(r => r.id),
         sensitivityLevel: this.calculateOverallSensitivity(applicableRules),
-        validationResults: this.validateRulesCompliance(applicableRules, result)
+        validationResults: this.validateRulesCompliance(
+          applicableRules,
+          result
+        ),
       };
     } catch (error) {
       console.error('[Document Processing] Agency validation failed:', error);
@@ -609,17 +652,25 @@ export class AdvancedDocumentProcessingService {
         autoApplyRules: [],
         approvalRequiredRules: [],
         sensitivityLevel: 'unknown',
-        validationResults: [{
-          ruleId: 'validation-error',
-          passed: false,
-          message: error instanceof Error ? error.message : 'Unknown validation error',
-          severity: 'error'
-        }]
+        validationResults: [
+          {
+            ruleId: 'validation-error',
+            passed: false,
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Unknown validation error',
+            severity: 'error',
+          },
+        ],
       };
     }
   }
 
-  private updateProcessingStatus(processId: string, status: ProcessingStatus): void {
+  private updateProcessingStatus(
+    processId: string,
+    status: ProcessingStatus
+  ): void {
     const result = this.processingQueue.get(processId);
     if (result) {
       result.status = status;
@@ -643,11 +694,11 @@ export class AdvancedDocumentProcessingService {
   // Mock data generation methods
   private generateMockOCRText(fileName: string): string {
     const templates = [
-      "POLICE INCIDENT REPORT\n\nCase Number: 2024-001234\nDate: January 15, 2024\nOfficer: John Smith (Badge #456)\n\nIncident Summary:\nTraffic stop resulted in citation for speeding. Driver John Doe (SSN: 123-45-6789) was cooperative during the stop.",
-      "FIRE DEPARTMENT INSPECTION REPORT\n\nInspection Date: January 20, 2024\nInspector: Sarah Johnson\nBusiness: Main Street Cafe\nAddress: 123 Main St, Anytown, ST 12345\n\nViolations Found:\n- Exit signs not properly illuminated\n- Fire extinguisher expired (Serial: FE-789123)",
-      "FINANCIAL AUDIT REPORT\n\nAudit Period: Q4 2023\nAccount Number: 4567-8901-2345\nBalance: $45,678.90\n\nFindings:\nAll transactions properly documented and approved."
+      'POLICE INCIDENT REPORT\n\nCase Number: 2024-001234\nDate: January 15, 2024\nOfficer: John Smith (Badge #456)\n\nIncident Summary:\nTraffic stop resulted in citation for speeding. Driver John Doe (SSN: 123-45-6789) was cooperative during the stop.',
+      'FIRE DEPARTMENT INSPECTION REPORT\n\nInspection Date: January 20, 2024\nInspector: Sarah Johnson\nBusiness: Main Street Cafe\nAddress: 123 Main St, Anytown, ST 12345\n\nViolations Found:\n- Exit signs not properly illuminated\n- Fire extinguisher expired (Serial: FE-789123)',
+      'FINANCIAL AUDIT REPORT\n\nAudit Period: Q4 2023\nAccount Number: 4567-8901-2345\nBalance: $45,678.90\n\nFindings:\nAll transactions properly documented and approved.',
     ];
-    
+
     return templates[Math.floor(Math.random() * templates.length)];
   }
 
@@ -663,8 +714,8 @@ export class AdvancedDocumentProcessingService {
         x: index * 50,
         y: 10,
         width: word.length * 8,
-        height: 16
-      }
+        height: 16,
+      },
     }));
   }
 
@@ -676,9 +727,9 @@ export class AdvancedDocumentProcessingService {
         x: 0,
         y: index * 20,
         width: line.length * 8,
-        height: 16
+        height: 16,
       },
-      words: this.generateMockWords(line)
+      words: this.generateMockWords(line),
     }));
   }
 
@@ -690,9 +741,9 @@ export class AdvancedDocumentProcessingService {
         x: 0,
         y: index * 60,
         width: Math.max(...para.split('\n').map(line => line.length)) * 8,
-        height: para.split('\n').length * 20
+        height: para.split('\n').length * 20,
       },
-      lines: this.generateMockLines(para)
+      lines: this.generateMockLines(para),
     }));
   }
 
@@ -703,11 +754,14 @@ export class AdvancedDocumentProcessingService {
     return 'low';
   }
 
-  private validateRulesCompliance(rules: any[], result: DocumentProcessingResult): AgencyValidationResult[] {
+  private validateRulesCompliance(
+    rules: any[],
+    result: DocumentProcessingResult
+  ): AgencyValidationResult[] {
     const validationResults: AgencyValidationResult[] = [];
 
     rules.forEach(rule => {
-      const hasRequiredPII = result.piiFindings?.some(finding => 
+      const hasRequiredPII = result.piiFindings?.some(finding =>
         rule.piiTypes.includes(finding.type)
       );
 
@@ -716,14 +770,14 @@ export class AdvancedDocumentProcessingService {
           ruleId: rule.id,
           passed: true,
           message: `Rule ${rule.name} has applicable PII findings`,
-          severity: 'info'
+          severity: 'info',
         });
       } else {
         validationResults.push({
           ruleId: rule.id,
           passed: false,
           message: `Rule ${rule.name} has no applicable PII findings`,
-          severity: 'warning'
+          severity: 'warning',
         });
       }
     });
@@ -733,5 +787,6 @@ export class AdvancedDocumentProcessingService {
 }
 
 // Export service instance
-export const advancedDocumentProcessingService = new AdvancedDocumentProcessingService();
+export const advancedDocumentProcessingService =
+  new AdvancedDocumentProcessingService();
 export default advancedDocumentProcessingService;

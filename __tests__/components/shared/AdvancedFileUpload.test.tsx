@@ -1,46 +1,59 @@
 /**
  * AdvancedFileUpload Component Tests
- * 
+ *
  * Comprehensive test suite for the AdvancedFileUpload component
  * covering file uploads, batch processing, progress tracking, and configuration.
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../../src/theme';
 import AdvancedFileUpload from '../../../src/components/shared/AdvancedFileUpload';
 import { useAgency } from '../../../src/contexts/AgencyContext';
 import { advancedDocumentProcessingService } from '../../../src/services/advancedDocumentProcessingService';
-import { ProcessingStatus, DocumentFileType } from '../../../src/services/advancedDocumentProcessingService';
+import {
+  ProcessingStatus,
+  DocumentFileType,
+} from '../../../src/services/advancedDocumentProcessingService';
 
 // Mock dependencies
 jest.mock('../../../src/contexts/AgencyContext');
 jest.mock('../../../src/services/advancedDocumentProcessingService');
 
 const mockUseAgency = useAgency as jest.MockedFunction<typeof useAgency>;
-const mockService = advancedDocumentProcessingService as jest.Mocked<typeof advancedDocumentProcessingService>;
+const mockService = advancedDocumentProcessingService as jest.Mocked<
+  typeof advancedDocumentProcessingService
+>;
 
 // Test component wrapper with theme
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider theme={theme}>
-    {children}
-  </ThemeProvider>
+  <ThemeProvider theme={theme}>{children}</ThemeProvider>
 );
 
 // Mock file creation helper
-const createMockFile = (name: string, type: string, size: number = 1024): File => {
+const createMockFile = (
+  name: string,
+  type: string,
+  size: number = 1024
+): File => {
   const content = new Array(size).fill('a').join('');
   return new File([content], name, { type });
 };
 
 describe('AdvancedFileUpload', () => {
   const mockOnComplete = jest.fn();
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Default agency context mock
     mockUseAgency.mockReturnValue({
       agency: {
@@ -52,14 +65,14 @@ describe('AdvancedFileUpload', () => {
           maxFileSize: 10485760, // 10MB
           allowedFormats: ['pdf', 'png', 'jpg', 'txt'],
           autoRedaction: true,
-          requireApproval: false
+          requireApproval: false,
         },
         isActive: true,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       },
       loading: false,
-      error: null
+      error: null,
     });
 
     // Default service mocks
@@ -78,19 +91,27 @@ describe('AdvancedFileUpload', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByText('Advanced Document Processing')).toBeInTheDocument();
-      expect(screen.getByText('Upload & Process Multiple Documents')).toBeInTheDocument();
-      expect(screen.getByText(/Drag & drop documents here/)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Browse Files/i })).toBeInTheDocument();
+      expect(
+        screen.getByText('Advanced Document Processing')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Upload & Process Multiple Documents')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Drag & drop documents here/)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Browse Files/i })
+      ).toBeInTheDocument();
     });
 
     test('should render with custom title and description', () => {
       render(
         <TestWrapper>
-          <AdvancedFileUpload 
+          <AdvancedFileUpload
             onComplete={mockOnComplete}
-            title="Custom Title"
-            description="Custom description"
+            title='Custom Title'
+            description='Custom description'
           />
         </TestWrapper>
       );
@@ -106,15 +127,19 @@ describe('AdvancedFileUpload', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByText(/Supported formats: PDF, PNG, JPG, TXT/)).toBeInTheDocument();
-      expect(screen.getByText(/Max file size: 10MB per file/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Supported formats: PDF, PNG, JPG, TXT/)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Max file size: 10MB per file/)
+      ).toBeInTheDocument();
     });
 
     test('should handle missing agency context gracefully', () => {
       mockUseAgency.mockReturnValue({
         agency: null,
         loading: false,
-        error: null
+        error: null,
       });
 
       render(
@@ -123,14 +148,16 @@ describe('AdvancedFileUpload', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByText(/Max file size: 5MB per file/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Max file size: 5MB per file/)
+      ).toBeInTheDocument();
     });
   });
 
   describe('File Selection and Validation', () => {
     test('should accept valid files through file input', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
@@ -149,7 +176,7 @@ describe('AdvancedFileUpload', () => {
 
     test('should validate file types against agency settings', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
@@ -157,7 +184,10 @@ describe('AdvancedFileUpload', () => {
       );
 
       const fileInput = screen.getByLabelText(/browse files/i);
-      const invalidFile = createMockFile('test.exe', 'application/octet-stream');
+      const invalidFile = createMockFile(
+        'test.exe',
+        'application/octet-stream'
+      );
 
       await user.upload(fileInput, invalidFile);
 
@@ -168,7 +198,7 @@ describe('AdvancedFileUpload', () => {
 
     test('should validate file sizes against agency limits', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
@@ -176,7 +206,11 @@ describe('AdvancedFileUpload', () => {
       );
 
       const fileInput = screen.getByLabelText(/browse files/i);
-      const largeFile = createMockFile('large.pdf', 'application/pdf', 20 * 1024 * 1024); // 20MB
+      const largeFile = createMockFile(
+        'large.pdf',
+        'application/pdf',
+        20 * 1024 * 1024
+      ); // 20MB
 
       await user.upload(fileInput, largeFile);
 
@@ -187,7 +221,7 @@ describe('AdvancedFileUpload', () => {
 
     test('should accept multiple files', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
@@ -198,7 +232,7 @@ describe('AdvancedFileUpload', () => {
       const files = [
         createMockFile('test1.pdf', 'application/pdf'),
         createMockFile('test2.txt', 'text/plain'),
-        createMockFile('test3.png', 'image/png')
+        createMockFile('test3.png', 'image/png'),
       ];
 
       await user.upload(fileInput, files);
@@ -212,7 +246,7 @@ describe('AdvancedFileUpload', () => {
 
     test('should prevent duplicate files', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
@@ -243,14 +277,16 @@ describe('AdvancedFileUpload', () => {
         </TestWrapper>
       );
 
-      const dropZone = screen.getByText(/Drag & drop documents here/).closest('div');
+      const dropZone = screen
+        .getByText(/Drag & drop documents here/)
+        .closest('div');
       const file = createMockFile('test.pdf', 'application/pdf');
 
       // Simulate drag over
       fireEvent.dragOver(dropZone!, {
         dataTransfer: {
-          items: [{ kind: 'file', type: 'application/pdf' }]
-        }
+          items: [{ kind: 'file', type: 'application/pdf' }],
+        },
       });
 
       expect(dropZone).toHaveClass('drag-over'); // Assuming CSS class is applied
@@ -258,8 +294,8 @@ describe('AdvancedFileUpload', () => {
       // Simulate drop
       fireEvent.drop(dropZone!, {
         dataTransfer: {
-          files: [file]
-        }
+          files: [file],
+        },
       });
 
       await waitFor(() => {
@@ -274,20 +310,24 @@ describe('AdvancedFileUpload', () => {
         </TestWrapper>
       );
 
-      const dropZone = screen.getByText(/Drag & drop documents here/).closest('div');
+      const dropZone = screen
+        .getByText(/Drag & drop documents here/)
+        .closest('div');
 
       fireEvent.dragEnter(dropZone!);
       expect(screen.getByText(/Drop files here/)).toBeInTheDocument();
 
       fireEvent.dragLeave(dropZone!);
-      expect(screen.getByText(/Drag & drop documents here/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Drag & drop documents here/)
+      ).toBeInTheDocument();
     });
   });
 
   describe('File Management', () => {
     test('should allow removing individual files', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
@@ -303,7 +343,9 @@ describe('AdvancedFileUpload', () => {
         expect(screen.getByText('test.pdf')).toBeInTheDocument();
       });
 
-      const removeButton = screen.getByRole('button', { name: /remove.*test\.pdf/i });
+      const removeButton = screen.getByRole('button', {
+        name: /remove.*test\.pdf/i,
+      });
       await user.click(removeButton);
 
       await waitFor(() => {
@@ -313,7 +355,7 @@ describe('AdvancedFileUpload', () => {
 
     test('should allow clearing all files', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
@@ -323,7 +365,7 @@ describe('AdvancedFileUpload', () => {
       const fileInput = screen.getByLabelText(/browse files/i);
       const files = [
         createMockFile('test1.pdf', 'application/pdf'),
-        createMockFile('test2.txt', 'text/plain')
+        createMockFile('test2.txt', 'text/plain'),
       ];
 
       await user.upload(fileInput, files);
@@ -346,32 +388,38 @@ describe('AdvancedFileUpload', () => {
   describe('Processing Configuration', () => {
     test('should open configuration dialog', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
         </TestWrapper>
       );
 
-      const configButton = screen.getByRole('button', { name: /processing options/i });
+      const configButton = screen.getByRole('button', {
+        name: /processing options/i,
+      });
       await user.click(configButton);
 
       expect(screen.getByText('Processing Configuration')).toBeInTheDocument();
       expect(screen.getByLabelText(/Enable OCR/)).toBeInTheDocument();
       expect(screen.getByLabelText(/Enable PII Detection/)).toBeInTheDocument();
-      expect(screen.getByLabelText(/Enable Agency Validation/)).toBeInTheDocument();
+      expect(
+        screen.getByLabelText(/Enable Agency Validation/)
+      ).toBeInTheDocument();
     });
 
     test('should save configuration changes', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
         </TestWrapper>
       );
 
-      const configButton = screen.getByRole('button', { name: /processing options/i });
+      const configButton = screen.getByRole('button', {
+        name: /processing options/i,
+      });
       await user.click(configButton);
 
       const ocrCheckbox = screen.getByLabelText(/Enable OCR/);
@@ -384,25 +432,33 @@ describe('AdvancedFileUpload', () => {
       const saveButton = screen.getByRole('button', { name: /save/i });
       await user.click(saveButton);
 
-      expect(screen.queryByText('Processing Configuration')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Processing Configuration')
+      ).not.toBeInTheDocument();
     });
 
     test('should reset configuration to defaults', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
         </TestWrapper>
       );
 
-      const configButton = screen.getByRole('button', { name: /processing options/i });
+      const configButton = screen.getByRole('button', {
+        name: /processing options/i,
+      });
       await user.click(configButton);
 
-      const resetButton = screen.getByRole('button', { name: /reset to defaults/i });
+      const resetButton = screen.getByRole('button', {
+        name: /reset to defaults/i,
+      });
       await user.click(resetButton);
 
-      const maxConcurrentInput = screen.getByLabelText(/Max Concurrent/) as HTMLInputElement;
+      const maxConcurrentInput = screen.getByLabelText(
+        /Max Concurrent/
+      ) as HTMLInputElement;
       expect(maxConcurrentInput.value).toBe('3');
     });
   });
@@ -410,7 +466,7 @@ describe('AdvancedFileUpload', () => {
   describe('Document Processing', () => {
     test('should start processing when process button is clicked', async () => {
       const user = userEvent.setup();
-      
+
       mockService.batchProcessDocuments.mockResolvedValue('batch_123');
       mockService.getBatchProgress.mockReturnValue({
         batchId: 'batch_123',
@@ -419,7 +475,7 @@ describe('AdvancedFileUpload', () => {
         failed: 0,
         inProgress: 1,
         currentFile: 'test.pdf',
-        overallProgress: 0
+        overallProgress: 0,
       });
 
       render(
@@ -437,22 +493,27 @@ describe('AdvancedFileUpload', () => {
         expect(screen.getByText('test.pdf')).toBeInTheDocument();
       });
 
-      const processButton = screen.getByRole('button', { name: /start processing/i });
+      const processButton = screen.getByRole('button', {
+        name: /start processing/i,
+      });
       await user.click(processButton);
 
-      expect(mockService.batchProcessDocuments).toHaveBeenCalledWith([file], expect.objectContaining({
-        agencyId: 'police',
-        maxConcurrent: 3,
-        enablePIIDetection: true,
-        enableAgencyValidation: true
-      }));
+      expect(mockService.batchProcessDocuments).toHaveBeenCalledWith(
+        [file],
+        expect.objectContaining({
+          agencyId: 'police',
+          maxConcurrent: 3,
+          enablePIIDetection: true,
+          enableAgencyValidation: true,
+        })
+      );
     });
 
     test('should show progress during processing', async () => {
       const user = userEvent.setup();
-      
+
       mockService.batchProcessDocuments.mockResolvedValue('batch_123');
-      
+
       let progressCall = 0;
       mockService.getBatchProgress.mockImplementation(() => {
         progressCall++;
@@ -464,7 +525,7 @@ describe('AdvancedFileUpload', () => {
             failed: 0,
             inProgress: 2,
             currentFile: 'test1.pdf',
-            overallProgress: 0
+            overallProgress: 0,
           };
         } else {
           return {
@@ -474,7 +535,7 @@ describe('AdvancedFileUpload', () => {
             failed: 0,
             inProgress: 0,
             currentFile: null,
-            overallProgress: 100
+            overallProgress: 100,
           };
         }
       });
@@ -488,23 +549,27 @@ describe('AdvancedFileUpload', () => {
       const fileInput = screen.getByLabelText(/browse files/i);
       const files = [
         createMockFile('test1.pdf', 'application/pdf'),
-        createMockFile('test2.pdf', 'application/pdf')
+        createMockFile('test2.pdf', 'application/pdf'),
       ];
 
       await user.upload(fileInput, files);
 
-      const processButton = screen.getByRole('button', { name: /start processing/i });
+      const processButton = screen.getByRole('button', {
+        name: /start processing/i,
+      });
       await user.click(processButton);
 
       // Wait for processing to start
       await waitFor(() => {
-        expect(screen.getByText(/Processing: 0 of 2 files/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Processing: 0 of 2 files/)
+        ).toBeInTheDocument();
       });
     });
 
     test('should handle processing completion', async () => {
       const user = userEvent.setup();
-      
+
       const mockResults = [
         {
           id: 'result_1',
@@ -514,8 +579,8 @@ describe('AdvancedFileUpload', () => {
           extractedText: 'Sample text',
           processingTime: 1500,
           piiFindings: [],
-          agencyRules: undefined
-        }
+          agencyRules: undefined,
+        },
       ];
 
       mockService.batchProcessDocuments.mockResolvedValue('batch_123');
@@ -526,7 +591,7 @@ describe('AdvancedFileUpload', () => {
         failed: 0,
         inProgress: 0,
         currentFile: null,
-        overallProgress: 100
+        overallProgress: 100,
       });
       mockService.getAllProcessingResults.mockReturnValue(mockResults);
 
@@ -541,7 +606,9 @@ describe('AdvancedFileUpload', () => {
 
       await user.upload(fileInput, file);
 
-      const processButton = screen.getByRole('button', { name: /start processing/i });
+      const processButton = screen.getByRole('button', {
+        name: /start processing/i,
+      });
       await user.click(processButton);
 
       // Simulate processing completion
@@ -556,8 +623,10 @@ describe('AdvancedFileUpload', () => {
 
     test('should handle processing errors', async () => {
       const user = userEvent.setup();
-      
-      mockService.batchProcessDocuments.mockRejectedValue(new Error('Processing failed'));
+
+      mockService.batchProcessDocuments.mockRejectedValue(
+        new Error('Processing failed')
+      );
 
       render(
         <TestWrapper>
@@ -570,7 +639,9 @@ describe('AdvancedFileUpload', () => {
 
       await user.upload(fileInput, file);
 
-      const processButton = screen.getByRole('button', { name: /start processing/i });
+      const processButton = screen.getByRole('button', {
+        name: /start processing/i,
+      });
       await user.click(processButton);
 
       await waitFor(() => {
@@ -596,25 +667,22 @@ describe('AdvancedFileUpload', () => {
               confidence: 0.95,
               startIndex: 10,
               endIndex: 21,
-              context: 'SSN: 123-45-6789'
-            }
+              context: 'SSN: 123-45-6789',
+            },
           ],
-          agencyRules: undefined
-        }
+          agencyRules: undefined,
+        },
       ];
 
       render(
         <TestWrapper>
-          <AdvancedFileUpload 
-            onComplete={mockOnComplete} 
-            showResults={true}
-          />
+          <AdvancedFileUpload onComplete={mockOnComplete} showResults={true} />
         </TestWrapper>
       );
 
       // Simulate having results
       const component = screen.getByTestId('advanced-file-upload');
-      
+
       // This would require implementing a way to pass results to the component
       // For now, we'll test that the results section exists when showResults is true
       expect(component).toBeInTheDocument();
@@ -622,7 +690,7 @@ describe('AdvancedFileUpload', () => {
 
     test('should show retry option for failed files', async () => {
       const user = userEvent.setup();
-      
+
       mockService.batchProcessDocuments.mockResolvedValue('batch_123');
       mockService.getBatchProgress.mockReturnValue({
         batchId: 'batch_123',
@@ -631,7 +699,7 @@ describe('AdvancedFileUpload', () => {
         failed: 1,
         inProgress: 0,
         currentFile: null,
-        overallProgress: 100
+        overallProgress: 100,
       });
 
       render(
@@ -645,7 +713,9 @@ describe('AdvancedFileUpload', () => {
 
       await user.upload(fileInput, file);
 
-      const processButton = screen.getByRole('button', { name: /start processing/i });
+      const processButton = screen.getByRole('button', {
+        name: /start processing/i,
+      });
       await user.click(processButton);
 
       await waitFor(() => {
@@ -663,21 +733,29 @@ describe('AdvancedFileUpload', () => {
       );
 
       expect(screen.getByLabelText(/browse files/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /processing options/i })).toBeInTheDocument();
-      expect(screen.getByRole('region', { name: /file upload area/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /processing options/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('region', { name: /file upload area/i })
+      ).toBeInTheDocument();
     });
 
     test('should support keyboard navigation', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
         </TestWrapper>
       );
 
-      const browseButton = screen.getByRole('button', { name: /browse files/i });
-      const configButton = screen.getByRole('button', { name: /processing options/i });
+      const browseButton = screen.getByRole('button', {
+        name: /browse files/i,
+      });
+      const configButton = screen.getByRole('button', {
+        name: /processing options/i,
+      });
 
       await user.tab();
       expect(browseButton).toHaveFocus();
@@ -688,7 +766,7 @@ describe('AdvancedFileUpload', () => {
 
     test('should announce file additions to screen readers', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
@@ -710,7 +788,7 @@ describe('AdvancedFileUpload', () => {
   describe('Performance', () => {
     test('should handle large number of files efficiently', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
@@ -718,7 +796,7 @@ describe('AdvancedFileUpload', () => {
       );
 
       const fileInput = screen.getByLabelText(/browse files/i);
-      const files = Array.from({ length: 100 }, (_, i) => 
+      const files = Array.from({ length: 100 }, (_, i) =>
         createMockFile(`test${i}.txt`, 'text/plain')
       );
 
@@ -736,7 +814,7 @@ describe('AdvancedFileUpload', () => {
 
     test('should debounce file validation', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AdvancedFileUpload onComplete={mockOnComplete} />
@@ -747,7 +825,7 @@ describe('AdvancedFileUpload', () => {
       const files = [
         createMockFile('test1.pdf', 'application/pdf'),
         createMockFile('test2.pdf', 'application/pdf'),
-        createMockFile('test3.pdf', 'application/pdf')
+        createMockFile('test3.pdf', 'application/pdf'),
       ];
 
       // Rapid file additions

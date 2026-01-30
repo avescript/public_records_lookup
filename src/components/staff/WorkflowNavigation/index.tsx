@@ -26,11 +26,11 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/core/Button';
 
-import { 
-  StyledBreadcrumbContainer, 
-  StyledNavigationPaper, 
-  StyledProgressContainer, 
-  StyledStepperContainer, 
+import {
+  StyledBreadcrumbContainer,
+  StyledNavigationPaper,
+  StyledProgressContainer,
+  StyledStepperContainer,
 } from './WorkflowNavigation.styles';
 
 export type WorkflowStep = 'locate' | 'redact' | 'respond' | 'review';
@@ -101,7 +101,7 @@ function StepIconComponent({ active, completed }: StepIconComponentProps) {
   if (completed) {
     return (
       <CheckCircleIcon
-        sx={{ 
+        sx={{
           color: 'success.main',
           fontSize: '1.8rem',
         }}
@@ -112,7 +112,7 @@ function StepIconComponent({ active, completed }: StepIconComponentProps) {
   if (active) {
     return (
       <PlayArrowIcon
-        sx={{ 
+        sx={{
           color: 'primary.main',
           fontSize: '1.8rem',
         }}
@@ -122,7 +122,7 @@ function StepIconComponent({ active, completed }: StepIconComponentProps) {
 
   return (
     <CircleIcon
-      sx={{ 
+      sx={{
         color: 'grey.400',
         fontSize: '1.8rem',
       }}
@@ -138,27 +138,29 @@ export function WorkflowNavigation({
   showProgress = true,
 }: WorkflowNavigationProps) {
   const router = useRouter();
-  
+
   const currentStepIndex = steps.findIndex(step => step.key === currentStep);
   const progress = ((currentStepIndex + 1) / steps.length) * 100;
 
-  const isStepCompleted = (stepKey: WorkflowStep) => completedSteps.includes(stepKey);
+  const isStepCompleted = (stepKey: WorkflowStep) =>
+    completedSteps.includes(stepKey);
   const isStepAccessible = (stepKey: WorkflowStep, index: number) => {
     // Current step is always accessible
     if (stepKey === currentStep) return true;
-    
+
     // Completed steps are always accessible
     if (isStepCompleted(stepKey)) return true;
-    
+
     // Next step is accessible if current step is completed
-    if (index === currentStepIndex + 1 && isStepCompleted(currentStep)) return true;
-    
+    if (index === currentStepIndex + 1 && isStepCompleted(currentStep))
+      return true;
+
     return false;
   };
 
   const handleStepClick = (stepKey: WorkflowStep, index: number) => {
     if (disabled || !isStepAccessible(stepKey, index)) return;
-    
+
     router.push(`/admin/request/${requestId}/workflow/${stepKey}` as any);
   };
 
@@ -170,23 +172,23 @@ export function WorkflowNavigation({
     <StyledNavigationPaper>
       {/* Breadcrumbs */}
       <StyledBreadcrumbContainer>
-        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />}>
+        <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />}>
           <Button
             startIcon={<DashboardIcon />}
             onClick={handleDashboardClick}
-            variant="text"
-            size="sm"
-            className="breadcrumb-button"
+            variant='text'
+            size='sm'
+            className='breadcrumb-button'
           >
             Dashboard
           </Button>
-          <Typography color="text.primary" sx={{ fontWeight: 500 }}>
+          <Typography color='text.primary' sx={{ fontWeight: 500 }}>
             Request {requestId}
           </Typography>
-          <Chip 
+          <Chip
             label={steps.find(s => s.key === currentStep)?.label || 'Unknown'}
-            color="primary"
-            size="small"
+            color='primary'
+            size='small'
           />
         </Breadcrumbs>
       </StyledBreadcrumbContainer>
@@ -194,18 +196,18 @@ export function WorkflowNavigation({
       {/* Progress Bar */}
       {showProgress && (
         <StyledProgressContainer>
-          <Box className="progress-header">
-            <Typography className="progress-label">
+          <Box className='progress-header'>
+            <Typography className='progress-label'>
               Workflow Progress
             </Typography>
-            <Typography className="progress-label">
+            <Typography className='progress-label'>
               {Math.round(progress)}% Complete
             </Typography>
           </Box>
-          <LinearProgress 
-            variant="determinate" 
+          <LinearProgress
+            variant='determinate'
             value={progress}
-            className="progress-bar"
+            className='progress-bar'
           />
         </StyledProgressContainer>
       )}
@@ -223,9 +225,13 @@ export function WorkflowNavigation({
             const isAccessible = isStepAccessible(step.key, index);
 
             return (
-              <Step key={step.key} completed={isCompleted} className={!isAccessible || disabled ? 'step-disabled' : ''}>
+              <Step
+                key={step.key}
+                completed={isCompleted}
+                className={!isAccessible || disabled ? 'step-disabled' : ''}
+              >
                 <StepLabel
-                  StepIconComponent={(props) => (
+                  StepIconComponent={props => (
                     <StepIconComponent
                       {...props}
                       completed={isCompleted}
@@ -234,14 +240,24 @@ export function WorkflowNavigation({
                   )}
                   onClick={() => handleStepClick(step.key, index)}
                 >
-                  <Typography 
-                    variant="body1" 
-                    component="div"
-                    className={isActive ? 'step-active' : isCompleted ? 'step-completed' : ''}
+                  <Typography
+                    variant='body1'
+                    component='div'
+                    className={
+                      isActive
+                        ? 'step-active'
+                        : isCompleted
+                          ? 'step-completed'
+                          : ''
+                    }
                   >
                     {step.label}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" className="step-description">
+                  <Typography
+                    variant='caption'
+                    color='text.secondary'
+                    className='step-description'
+                  >
                     {step.description}
                   </Typography>
                 </StepLabel>

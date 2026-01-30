@@ -53,11 +53,11 @@ const formatFileSize = (bytes: number): string => {
 
 const getFileIcon = (file: File) => {
   if (file.type.startsWith('image/')) {
-    return <ImageIcon color="primary" />;
+    return <ImageIcon color='primary' />;
   } else if (file.type === 'application/pdf') {
-    return <PictureAsPdfIcon color="error" />;
+    return <PictureAsPdfIcon color='error' />;
   } else {
-    return <DescriptionIcon color="action" />;
+    return <DescriptionIcon color='action' />;
   }
 };
 
@@ -126,18 +126,18 @@ const FileUpload: React.FC<FileUploadProps> = ({
       >
         <input {...getInputProps()} />
         <CloudUploadIcon sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-        <Typography variant="body1" gutterBottom>
+        <Typography variant='body1' gutterBottom>
           {isDragActive
             ? 'Drop the files here'
             : 'Drag and drop files here, or click to select files'}
         </Typography>
-        <Typography variant="caption" color="textSecondary">
+        <Typography variant='caption' color='textSecondary'>
           Accepted files: PDF, Word documents, text files, images (JPG, PNG)
         </Typography>
-        <Typography variant="caption" display="block" color="textSecondary">
+        <Typography variant='caption' display='block' color='textSecondary'>
           Maximum size: {formatFileSize(maxSize)}
         </Typography>
-        <Button variant="contained" sx={{ mt: 2 }} disabled={isLoading}>
+        <Button variant='contained' sx={{ mt: 2 }} disabled={isLoading}>
           Select Files
         </Button>
       </DropZone>
@@ -149,7 +149,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       )}
 
       {error && (
-        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+        <Typography color='error' variant='body2' sx={{ mt: 1 }}>
           {error}
         </Typography>
       )}
@@ -159,7 +159,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           {fileRejections.map(({ file, errors }, index) => (
             <Alert
               key={`${file.name}-${index}`}
-              severity="error"
+              severity='error'
               sx={{ mb: 1 }}
             >
               {file.name}: {errors.map(e => e.message).join(', ')}
@@ -170,7 +170,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       {selectedFiles.length > 0 && (
         <FileList>
-          <Typography variant="subtitle2" gutterBottom>
+          <Typography variant='subtitle2' gutterBottom>
             Selected Files ({selectedFiles.length}/{maxFiles}):
           </Typography>
           {selectedFiles.map((file: File, index: number) => {
@@ -181,7 +181,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     {previewUrl ? (
                       <Box
-                        component="img"
+                        component='img'
                         src={previewUrl}
                         alt={file.name}
                         sx={{
@@ -205,15 +205,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
                       </Box>
                     )}
                     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                      <Typography variant="body2" noWrap title={file.name}>
+                      <Typography variant='body2' noWrap title={file.name}>
                         {file.name}
                       </Typography>
-                      <Typography variant="caption" color="textSecondary">
+                      <Typography variant='caption' color='textSecondary'>
                         {formatFileSize(file.size)}
                       </Typography>
                     </Box>
                     <IconButton
-                      size="small"
+                      size='small'
                       onClick={() => removeFile(index)}
                       disabled={isLoading}
                       aria-label={`Remove ${file.name}`}

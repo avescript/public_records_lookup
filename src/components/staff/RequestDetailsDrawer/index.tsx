@@ -37,9 +37,15 @@ import { format } from 'date-fns';
 import dynamic from 'next/dynamic';
 
 import { AuditPanel } from '@/components/staff/AuditPanel';
-import { StaffButton, LegalButton, PermissionButton, RoleGuard } from '../../auth';
+
 import { SYNTHETIC_AGENCIES } from '../../../data/syntheticDataTemplates';
 import { routeRequestToAgency } from '../../../services/requestService';
+import {
+  LegalButton,
+  PermissionButton,
+  RoleGuard,
+  StaffButton,
+} from '../../auth';
 
 // Helper function to convert Firebase Timestamp or mock timestamp to Date
 const convertToDate = (timestamp: any): Date => {
@@ -48,7 +54,7 @@ const convertToDate = (timestamp: any): Date => {
       // Fallback for null/undefined
       return new Date();
     }
-    
+
     if (typeof timestamp.toDate === 'function') {
       // Firebase Timestamp or mock timestamp with toDate method
       return timestamp.toDate();
@@ -61,10 +67,18 @@ const convertToDate = (timestamp: any): Date => {
     } else if (typeof timestamp === 'string') {
       // ISO string
       return new Date(timestamp);
-    } else if (timestamp && typeof timestamp === 'object' && timestamp.seconds) {
+    } else if (
+      timestamp &&
+      typeof timestamp === 'object' &&
+      timestamp.seconds
+    ) {
       // Mock Firebase timestamp object with seconds
       return new Date(timestamp.seconds * 1000);
-    } else if (timestamp && typeof timestamp === 'object' && timestamp._isoString) {
+    } else if (
+      timestamp &&
+      typeof timestamp === 'object' &&
+      timestamp._isoString
+    ) {
       // Mock timestamp with stored ISO string
       return new Date(timestamp._isoString);
     } else {
@@ -78,18 +92,28 @@ const convertToDate = (timestamp: any): Date => {
 };
 
 import { MatchResult } from '../../../services/aiMatchingService';
-import { CommentThread, PackageApproval } from '../../../services/legalReviewService';
-import { AssociatedRecord,RequestStatus, StoredRequest } from '../../../services/requestService';
+import {
+  CommentThread,
+  PackageApproval,
+} from '../../../services/legalReviewService';
+import {
+  AssociatedRecord,
+  RequestStatus,
+  StoredRequest,
+} from '../../../services/requestService';
 import PIIFindings from '../../shared/PIIFindings';
 import { CommentThreadComponent } from '../CommentThread';
 import { PackageApprovalComponent } from '../PackageApproval';
 import { PackageBuilder } from '../PackageBuilder';
 
 // Dynamically import PDFPreview to prevent SSR issues with browser-specific APIs
-const PDFPreview = dynamic(() => import('../../shared/PDFPreview/ClientWrapper'), {
-  ssr: false,
-  loading: () => <div>Loading PDF preview...</div>,
-});
+const PDFPreview = dynamic(
+  () => import('../../shared/PDFPreview/ClientWrapper'),
+  {
+    ssr: false,
+    loading: () => <div>Loading PDF preview...</div>,
+  }
+);
 import { PIIFinding } from '../../../services/piiDetectionService';
 
 interface RequestDetailsDrawerProps {
@@ -131,7 +155,9 @@ export function RequestDetailsDrawer({
   onFindMatches,
 }: RequestDetailsDrawerProps) {
   const [editingStatus, setEditingStatus] = useState(false);
-  const [newStatus, setNewStatus] = useState<RequestStatus>(request?.status || 'submitted');
+  const [newStatus, setNewStatus] = useState<RequestStatus>(
+    request?.status || 'submitted'
+  );
   const [addingNote, setAddingNote] = useState(false);
   const [newNote, setNewNote] = useState('');
   const [showPIIPreview, setShowPIIPreview] = useState(false);
@@ -140,9 +166,9 @@ export function RequestDetailsDrawer({
 
   const formatDate = (timestamp: any) => {
     if (!timestamp) return 'N/A';
-    
+
     let date: Date;
-    
+
     try {
       if (timestamp.toDate && typeof timestamp.toDate === 'function') {
         // Firebase Timestamp or mock timestamp with toDate function
@@ -160,13 +186,13 @@ export function RequestDetailsDrawer({
         // Fallback - try to create Date from whatever we have
         date = new Date(timestamp);
       }
-      
+
       // Validate the date
       if (isNaN(date.getTime())) {
         console.warn('Invalid date in formatDate:', timestamp);
         return 'Invalid Date';
       }
-      
+
       return format(date, 'MMM d, yyyy h:mm a');
     } catch (error) {
       console.error('Error formatting date:', error, timestamp);
@@ -250,7 +276,7 @@ export function RequestDetailsDrawer({
 
   return (
     <Drawer
-      anchor="right"
+      anchor='right'
       open={open}
       onClose={onClose}
       sx={{
@@ -273,14 +299,14 @@ export function RequestDetailsDrawer({
           color: 'primary.contrastText',
         }}
       >
-        <Typography variant="h6" component="div">
+        <Typography variant='h6' component='div'>
           Request Details
         </Typography>
         <IconButton
-          edge="end"
-          color="inherit"
+          edge='end'
+          color='inherit'
           onClick={onClose}
-          aria-label="close"
+          aria-label='close'
         >
           <CloseIcon />
         </IconButton>
@@ -291,54 +317,66 @@ export function RequestDetailsDrawer({
         <Stack spacing={3}>
           {/* Basic Information */}
           <Paper elevation={1} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant='h6' gutterBottom>
               Request Information
             </Typography>
             <Stack spacing={2}>
               <Box>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant='body2' color='text.secondary'>
                   Tracking ID
                 </Typography>
-                <Typography variant="body1" fontWeight="medium">
+                <Typography variant='body1' fontWeight='medium'>
                   {request.trackingId}
                 </Typography>
               </Box>
 
               <Box>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant='body2' color='text.secondary'>
                   Title
                 </Typography>
-                <Typography variant="body1">{request.title}</Typography>
+                <Typography variant='body1'>{request.title}</Typography>
               </Box>
 
               <Box>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant='body2' color='text.secondary'>
                   Description
                 </Typography>
-                <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                <Typography variant='body1' sx={{ whiteSpace: 'pre-wrap' }}>
                   {request.description}
                 </Typography>
               </Box>
 
               <Box>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant='body2' color='text.secondary'>
                   Department
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant='body1'>
                   {getDepartmentDisplayName(request.department)}
                 </Typography>
               </Box>
 
               <Box>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant='body2' color='text.secondary'>
                   Agency
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    mt: 0.5,
+                  }}
+                >
                   <Chip
-                    label={SYNTHETIC_AGENCIES.find(a => a.id === request.agency)?.name || request.agency || 'Unknown'}
-                    color="primary"
-                    size="small"
-                    variant="outlined"
+                    label={
+                      SYNTHETIC_AGENCIES.find(a => a.id === request.agency)
+                        ?.name ||
+                      request.agency ||
+                      'Unknown'
+                    }
+                    color='primary'
+                    size='small'
+                    variant='outlined'
                   />
                 </Box>
               </Box>
@@ -355,10 +393,10 @@ export function RequestDetailsDrawer({
                 mb: 2,
               }}
             >
-              <Typography variant="h6">Status</Typography>
+              <Typography variant='h6'>Status</Typography>
               <RoleGuard permissions={['edit_request']}>
                 {!editingStatus && (
-                  <IconButton size="small" onClick={handleStatusEdit}>
+                  <IconButton size='small' onClick={handleStatusEdit}>
                     <EditIcon />
                   </IconButton>
                 )}
@@ -371,8 +409,10 @@ export function RequestDetailsDrawer({
                   <InputLabel>Status</InputLabel>
                   <Select
                     value={newStatus}
-                    label="Status"
-                    onChange={e => setNewStatus(e.target.value as RequestStatus)}
+                    label='Status'
+                    onChange={e =>
+                      setNewStatus(e.target.value as RequestStatus)
+                    }
                   >
                     {statusOptions.map(option => (
                       <MenuItem key={option.value} value={option.value}>
@@ -384,16 +424,16 @@ export function RequestDetailsDrawer({
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <PermissionButton
                     requiredPermissions={['edit_request']}
-                    variant="contained"
-                    size="small"
+                    variant='contained'
+                    size='small'
                     startIcon={<SaveIcon />}
                     onClick={handleStatusSave}
                   >
                     Save
                   </PermissionButton>
                   <Button
-                    variant="outlined"
-                    size="small"
+                    variant='outlined'
+                    size='small'
                     onClick={handleStatusCancel}
                   >
                     Cancel
@@ -404,157 +444,209 @@ export function RequestDetailsDrawer({
               <Chip
                 label={request.status.replace('_', ' ').toUpperCase()}
                 color={getStatusColor(request.status) as any}
-                size="medium"
+                size='medium'
               />
             )}
           </Paper>
 
           {/* Contact Information */}
           <Paper elevation={1} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant='h6' gutterBottom>
               Contact Information
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <EmailIcon color="action" />
-              <Typography variant="body1">{request.contactEmail}</Typography>
+              <EmailIcon color='action' />
+              <Typography variant='body1'>{request.contactEmail}</Typography>
             </Box>
           </Paper>
 
           {/* Associated Records */}
-          {request.associatedRecords && request.associatedRecords.length > 0 && (
-            <Paper elevation={1} sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Associated Records ({request.associatedRecords.length})
-              </Typography>
-              <Stack spacing={2}>
-                {request.associatedRecords.map((record, index) => (
+          {request.associatedRecords &&
+            request.associatedRecords.length > 0 && (
+              <Paper elevation={1} sx={{ p: 3 }}>
+                <Typography variant='h6' gutterBottom>
+                  Associated Records ({request.associatedRecords.length})
+                </Typography>
+                <Stack spacing={2}>
+                  {request.associatedRecords.map((record, index) => (
+                    <Box
+                      key={record.candidateId}
+                      sx={{
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 1,
+                        p: 2,
+                        backgroundColor: 'background.default',
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant='subtitle1' fontWeight='medium'>
+                          {record.title}
+                        </Typography>
+                        <Chip
+                          size='small'
+                          label={record.confidence.toUpperCase()}
+                          color={
+                            record.confidence === 'high'
+                              ? 'success'
+                              : record.confidence === 'medium'
+                                ? 'warning'
+                                : 'default'
+                          }
+                        />
+                      </Box>
+
+                      <Typography
+                        variant='body2'
+                        color='text.secondary'
+                        sx={{ mb: 1 }}
+                      >
+                        {record.description}
+                      </Typography>
+
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          gap: 2,
+                          flexWrap: 'wrap',
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant='caption' color='text.secondary'>
+                          <strong>Source:</strong> {record.source}
+                        </Typography>
+                        <Typography variant='caption' color='text.secondary'>
+                          <strong>Agency:</strong> {record.agency}
+                        </Typography>
+                        <Typography variant='caption' color='text.secondary'>
+                          <strong>Score:</strong>{' '}
+                          {(record.relevanceScore * 100).toFixed(0)}%
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          gap: 1,
+                          flexWrap: 'wrap',
+                          mb: 1,
+                        }}
+                      >
+                        {record.keyPhrases
+                          .slice(0, 3)
+                          .map((phrase, phraseIndex) => (
+                            <Chip
+                              key={phraseIndex}
+                              label={phrase}
+                              size='small'
+                              variant='outlined'
+                              color='primary'
+                            />
+                          ))}
+                        {record.keyPhrases.length > 3 && (
+                          <Chip
+                            label={`+${record.keyPhrases.length - 3} more`}
+                            size='small'
+                            variant='outlined'
+                            color='default'
+                          />
+                        )}
+                      </Box>
+
+                      <Typography variant='caption' color='text.secondary'>
+                        Accepted by {record.acceptedBy} on{' '}
+                        {(() => {
+                          try {
+                            return format(
+                              convertToDate(record.acceptedAt),
+                              'MMM d, yyyy \'at\' h:mm a'
+                            );
+                          } catch (error) {
+                            console.error(
+                              'Error formatting date:',
+                              error,
+                              record.acceptedAt
+                            );
+                            return 'unknown date';
+                          }
+                        })()}
+                      </Typography>
+                    </Box>
+                  ))}
+
+                  {/* Package Builder Button */}
                   <Box
-                    key={record.candidateId}
                     sx={{
-                      border: '1px solid',
+                      pt: 2,
+                      borderTop: '1px solid',
                       borderColor: 'divider',
-                      borderRadius: 1,
-                      p: 2,
-                      backgroundColor: 'background.default',
                     }}
                   >
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                      <Typography variant="subtitle1" fontWeight="medium">
-                        {record.title}
-                      </Typography>
-                      <Chip
-                        size="small"
-                        label={record.confidence.toUpperCase()}
-                        color={record.confidence === 'high' ? 'success' : record.confidence === 'medium' ? 'warning' : 'default'}
-                      />
-                    </Box>
-                    
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                      {record.description}
-                    </Typography>
-                    
-                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 1 }}>
-                      <Typography variant="caption" color="text.secondary">
-                        <strong>Source:</strong> {record.source}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        <strong>Agency:</strong> {record.agency}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        <strong>Score:</strong> {(record.relevanceScore * 100).toFixed(0)}%
-                      </Typography>
-                    </Box>
-                    
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
-                      {record.keyPhrases.slice(0, 3).map((phrase, phraseIndex) => (
-                        <Chip
-                          key={phraseIndex}
-                          label={phrase}
-                          size="small"
-                          variant="outlined"
-                          color="primary"
-                        />
-                      ))}
-                      {record.keyPhrases.length > 3 && (
-                        <Chip
-                          label={`+${record.keyPhrases.length - 3} more`}
-                          size="small"
-                          variant="outlined"
-                          color="default"
-                        />
-                      )}
-                    </Box>
-                    
-                    <Typography variant="caption" color="text.secondary">
-                      Accepted by {record.acceptedBy} on {(() => {
-                        try {
-                          return format(convertToDate(record.acceptedAt), 'MMM d, yyyy \'at\' h:mm a');
-                        } catch (error) {
-                          console.error('Error formatting date:', error, record.acceptedAt);
-                          return 'unknown date';
-                        }
-                      })()}
-                    </Typography>
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      onClick={() => setShowPackageBuilder(true)}
+                      disabled={
+                        !request.associatedRecords ||
+                        request.associatedRecords.length === 0
+                      }
+                      sx={{ width: '100%' }}
+                    >
+                      Build Package for Delivery
+                    </Button>
                   </Box>
-                ))}
-                
-                {/* Package Builder Button */}
-                <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setShowPackageBuilder(true)}
-                    disabled={!request.associatedRecords || request.associatedRecords.length === 0}
-                    sx={{ width: '100%' }}
-                  >
-                    Build Package for Delivery
-                  </Button>
-                </Box>
-              </Stack>
-            </Paper>
-          )}
+                </Stack>
+              </Paper>
+            )}
 
           {/* Date Information */}
           <Paper elevation={1} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant='h6' gutterBottom>
               Timeline
             </Typography>
             <Stack spacing={2}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <CalendarIcon color="action" />
+                <CalendarIcon color='action' />
                 <Box>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Submitted
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant='body1'>
                     {formatDate(request.submittedAt)}
                   </Typography>
                 </Box>
               </Box>
 
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <HistoryIcon color="action" />
+                <HistoryIcon color='action' />
                 <Box>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Last Updated
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant='body1'>
                     {formatDate(request.updatedAt)}
                   </Typography>
                 </Box>
               </Box>
 
               <Box>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant='body2' color='text.secondary'>
                   Date Range Requested
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant='body1'>
                   {request.dateRange.startDate} to {request.dateRange.endDate}
                   {request.dateRange.preset && (
                     <Typography
-                      component="span"
-                      variant="body2"
-                      color="text.secondary"
+                      component='span'
+                      variant='body2'
+                      color='text.secondary'
                       sx={{ ml: 1 }}
                     >
                       ({request.dateRange.preset})
@@ -567,17 +659,18 @@ export function RequestDetailsDrawer({
 
           {/* Attachments */}
           <Paper elevation={1} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant='h6' gutterBottom>
               Attachments
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <AttachFileIcon color="action" />
-              <Typography variant="body1">
-                {request.attachmentCount} file{request.attachmentCount !== 1 ? 's' : ''} attached
+              <AttachFileIcon color='action' />
+              <Typography variant='body1'>
+                {request.attachmentCount} file
+                {request.attachmentCount !== 1 ? 's' : ''} attached
               </Typography>
             </Box>
             {request.attachmentCount === 0 && (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              <Typography variant='body2' color='text.secondary' sx={{ mt: 1 }}>
                 No attachments provided
               </Typography>
             )}
@@ -585,14 +678,14 @@ export function RequestDetailsDrawer({
 
           {/* AI Matching */}
           <Paper elevation={1} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant='h6' gutterBottom>
               AI Record Search
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
               Use AI to find relevant records that might match this request
             </Typography>
             <Button
-              variant="contained"
+              variant='contained'
               startIcon={<SearchIcon />}
               onClick={handleFindMatches}
               disabled={!onFindMatches}
@@ -601,7 +694,11 @@ export function RequestDetailsDrawer({
               Find Matches
             </Button>
             {!onFindMatches && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+              <Typography
+                variant='caption'
+                color='text.secondary'
+                sx={{ display: 'block', mt: 1 }}
+              >
                 AI matching not available in this context
               </Typography>
             )}
@@ -609,26 +706,27 @@ export function RequestDetailsDrawer({
 
           {/* PII Detection & Redaction */}
           <Paper elevation={1} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant='h6' gutterBottom>
               PII Detection & Redaction
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Review documents for personally identifiable information that may need redaction
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+              Review documents for personally identifiable information that may
+              need redaction
             </Typography>
-            
+
             <Stack spacing={2}>
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                 <Button
-                  variant="contained"
+                  variant='contained'
                   startIcon={<SecurityIcon />}
                   onClick={() => handleShowPIIPreview()}
-                  color="warning"
+                  color='warning'
                 >
                   Review PII Findings
                 </Button>
                 {showPIIPreview && (
                   <Button
-                    variant="outlined"
+                    variant='outlined'
                     startIcon={<VisibilityOffIcon />}
                     onClick={handleHidePIIPreview}
                   >
@@ -642,7 +740,7 @@ export function RequestDetailsDrawer({
                 <PIIFindings
                   recordId={request.id!}
                   onFindingSelect={handlePIIFindingSelect}
-                  groupBy="type"
+                  groupBy='type'
                   showEmptyState={true}
                 />
               )}
@@ -650,13 +748,13 @@ export function RequestDetailsDrawer({
               {/* PDF Preview with PII Overlays */}
               {showPIIPreview && selectedPIIFile && (
                 <Box>
-                  <Typography variant="subtitle1" gutterBottom>
+                  <Typography variant='subtitle1' gutterBottom>
                     Document Preview: {selectedPIIFile}
                   </Typography>
                   <PDFPreview
                     recordId={request.id!}
                     fileName={selectedPIIFile}
-                    onPIIFindingsLoad={(findings) => {
+                    onPIIFindingsLoad={findings => {
                       console.log('PII findings loaded:', findings.length);
                     }}
                   />
@@ -666,21 +764,21 @@ export function RequestDetailsDrawer({
           </Paper>
 
           {/* Epic 5: Comment Threads (US-050) */}
-          <RoleGuard 
+          <RoleGuard
             roles={['admin', 'legal_reviewer', 'staff']}
             showAccessDenied={true}
-            accessDeniedMessage="Legal review and comment features require staff access or above."
+            accessDeniedMessage='Legal review and comment features require staff access or above.'
           >
             <Paper elevation={1} sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant='h6' gutterBottom>
                 Legal Review & Comments
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
                 Communicate with legal reviewers about changes and approvals
               </Typography>
               <CommentThreadComponent
                 recordId={request.id!}
-                fileName="main_document"
+                fileName='main_document'
                 onThreadCreated={(thread: CommentThread) => {
                   console.log('New comment thread created:', thread);
                 }}
@@ -692,16 +790,16 @@ export function RequestDetailsDrawer({
           </RoleGuard>
 
           {/* Epic 5: Package Approval (US-051) */}
-          <RoleGuard 
+          <RoleGuard
             permissions={['approve_request', 'final_approval']}
             showAccessDenied={true}
-            accessDeniedMessage="Package approval features require approval permissions."
+            accessDeniedMessage='Package approval features require approval permissions.'
           >
             <Paper elevation={1} sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant='h6' gutterBottom>
                 Package Approval
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
                 Manage package-level approvals for final delivery
               </Typography>
               <PackageApprovalComponent
@@ -727,9 +825,9 @@ export function RequestDetailsDrawer({
                 mb: 2,
               }}
             >
-              <Typography variant="h6">Internal Notes</Typography>
+              <Typography variant='h6'>Internal Notes</Typography>
               <StaffButton
-                size="small"
+                size='small'
                 startIcon={<AssignmentIcon />}
                 onClick={handleNoteAdd}
                 style={{ display: addingNote ? 'none' : 'flex' }}
@@ -744,14 +842,14 @@ export function RequestDetailsDrawer({
                   fullWidth
                   multiline
                   rows={3}
-                  placeholder="Add an internal note about this request..."
+                  placeholder='Add an internal note about this request...'
                   value={newNote}
                   onChange={e => setNewNote(e.target.value)}
                 />
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <StaffButton
-                    variant="contained"
-                    size="small"
+                    variant='contained'
+                    size='small'
                     startIcon={<SaveIcon />}
                     onClick={handleNoteSave}
                     disabled={!newNote.trim()}
@@ -759,8 +857,8 @@ export function RequestDetailsDrawer({
                     Add Note
                   </StaffButton>
                   <Button
-                    variant="outlined"
-                    size="small"
+                    variant='outlined'
+                    size='small'
                     onClick={handleNoteCancel}
                   >
                     Cancel
@@ -769,7 +867,7 @@ export function RequestDetailsDrawer({
               </Stack>
             )}
 
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant='body2' color='text.secondary'>
               No internal notes yet
             </Typography>
           </Paper>
@@ -778,13 +876,13 @@ export function RequestDetailsDrawer({
           <Paper elevation={1} sx={{ p: 3 }}>
             <AuditPanel
               requestId={request.id}
-              title="Request Audit Log"
+              title='Request Audit Log'
               maxHeight={400}
             />
           </Paper>
         </Stack>
       </Box>
-      
+
       {/* Package Builder Dialog */}
       {request && (
         <PackageBuilder
@@ -798,7 +896,7 @@ export function RequestDetailsDrawer({
             department: request.department,
             submittedAt: request.submittedAt,
           }}
-          onPackageBuilt={(packageId) => {
+          onPackageBuilt={packageId => {
             console.log('Package built:', packageId);
             setShowPackageBuilder(false);
           }}

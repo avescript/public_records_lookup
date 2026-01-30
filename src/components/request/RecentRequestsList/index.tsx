@@ -53,26 +53,26 @@ export const RecentRequestsList = () => {
         <ListItem key={request.id} divider>
           <ListItemText
             primary={
-              <Typography variant="subtitle1" component="div">
+              <Typography variant='subtitle1' component='div'>
                 {request.title}
               </Typography>
             }
             secondary={
               <>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant='body2' color='text.secondary'>
                   {request.department} - Submitted: {request.submittedDate}
                 </Typography>
                 <Chip
                   label={request.status}
                   color={getStatusColor(request.status)}
-                  size="small"
+                  size='small'
                   sx={{ mt: 1 }}
                 />
               </>
             }
           />
           <ListItemSecondaryAction>
-            <IconButton edge="end" aria-label="view details">
+            <IconButton edge='end' aria-label='view details'>
               <VisibilityIcon />
             </IconButton>
           </ListItemSecondaryAction>

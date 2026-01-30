@@ -1,11 +1,11 @@
 /**
  * BigQuery Export Service for Public Records AI Assistant
- * 
+ *
  * Provides export functionality for audit data, events, deliveries, and errors
  * with BigQuery-compatible schema and mock exporter functionality.
  */
 
-import { AuditEvent, AuditFilter,auditService } from './auditService';
+import { AuditEvent, AuditFilter, auditService } from './auditService';
 
 // BigQuery Schema Definitions
 export interface BigQueryEvent {
@@ -120,15 +120,19 @@ class BigQueryExportService {
   /**
    * Export delivery data to BigQuery format
    */
-  async exportDeliveries(filter: { 
-    startDate?: string;
-    endDate?: string;
-    status?: string[];
-  } = {}): Promise<BigQueryDelivery[]> {
+  async exportDeliveries(
+    filter: {
+      startDate?: string;
+      endDate?: string;
+      status?: string[];
+    } = {}
+  ): Promise<BigQueryDelivery[]> {
     try {
       // Mock delivery data - in production this would come from delivery service
       const deliveries = this.generateMockDeliveries(filter);
-      return deliveries.map(delivery => this.convertDeliveryToBigQuery(delivery));
+      return deliveries.map(delivery =>
+        this.convertDeliveryToBigQuery(delivery)
+      );
     } catch (error) {
       console.error('Failed to export deliveries:', error);
       throw new Error('Failed to export deliveries for BigQuery');
@@ -138,12 +142,14 @@ class BigQueryExportService {
   /**
    * Export error data to BigQuery format
    */
-  async exportErrors(filter: {
-    startDate?: string;
-    endDate?: string;
-    severity?: string[];
-    resolved?: boolean;
-  } = {}): Promise<BigQueryError[]> {
+  async exportErrors(
+    filter: {
+      startDate?: string;
+      endDate?: string;
+      severity?: string[];
+      resolved?: boolean;
+    } = {}
+  ): Promise<BigQueryError[]> {
     try {
       // Mock error data - in production this would come from error tracking service
       const errors = this.generateMockErrors(filter);
@@ -157,11 +163,13 @@ class BigQueryExportService {
   /**
    * Export performance metrics to BigQuery format
    */
-  async exportMetrics(filter: {
-    startDate?: string;
-    endDate?: string;
-    services?: string[];
-  } = {}): Promise<BigQueryMetrics[]> {
+  async exportMetrics(
+    filter: {
+      startDate?: string;
+      endDate?: string;
+      services?: string[];
+    } = {}
+  ): Promise<BigQueryMetrics[]> {
     try {
       // Mock metrics data - in production this would come from monitoring service
       const metrics = this.generateMockMetrics(filter);
@@ -175,11 +183,13 @@ class BigQueryExportService {
   /**
    * Create a complete export of all data types
    */
-  async createFullExport(filter: {
-    startDate?: string;
-    endDate?: string;
-    format?: 'json' | 'csv' | 'newline_delimited_json';
-  } = {}): Promise<ExportSummary> {
+  async createFullExport(
+    filter: {
+      startDate?: string;
+      endDate?: string;
+      format?: 'json' | 'csv' | 'newline_delimited_json';
+    } = {}
+  ): Promise<ExportSummary> {
     try {
       const exportId = `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const format = filter.format || 'json';
@@ -215,10 +225,17 @@ class BigQueryExportService {
         errors_count: errors.length,
         metrics_count: metrics.length,
         time_range: {
-          start: filter.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          start:
+            filter.startDate ||
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
           end: filter.endDate || new Date().toISOString(),
         },
-        export_size_bytes: this.calculateExportSize({ events, deliveries, errors, metrics }),
+        export_size_bytes: this.calculateExportSize({
+          events,
+          deliveries,
+          errors,
+          metrics,
+        }),
         export_format: format,
       };
 
@@ -253,17 +270,20 @@ class BigQueryExportService {
 
       // Create download files
       if (format === 'json') {
-        this.downloadAsJSON({
-          events,
-          deliveries,
-          errors,
-          metrics,
-          export_metadata: {
-            export_id: exportId,
-            timestamp: new Date().toISOString(),
-            dataset_name: this.DATASET_NAME,
+        this.downloadAsJSON(
+          {
+            events,
+            deliveries,
+            errors,
+            metrics,
+            export_metadata: {
+              export_id: exportId,
+              timestamp: new Date().toISOString(),
+              dataset_name: this.DATASET_NAME,
+            },
           },
-        }, `bigquery-export-${exportId}.json`);
+          `bigquery-export-${exportId}.json`
+        );
       } else if (format === 'csv') {
         // Download separate CSV files for each table
         this.downloadAsCSV(events, `events-${exportId}.csv`);
@@ -401,7 +421,7 @@ class BigQueryExportService {
         GROUP BY date
         ORDER BY date DESC
       `,
-      
+
       backlog_trend: `
         SELECT 
           DATE(timestamp) as date,
@@ -413,7 +433,7 @@ class BigQueryExportService {
         GROUP BY date, service
         ORDER BY date DESC, service
       `,
-      
+
       sla_breaches: `
         SELECT 
           DATE(timestamp) as date,
@@ -429,7 +449,7 @@ class BigQueryExportService {
         GROUP BY date
         ORDER BY date DESC
       `,
-      
+
       delivery_success_rate: `
         SELECT 
           DATE(sent_timestamp) as date,
@@ -445,7 +465,7 @@ class BigQueryExportService {
         GROUP BY date, delivery_method
         ORDER BY date DESC, delivery_method
       `,
-      
+
       error_analysis: `
         SELECT 
           DATE(timestamp) as date,
@@ -548,30 +568,39 @@ class BigQueryExportService {
     // Generate mock delivery data
     const deliveries = [];
     const now = new Date();
-    
+
     for (let i = 0; i < 50; i++) {
-      const createdAt = new Date(now.getTime() - (i * 24 * 60 * 60 * 1000));
-      const sentAt = new Date(createdAt.getTime() + (2 * 60 * 60 * 1000));
-      const deliveredAt = Math.random() > 0.1 ? new Date(sentAt.getTime() + (30 * 60 * 1000)) : null;
-      
+      const createdAt = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+      const sentAt = new Date(createdAt.getTime() + 2 * 60 * 60 * 1000);
+      const deliveredAt =
+        Math.random() > 0.1
+          ? new Date(sentAt.getTime() + 30 * 60 * 1000)
+          : null;
+
       deliveries.push({
         id: `delivery_${i + 1}`,
         requestId: `req_${i + 1}`,
         packageId: `pkg_${i + 1}`,
         recipientEmail: `user${i + 1}@example.com`,
         method: Math.random() > 0.5 ? 'email' : 'portal',
-        status: deliveredAt ? 'delivered' : (Math.random() > 0.8 ? 'failed' : 'sent'),
+        status: deliveredAt
+          ? 'delivered'
+          : Math.random() > 0.8
+            ? 'failed'
+            : 'sent',
         createdAt: createdAt.toISOString(),
         sentAt: sentAt.toISOString(),
         deliveredAt: deliveredAt?.toISOString(),
-        failedAt: !deliveredAt && Math.random() > 0.8 ? sentAt.toISOString() : null,
-        failureReason: !deliveredAt && Math.random() > 0.8 ? 'Email bounced' : null,
+        failedAt:
+          !deliveredAt && Math.random() > 0.8 ? sentAt.toISOString() : null,
+        failureReason:
+          !deliveredAt && Math.random() > 0.8 ? 'Email bounced' : null,
         fileCount: Math.floor(Math.random() * 10) + 1,
         sizeBytes: Math.floor(Math.random() * 50000000) + 1000000, // 1MB to 50MB
         trackingNumber: `TRK${String(i + 1).padStart(6, '0')}`,
       });
     }
-    
+
     return deliveries;
   }
 
@@ -579,13 +608,24 @@ class BigQueryExportService {
     // Generate mock error data
     const errors = [];
     const now = new Date();
-    const errorTypes = ['validation', 'processing', 'delivery', 'system', 'security'];
-    const services = ['RequestService', 'AIMatchingService', 'PackageService', 'DeliveryService'];
-    
+    const errorTypes = [
+      'validation',
+      'processing',
+      'delivery',
+      'system',
+      'security',
+    ];
+    const services = [
+      'RequestService',
+      'AIMatchingService',
+      'PackageService',
+      'DeliveryService',
+    ];
+
     for (let i = 0; i < 25; i++) {
-      const timestamp = new Date(now.getTime() - (i * 60 * 60 * 1000));
+      const timestamp = new Date(now.getTime() - i * 60 * 60 * 1000);
       const resolved = Math.random() > 0.3;
-      
+
       errors.push({
         id: `error_${i + 1}`,
         timestamp: timestamp.toISOString(),
@@ -599,12 +639,16 @@ class BigQueryExportService {
         sessionId: `session_${i + 1}`,
         url: `/api/endpoint${i + 1}`,
         userAgent: 'Mozilla/5.0 (Test Browser)',
-        severity: ['low', 'medium', 'high', 'critical'][Math.floor(Math.random() * 4)],
+        severity: ['low', 'medium', 'high', 'critical'][
+          Math.floor(Math.random() * 4)
+        ],
         resolved,
-        resolvedAt: resolved ? new Date(timestamp.getTime() + (60 * 60 * 1000)).toISOString() : null,
+        resolvedAt: resolved
+          ? new Date(timestamp.getTime() + 60 * 60 * 1000).toISOString()
+          : null,
       });
     }
-    
+
     return errors;
   }
 
@@ -620,10 +664,10 @@ class BigQueryExportService {
       'delivery_success_rate',
       'user_satisfaction_score',
     ];
-    
+
     for (let i = 0; i < 100; i++) {
-      const timestamp = new Date(now.getTime() - (i * 30 * 60 * 1000)); // Every 30 minutes
-      
+      const timestamp = new Date(now.getTime() - i * 30 * 60 * 1000); // Every 30 minutes
+
       metrics.push({
         id: `metric_${i + 1}`,
         timestamp: timestamp.toISOString(),
@@ -639,7 +683,7 @@ class BigQueryExportService {
         service: 'MetricsService',
       });
     }
-    
+
     return metrics;
   }
 
@@ -658,12 +702,12 @@ class BigQueryExportService {
       const stored = localStorage.getItem(this.EXPORT_STORAGE_KEY);
       const exports = stored ? JSON.parse(stored) : [];
       exports.push(summary);
-      
+
       // Keep only last 100 exports
       if (exports.length > 100) {
         exports.splice(0, exports.length - 100);
       }
-      
+
       localStorage.setItem(this.EXPORT_STORAGE_KEY, JSON.stringify(exports));
     } catch (error) {
       console.warn('Failed to save export record:', error);
@@ -679,20 +723,22 @@ class BigQueryExportService {
 
   private downloadAsCSV(data: any[], filename: string): void {
     if (data.length === 0) return;
-    
+
     const headers = Object.keys(data[0]);
     const csvContent = [
       headers.join(','),
-      ...data.map(row => 
-        headers.map(header => {
-          const value = row[header];
-          return typeof value === 'string' && value.includes(',') 
-            ? `"${value.replace(/"/g, '""')}"` 
-            : value;
-        }).join(',')
+      ...data.map(row =>
+        headers
+          .map(header => {
+            const value = row[header];
+            return typeof value === 'string' && value.includes(',')
+              ? `"${value.replace(/"/g, '""')}"`
+              : value;
+          })
+          .join(',')
       ),
     ].join('\n');
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv' });
     this.downloadBlob(blob, filename);
   }

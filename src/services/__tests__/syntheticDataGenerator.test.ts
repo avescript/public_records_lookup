@@ -4,8 +4,17 @@
  * Comprehensive test suite for synthetic data generation and validation
  */
 
-import { DOCUMENT_TEMPLATES, REQUEST_TEMPLATES, SYNTHETIC_AGENCIES, SYNTHETIC_PERSONAS } from '../../data/syntheticDataTemplates';
-import SyntheticDataGenerator, { GeneratedDocument, GeneratedRequest, SyntheticDataSet } from '../syntheticDataGenerator';
+import {
+  DOCUMENT_TEMPLATES,
+  REQUEST_TEMPLATES,
+  SYNTHETIC_AGENCIES,
+  SYNTHETIC_PERSONAS,
+} from '../../data/syntheticDataTemplates';
+import SyntheticDataGenerator, {
+  GeneratedDocument,
+  GeneratedRequest,
+  SyntheticDataSet,
+} from '../syntheticDataGenerator';
 
 describe('SyntheticDataGenerator', () => {
   let generator: SyntheticDataGenerator;
@@ -49,7 +58,7 @@ describe('SyntheticDataGenerator', () => {
       };
 
       const dataset = generator.generateDataset(options);
-      
+
       expect(dataset.requests).toHaveLength(50);
     });
 
@@ -62,7 +71,7 @@ describe('SyntheticDataGenerator', () => {
       };
 
       const dataset = generator.generateDataset(options);
-      
+
       // Should have approximately documentsPerAgency * number of agencies
       const expectedDocuments = 8 * SYNTHETIC_AGENCIES.length;
       expect(dataset.documents).toHaveLength(expectedDocuments);
@@ -77,19 +86,20 @@ describe('SyntheticDataGenerator', () => {
       };
 
       const dataset = generator.generateDataset(options);
-      
+
       // Should have more than the base number of requests due to edge cases
       expect(dataset.requests.length).toBeGreaterThan(10);
-      
+
       // Check for edge case test scenarios
-      const edgeCaseRequests = dataset.requests.filter(r => 
-        r.testScenario?.includes('test') || 
-        r.testScenario?.includes('edge') ||
-        r.testScenario?.includes('broad') ||
-        r.testScenario?.includes('no_matches') ||
-        r.testScenario?.includes('high_sensitivity')
+      const edgeCaseRequests = dataset.requests.filter(
+        r =>
+          r.testScenario?.includes('test') ||
+          r.testScenario?.includes('edge') ||
+          r.testScenario?.includes('broad') ||
+          r.testScenario?.includes('no_matches') ||
+          r.testScenario?.includes('high_sensitivity')
       );
-      
+
       expect(edgeCaseRequests.length).toBeGreaterThan(0);
     });
 
@@ -102,15 +112,15 @@ describe('SyntheticDataGenerator', () => {
       };
 
       const dataset = generator.generateDataset(options);
-      
+
       // Should have more requests due to performance test data
       expect(dataset.requests.length).toBeGreaterThan(5);
-      
+
       // Check for performance test scenarios
-      const perfTestRequests = dataset.requests.filter(r => 
+      const perfTestRequests = dataset.requests.filter(r =>
         r.testScenario?.includes('performance')
       );
-      
+
       expect(perfTestRequests.length).toBeGreaterThan(0);
     });
   });
@@ -129,21 +139,21 @@ describe('SyntheticDataGenerator', () => {
         expect(request.title).toBeDefined();
         expect(typeof request.title).toBe('string');
         expect(request.title.length).toBeGreaterThan(0);
-        
+
         expect(request.department).toBeDefined();
         expect(typeof request.department).toBe('string');
-        
+
         expect(request.description).toBeDefined();
         expect(typeof request.description).toBe('string');
         expect(request.description.length).toBeGreaterThan(10);
-        
+
         expect(request.contactEmail).toBeDefined();
         expect(request.contactEmail).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
-        
+
         expect(request.dateRange).toBeDefined();
         expect(request.dateRange.startDate).toBeDefined();
         expect(request.dateRange.endDate).toBeDefined();
-        
+
         // Synthetic data specific fields
         expect(['simple', 'medium', 'complex']).toContain(request.complexity);
         expect(request.persona).toBeDefined();
@@ -163,12 +173,12 @@ describe('SyntheticDataGenerator', () => {
 
       const agencyIds = SYNTHETIC_AGENCIES.map(a => a.id);
       const requestAgencies = dataset.requests.map(r => r.agency.id);
-      
+
       // Each agency should have at least one request
       agencyIds.forEach(agencyId => {
         expect(requestAgencies).toContain(agencyId);
       });
-      
+
       // Check analytics
       agencyIds.forEach(agencyId => {
         expect(dataset.analytics.requestsByAgency[agencyId]).toBeGreaterThan(0);
@@ -184,7 +194,7 @@ describe('SyntheticDataGenerator', () => {
       });
 
       const personaTypes = SYNTHETIC_PERSONAS.map(p => p.type);
-      
+
       dataset.requests.forEach(request => {
         expect(personaTypes).toContain(request.persona.type);
         expect(request.contactEmail).toBe(request.persona.email);
@@ -206,31 +216,35 @@ describe('SyntheticDataGenerator', () => {
         expect(document.id).toBeDefined();
         expect(typeof document.id).toBe('string');
         expect(document.id.startsWith('doc-synth-')).toBe(true);
-        
+
         expect(document.title).toBeDefined();
         expect(typeof document.title).toBe('string');
         expect(document.title.length).toBeGreaterThan(0);
-        
+
         expect(document.description).toBeDefined();
         expect(typeof document.description).toBe('string');
         expect(document.description.length).toBeGreaterThan(10);
-        
+
         expect(document.source).toBeDefined();
         expect(document.recordType).toBeDefined();
         expect(document.agency).toBeDefined();
         expect(document.dateCreated).toBeDefined();
-        
+
         expect(typeof document.relevanceScore).toBe('number');
         expect(document.relevanceScore).toBeGreaterThanOrEqual(0);
         expect(document.relevanceScore).toBeLessThanOrEqual(1);
-        
+
         expect(['high', 'medium', 'low']).toContain(document.confidence);
         expect(Array.isArray(document.keyPhrases)).toBe(true);
-        
+
         // Synthetic metadata
         expect(document.syntheticMetadata).toBeDefined();
-        expect(['pdf', 'email', 'spreadsheet', 'image', 'form']).toContain(document.syntheticMetadata.documentType);
-        expect(['public', 'standard', 'restricted', 'confidential']).toContain(document.syntheticMetadata.classification);
+        expect(['pdf', 'email', 'spreadsheet', 'image', 'form']).toContain(
+          document.syntheticMetadata.documentType
+        );
+        expect(['public', 'standard', 'restricted', 'confidential']).toContain(
+          document.syntheticMetadata.classification
+        );
         expect(Array.isArray(document.syntheticMetadata.piiTypes)).toBe(true);
         expect(typeof document.syntheticMetadata.realismScore).toBe('number');
       });
@@ -244,9 +258,13 @@ describe('SyntheticDataGenerator', () => {
         includePerformanceData: false,
       });
 
-      const documentTypes = new Set(dataset.documents.map(d => d.syntheticMetadata.documentType));
-      const classifications = new Set(dataset.documents.map(d => d.syntheticMetadata.classification));
-      
+      const documentTypes = new Set(
+        dataset.documents.map(d => d.syntheticMetadata.documentType)
+      );
+      const classifications = new Set(
+        dataset.documents.map(d => d.syntheticMetadata.classification)
+      );
+
       // Should have multiple document types and classifications
       expect(documentTypes.size).toBeGreaterThan(1);
       expect(classifications.size).toBeGreaterThan(1);
@@ -262,11 +280,13 @@ describe('SyntheticDataGenerator', () => {
 
       dataset.documents.forEach(document => {
         expect(document.metadata.fileSize).toBeDefined();
-        expect(document.metadata.fileSize).toMatch(/^\d+(\.\d+)?\s*(KB|MB|GB)$/);
-        
+        expect(document.metadata.fileSize).toMatch(
+          /^\d+(\.\d+)?\s*(KB|MB|GB)$/
+        );
+
         expect(typeof document.metadata.pageCount).toBe('number');
         expect(document.metadata.pageCount).toBeGreaterThan(0);
-        
+
         expect(document.metadata.lastModified).toBeDefined();
         expect(document.metadata.classification).toBeDefined();
       });
@@ -287,15 +307,15 @@ describe('SyntheticDataGenerator', () => {
           request.expectedMatches.forEach(docId => {
             const document = dataset.documents.find(d => d.id === docId);
             expect(document).toBeDefined();
-            
+
             if (document) {
               // Documents should be from the same or related agency
               const requestAgency = request.agency.id;
               const documentAgency = document.template.agency;
-              
+
               // Allow some cross-agency matches for realistic scenarios
-              const isRealistic = documentAgency === requestAgency || 
-                                Math.random() > 0.8; // Allow some cross-agency matches
+              const isRealistic =
+                documentAgency === requestAgency || Math.random() > 0.8; // Allow some cross-agency matches
               expect(isRealistic).toBe(true);
             }
           });
@@ -313,7 +333,7 @@ describe('SyntheticDataGenerator', () => {
 
       const documentIds = dataset.documents.map(d => d.id);
       const uniqueIds = new Set(documentIds);
-      
+
       expect(uniqueIds.size).toBe(documentIds.length);
     });
 
@@ -325,16 +345,21 @@ describe('SyntheticDataGenerator', () => {
         includePerformanceData: false,
       });
 
-      const complexityCounts = dataset.requests.reduce((acc, req) => {
-        acc[req.complexity] = (acc[req.complexity] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+      const complexityCounts = dataset.requests.reduce(
+        (acc, req) => {
+          acc[req.complexity] = (acc[req.complexity] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
 
       // Should have a mix of complexity levels
       expect(Object.keys(complexityCounts).length).toBeGreaterThan(1);
-      
+
       // Analytics should match actual counts
-      expect(dataset.analytics.complexityDistribution).toEqual(complexityCounts);
+      expect(dataset.analytics.complexityDistribution).toEqual(
+        complexityCounts
+      );
       expect(dataset.metadata.complexity).toEqual(complexityCounts);
     });
 
@@ -347,27 +372,41 @@ describe('SyntheticDataGenerator', () => {
       });
 
       // Verify analytics match actual data
-      const actualRequestsByAgency = dataset.requests.reduce((acc, req) => {
-        acc[req.agency.id] = (acc[req.agency.id] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-      
-      expect(dataset.analytics.requestsByAgency).toEqual(actualRequestsByAgency);
+      const actualRequestsByAgency = dataset.requests.reduce(
+        (acc, req) => {
+          acc[req.agency.id] = (acc[req.agency.id] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
 
-      const actualDocumentsByAgency = dataset.documents.reduce((acc, doc) => {
-        acc[doc.template.agency] = (acc[doc.template.agency] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-      
-      expect(dataset.analytics.documentsByAgency).toEqual(actualDocumentsByAgency);
+      expect(dataset.analytics.requestsByAgency).toEqual(
+        actualRequestsByAgency
+      );
+
+      const actualDocumentsByAgency = dataset.documents.reduce(
+        (acc, doc) => {
+          acc[doc.template.agency] = (acc[doc.template.agency] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
+
+      expect(dataset.analytics.documentsByAgency).toEqual(
+        actualDocumentsByAgency
+      );
 
       // Average expected matches should be calculated correctly
-      const totalMatches = dataset.requests.reduce((sum, req) => 
-        sum + (req.expectedMatches?.length || 0), 0
+      const totalMatches = dataset.requests.reduce(
+        (sum, req) => sum + (req.expectedMatches?.length || 0),
+        0
       );
       const expectedAvg = totalMatches / dataset.requests.length;
-      
-      expect(dataset.analytics.averageExpectedMatches).toBeCloseTo(expectedAvg, 2);
+
+      expect(dataset.analytics.averageExpectedMatches).toBeCloseTo(
+        expectedAvg,
+        2
+      );
     });
   });
 
@@ -406,25 +445,27 @@ describe('SyntheticDataGenerator', () => {
   describe('Performance and Scale', () => {
     it('should generate large datasets efficiently', () => {
       const startTime = Date.now();
-      
+
       const dataset = generator.generateDataset({
         requestCount: 100,
         documentsPerAgency: 50,
         includeEdgeCases: true,
         includePerformanceData: true,
       });
-      
+
       const endTime = Date.now();
       const generationTime = endTime - startTime;
-      
+
       // Should generate within reasonable time (less than 5 seconds)
       expect(generationTime).toBeLessThan(5000);
-      
+
       // Should have generated the expected volume
       expect(dataset.requests.length).toBeGreaterThan(100);
       expect(dataset.documents.length).toBe(50 * SYNTHETIC_AGENCIES.length);
-      
-      console.log(`Generated ${dataset.requests.length} requests and ${dataset.documents.length} documents in ${generationTime}ms`);
+
+      console.log(
+        `Generated ${dataset.requests.length} requests and ${dataset.documents.length} documents in ${generationTime}ms`
+      );
     });
 
     it('should handle edge cases gracefully', () => {
@@ -435,10 +476,10 @@ describe('SyntheticDataGenerator', () => {
         includeEdgeCases: false,
         includePerformanceData: false,
       });
-      
+
       expect(minimalDataset.requests.length).toBeGreaterThanOrEqual(1);
       expect(minimalDataset.documents.length).toBe(SYNTHETIC_AGENCIES.length);
-      
+
       // Test with zero requests (should still generate documents)
       const docsOnlyDataset = generator.generateDataset({
         requestCount: 0,
@@ -446,8 +487,10 @@ describe('SyntheticDataGenerator', () => {
         includeEdgeCases: false,
         includePerformanceData: false,
       });
-      
-      expect(docsOnlyDataset.documents.length).toBe(5 * SYNTHETIC_AGENCIES.length);
+
+      expect(docsOnlyDataset.documents.length).toBe(
+        5 * SYNTHETIC_AGENCIES.length
+      );
     });
   });
 
@@ -463,17 +506,19 @@ describe('SyntheticDataGenerator', () => {
       dataset.requests.forEach(request => {
         const startDate = new Date(request.dateRange.startDate);
         const endDate = new Date(request.dateRange.endDate);
-        
+
         expect(startDate).toBeInstanceOf(Date);
         expect(endDate).toBeInstanceOf(Date);
         expect(startDate.getTime()).toBeLessThanOrEqual(endDate.getTime());
-        
+
         // Dates should be within reasonable range (not too far in past/future)
         const now = new Date();
         const twoYearsAgo = new Date(now.getFullYear() - 2, 0, 1);
         const oneYearFromNow = new Date(now.getFullYear() + 1, 11, 31);
-        
-        expect(startDate.getTime()).toBeGreaterThanOrEqual(twoYearsAgo.getTime());
+
+        expect(startDate.getTime()).toBeGreaterThanOrEqual(
+          twoYearsAgo.getTime()
+        );
         expect(endDate.getTime()).toBeLessThanOrEqual(oneYearFromNow.getTime());
       });
     });
@@ -503,20 +548,24 @@ describe('SyntheticDataGenerator', () => {
         // Page count should be reasonable
         expect(document.metadata.pageCount).toBeGreaterThan(0);
         expect(document.metadata.pageCount).toBeLessThan(500);
-        
+
         // File size should match expected format
-        expect(document.metadata.fileSize).toMatch(/^\d+(\.\d+)?\s*(KB|MB|GB)$/);
-        
+        expect(document.metadata.fileSize).toMatch(
+          /^\d+(\.\d+)?\s*(KB|MB|GB)$/
+        );
+
         // Parse file size and ensure it's reasonable
-        const match = document.metadata.fileSize.match(/^(\d+(?:\.\d+)?)\s*(KB|MB|GB)$/);
+        const match = document.metadata.fileSize.match(
+          /^(\d+(?:\.\d+)?)\s*(KB|MB|GB)$/
+        );
         expect(match).not.toBeNull();
-        
+
         if (match) {
           const value = parseFloat(match[1]);
           const unit = match[2];
-          
+
           expect(value).toBeGreaterThan(0);
-          
+
           if (unit === 'KB') {
             expect(value).toBeLessThan(10000); // Less than 10MB
           } else if (unit === 'MB') {

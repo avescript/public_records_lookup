@@ -1,46 +1,50 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography, Alert } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 
-import { usePermissions, UserRole, Permission } from '../../hooks/usePermissions';
+import {
+  Permission,
+  usePermissions,
+  UserRole,
+} from '../../hooks/usePermissions';
 
 interface RoleGuardProps {
   /**
    * Required roles to access the content
    */
   roles?: UserRole[];
-  
+
   /**
    * Required permissions to access the content
    */
   permissions?: Permission[];
-  
+
   /**
    * Require ALL roles (default: false - requires ANY role)
    */
   requireAllRoles?: boolean;
-  
+
   /**
    * Require ALL permissions (default: false - requires ANY permission)
    */
   requireAllPermissions?: boolean;
-  
+
   /**
    * Content to show when access is granted
    */
   children: React.ReactNode;
-  
+
   /**
    * Content to show when access is denied (optional)
    */
   fallback?: React.ReactNode;
-  
+
   /**
    * Whether to show a default "Access Denied" message when access is denied and no fallback provided
    */
   showAccessDenied?: boolean;
-  
+
   /**
    * Custom access denied message
    */
@@ -58,15 +62,15 @@ export function RoleGuard({
   children,
   fallback,
   showAccessDenied = false,
-  accessDeniedMessage = "You don't have permission to access this feature.",
+  accessDeniedMessage = 'You don\'t have permission to access this feature.',
 }: RoleGuardProps) {
-  const { 
-    hasAnyRole, 
+  const {
+    hasAnyRole,
     hasRole,
-    hasPermission, 
-    hasAnyPermission, 
+    hasPermission,
+    hasAnyPermission,
     hasAllPermissions,
-    user 
+    user,
   } = usePermissions();
 
   // Check role access
@@ -96,22 +100,20 @@ export function RoleGuard({
     if (fallback) {
       return <>{fallback}</>;
     }
-    
+
     if (showAccessDenied) {
       return (
-        <Alert severity="warning" sx={{ my: 2 }}>
-          <Typography variant="body2">
-            {accessDeniedMessage}
-          </Typography>
+        <Alert severity='warning' sx={{ my: 2 }}>
+          <Typography variant='body2'>{accessDeniedMessage}</Typography>
           {user && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant='caption' color='text.secondary'>
               Current role: {user.role}
             </Typography>
           )}
         </Alert>
       );
     }
-    
+
     return null;
   }
 
@@ -121,7 +123,11 @@ export function RoleGuard({
 /**
  * Simplified role guard that only checks for specific roles
  */
-export function AdminOnly({ children, fallback, showAccessDenied = false }: {
+export function AdminOnly({
+  children,
+  fallback,
+  showAccessDenied = false,
+}: {
   children: React.ReactNode;
   fallback?: React.ReactNode;
   showAccessDenied?: boolean;
@@ -131,7 +137,7 @@ export function AdminOnly({ children, fallback, showAccessDenied = false }: {
       roles={['admin']}
       fallback={fallback}
       showAccessDenied={showAccessDenied}
-      accessDeniedMessage="This feature is only available to administrators."
+      accessDeniedMessage='This feature is only available to administrators.'
     >
       {children}
     </RoleGuard>
@@ -141,7 +147,11 @@ export function AdminOnly({ children, fallback, showAccessDenied = false }: {
 /**
  * Guard for staff-level access (staff or admin)
  */
-export function StaffOnly({ children, fallback, showAccessDenied = false }: {
+export function StaffOnly({
+  children,
+  fallback,
+  showAccessDenied = false,
+}: {
   children: React.ReactNode;
   fallback?: React.ReactNode;
   showAccessDenied?: boolean;
@@ -151,7 +161,7 @@ export function StaffOnly({ children, fallback, showAccessDenied = false }: {
       roles={['admin', 'staff']}
       fallback={fallback}
       showAccessDenied={showAccessDenied}
-      accessDeniedMessage="This feature is only available to staff members."
+      accessDeniedMessage='This feature is only available to staff members.'
     >
       {children}
     </RoleGuard>
@@ -161,7 +171,11 @@ export function StaffOnly({ children, fallback, showAccessDenied = false }: {
 /**
  * Guard for legal reviewer access (legal_reviewer or admin)
  */
-export function LegalOnly({ children, fallback, showAccessDenied = false }: {
+export function LegalOnly({
+  children,
+  fallback,
+  showAccessDenied = false,
+}: {
   children: React.ReactNode;
   fallback?: React.ReactNode;
   showAccessDenied?: boolean;
@@ -171,7 +185,7 @@ export function LegalOnly({ children, fallback, showAccessDenied = false }: {
       roles={['admin', 'legal_reviewer']}
       fallback={fallback}
       showAccessDenied={showAccessDenied}
-      accessDeniedMessage="This feature is only available to legal reviewers."
+      accessDeniedMessage='This feature is only available to legal reviewers.'
     >
       {children}
     </RoleGuard>
@@ -181,7 +195,11 @@ export function LegalOnly({ children, fallback, showAccessDenied = false }: {
 /**
  * Guard for features requiring approval permissions
  */
-export function ApprovalRequired({ children, fallback, showAccessDenied = false }: {
+export function ApprovalRequired({
+  children,
+  fallback,
+  showAccessDenied = false,
+}: {
   children: React.ReactNode;
   fallback?: React.ReactNode;
   showAccessDenied?: boolean;

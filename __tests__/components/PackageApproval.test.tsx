@@ -12,16 +12,28 @@ import type { PackageApproval } from '../../src/services/legalReviewService';
 
 // Mock the legal review service
 jest.mock('../../src/services/legalReviewService');
-const mockLegalReviewService = legalReviewService as jest.Mocked<typeof legalReviewService>;
+const mockLegalReviewService = legalReviewService as jest.Mocked<
+  typeof legalReviewService
+>;
 
 // Mock Material-UI components for cleaner testing
 jest.mock('@mui/material', () => ({
   ...jest.requireActual('@mui/material'),
-  Dialog: ({ open, children, onClose }: any) => 
-    open ? <div data-testid="dialog" onClick={onClose}>{children}</div> : null,
-  DialogTitle: ({ children }: any) => <div data-testid="dialog-title">{children}</div>,
-  DialogContent: ({ children }: any) => <div data-testid="dialog-content">{children}</div>,
-  DialogActions: ({ children }: any) => <div data-testid="dialog-actions">{children}</div>,
+  Dialog: ({ open, children, onClose }: any) =>
+    open ? (
+      <div data-testid='dialog' onClick={onClose}>
+        {children}
+      </div>
+    ) : null,
+  DialogTitle: ({ children }: any) => (
+    <div data-testid='dialog-title'>{children}</div>
+  ),
+  DialogContent: ({ children }: any) => (
+    <div data-testid='dialog-content'>{children}</div>
+  ),
+  DialogActions: ({ children }: any) => (
+    <div data-testid='dialog-actions'>{children}</div>
+  ),
 }));
 
 describe('PackageApproval Component', () => {
@@ -48,9 +60,15 @@ describe('PackageApproval Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue(mockPackageApprovals);
-    mockLegalReviewService.createPackageApproval.mockResolvedValue(mockPackageApproval);
-    mockLegalReviewService.submitPackageApproval.mockResolvedValue(mockPackageApproval);
+    mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue(
+      mockPackageApprovals
+    );
+    mockLegalReviewService.createPackageApproval.mockResolvedValue(
+      mockPackageApproval
+    );
+    mockLegalReviewService.submitPackageApproval.mockResolvedValue(
+      mockPackageApproval
+    );
     mockLegalReviewService.lockPackage.mockResolvedValue(mockPackageApproval);
   });
 
@@ -58,7 +76,7 @@ describe('PackageApproval Component', () => {
     it('should render package approval section', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -72,7 +90,7 @@ describe('PackageApproval Component', () => {
     it('should display package statistics', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -88,7 +106,7 @@ describe('PackageApproval Component', () => {
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -101,13 +119,15 @@ describe('PackageApproval Component', () => {
     it('should load package approvals on mount', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
 
       await waitFor(() => {
-        expect(mockLegalReviewService.getPackageApprovalsByRequest).toHaveBeenCalledWith('request-123');
+        expect(
+          mockLegalReviewService.getPackageApprovalsByRequest
+        ).toHaveBeenCalledWith('request-123');
       });
     });
   });
@@ -127,11 +147,13 @@ describe('PackageApproval Component', () => {
         updatedAt: '2024-01-15T11:00:00.000Z',
       };
 
-      mockLegalReviewService.createPackageApproval.mockResolvedValue(newPackage);
+      mockLegalReviewService.createPackageApproval.mockResolvedValue(
+        newPackage
+      );
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -140,10 +162,13 @@ describe('PackageApproval Component', () => {
       fireEvent.click(createButton);
 
       await waitFor(() => {
-        expect(mockLegalReviewService.createPackageApproval).toHaveBeenCalledWith(
-          'request-123',
-          ['record-1', 'record-2', 'record-3']
-        );
+        expect(
+          mockLegalReviewService.createPackageApproval
+        ).toHaveBeenCalledWith('request-123', [
+          'record-1',
+          'record-2',
+          'record-3',
+        ]);
       });
     });
 
@@ -154,7 +179,7 @@ describe('PackageApproval Component', () => {
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -162,16 +187,15 @@ describe('PackageApproval Component', () => {
       fireEvent.click(screen.getByText('Create Package'));
 
       await waitFor(() => {
-        expect(screen.getByText('Failed to create package')).toBeInTheDocument();
+        expect(
+          screen.getByText('Failed to create package')
+        ).toBeInTheDocument();
       });
     });
 
     it('should disable create button when records array is empty', () => {
       render(
-        <PackageApprovalComponent
-          requestId="request-123"
-          recordIds={[]}
-        />
+        <PackageApprovalComponent requestId='request-123' recordIds={[]} />
       );
 
       const createButton = screen.getByText('Create Package');
@@ -183,7 +207,7 @@ describe('PackageApproval Component', () => {
     it('should display pending status correctly', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -205,11 +229,13 @@ describe('PackageApproval Component', () => {
         approvedAt: '2024-01-15T12:00:00.000Z',
       };
 
-      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([approvedPackage]);
+      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([
+        approvedPackage,
+      ]);
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -230,18 +256,22 @@ describe('PackageApproval Component', () => {
         rejectedAt: '2024-01-15T12:00:00.000Z',
       };
 
-      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([rejectedPackage]);
+      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([
+        rejectedPackage,
+      ]);
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
 
       await waitFor(() => {
         expect(screen.getByText('Rejected')).toBeInTheDocument();
-        expect(screen.getByText('Contains sensitive information')).toBeInTheDocument();
+        expect(
+          screen.getByText('Contains sensitive information')
+        ).toBeInTheDocument();
         expect(screen.getByText('Mike Wilson')).toBeInTheDocument();
       });
     });
@@ -255,11 +285,13 @@ describe('PackageApproval Component', () => {
         comments: 'Please review page 3',
       };
 
-      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([changesPackage]);
+      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([
+        changesPackage,
+      ]);
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -276,7 +308,7 @@ describe('PackageApproval Component', () => {
     it('should open approval dialog when approve button clicked', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -298,11 +330,13 @@ describe('PackageApproval Component', () => {
         deliveryApproved: true,
       };
 
-      mockLegalReviewService.submitPackageApproval.mockResolvedValue(approvedPackage);
+      mockLegalReviewService.submitPackageApproval.mockResolvedValue(
+        approvedPackage
+      );
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -314,17 +348,23 @@ describe('PackageApproval Component', () => {
 
       // Fill approval form
       const reasonInput = screen.getByLabelText('Reason');
-      fireEvent.change(reasonInput, { target: { value: 'All documents reviewed and approved' } });
+      fireEvent.change(reasonInput, {
+        target: { value: 'All documents reviewed and approved' },
+      });
 
       const commentsInput = screen.getByLabelText('Comments');
-      fireEvent.change(commentsInput, { target: { value: 'Ready for delivery' } });
+      fireEvent.change(commentsInput, {
+        target: { value: 'Ready for delivery' },
+      });
 
       // Submit approval
       const submitButton = screen.getByText('Submit Approval');
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockLegalReviewService.submitPackageApproval).toHaveBeenCalledWith(
+        expect(
+          mockLegalReviewService.submitPackageApproval
+        ).toHaveBeenCalledWith(
           'package-1',
           'approved',
           'user-legal-001',
@@ -338,7 +378,7 @@ describe('PackageApproval Component', () => {
     it('should submit rejection with reason', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -350,17 +390,23 @@ describe('PackageApproval Component', () => {
 
       // Fill rejection form
       const reasonInput = screen.getByLabelText('Reason');
-      fireEvent.change(reasonInput, { target: { value: 'Contains sensitive information' } });
+      fireEvent.change(reasonInput, {
+        target: { value: 'Contains sensitive information' },
+      });
 
       const commentsInput = screen.getByLabelText('Comments');
-      fireEvent.change(commentsInput, { target: { value: 'Needs more redactions' } });
+      fireEvent.change(commentsInput, {
+        target: { value: 'Needs more redactions' },
+      });
 
       // Submit rejection
       const submitButton = screen.getByText('Submit Rejection');
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockLegalReviewService.submitPackageApproval).toHaveBeenCalledWith(
+        expect(
+          mockLegalReviewService.submitPackageApproval
+        ).toHaveBeenCalledWith(
           'package-1',
           'rejected',
           'user-legal-001',
@@ -374,7 +420,7 @@ describe('PackageApproval Component', () => {
     it('should request changes with details', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -386,17 +432,23 @@ describe('PackageApproval Component', () => {
 
       // Fill changes form
       const reasonInput = screen.getByLabelText('Reason');
-      fireEvent.change(reasonInput, { target: { value: 'Minor changes needed' } });
+      fireEvent.change(reasonInput, {
+        target: { value: 'Minor changes needed' },
+      });
 
       const commentsInput = screen.getByLabelText('Comments');
-      fireEvent.change(commentsInput, { target: { value: 'Please review page 3' } });
+      fireEvent.change(commentsInput, {
+        target: { value: 'Please review page 3' },
+      });
 
       // Submit changes request
       const submitButton = screen.getByText('Submit Changes');
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockLegalReviewService.submitPackageApproval).toHaveBeenCalledWith(
+        expect(
+          mockLegalReviewService.submitPackageApproval
+        ).toHaveBeenCalledWith(
           'package-1',
           'changes_requested',
           'user-legal-001',
@@ -410,7 +462,7 @@ describe('PackageApproval Component', () => {
     it('should validate required fields in approval forms', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -425,7 +477,9 @@ describe('PackageApproval Component', () => {
       fireEvent.click(submitButton);
 
       // Should not call service
-      expect(mockLegalReviewService.submitPackageApproval).not.toHaveBeenCalled();
+      expect(
+        mockLegalReviewService.submitPackageApproval
+      ).not.toHaveBeenCalled();
       expect(screen.getByText('Reason is required')).toBeInTheDocument();
     });
 
@@ -436,7 +490,7 @@ describe('PackageApproval Component', () => {
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -451,7 +505,9 @@ describe('PackageApproval Component', () => {
       fireEvent.click(screen.getByText('Submit Approval'));
 
       await waitFor(() => {
-        expect(screen.getByText('Failed to submit approval')).toBeInTheDocument();
+        expect(
+          screen.getByText('Failed to submit approval')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -465,11 +521,13 @@ describe('PackageApproval Component', () => {
         lockTimestamp: '2024-01-15T12:00:00.000Z',
       };
 
-      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([approvedPackage]);
+      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([
+        approvedPackage,
+      ]);
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -487,11 +545,13 @@ describe('PackageApproval Component', () => {
         isLocked: true,
       };
 
-      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([lockedPackage]);
+      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([
+        lockedPackage,
+      ]);
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -512,11 +572,13 @@ describe('PackageApproval Component', () => {
         deliveryApproved: true,
       };
 
-      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([deliveryApprovedPackage]);
+      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([
+        deliveryApprovedPackage,
+      ]);
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -531,7 +593,7 @@ describe('PackageApproval Component', () => {
     it('should display record count', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -544,7 +606,7 @@ describe('PackageApproval Component', () => {
     it('should show record IDs when expanded', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -564,7 +626,7 @@ describe('PackageApproval Component', () => {
     it('should display creation timestamp', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -583,11 +645,13 @@ describe('PackageApproval Component', () => {
         reviewerName: 'Sarah Johnson',
       };
 
-      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([approvedPackage]);
+      mockLegalReviewService.getPackageApprovalsByRequest.mockResolvedValue([
+        approvedPackage,
+      ]);
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -606,13 +670,15 @@ describe('PackageApproval Component', () => {
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
 
       await waitFor(() => {
-        expect(screen.getByText('Error loading package approvals')).toBeInTheDocument();
+        expect(
+          screen.getByText('Error loading package approvals')
+        ).toBeInTheDocument();
       });
     });
 
@@ -623,7 +689,7 @@ describe('PackageApproval Component', () => {
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -646,13 +712,13 @@ describe('PackageApproval Component', () => {
     it('should have proper ARIA labels', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
 
       expect(screen.getByLabelText('Package Approval')).toBeInTheDocument();
-      
+
       await waitFor(() => {
         expect(screen.getByLabelText('Package actions')).toBeInTheDocument();
       });
@@ -661,7 +727,7 @@ describe('PackageApproval Component', () => {
     it('should support keyboard navigation', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -676,7 +742,7 @@ describe('PackageApproval Component', () => {
     it('should have proper role attributes for interactive elements', async () => {
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -699,7 +765,7 @@ describe('PackageApproval Component', () => {
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -718,7 +784,7 @@ describe('PackageApproval Component', () => {
 
       render(
         <PackageApprovalComponent
-          requestId="request-123"
+          requestId='request-123'
           recordIds={['record-1', 'record-2', 'record-3']}
         />
       );
@@ -726,7 +792,7 @@ describe('PackageApproval Component', () => {
       await waitFor(() => {
         const approveButton = screen.getByText('Approve');
         const rejectButton = screen.getByText('Reject');
-        
+
         // Buttons should be vertically stacked on mobile
         expect(approveButton).toBeInTheDocument();
         expect(rejectButton).toBeInTheDocument();

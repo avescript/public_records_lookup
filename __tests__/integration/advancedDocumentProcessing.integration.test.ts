@@ -1,11 +1,14 @@
 /**
  * Integration Tests for Advanced Document Processing
- * 
+ *
  * Tests the core advanced document processing functionality
  * with minimal dependencies.
  */
 
-import { DocumentFileType, ProcessingStatus } from '../../src/services/advancedDocumentProcessingService';
+import {
+  DocumentFileType,
+  ProcessingStatus,
+} from '../../src/services/advancedDocumentProcessingService';
 
 // Mock File for testing
 global.File = class MockFile {
@@ -71,7 +74,8 @@ describe('Advanced Document Processing Integration', () => {
 
   describe('File Processing Workflow', () => {
     test('should handle text extraction from files', async () => {
-      const textContent = 'This is sample document content with potential PII data.';
+      const textContent =
+        'This is sample document content with potential PII data.';
       const file = new File([textContent], 'test.txt', { type: 'text/plain' });
 
       // Simulate file reading
@@ -79,7 +83,7 @@ describe('Advanced Document Processing Integration', () => {
       let extractedText = '';
 
       const readPromise = new Promise<string>((resolve, reject) => {
-        reader.onload = (e) => {
+        reader.onload = e => {
           resolve(e.target?.result as string);
         };
         reader.onerror = reject;
@@ -112,7 +116,7 @@ describe('Advanced Document Processing Integration', () => {
       const stages = [
         ProcessingStatus.PENDING,
         ProcessingStatus.PROCESSING,
-        ProcessingStatus.COMPLETED
+        ProcessingStatus.COMPLETED,
       ];
 
       expect(stages).toHaveLength(3);
@@ -127,7 +131,7 @@ describe('Advanced Document Processing Integration', () => {
       const inProgress = 2;
 
       const overallProgress = Math.round((completed / total) * 100);
-      
+
       expect(completed + failed + inProgress).toBe(total);
       expect(overallProgress).toBe(70);
     });
@@ -139,9 +143,9 @@ describe('Advanced Document Processing Integration', () => {
       const reader = new FileReader();
 
       const readPromise = new Promise((resolve, reject) => {
-        reader.onload = (e) => resolve(e.target?.result);
+        reader.onload = e => resolve(e.target?.result);
         reader.onerror = () => reject(new Error('File read error'));
-        
+
         // Simulate error
         setTimeout(() => {
           if (reader.onerror) {
@@ -155,15 +159,24 @@ describe('Advanced Document Processing Integration', () => {
 
     test('should validate file sizes', () => {
       const maxSize = 10 * 1024 * 1024; // 10MB
-      const smallFile = new File(['small content'], 'small.txt', { type: 'text/plain' });
-      
+      const smallFile = new File(['small content'], 'small.txt', {
+        type: 'text/plain',
+      });
+
       expect(smallFile.size).toBeLessThan(maxSize);
     });
 
     test('should validate file types', () => {
-      const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'text/plain'];
-      const file = new File(['content'], 'test.pdf', { type: 'application/pdf' });
-      
+      const allowedTypes = [
+        'application/pdf',
+        'image/png',
+        'image/jpeg',
+        'text/plain',
+      ];
+      const file = new File(['content'], 'test.pdf', {
+        type: 'application/pdf',
+      });
+
       expect(allowedTypes).toContain(file.type);
     });
   });
@@ -178,12 +191,17 @@ describe('Advanced Document Processing Integration', () => {
         { ext: 'gif', type: 'image/gif' },
         { ext: 'txt', type: 'text/plain' },
         { ext: 'doc', type: 'application/msword' },
-        { ext: 'docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
-        { ext: 'rtf', type: 'application/rtf' }
+        {
+          ext: 'docx',
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        },
+        { ext: 'rtf', type: 'application/rtf' },
       ];
 
       supportedFormats.forEach(format => {
-        const file = new File(['content'], `test.${format.ext}`, { type: format.type });
+        const file = new File(['content'], `test.${format.ext}`, {
+          type: format.type,
+        });
         expect(file.name.endsWith(format.ext)).toBe(true);
         expect(file.type).toBe(format.type);
       });
@@ -199,7 +217,9 @@ describe('Advanced Document Processing Integration', () => {
       });
 
       textFormats.forEach(type => {
-        expect(['text/', 'application/rtf'].some(prefix => type.includes(prefix))).toBe(true);
+        expect(
+          ['text/', 'application/rtf'].some(prefix => type.includes(prefix))
+        ).toBe(true);
       });
 
       documentFormats.forEach(type => {
@@ -213,7 +233,7 @@ describe('Advanced Document Processing Integration', () => {
       const maxConcurrent = 3;
       const totalFiles = 10;
       const batches = Math.ceil(totalFiles / maxConcurrent);
-      
+
       expect(batches).toBe(4);
       expect(maxConcurrent).toBeLessThanOrEqual(totalFiles);
     });
@@ -222,10 +242,11 @@ describe('Advanced Document Processing Integration', () => {
       const baseProcessingTime = 100; // ms per file
       const ocrMultiplier = 5;
       const piiDetectionTime = 50;
-      
+
       const textFileTime = baseProcessingTime + piiDetectionTime;
-      const imageFileTime = baseProcessingTime * ocrMultiplier + piiDetectionTime;
-      
+      const imageFileTime =
+        baseProcessingTime * ocrMultiplier + piiDetectionTime;
+
       expect(textFileTime).toBe(150);
       expect(imageFileTime).toBe(550);
     });
@@ -238,7 +259,7 @@ describe('Advanced Document Processing Integration', () => {
         enablePIIDetection: true,
         enableAgencyValidation: true,
         maxConcurrent: 3,
-        timeout: 30000
+        timeout: 30000,
       };
 
       expect(defaultConfig.maxConcurrent).toBe(3);
@@ -250,13 +271,13 @@ describe('Advanced Document Processing Integration', () => {
       const defaultConfig = {
         enableOCR: true,
         enablePIIDetection: true,
-        maxConcurrent: 3
+        maxConcurrent: 3,
       };
 
       const customConfig = {
         ...defaultConfig,
         enableOCR: false,
-        maxConcurrent: 5
+        maxConcurrent: 5,
       };
 
       expect(customConfig.enableOCR).toBe(false);
@@ -274,7 +295,7 @@ describe('Advanced Document Processing Integration', () => {
         status: ProcessingStatus.COMPLETED,
         extractedText: 'Sample text content',
         processingTime: 1250,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       expect(mockResult.id).toMatch(/^proc_\d+_[a-z0-9]+$/);
@@ -290,11 +311,11 @@ describe('Advanced Document Processing Integration', () => {
         fileSize: 2048,
         ocrConfidence: 0.92,
         piiCount: 3,
-        agencyRulesApplied: 2
+        agencyRulesApplied: 2,
       };
 
       const processingTime = metadata.endTime - metadata.startTime;
-      
+
       expect(processingTime).toBe(1500);
       expect(metadata.ocrConfidence).toBeGreaterThan(0.9);
       expect(metadata.piiCount).toBe(3);

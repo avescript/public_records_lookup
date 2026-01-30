@@ -10,7 +10,7 @@ const convertToDate = (timestamp: any): Date => {
     if (!timestamp) {
       return new Date();
     }
-    
+
     if (typeof timestamp.toDate === 'function') {
       return timestamp.toDate();
     } else if (timestamp instanceof Date) {
@@ -19,9 +19,17 @@ const convertToDate = (timestamp: any): Date => {
       return new Date(timestamp);
     } else if (typeof timestamp === 'string') {
       return new Date(timestamp);
-    } else if (timestamp && typeof timestamp === 'object' && timestamp.seconds) {
+    } else if (
+      timestamp &&
+      typeof timestamp === 'object' &&
+      timestamp.seconds
+    ) {
       return new Date(timestamp.seconds * 1000);
-    } else if (timestamp && typeof timestamp === 'object' && timestamp._isoString) {
+    } else if (
+      timestamp &&
+      typeof timestamp === 'object' &&
+      timestamp._isoString
+    ) {
       return new Date(timestamp._isoString);
     } else {
       return new Date(timestamp);
@@ -81,7 +89,7 @@ describe('Timestamp conversion', () => {
 
     const result = convertToDate(mockTimestamp);
     const formatted = format(result, 'MMM d, yyyy \'at\' h:mm a');
-    
+
     // Should not throw and should produce a reasonable format
     expect(formatted).toMatch(/Jan 15, 2024 at \d{1,2}:\d{2} [AP]M/);
   });

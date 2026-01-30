@@ -1,19 +1,20 @@
 /**
  * Agency Dashboard Component
  * Epic 9 Task 6: Agency Dashboard & Analytics
- * 
+ *
  * Real-time dashboard with interactive charts, KPIs, and agency performance metrics
  */
 
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
 import {
   agencyAnalyticsService,
   type AgencyMetrics,
-  type TimeRange,
   type DashboardConfig,
-  type PerformanceKPIs
+  type PerformanceKPIs,
+  type TimeRange,
 } from '../../services/agencyAnalyticsService';
 
 interface DashboardProps {
@@ -30,9 +31,11 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>({
     startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
     endDate: new Date().toISOString(),
-    granularity: 'day'
+    granularity: 'day',
   });
-  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(
+    null
+  );
 
   // Data Loading
   const loadDashboardData = useCallback(async () => {
@@ -43,14 +46,16 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
       const [metricsData, kpisData, configData] = await Promise.all([
         agencyAnalyticsService.getAgencyMetrics(agencyId, timeRange),
         agencyAnalyticsService.getRealTimeKPIs(agencyId),
-        agencyAnalyticsService.getDashboardConfig(agencyId)
+        agencyAnalyticsService.getDashboardConfig(agencyId),
       ]);
 
       setMetrics(metricsData);
       setKpis(kpisData);
       setConfig(configData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load dashboard data'
+      );
     } finally {
       setLoading(false);
     }
@@ -61,7 +66,10 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
     loadDashboardData();
 
     if (config?.refreshInterval) {
-      const interval = setInterval(loadDashboardData, config.refreshInterval * 1000);
+      const interval = setInterval(
+        loadDashboardData,
+        config.refreshInterval * 1000
+      );
       setRefreshInterval(interval);
 
       return () => {
@@ -111,14 +119,18 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
     setTimeRange({
       startDate: startDate.toISOString(),
       endDate: now.toISOString(),
-      granularity
+      granularity,
     });
   };
 
   // Export Handler
   const handleExport = async (format: 'csv' | 'json' | 'xlsx') => {
     try {
-      const blob = await agencyAnalyticsService.exportAnalytics(agencyId, timeRange, format);
+      const blob = await agencyAnalyticsService.exportAnalytics(
+        agencyId,
+        timeRange,
+        format
+      );
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -136,22 +148,30 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
   const systemHealthStatus = useMemo(() => {
     if (!metrics) return null;
     const health = metrics.systemHealth;
-    
+
     return {
-      color: health.overallHealth === 'healthy' ? 'text-green-600' :
-             health.overallHealth === 'warning' ? 'text-yellow-600' : 'text-red-600',
-      bgColor: health.overallHealth === 'healthy' ? 'bg-green-100' :
-               health.overallHealth === 'warning' ? 'bg-yellow-100' : 'bg-red-100',
-      status: health.overallHealth.toUpperCase()
+      color:
+        health.overallHealth === 'healthy'
+          ? 'text-green-600'
+          : health.overallHealth === 'warning'
+            ? 'text-yellow-600'
+            : 'text-red-600',
+      bgColor:
+        health.overallHealth === 'healthy'
+          ? 'bg-green-100'
+          : health.overallHealth === 'warning'
+            ? 'bg-yellow-100'
+            : 'bg-red-100',
+      status: health.overallHealth.toUpperCase(),
     };
   }, [metrics]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4'></div>
+          <p className='text-gray-600'>Loading dashboard...</p>
         </div>
       </div>
     );
@@ -159,13 +179,13 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 text-xl mb-4">⚠️ Error</div>
-          <p className="text-gray-600 mb-4">{error}</p>
+      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='text-red-600 text-xl mb-4'>⚠️ Error</div>
+          <p className='text-gray-600 mb-4'>{error}</p>
           <button
             onClick={loadDashboardData}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700'
           >
             Retry
           </button>
@@ -176,30 +196,34 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
 
   if (!metrics || !kpis) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-600">No data available</p>
+      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
+        <p className='text-gray-600'>No data available</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className='min-h-screen bg-gray-50 p-4'>
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex justify-between items-start">
+      <div className='mb-8'>
+        <div className='flex justify-between items-start'>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className='text-3xl font-bold text-gray-900 mb-2'>
               {metrics.agencyName} Dashboard
             </h1>
-            <p className="text-gray-600">
+            <p className='text-gray-600'>
               Real-time analytics and performance metrics
             </p>
           </div>
-          
+
           {/* System Health Indicator */}
           {systemHealthStatus && (
-            <div className={`px-4 py-2 rounded-lg ${systemHealthStatus.bgColor}`}>
-              <span className={`text-sm font-medium ${systemHealthStatus.color}`}>
+            <div
+              className={`px-4 py-2 rounded-lg ${systemHealthStatus.bgColor}`}
+            >
+              <span
+                className={`text-sm font-medium ${systemHealthStatus.color}`}
+              >
                 System: {systemHealthStatus.status}
               </span>
             </div>
@@ -208,17 +232,17 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
       </div>
 
       {/* Controls */}
-      <div className="mb-6 bg-white p-4 rounded-lg shadow-sm border">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className='mb-6 bg-white p-4 rounded-lg shadow-sm border'>
+        <div className='flex flex-wrap items-center justify-between gap-4'>
           {/* Time Range Quick Selectors */}
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600 mr-2">Time Range:</span>
-            {['24h', '7d', '30d', '90d'].map((range) => (
+          <div className='flex items-center space-x-2'>
+            <span className='text-sm text-gray-600 mr-2'>Time Range:</span>
+            {['24h', '7d', '30d', '90d'].map(range => (
               <button
                 key={range}
                 onClick={() => handleQuickTimeRange(range)}
-                className="px-3 py-1 text-sm border rounded-md hover:bg-gray-50 
-                         focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className='px-3 py-1 text-sm border rounded-md hover:bg-gray-50 
+                         focus:outline-none focus:ring-2 focus:ring-blue-500'
               >
                 {range}
               </button>
@@ -226,14 +250,14 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
           </div>
 
           {/* Export Options */}
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600 mr-2">Export:</span>
-            {['csv', 'json', 'xlsx'].map((format) => (
+          <div className='flex items-center space-x-2'>
+            <span className='text-sm text-gray-600 mr-2'>Export:</span>
+            {['csv', 'json', 'xlsx'].map(format => (
               <button
                 key={format}
                 onClick={() => handleExport(format as any)}
-                className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md 
-                         hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className='px-3 py-1 text-sm bg-blue-600 text-white rounded-md 
+                         hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
               >
                 {format.toUpperCase()}
               </button>
@@ -243,8 +267,8 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
           {/* Refresh Button */}
           <button
             onClick={loadDashboardData}
-            className="px-4 py-2 text-sm bg-gray-600 text-white rounded-md 
-                     hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            className='px-4 py-2 text-sm bg-gray-600 text-white rounded-md 
+                     hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500'
           >
             Refresh
           </button>
@@ -252,102 +276,118 @@ const AgencyDashboard: React.FC<DashboardProps> = ({ agencyId }) => {
       </div>
 
       {/* KPI Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
         <KPICard
-          title="Requests/Hour"
+          title='Requests/Hour'
           value={kpis.requestsPerHour}
-          unit=""
-          trend="up"
-          color="blue"
+          unit=''
+          trend='up'
+          color='blue'
         />
         <KPICard
-          title="System Availability"
+          title='System Availability'
           value={kpis.systemAvailability}
-          unit="%"
-          trend="stable"
-          color="green"
+          unit='%'
+          trend='stable'
+          color='green'
         />
         <KPICard
-          title="User Satisfaction"
+          title='User Satisfaction'
           value={kpis.userSatisfactionScore}
-          unit="/5"
-          trend="up"
-          color="purple"
+          unit='/5'
+          trend='up'
+          color='purple'
         />
         <KPICard
-          title="Cost Per Request"
+          title='Cost Per Request'
           value={kpis.costPerRequest}
-          unit="$"
-          trend="down"
-          color="orange"
+          unit='$'
+          trend='down'
+          color='orange'
         />
       </div>
 
       {/* Main Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
         {/* Request Volume Trend */}
-        <ChartCard title="Request Volume Trend">
-          <LineChart 
+        <ChartCard title='Request Volume Trend'>
+          <LineChart
             data={metrics.requestMetrics.requestVolumeTrend}
-            title="Requests Over Time"
+            title='Requests Over Time'
           />
         </ChartCard>
 
         {/* Processing Time Distribution */}
-        <ChartCard title="Processing Time Distribution">
-          <BarChart 
+        <ChartCard title='Processing Time Distribution'>
+          <BarChart
             data={metrics.requestMetrics.processingTimeDistribution}
-            title="Processing Time Ranges"
+            title='Processing Time Ranges'
           />
         </ChartCard>
 
         {/* Document Format Distribution */}
-        <ChartCard title="Document Formats">
-          <PieChart 
+        <ChartCard title='Document Formats'>
+          <PieChart
             data={metrics.documentMetrics.formatDistribution}
-            title="Document Types Processed"
+            title='Document Types Processed'
           />
         </ChartCard>
 
         {/* Cost Trend */}
-        <ChartCard title="Cost Analysis">
-          <LineChart 
+        <ChartCard title='Cost Analysis'>
+          <LineChart
             data={metrics.costMetrics.costTrend}
-            title="Cost Over Time"
-            color="#f59e0b"
+            title='Cost Over Time'
+            color='#f59e0b'
           />
         </ChartCard>
       </div>
 
       {/* Detailed Metrics Tables */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
         {/* Request Status Breakdown */}
         <MetricsTable
-          title="Request Status Breakdown"
+          title='Request Status Breakdown'
           data={metrics.requestMetrics.statusDistribution.map(item => ({
             label: item.status,
             value: item.count.toString(),
-            percentage: `${item.percentage}%`
+            percentage: `${item.percentage}%`,
           }))}
         />
 
         {/* System Performance Metrics */}
         <MetricsTable
-          title="System Performance"
+          title='System Performance'
           data={[
-            { label: 'CPU Usage', value: `${metrics.systemHealth.cpuUsage}%`, percentage: '' },
-            { label: 'Memory Usage', value: `${metrics.systemHealth.memoryUsage}%`, percentage: '' },
-            { label: 'Storage Usage', value: `${metrics.systemHealth.storageUsage}%`, percentage: '' },
-            { label: 'Response Time', value: `${metrics.systemHealth.responseTime}ms`, percentage: '' },
+            {
+              label: 'CPU Usage',
+              value: `${metrics.systemHealth.cpuUsage}%`,
+              percentage: '',
+            },
+            {
+              label: 'Memory Usage',
+              value: `${metrics.systemHealth.memoryUsage}%`,
+              percentage: '',
+            },
+            {
+              label: 'Storage Usage',
+              value: `${metrics.systemHealth.storageUsage}%`,
+              percentage: '',
+            },
+            {
+              label: 'Response Time',
+              value: `${metrics.systemHealth.responseTime}ms`,
+              percentage: '',
+            },
           ]}
         />
       </div>
 
       {/* Alerts and Issues */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
         {/* Active Alerts */}
         <AlertsList alerts={metrics.systemHealth.activeAlerts} />
-        
+
         {/* Recent Issues */}
         <IssuesList issues={metrics.systemHealth.recentIssues} />
       </div>
@@ -373,84 +413,85 @@ const KPICard: React.FC<{
   const trendIcon = {
     up: '↗️',
     down: '↘️',
-    stable: '→'
+    stable: '→',
   };
 
   return (
     <div className={`p-6 rounded-lg border-2 ${colorClasses[color]} shadow-sm`}>
-      <h3 className="text-sm font-medium text-gray-600 mb-2">{title}</h3>
-      <div className="flex items-baseline justify-between">
-        <span className="text-3xl font-bold text-gray-900">
-          {typeof value === 'number' ? 
-            (unit === '$' ? `$${value.toFixed(2)}` : `${value.toFixed(unit === '%' ? 1 : 0)}${unit}`) : 
-            value
-          }
+      <h3 className='text-sm font-medium text-gray-600 mb-2'>{title}</h3>
+      <div className='flex items-baseline justify-between'>
+        <span className='text-3xl font-bold text-gray-900'>
+          {typeof value === 'number'
+            ? unit === '$'
+              ? `$${value.toFixed(2)}`
+              : `${value.toFixed(unit === '%' ? 1 : 0)}${unit}`
+            : value}
         </span>
-        <span className="text-lg">{trendIcon[trend]}</span>
+        <span className='text-lg'>{trendIcon[trend]}</span>
       </div>
     </div>
   );
 };
 
-const ChartCard: React.FC<{ title: string; children: React.ReactNode }> = ({ 
-  title, 
-  children 
+const ChartCard: React.FC<{ title: string; children: React.ReactNode }> = ({
+  title,
+  children,
 }) => (
-  <div className="bg-white p-6 rounded-lg shadow-sm border">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+  <div className='bg-white p-6 rounded-lg shadow-sm border'>
+    <h3 className='text-lg font-semibold text-gray-900 mb-4'>{title}</h3>
     {children}
   </div>
 );
 
-const LineChart: React.FC<{ 
-  data: Array<{ timestamp: string; value: number; label?: string }>; 
+const LineChart: React.FC<{
+  data: Array<{ timestamp: string; value: number; label?: string }>;
   title: string;
   color?: string;
 }> = ({ data, title, color = '#3b82f6' }) => (
-  <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-200 rounded-lg">
-    <div className="text-center">
-      <div className="text-gray-400 text-4xl mb-2">📈</div>
-      <p className="text-gray-600">{title}</p>
-      <p className="text-sm text-gray-500 mt-1">{data.length} data points</p>
+  <div className='h-64 flex items-center justify-center border-2 border-dashed border-gray-200 rounded-lg'>
+    <div className='text-center'>
+      <div className='text-gray-400 text-4xl mb-2'>📈</div>
+      <p className='text-gray-600'>{title}</p>
+      <p className='text-sm text-gray-500 mt-1'>{data.length} data points</p>
     </div>
   </div>
 );
 
-const BarChart: React.FC<{ 
-  data: Array<{ timeRange: string; count: number; percentage: number }>; 
+const BarChart: React.FC<{
+  data: Array<{ timeRange: string; count: number; percentage: number }>;
   title: string;
 }> = ({ data, title }) => (
-  <div className="h-64">
-    <div className="flex items-end justify-between h-full space-x-2 p-4">
+  <div className='h-64'>
+    <div className='flex items-end justify-between h-full space-x-2 p-4'>
       {data.map((item, index) => (
-        <div key={index} className="flex flex-col items-center flex-1">
-          <div 
-            className="w-full bg-blue-500 rounded-t-md"
+        <div key={index} className='flex flex-col items-center flex-1'>
+          <div
+            className='w-full bg-blue-500 rounded-t-md'
             style={{ height: `${item.percentage * 2}%`, minHeight: '8px' }}
           />
-          <span className="text-xs text-gray-600 mt-2 text-center">
+          <span className='text-xs text-gray-600 mt-2 text-center'>
             {item.timeRange}
           </span>
-          <span className="text-xs text-gray-500">{item.count}</span>
+          <span className='text-xs text-gray-500'>{item.count}</span>
         </div>
       ))}
     </div>
   </div>
 );
 
-const PieChart: React.FC<{ 
-  data: Array<{ format: string; count: number; percentage: number }>; 
+const PieChart: React.FC<{
+  data: Array<{ format: string; count: number; percentage: number }>;
   title: string;
 }> = ({ data, title }) => (
-  <div className="h-64 flex items-center justify-center">
-    <div className="text-center">
-      <div className="text-gray-400 text-4xl mb-2">🥧</div>
-      <p className="text-gray-600">{title}</p>
-      <div className="mt-4 space-y-1">
+  <div className='h-64 flex items-center justify-center'>
+    <div className='text-center'>
+      <div className='text-gray-400 text-4xl mb-2'>🥧</div>
+      <p className='text-gray-600'>{title}</p>
+      <div className='mt-4 space-y-1'>
         {data.slice(0, 5).map((item, index) => (
-          <div key={index} className="flex justify-between text-sm">
-            <span className="text-gray-600">{item.format}:</span>
-            <span className="text-gray-900">{item.percentage}%</span>
+          <div key={index} className='flex justify-between text-sm'>
+            <span className='text-gray-600'>{item.format}:</span>
+            <span className='text-gray-900'>{item.percentage}%</span>
           </div>
         ))}
       </div>
@@ -462,16 +503,21 @@ const MetricsTable: React.FC<{
   title: string;
   data: Array<{ label: string; value: string; percentage: string }>;
 }> = ({ title, data }) => (
-  <div className="bg-white p-6 rounded-lg shadow-sm border">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
-    <div className="space-y-3">
+  <div className='bg-white p-6 rounded-lg shadow-sm border'>
+    <h3 className='text-lg font-semibold text-gray-900 mb-4'>{title}</h3>
+    <div className='space-y-3'>
       {data.map((item, index) => (
-        <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
-          <span className="text-gray-600">{item.label}</span>
-          <div className="text-right">
-            <span className="text-gray-900 font-medium">{item.value}</span>
+        <div
+          key={index}
+          className='flex justify-between items-center py-2 border-b last:border-b-0'
+        >
+          <span className='text-gray-600'>{item.label}</span>
+          <div className='text-right'>
+            <span className='text-gray-900 font-medium'>{item.value}</span>
             {item.percentage && (
-              <span className="text-gray-500 text-sm ml-2">({item.percentage})</span>
+              <span className='text-gray-500 text-sm ml-2'>
+                ({item.percentage})
+              </span>
             )}
           </div>
         </div>
@@ -497,28 +543,30 @@ const AlertsList: React.FC<{
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Active Alerts</h3>
+    <div className='bg-white p-6 rounded-lg shadow-sm border'>
+      <h3 className='text-lg font-semibold text-gray-900 mb-4'>
+        Active Alerts
+      </h3>
       {alerts.length === 0 ? (
-        <div className="text-center py-8">
-          <div className="text-green-500 text-3xl mb-2">✅</div>
-          <p className="text-gray-600">No active alerts</p>
+        <div className='text-center py-8'>
+          <div className='text-green-500 text-3xl mb-2'>✅</div>
+          <p className='text-gray-600'>No active alerts</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {alerts.map((alert) => (
-            <div 
+        <div className='space-y-3'>
+          {alerts.map(alert => (
+            <div
               key={alert.id}
               className={`p-3 rounded-lg border ${severityColors[alert.severity]}`}
             >
-              <div className="flex justify-between items-start mb-1">
-                <span className="font-medium">{alert.title}</span>
-                <span className="text-xs uppercase tracking-wide">
+              <div className='flex justify-between items-start mb-1'>
+                <span className='font-medium'>{alert.title}</span>
+                <span className='text-xs uppercase tracking-wide'>
                   {alert.severity}
                 </span>
               </div>
-              <p className="text-sm opacity-90 mb-2">{alert.description}</p>
-              <span className="text-xs opacity-75">
+              <p className='text-sm opacity-90 mb-2'>{alert.description}</p>
+              <span className='text-xs opacity-75'>
                 {new Date(alert.timestamp).toLocaleString()}
               </span>
             </div>
@@ -547,32 +595,36 @@ const IssuesList: React.FC<{
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Issues</h3>
+    <div className='bg-white p-6 rounded-lg shadow-sm border'>
+      <h3 className='text-lg font-semibold text-gray-900 mb-4'>
+        Recent Issues
+      </h3>
       {issues.length === 0 ? (
-        <div className="text-center py-8">
-          <div className="text-green-500 text-3xl mb-2">🛡️</div>
-          <p className="text-gray-600">No recent issues</p>
+        <div className='text-center py-8'>
+          <div className='text-green-500 text-3xl mb-2'>🛡️</div>
+          <p className='text-gray-600'>No recent issues</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {issues.map((issue) => (
-            <div 
+        <div className='space-y-3'>
+          {issues.map(issue => (
+            <div
               key={issue.id}
               className={`p-3 rounded-lg border ${
-                issue.resolved ? 'bg-gray-50 border-gray-200' : 'bg-yellow-50 border-yellow-200'
+                issue.resolved
+                  ? 'bg-gray-50 border-gray-200'
+                  : 'bg-yellow-50 border-yellow-200'
               }`}
             >
-              <div className="flex justify-between items-start mb-1">
-                <span className="font-medium flex items-center">
+              <div className='flex justify-between items-start mb-1'>
+                <span className='font-medium flex items-center'>
                   {issue.resolved ? '✅' : '⚠️'} {issue.title}
                 </span>
                 <span className={`text-xs ${impactColors[issue.impact]}`}>
                   {issue.impact} impact
                 </span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">{issue.description}</p>
-              <div className="flex justify-between items-center text-xs text-gray-500">
+              <p className='text-sm text-gray-600 mb-2'>{issue.description}</p>
+              <div className='flex justify-between items-center text-xs text-gray-500'>
                 <span>{new Date(issue.timestamp).toLocaleString()}</span>
                 {issue.resolved && issue.resolutionTime && (
                   <span>Resolved in {issue.resolutionTime}min</span>

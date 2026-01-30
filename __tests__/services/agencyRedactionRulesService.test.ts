@@ -1,7 +1,7 @@
 /**
  * Agency Redaction Rules Service Tests
  * Epic 9 Task 4: Agency-Specific Redaction Rules
- * 
+ *
  * Comprehensive tests for the agency-specific redaction rules system
  */
 
@@ -54,7 +54,7 @@ enum SensitivityLevel {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 // Use static import instead of dynamic import to fix Jest module loading issue
@@ -86,8 +86,9 @@ describe('AgencyRedactionRulesService', () => {
 
   describe('Agency Template Management', () => {
     test('should get default template for police agency', async () => {
-      const template = await agencyRedactionRulesService.getAgencyTemplate('police');
-      
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate('police');
+
       expect(template).toBeDefined();
       expect(template?.agencyId).toBe('police');
       expect(template?.agencyName).toBe('Police Department');
@@ -96,8 +97,9 @@ describe('AgencyRedactionRulesService', () => {
     });
 
     test('should get default template for fire agency', async () => {
-      const template = await agencyRedactionRulesService.getAgencyTemplate('fire');
-      
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate('fire');
+
       expect(template).toBeDefined();
       expect(template?.agencyId).toBe('fire');
       expect(template?.agencyName).toBe('Fire Department');
@@ -106,7 +108,8 @@ describe('AgencyRedactionRulesService', () => {
     });
 
     test('should return null for unknown agency', async () => {
-      const template = await agencyRedactionRulesService.getAgencyTemplate('unknown-agency');
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate('unknown-agency');
       expect(template).toBeNull();
     });
 
@@ -136,16 +139,18 @@ describe('AgencyRedactionRulesService', () => {
         isActive: true,
       };
 
-      const success = await agencyRedactionRulesService.saveAgencyTemplate(newTemplate);
+      const success =
+        await agencyRedactionRulesService.saveAgencyTemplate(newTemplate);
       expect(success).toBe(true);
 
-      const retrievedTemplate = await agencyRedactionRulesService.getAgencyTemplate(agencyId);
+      const retrievedTemplate =
+        await agencyRedactionRulesService.getAgencyTemplate(agencyId);
       expect(retrievedTemplate).toEqual(newTemplate);
     });
 
     test('should get all templates', async () => {
       const templates = await agencyRedactionRulesService.getAllTemplates();
-      
+
       expect(templates).toHaveLength(6); // 5 default + 1 test = 6 total
       expect(templates.map(t => t.agencyId)).toContain('police');
       expect(templates.map(t => t.agencyId)).toContain('fire');
@@ -170,49 +175,68 @@ describe('AgencyRedactionRulesService', () => {
         retentionPeriod: 90,
       };
 
-      const success = await agencyRedactionRulesService.addRuleToAgency(testAgencyId, newRule);
+      const success = await agencyRedactionRulesService.addRuleToAgency(
+        testAgencyId,
+        newRule
+      );
       expect(success).toBe(true);
 
-      const template = await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
       const foundRule = template?.rules.find(r => r.id === newRule.id);
       expect(foundRule).toEqual(newRule);
     });
 
     test('should allow adding duplicate rule to agency', async () => {
       // Current service allows duplicates, so we test for success
-      const template = await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
       const existingRule = template?.rules[0];
-      
+
       if (existingRule) {
-        const success = await agencyRedactionRulesService.addRuleToAgency(testAgencyId, existingRule);
+        const success = await agencyRedactionRulesService.addRuleToAgency(
+          testAgencyId,
+          existingRule
+        );
         expect(success).toBe(true); // Service currently allows duplicates
       }
     });
 
     test('should remove rule from agency', async () => {
-      const template = await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
       const ruleToRemove = template?.rules[0];
-      
+
       if (ruleToRemove) {
-        const success = await agencyRedactionRulesService.removeRuleFromAgency(testAgencyId, ruleToRemove.id);
+        const success = await agencyRedactionRulesService.removeRuleFromAgency(
+          testAgencyId,
+          ruleToRemove.id
+        );
         expect(success).toBe(true);
 
-        const updatedTemplate = await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
-        const foundRule = updatedTemplate?.rules.find(r => r.id === ruleToRemove.id);
+        const updatedTemplate =
+          await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
+        const foundRule = updatedTemplate?.rules.find(
+          r => r.id === ruleToRemove.id
+        );
         expect(foundRule).toBeUndefined();
       }
     });
 
     test('should return true when trying to remove non-existent rule', async () => {
       // Service doesn't validate rule existence during removal
-      const success = await agencyRedactionRulesService.removeRuleFromAgency(testAgencyId, 'non-existent-rule');
+      const success = await agencyRedactionRulesService.removeRuleFromAgency(
+        testAgencyId,
+        'non-existent-rule'
+      );
       expect(success).toBe(true); // Service doesn't fail on non-existent rules
     });
 
     test('should update existing rule', async () => {
-      const template = await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
       const ruleToUpdate = template?.rules[0];
-      
+
       if (ruleToUpdate) {
         const updatedRule: RedactionRule = {
           ...ruleToUpdate,
@@ -222,14 +246,23 @@ describe('AgencyRedactionRulesService', () => {
         };
 
         // Remove old rule and add updated rule
-        const removed = await agencyRedactionRulesService.removeRuleFromAgency(testAgencyId, ruleToUpdate.id);
+        const removed = await agencyRedactionRulesService.removeRuleFromAgency(
+          testAgencyId,
+          ruleToUpdate.id
+        );
         expect(removed).toBe(true);
-        
-        const added = await agencyRedactionRulesService.addRuleToAgency(testAgencyId, updatedRule);
+
+        const added = await agencyRedactionRulesService.addRuleToAgency(
+          testAgencyId,
+          updatedRule
+        );
         expect(added).toBe(true);
 
-        const updatedTemplate = await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
-        const foundRule = updatedTemplate?.rules.find(r => r.id === ruleToUpdate.id);
+        const updatedTemplate =
+          await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
+        const foundRule = updatedTemplate?.rules.find(
+          r => r.id === ruleToUpdate.id
+        );
         expect(foundRule?.name).toBe('Updated Rule Name');
         expect(foundRule?.sensitivityLevel).toBe(SensitivityLevel.CRITICAL);
         expect(foundRule?.requiresApproval).toBe(true);
@@ -251,7 +284,10 @@ describe('AgencyRedactionRulesService', () => {
         requiresApproval: false,
       };
 
-      const validation = agencyRedactionRulesService.validateRuleForAgency(testAgencyId, validRule);
+      const validation = agencyRedactionRulesService.validateRuleForAgency(
+        testAgencyId,
+        validRule
+      );
       expect(validation.isValid).toBe(true);
       expect(validation.issues).toHaveLength(0);
     });
@@ -263,9 +299,14 @@ describe('AgencyRedactionRulesService', () => {
         piiTypes: [],
       } as RedactionRule;
 
-      const validation = agencyRedactionRulesService.validateRuleForAgency(testAgencyId, invalidRule);
+      const validation = agencyRedactionRulesService.validateRuleForAgency(
+        testAgencyId,
+        invalidRule
+      );
       expect(validation.isValid).toBe(false);
-      expect(validation.issues).toContain('Rule must have id, name, and at least one PII type');
+      expect(validation.issues).toContain(
+        'Rule must have id, name, and at least one PII type'
+      );
     });
 
     test('should invalidate rule with invalid retention period', () => {
@@ -280,7 +321,10 @@ describe('AgencyRedactionRulesService', () => {
         retentionPeriod: -1,
       };
 
-      const validation = agencyRedactionRulesService.validateRuleForAgency(testAgencyId, invalidRule);
+      const validation = agencyRedactionRulesService.validateRuleForAgency(
+        testAgencyId,
+        invalidRule
+      );
       expect(validation.isValid).toBe(true); // Service doesn't validate retention period
     });
 
@@ -295,7 +339,10 @@ describe('AgencyRedactionRulesService', () => {
         requiresApproval: false, // Critical but no approval required
       };
 
-      const validation = agencyRedactionRulesService.validateRuleForAgency(testAgencyId, conflictingRule);
+      const validation = agencyRedactionRulesService.validateRuleForAgency(
+        testAgencyId,
+        conflictingRule
+      );
       expect(validation.isValid).toBe(true); // Service accepts this rule
       // Service doesn't implement warnings system
     });
@@ -306,11 +353,13 @@ describe('AgencyRedactionRulesService', () => {
 
     test('should get applicable rules for PII types', async () => {
       const piiTypes = [PIIType.SSN, PIIType.PHONE];
-      const template = await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
-      const applicableRules = template?.rules.filter(rule => 
-        rule.piiTypes.some(type => piiTypes.includes(type))
-      ) || [];
-      
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
+      const applicableRules =
+        template?.rules.filter(rule =>
+          rule.piiTypes.some(type => piiTypes.includes(type))
+        ) || [];
+
       expect(applicableRules.length).toBeGreaterThanOrEqual(0);
       applicableRules.forEach(rule => {
         expect(rule.piiTypes.some(type => piiTypes.includes(type))).toBe(true);
@@ -318,16 +367,20 @@ describe('AgencyRedactionRulesService', () => {
     });
 
     test('should get auto-apply rules for agency', async () => {
-      const autoApplyRules = await agencyRedactionRulesService.getAutoApplyRules(testAgencyId);
-      
+      const autoApplyRules =
+        await agencyRedactionRulesService.getAutoApplyRules(testAgencyId);
+
       autoApplyRules.forEach(rule => {
         expect(rule.autoApply).toBe(true);
       });
     });
 
     test('should get rules requiring approval', async () => {
-      const approvalRules = await agencyRedactionRulesService.getApprovalRequiredRules(testAgencyId);
-      
+      const approvalRules =
+        await agencyRedactionRulesService.getApprovalRequiredRules(
+          testAgencyId
+        );
+
       approvalRules.forEach(rule => {
         expect(rule.requiresApproval).toBe(true);
       });
@@ -338,8 +391,9 @@ describe('AgencyRedactionRulesService', () => {
     const testAgencyId = 'police';
 
     test('should get agency rules summary', async () => {
-      const summary = await agencyRedactionRulesService.getAgencyRulesSummary(testAgencyId);
-      
+      const summary =
+        await agencyRedactionRulesService.getAgencyRulesSummary(testAgencyId);
+
       expect(summary).toBeDefined();
       expect(typeof summary.totalRules).toBe('number');
       expect(typeof summary.autoApplyRules).toBe('number');
@@ -351,61 +405,76 @@ describe('AgencyRedactionRulesService', () => {
     });
 
     test('should calculate correct rule statistics', async () => {
-      const template = await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
-      const summary = await agencyRedactionRulesService.getAgencyRulesSummary(testAgencyId);
-      
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
+      const summary =
+        await agencyRedactionRulesService.getAgencyRulesSummary(testAgencyId);
+
       if (template) {
         expect(summary.totalRules).toBe(template.rules.length);
-        expect(summary.autoApplyRules).toBe(template.rules.filter(r => r.autoApply).length);
-        expect(summary.approvalRequiredRules).toBe(template.rules.filter(r => r.requiresApproval).length);
+        expect(summary.autoApplyRules).toBe(
+          template.rules.filter(r => r.autoApply).length
+        );
+        expect(summary.approvalRequiredRules).toBe(
+          template.rules.filter(r => r.requiresApproval).length
+        );
       }
     });
   });
 
   describe('Default Templates', () => {
     test('should have different rule counts for each agency', async () => {
-      const policeTemplate = await agencyRedactionRulesService.getAgencyTemplate('police');
-      const fireTemplate = await agencyRedactionRulesService.getAgencyTemplate('fire');
-      const financeTemplate = await agencyRedactionRulesService.getAgencyTemplate('finance');
-      
+      const policeTemplate =
+        await agencyRedactionRulesService.getAgencyTemplate('police');
+      const fireTemplate =
+        await agencyRedactionRulesService.getAgencyTemplate('fire');
+      const financeTemplate =
+        await agencyRedactionRulesService.getAgencyTemplate('finance');
+
       expect(policeTemplate?.rules.length).toBe(4); // Updated expected counts
       expect(fireTemplate?.rules.length).toBe(3); // Updated expected count
       expect(financeTemplate?.rules.length).toBe(3); // Updated expected count
     });
 
     test('should have appropriate sensitivity levels for each agency', async () => {
-      const policeTemplate = await agencyRedactionRulesService.getAgencyTemplate('police');
-      const healthTemplate = await agencyRedactionRulesService.getAgencyTemplate('health');
-      
+      const policeTemplate =
+        await agencyRedactionRulesService.getAgencyTemplate('police');
+      const healthTemplate =
+        await agencyRedactionRulesService.getAgencyTemplate('health');
+
       // Police should have high/critical rules for law enforcement data
-      const policeHighCriticalRules = policeTemplate?.rules.filter(r => 
-        r.sensitivityLevel === SensitivityLevel.HIGH || 
-        r.sensitivityLevel === SensitivityLevel.CRITICAL
+      const policeHighCriticalRules = policeTemplate?.rules.filter(
+        r =>
+          r.sensitivityLevel === SensitivityLevel.HIGH ||
+          r.sensitivityLevel === SensitivityLevel.CRITICAL
       );
       expect(policeHighCriticalRules?.length).toBeGreaterThan(0);
 
       // Health should have critical rules for medical data
-      const healthCriticalRules = healthTemplate?.rules.filter(r => 
-        r.sensitivityLevel === SensitivityLevel.CRITICAL
+      const healthCriticalRules = healthTemplate?.rules.filter(
+        r => r.sensitivityLevel === SensitivityLevel.CRITICAL
       );
       expect(healthCriticalRules?.length).toBeGreaterThan(0);
     });
 
     test('should have appropriate PII types for each agency', async () => {
-      const financeTemplate = await agencyRedactionRulesService.getAgencyTemplate('finance');
-      const healthTemplate = await agencyRedactionRulesService.getAgencyTemplate('health');
-      
+      const financeTemplate =
+        await agencyRedactionRulesService.getAgencyTemplate('finance');
+      const healthTemplate =
+        await agencyRedactionRulesService.getAgencyTemplate('health');
+
       // Finance should protect financial data
       const financeRules = financeTemplate?.rules || [];
-      const hasFinancialPII = financeRules.some(rule => 
-        rule.piiTypes.includes(PIIType.ACCOUNT_NUMBER) ||
-        rule.piiTypes.includes(PIIType.ROUTING_NUMBER)
+      const hasFinancialPII = financeRules.some(
+        rule =>
+          rule.piiTypes.includes(PIIType.ACCOUNT_NUMBER) ||
+          rule.piiTypes.includes(PIIType.ROUTING_NUMBER)
       );
       expect(hasFinancialPII).toBe(true);
 
       // Health should protect medical data
       const healthRules = healthTemplate?.rules || [];
-      const hasMedicalPII = healthRules.some(rule => 
+      const hasMedicalPII = healthRules.some(rule =>
         rule.piiTypes.includes(PIIType.MEDICAL_ID)
       );
       expect(hasMedicalPII).toBe(true);
@@ -419,7 +488,8 @@ describe('AgencyRedactionRulesService', () => {
         throw new Error('LocalStorage error');
       });
 
-      const template = await agencyRedactionRulesService.getAgencyTemplate('police');
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate('police');
       // Should fall back to default template
       expect(template).toBeDefined();
       expect(template?.agencyId).toBe('police');
@@ -429,7 +499,8 @@ describe('AgencyRedactionRulesService', () => {
       // Store invalid JSON
       mockLocalStorage.store['agency_template_test'] = 'invalid json';
 
-      const template = await agencyRedactionRulesService.getAgencyTemplate('test');
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate('test');
       expect(template).toBeNull();
     });
 
@@ -444,7 +515,10 @@ describe('AgencyRedactionRulesService', () => {
         requiresApproval: false,
       };
 
-      const validation = agencyRedactionRulesService.validateRuleForAgency('', invalidRule);
+      const validation = agencyRedactionRulesService.validateRuleForAgency(
+        '',
+        invalidRule
+      );
       expect(validation.isValid).toBe(true); // Service doesn't validate agency ID format
     });
   });
@@ -455,15 +529,19 @@ describe('AgencyRedactionRulesService', () => {
       const startTime = Date.now();
 
       // Create template with many rules
-      const manyRules: RedactionRule[] = Array.from({ length: 100 }, (_, i) => ({
-        id: `perf-rule-${i}`,
-        name: `Performance Rule ${i}`,
-        description: `Performance test rule ${i}`,
-        piiTypes: [PIIType.SSN, PIIType.EMAIL],
-        sensitivityLevel: i % 2 === 0 ? SensitivityLevel.HIGH : SensitivityLevel.MEDIUM,
-        autoApply: i % 3 === 0,
-        requiresApproval: i % 4 === 0,
-      }));
+      const manyRules: RedactionRule[] = Array.from(
+        { length: 100 },
+        (_, i) => ({
+          id: `perf-rule-${i}`,
+          name: `Performance Rule ${i}`,
+          description: `Performance test rule ${i}`,
+          piiTypes: [PIIType.SSN, PIIType.EMAIL],
+          sensitivityLevel:
+            i % 2 === 0 ? SensitivityLevel.HIGH : SensitivityLevel.MEDIUM,
+          autoApply: i % 3 === 0,
+          requiresApproval: i % 4 === 0,
+        })
+      );
 
       const template: AgencyRedactionTemplate = {
         id: `template_${testAgencyId}`,
@@ -477,9 +555,10 @@ describe('AgencyRedactionRulesService', () => {
       };
 
       await agencyRedactionRulesService.saveAgencyTemplate(template);
-      
+
       // Test retrieval performance
-      const retrievedTemplate = await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
+      const retrievedTemplate =
+        await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
       const endTime = Date.now();
 
       expect(retrievedTemplate?.rules).toHaveLength(100);

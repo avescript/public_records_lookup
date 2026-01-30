@@ -15,9 +15,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { useAuth } from '../../contexts/AuthContext';
+import { AdminButton, PermissionButton, RoleChip } from '../auth';
 import { ClientProviders } from '../providers/ClientProviders';
 import { AgencySwitcher } from '../shared/AgencySwitcher';
-import { RoleChip, AdminButton, PermissionButton } from '../auth';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -34,11 +34,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar position="static" sx={{ bgcolor: 'primary.dark' }}>
+      <AppBar position='static' sx={{ bgcolor: 'primary.dark' }}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             <Link
-              href="/admin"
+              href='/admin'
               style={{ color: 'inherit', textDecoration: 'none' }}
             >
               Admin Console
@@ -47,7 +47,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
           {/* Agency Switcher */}
           <Box sx={{ mr: 3 }}>
-            <AgencySwitcher variant="compact" showDepartmentCount={false} />
+            <AgencySwitcher variant='compact' showDepartmentCount={false} />
           </Box>
 
           {/* Admin Status Indicator */}
@@ -56,34 +56,34 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           {/* Admin Navigation */}
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             <Button
-              color="inherit"
+              color='inherit'
               component={Link}
-              href="/admin/staff"
+              href='/admin/staff'
               sx={{
                 fontWeight: pathname === '/admin/staff' ? 'bold' : 'normal',
               }}
             >
               Request Queue
             </Button>
-            
+
             {/* Admin Tools - Admin Only */}
             <PermissionButton
               requiredRoles={['admin']}
-              color="inherit"
+              color='inherit'
               component={Link}
-              href="/admin/tools"
+              href='/admin/tools'
               sx={{
                 fontWeight: pathname === '/admin/tools' ? 'bold' : 'normal',
               }}
             >
               Admin Tools
             </PermissionButton>
-            
+
             <Button
-              color="inherit"
+              color='inherit'
               onClick={handleLogout}
               startIcon={<ExitToApp />}
-              variant="outlined"
+              variant='outlined'
               sx={{ ml: 2 }}
             >
               Logout
@@ -92,13 +92,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </Toolbar>
       </AppBar>
 
-      <Box component="main" sx={{ flexGrow: 1, py: 3, bgcolor: 'grey.50' }}>
-        <Container maxWidth="xl">{children}</Container>
+      <Box component='main' sx={{ flexGrow: 1, py: 3, bgcolor: 'grey.50' }}>
+        <Container maxWidth='xl'>{children}</Container>
       </Box>
 
-      <Box component="footer" sx={{ py: 2, bgcolor: 'grey.200' }}>
-        <Container maxWidth="xl">
-          <Typography variant="body2" color="text.secondary" align="center">
+      <Box component='footer' sx={{ py: 2, bgcolor: 'grey.200' }}>
+        <Container maxWidth='xl'>
+          <Typography variant='body2' color='text.secondary' align='center'>
             Staff Portal - Public Records Management System
           </Typography>
         </Container>

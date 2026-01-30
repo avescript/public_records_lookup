@@ -1,56 +1,57 @@
 /**
  * Agency Redaction Rules Manager Component
  * Epic 9 Task 4: Agency-Specific Redaction Rules
- * 
+ *
  * UI component for managing and configuring agency-specific redaction rules
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Box,
-  Paper,
-  Typography,
+  Add as AddIcon,
+  Assessment as AssessmentIcon,
+  AutoMode as AutoModeIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  ExpandMore as ExpandMoreIcon,
+  Gavel as GavelIcon,
+  Security as SecurityIcon,
+  Warning as WarningIcon,
+} from '@mui/icons-material';
+import {
   Accordion,
-  AccordionSummary,
   AccordionDetails,
+  AccordionSummary,
+  Alert,
+  Box,
+  Button,
   Card,
   CardContent,
   Chip,
-  Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControlLabel,
-  Switch,
-  Grid,
-  Alert,
-  Tabs,
-  Tab,
+  DialogContent,
+  DialogTitle,
   Divider,
+  FormControl,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  InputLabel,
   List,
   ListItem,
-  ListItemText,
   ListItemSecondaryAction,
-  IconButton,
+  ListItemText,
+  MenuItem,
+  Paper,
+  Select,
+  Switch,
+  Tab,
+  Tabs,
+  TextField,
   Tooltip,
+  Typography,
 } from '@mui/material';
-import {
-  ExpandMore as ExpandMoreIcon,
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Security as SecurityIcon,
-  Gavel as GavelIcon,
-  Assessment as AssessmentIcon,
-  AutoMode as AutoModeIcon,
-  Warning as WarningIcon,
-} from '@mui/icons-material';
+
 import { useAgency } from '../../../contexts/AgencyContext';
 import { agencyRedactionRulesService } from '../../../services/agencyRedactionRulesService';
 import {
@@ -71,7 +72,7 @@ function TabPanel(props: TabPanelProps) {
 
   return (
     <div
-      role="tabpanel"
+      role='tabpanel'
       hidden={value !== index}
       id={`agency-rules-tabpanel-${index}`}
       aria-labelledby={`agency-rules-tab-${index}`}
@@ -84,8 +85,12 @@ function TabPanel(props: TabPanelProps) {
 
 export const AgencyRedactionRulesManager: React.FC = () => {
   const { currentAgency } = useAgency();
-  const [template, setTemplate] = useState<AgencyRedactionTemplate | null>(null);
-  const [allTemplates, setAllTemplates] = useState<AgencyRedactionTemplate[]>([]);
+  const [template, setTemplate] = useState<AgencyRedactionTemplate | null>(
+    null
+  );
+  const [allTemplates, setAllTemplates] = useState<AgencyRedactionTemplate[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState(0);
@@ -125,7 +130,12 @@ export const AgencyRedactionRulesManager: React.FC = () => {
 
   // Handle rule creation/editing
   const handleSaveRule = async () => {
-    if (!currentAgency?.id || !ruleFormData.id || !ruleFormData.name || !ruleFormData.piiTypes) {
+    if (
+      !currentAgency?.id ||
+      !ruleFormData.id ||
+      !ruleFormData.name ||
+      !ruleFormData.piiTypes
+    ) {
       return;
     }
 
@@ -135,20 +145,27 @@ export const AgencyRedactionRulesManager: React.FC = () => {
         name: ruleFormData.name,
         description: ruleFormData.description || '',
         piiTypes: ruleFormData.piiTypes,
-        sensitivityLevel: ruleFormData.sensitivityLevel || SensitivityLevel.MEDIUM,
+        sensitivityLevel:
+          ruleFormData.sensitivityLevel || SensitivityLevel.MEDIUM,
         autoApply: ruleFormData.autoApply || false,
         requiresApproval: ruleFormData.requiresApproval || false,
         retentionPeriod: ruleFormData.retentionPeriod,
       };
 
       // Validate rule
-      const validation = agencyRedactionRulesService.validateRuleForAgency(currentAgency.id, rule);
+      const validation = agencyRedactionRulesService.validateRuleForAgency(
+        currentAgency.id,
+        rule
+      );
       if (!validation.isValid) {
         setError(`Rule validation failed: ${validation.issues.join(', ')}`);
         return;
       }
 
-      const success = await agencyRedactionRulesService.addRuleToAgency(currentAgency.id, rule);
+      const success = await agencyRedactionRulesService.addRuleToAgency(
+        currentAgency.id,
+        rule
+      );
       if (success) {
         setOpenRuleDialog(false);
         setEditingRule(null);
@@ -168,7 +185,10 @@ export const AgencyRedactionRulesManager: React.FC = () => {
     if (!currentAgency?.id) return;
 
     try {
-      const success = await agencyRedactionRulesService.removeRuleFromAgency(currentAgency.id, ruleId);
+      const success = await agencyRedactionRulesService.removeRuleFromAgency(
+        currentAgency.id,
+        ruleId
+      );
       if (success) {
         await loadAgencyData();
       } else {
@@ -203,17 +223,27 @@ export const AgencyRedactionRulesManager: React.FC = () => {
   // Get sensitivity level color
   const getSensitivityColor = (level: SensitivityLevel): string => {
     switch (level) {
-      case SensitivityLevel.LOW: return '#4caf50';
-      case SensitivityLevel.MEDIUM: return '#ff9800';
-      case SensitivityLevel.HIGH: return '#f44336';
-      case SensitivityLevel.CRITICAL: return '#9c27b0';
-      default: return '#757575';
+      case SensitivityLevel.LOW:
+        return '#4caf50';
+      case SensitivityLevel.MEDIUM:
+        return '#ff9800';
+      case SensitivityLevel.HIGH:
+        return '#f44336';
+      case SensitivityLevel.CRITICAL:
+        return '#9c27b0';
+      default:
+        return '#757575';
     }
   };
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <Box
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        minHeight='400px'
+      >
         <Typography>Loading agency redaction rules...</Typography>
       </Box>
     );
@@ -221,7 +251,7 @@ export const AgencyRedactionRulesManager: React.FC = () => {
 
   if (!currentAgency) {
     return (
-      <Alert severity="warning">
+      <Alert severity='warning'>
         Please select an agency to manage redaction rules.
       </Alert>
     );
@@ -229,17 +259,18 @@ export const AgencyRedactionRulesManager: React.FC = () => {
 
   return (
     <Box>
-      <Box display="flex" alignItems="center" justifyContent="between" mb={3}>
+      <Box display='flex' alignItems='center' justifyContent='between' mb={3}>
         <Box>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant='h4' gutterBottom>
             Redaction Rules Configuration
           </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            {currentAgency.name} - Manage agency-specific redaction rules and templates
+          <Typography variant='subtitle1' color='textSecondary'>
+            {currentAgency.name} - Manage agency-specific redaction rules and
+            templates
           </Typography>
         </Box>
         <Button
-          variant="contained"
+          variant='contained'
           startIcon={<AddIcon />}
           onClick={handleCreateRule}
           sx={{ ml: 2 }}
@@ -249,28 +280,31 @@ export const AgencyRedactionRulesManager: React.FC = () => {
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity='error' sx={{ mb: 3 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       <Paper sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)}>
-            <Tab 
-              label="Current Rules" 
-              icon={<GavelIcon />} 
-              iconPosition="start" 
+          <Tabs
+            value={selectedTab}
+            onChange={(_, newValue) => setSelectedTab(newValue)}
+          >
+            <Tab
+              label='Current Rules'
+              icon={<GavelIcon />}
+              iconPosition='start'
             />
-            <Tab 
-              label="Statistics" 
-              icon={<AssessmentIcon />} 
-              iconPosition="start" 
+            <Tab
+              label='Statistics'
+              icon={<AssessmentIcon />}
+              iconPosition='start'
             />
-            <Tab 
-              label="Templates" 
-              icon={<SecurityIcon />} 
-              iconPosition="start" 
+            <Tab
+              label='Templates'
+              icon={<SecurityIcon />}
+              iconPosition='start'
             />
           </Tabs>
         </Box>
@@ -278,78 +312,96 @@ export const AgencyRedactionRulesManager: React.FC = () => {
         <TabPanel value={selectedTab} index={0}>
           {template?.rules && template.rules.length > 0 ? (
             <Grid container spacing={3}>
-              {template.rules.map((rule) => (
+              {template.rules.map(rule => (
                 <Grid item xs={12} key={rule.id}>
-                  <Card variant="outlined">
+                  <Card variant='outlined'>
                     <CardContent>
-                      <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
+                      <Box
+                        display='flex'
+                        justifyContent='space-between'
+                        alignItems='start'
+                        mb={2}
+                      >
                         <Box>
-                          <Typography variant="h6" gutterBottom>
+                          <Typography variant='h6' gutterBottom>
                             {rule.name}
                           </Typography>
-                          <Typography variant="body2" color="textSecondary" mb={2}>
+                          <Typography
+                            variant='body2'
+                            color='textSecondary'
+                            mb={2}
+                          >
                             {rule.description}
                           </Typography>
                         </Box>
                         <Box>
-                          <IconButton onClick={() => handleEditRule(rule)} size="small">
+                          <IconButton
+                            onClick={() => handleEditRule(rule)}
+                            size='small'
+                          >
                             <EditIcon />
                           </IconButton>
-                          <IconButton 
-                            onClick={() => handleDeleteRule(rule.id)} 
-                            size="small" 
-                            color="error"
+                          <IconButton
+                            onClick={() => handleDeleteRule(rule.id)}
+                            size='small'
+                            color='error'
                           >
                             <DeleteIcon />
                           </IconButton>
                         </Box>
                       </Box>
 
-                      <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
+                      <Box display='flex' flexWrap='wrap' gap={1} mb={2}>
                         <Chip
                           label={rule.sensitivityLevel.toUpperCase()}
-                          size="small"
-                          sx={{ 
-                            backgroundColor: getSensitivityColor(rule.sensitivityLevel),
+                          size='small'
+                          sx={{
+                            backgroundColor: getSensitivityColor(
+                              rule.sensitivityLevel
+                            ),
                             color: 'white',
                           }}
                         />
                         {rule.autoApply && (
                           <Chip
                             icon={<AutoModeIcon />}
-                            label="Auto-Apply"
-                            size="small"
-                            color="primary"
+                            label='Auto-Apply'
+                            size='small'
+                            color='primary'
                           />
                         )}
                         {rule.requiresApproval && (
                           <Chip
                             icon={<WarningIcon />}
-                            label="Requires Approval"
-                            size="small"
-                            color="warning"
+                            label='Requires Approval'
+                            size='small'
+                            color='warning'
                           />
                         )}
                       </Box>
 
                       <Box>
-                        <Typography variant="subtitle2" gutterBottom>
+                        <Typography variant='subtitle2' gutterBottom>
                           PII Types Protected:
                         </Typography>
-                        <Box display="flex" flexWrap="wrap" gap={1}>
-                          {rule.piiTypes.map((piiType) => (
+                        <Box display='flex' flexWrap='wrap' gap={1}>
+                          {rule.piiTypes.map(piiType => (
                             <Chip
                               key={piiType}
                               label={piiType.replace('_', ' ')}
-                              size="small"
-                              variant="outlined"
+                              size='small'
+                              variant='outlined'
                             />
                           ))}
                         </Box>
                       </Box>
 
                       {rule.retentionPeriod && (
-                        <Typography variant="body2" color="textSecondary" mt={1}>
+                        <Typography
+                          variant='body2'
+                          color='textSecondary'
+                          mt={1}
+                        >
                           Retention Period: {rule.retentionPeriod} days
                         </Typography>
                       )}
@@ -359,8 +411,9 @@ export const AgencyRedactionRulesManager: React.FC = () => {
               ))}
             </Grid>
           ) : (
-            <Alert severity="info">
-              No redaction rules configured for this agency. Click "Add Rule" to create your first rule.
+            <Alert severity='info'>
+              No redaction rules configured for this agency. Click "Add Rule" to
+              create your first rule.
             </Alert>
           )}
         </TabPanel>
@@ -371,26 +424,26 @@ export const AgencyRedactionRulesManager: React.FC = () => {
               <Grid item xs={12} md={6}>
                 <Card>
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant='h6' gutterBottom>
                       Rule Summary
                     </Typography>
                     <List>
                       <ListItem>
-                        <ListItemText 
-                          primary="Total Rules" 
-                          secondary={stats.totalRules} 
+                        <ListItemText
+                          primary='Total Rules'
+                          secondary={stats.totalRules}
                         />
                       </ListItem>
                       <ListItem>
-                        <ListItemText 
-                          primary="Auto-Apply Rules" 
-                          secondary={stats.autoApplyRules} 
+                        <ListItemText
+                          primary='Auto-Apply Rules'
+                          secondary={stats.autoApplyRules}
                         />
                       </ListItem>
                       <ListItem>
-                        <ListItemText 
-                          primary="Approval Required Rules" 
-                          secondary={stats.approvalRequiredRules} 
+                        <ListItemText
+                          primary='Approval Required Rules'
+                          secondary={stats.approvalRequiredRules}
                         />
                       </ListItem>
                     </List>
@@ -401,29 +454,33 @@ export const AgencyRedactionRulesManager: React.FC = () => {
               <Grid item xs={12} md={6}>
                 <Card>
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant='h6' gutterBottom>
                       By Sensitivity Level
                     </Typography>
                     <List>
-                      {Object.entries(stats.bySensitivity).map(([level, count]) => (
-                        <ListItem key={level}>
-                          <ListItemText 
-                            primary={
-                              <Box display="flex" alignItems="center" gap={1}>
-                                <Chip
-                                  label={level.toUpperCase()}
-                                  size="small"
-                                  sx={{ 
-                                    backgroundColor: getSensitivityColor(level as SensitivityLevel),
-                                    color: 'white',
-                                  }}
-                                />
-                                <span>{count} rules</span>
-                              </Box>
-                            }
-                          />
-                        </ListItem>
-                      ))}
+                      {Object.entries(stats.bySensitivity).map(
+                        ([level, count]) => (
+                          <ListItem key={level}>
+                            <ListItemText
+                              primary={
+                                <Box display='flex' alignItems='center' gap={1}>
+                                  <Chip
+                                    label={level.toUpperCase()}
+                                    size='small'
+                                    sx={{
+                                      backgroundColor: getSensitivityColor(
+                                        level as SensitivityLevel
+                                      ),
+                                      color: 'white',
+                                    }}
+                                  />
+                                  <span>{count} rules</span>
+                                </Box>
+                              }
+                            />
+                          </ListItem>
+                        )
+                      )}
                     </List>
                   </CardContent>
                 </Card>
@@ -432,17 +489,20 @@ export const AgencyRedactionRulesManager: React.FC = () => {
               <Grid item xs={12}>
                 <Card>
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant='h6' gutterBottom>
                       PII Types Coverage
                     </Typography>
-                    <Box display="flex" flexWrap="wrap" gap={1}>
+                    <Box display='flex' flexWrap='wrap' gap={1}>
                       {Object.entries(stats.byPIIType)
                         .filter(([, count]) => count > 0)
                         .map(([piiType, count]) => (
-                          <Tooltip key={piiType} title={`${count} rules protect this type`}>
+                          <Tooltip
+                            key={piiType}
+                            title={`${count} rules protect this type`}
+                          >
                             <Chip
                               label={`${piiType.replace('_', ' ')} (${count})`}
-                              variant="outlined"
+                              variant='outlined'
                             />
                           </Tooltip>
                         ))}
@@ -452,47 +512,54 @@ export const AgencyRedactionRulesManager: React.FC = () => {
               </Grid>
             </Grid>
           ) : (
-            <Alert severity="info">
+            <Alert severity='info'>
               No statistics available for this agency.
             </Alert>
           )}
         </TabPanel>
 
         <TabPanel value={selectedTab} index={2}>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             Available Agency Templates
           </Typography>
           <Grid container spacing={2}>
-            {allTemplates.map((tmpl) => (
+            {allTemplates.map(tmpl => (
               <Grid item xs={12} md={6} key={tmpl.id}>
-                <Card 
-                  variant={tmpl.agencyId === currentAgency?.id ? 'elevation' : 'outlined'}
-                  sx={{ 
+                <Card
+                  variant={
+                    tmpl.agencyId === currentAgency?.id
+                      ? 'elevation'
+                      : 'outlined'
+                  }
+                  sx={{
                     border: tmpl.agencyId === currentAgency?.id ? 2 : 1,
-                    borderColor: tmpl.agencyId === currentAgency?.id ? 'primary.main' : 'grey.300',
+                    borderColor:
+                      tmpl.agencyId === currentAgency?.id
+                        ? 'primary.main'
+                        : 'grey.300',
                   }}
                 >
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant='h6' gutterBottom>
                       {tmpl.agencyName}
                     </Typography>
-                    <Typography variant="body2" color="textSecondary" mb={2}>
+                    <Typography variant='body2' color='textSecondary' mb={2}>
                       {tmpl.description}
                     </Typography>
-                    <Typography variant="body2" mb={1}>
+                    <Typography variant='body2' mb={1}>
                       Rules: {tmpl.rules.length}
                     </Typography>
-                    <Typography variant="body2" mb={1}>
+                    <Typography variant='body2' mb={1}>
                       Version: {tmpl.version}
                     </Typography>
-                    <Typography variant="body2">
+                    <Typography variant='body2'>
                       Updated: {new Date(tmpl.updatedAt).toLocaleDateString()}
                     </Typography>
                     {tmpl.agencyId === currentAgency?.id && (
                       <Chip
-                        label="Current Agency"
-                        color="primary"
-                        size="small"
+                        label='Current Agency'
+                        color='primary'
+                        size='small'
                         sx={{ mt: 1 }}
                       />
                     )}
@@ -505,7 +572,12 @@ export const AgencyRedactionRulesManager: React.FC = () => {
       </Paper>
 
       {/* Rule Create/Edit Dialog */}
-      <Dialog open={openRuleDialog} onClose={() => setOpenRuleDialog(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={openRuleDialog}
+        onClose={() => setOpenRuleDialog(false)}
+        maxWidth='md'
+        fullWidth
+      >
         <DialogTitle>
           {editingRule ? 'Edit Redaction Rule' : 'Create New Redaction Rule'}
         </DialogTitle>
@@ -515,18 +587,22 @@ export const AgencyRedactionRulesManager: React.FC = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Rule Name"
+                  label='Rule Name'
                   value={ruleFormData.name || ''}
-                  onChange={(e) => setRuleFormData({ ...ruleFormData, name: e.target.value })}
+                  onChange={e =>
+                    setRuleFormData({ ...ruleFormData, name: e.target.value })
+                  }
                   required
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Rule ID"
+                  label='Rule ID'
                   value={ruleFormData.id || ''}
-                  onChange={(e) => setRuleFormData({ ...ruleFormData, id: e.target.value })}
+                  onChange={e =>
+                    setRuleFormData({ ...ruleFormData, id: e.target.value })
+                  }
                   disabled={!!editingRule}
                   required
                 />
@@ -534,9 +610,14 @@ export const AgencyRedactionRulesManager: React.FC = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Description"
+                  label='Description'
                   value={ruleFormData.description || ''}
-                  onChange={(e) => setRuleFormData({ ...ruleFormData, description: e.target.value })}
+                  onChange={e =>
+                    setRuleFormData({
+                      ...ruleFormData,
+                      description: e.target.value,
+                    })
+                  }
                   multiline
                   rows={3}
                 />
@@ -545,14 +626,18 @@ export const AgencyRedactionRulesManager: React.FC = () => {
                 <FormControl fullWidth>
                   <InputLabel>Sensitivity Level</InputLabel>
                   <Select
-                    value={ruleFormData.sensitivityLevel || SensitivityLevel.MEDIUM}
-                    onChange={(e) => setRuleFormData({ 
-                      ...ruleFormData, 
-                      sensitivityLevel: e.target.value as SensitivityLevel 
-                    })}
-                    label="Sensitivity Level"
+                    value={
+                      ruleFormData.sensitivityLevel || SensitivityLevel.MEDIUM
+                    }
+                    onChange={e =>
+                      setRuleFormData({
+                        ...ruleFormData,
+                        sensitivityLevel: e.target.value as SensitivityLevel,
+                      })
+                    }
+                    label='Sensitivity Level'
                   >
-                    {Object.values(SensitivityLevel).map((level) => (
+                    {Object.values(SensitivityLevel).map(level => (
                       <MenuItem key={level} value={level}>
                         {level.toUpperCase()}
                       </MenuItem>
@@ -563,13 +648,15 @@ export const AgencyRedactionRulesManager: React.FC = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Retention Period (days)"
-                  type="number"
+                  label='Retention Period (days)'
+                  type='number'
                   value={ruleFormData.retentionPeriod || ''}
-                  onChange={(e) => setRuleFormData({ 
-                    ...ruleFormData, 
-                    retentionPeriod: parseInt(e.target.value) || undefined 
-                  })}
+                  onChange={e =>
+                    setRuleFormData({
+                      ...ruleFormData,
+                      retentionPeriod: parseInt(e.target.value) || undefined,
+                    })
+                  }
                 />
               </Grid>
               <Grid item xs={12}>
@@ -578,20 +665,26 @@ export const AgencyRedactionRulesManager: React.FC = () => {
                   <Select
                     multiple
                     value={ruleFormData.piiTypes || []}
-                    onChange={(e) => setRuleFormData({ 
-                      ...ruleFormData, 
-                      piiTypes: e.target.value as PIIType[] 
-                    })}
-                    label="PII Types"
-                    renderValue={(selected) => (
+                    onChange={e =>
+                      setRuleFormData({
+                        ...ruleFormData,
+                        piiTypes: e.target.value as PIIType[],
+                      })
+                    }
+                    label='PII Types'
+                    renderValue={selected => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {(selected as PIIType[]).map((value) => (
-                          <Chip key={value} label={value.replace('_', ' ')} size="small" />
+                        {(selected as PIIType[]).map(value => (
+                          <Chip
+                            key={value}
+                            label={value.replace('_', ' ')}
+                            size='small'
+                          />
                         ))}
                       </Box>
                     )}
                   >
-                    {Object.values(PIIType).map((type) => (
+                    {Object.values(PIIType).map(type => (
                       <MenuItem key={type} value={type}>
                         {type.replace('_', ' ')}
                       </MenuItem>
@@ -604,13 +697,15 @@ export const AgencyRedactionRulesManager: React.FC = () => {
                   control={
                     <Switch
                       checked={ruleFormData.autoApply || false}
-                      onChange={(e) => setRuleFormData({ 
-                        ...ruleFormData, 
-                        autoApply: e.target.checked 
-                      })}
+                      onChange={e =>
+                        setRuleFormData({
+                          ...ruleFormData,
+                          autoApply: e.target.checked,
+                        })
+                      }
                     />
                   }
-                  label="Auto-Apply Rule"
+                  label='Auto-Apply Rule'
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -618,13 +713,15 @@ export const AgencyRedactionRulesManager: React.FC = () => {
                   control={
                     <Switch
                       checked={ruleFormData.requiresApproval || false}
-                      onChange={(e) => setRuleFormData({ 
-                        ...ruleFormData, 
-                        requiresApproval: e.target.checked 
-                      })}
+                      onChange={e =>
+                        setRuleFormData({
+                          ...ruleFormData,
+                          requiresApproval: e.target.checked,
+                        })
+                      }
                     />
                   }
-                  label="Requires Approval"
+                  label='Requires Approval'
                 />
               </Grid>
             </Grid>
@@ -632,7 +729,7 @@ export const AgencyRedactionRulesManager: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenRuleDialog(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSaveRule}>
+          <Button variant='contained' onClick={handleSaveRule}>
             {editingRule ? 'Update Rule' : 'Create Rule'}
           </Button>
         </DialogActions>

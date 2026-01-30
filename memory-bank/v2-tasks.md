@@ -3,12 +3,14 @@
 ## Project Overview
 
 **Version 2 Objectives:**
+
 - Transform V1's feature-complete system into a guided, step-by-step workflow
 - Introduce AI-powered assistance throughout the entire process
 - Improve user experience with a redesigned, intuitive interface
 - Enhance automation while maintaining human oversight and compliance
 
 **Core V2 Workflow:**
+
 1. **Request Landing Page** - Centralized request management dashboard
 2. **Step 1: Locate** - AI-assisted record discovery and selection
 3. **Step 2: Redact** - Enhanced AI redaction with manual refinement
@@ -342,6 +344,7 @@
 ## Technical Architecture
 
 ### Infrastructure Requirements
+
 - **Frontend:** React 18+ with Next.js 14, Material-UI v6
 - **AI Integration:** OpenAI GPT-4 and/or Google Vertex AI
 - **Backend:** Enhanced Node.js services with Express
@@ -350,6 +353,7 @@
 - **Analytics:** BigQuery for advanced analytics and reporting
 
 ### Migration Strategy
+
 1. **Phase 1:** Parallel V2 development alongside V1 maintenance
 2. **Phase 2:** Gradual feature migration with user opt-in
 3. **Phase 3:** Full V2 deployment with V1 deprecation
@@ -360,6 +364,7 @@
 ## Success Metrics
 
 ### Primary KPIs
+
 - [ ] **Processing Time:** ≥40% reduction in average request completion time
 - [ ] **AI Accuracy:** ≥90% accuracy in AI-matched records vs. manual baseline
 - [ ] **User Satisfaction:** ≥80% improved ease of use vs. V1
@@ -367,6 +372,7 @@
 - [ ] **Adoption:** ≥85% user migration from V1 to V2 within 6 months
 
 ### Secondary Metrics
+
 - [ ] Reduced manual intervention by ≥60%
 - [ ] Improved response consistency by ≥75%
 - [ ] Enhanced audit trail completeness to 100%
@@ -378,6 +384,7 @@
 ## Dependencies & Prerequisites
 
 ### V1 Foundation Requirements
+
 - ✅ Complete V1 system (All 7 epics completed)
 - ✅ Audit & observability system
 - ✅ Authentication and authorization
@@ -385,6 +392,7 @@
 - ✅ Testing infrastructure and CI/CD
 
 ### External Dependencies
+
 - [ ] AI service agreements (OpenAI/Google)
 - [ ] Enhanced cloud infrastructure provisioning
 - [ ] Security and compliance review

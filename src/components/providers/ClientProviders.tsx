@@ -12,9 +12,7 @@ interface ClientProvidersProps {
 export function ClientProviders({ children }: ClientProvidersProps) {
   return (
     <AuthProvider>
-      <AgencyProvider>
-        {children}
-      </AgencyProvider>
+      <AgencyProvider>{children}</AgencyProvider>
     </AuthProvider>
   );
 }

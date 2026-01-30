@@ -1,34 +1,38 @@
 // Hooks
-export { usePermissions, type UserRole, type Permission, FEATURES, isFeatureAvailable } from '../../hooks/usePermissions';
+export {
+  FEATURES,
+  isFeatureAvailable,
+  type Permission,
+  usePermissions,
+  type UserRole,
+} from '../../hooks/usePermissions';
 
 // Components
-export { 
-  RoleGuard, 
-  AdminOnly, 
-  StaffOnly, 
-  LegalOnly, 
-  ApprovalRequired 
-} from './RoleGuard';
-
-export { 
-  withRoleAccess,
-  withAdminAccess,
-  withStaffAccess, 
-  withLegalAccess,
-  withPermissions
-} from './withRoleAccess';
-
 export {
+  AdminButton,
+  ApprovalButton,
+  LegalButton,
   PermissionButton,
   PermissionIconButton,
   PermissionMenuItem,
+  RejectButton,
   RoleChip,
-  AdminButton,
   StaffButton,
-  LegalButton,
-  ApprovalButton,
-  RejectButton
 } from './PermissionComponents';
+export {
+  AdminOnly,
+  ApprovalRequired,
+  LegalOnly,
+  RoleGuard,
+  StaffOnly,
+} from './RoleGuard';
+export {
+  withAdminAccess,
+  withLegalAccess,
+  withPermissions,
+  withRoleAccess,
+  withStaffAccess,
+} from './withRoleAccess';
 
 // Re-export existing auth components
 export { ProtectedRoute } from './ProtectedRoute';

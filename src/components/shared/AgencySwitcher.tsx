@@ -56,12 +56,13 @@ interface AgencySwitcherProps {
   disabled?: boolean;
 }
 
-export function AgencySwitcher({ 
-  variant = 'full', 
+export function AgencySwitcher({
+  variant = 'full',
   showDepartmentCount = true,
-  disabled = false, 
+  disabled = false,
 }: AgencySwitcherProps) {
-  const { currentAgency, availableAgencies, switchAgency, isLoading } = useAgency();
+  const { currentAgency, availableAgencies, switchAgency, isLoading } =
+    useAgency();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -83,14 +84,18 @@ export function AgencySwitcher({
   if (isLoading || !currentAgency) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Skeleton variant="circular" width={24} height={24} />
-        <Skeleton variant="text" width={variant === 'compact' ? 80 : 120} />
-        {variant === 'full' && <Skeleton variant="circular" width={16} height={16} />}
+        <Skeleton variant='circular' width={24} height={24} />
+        <Skeleton variant='text' width={variant === 'compact' ? 80 : 120} />
+        {variant === 'full' && (
+          <Skeleton variant='circular' width={16} height={16} />
+        )}
       </Box>
     );
   }
 
-  const currentAgencyIcon = AGENCY_ICONS[currentAgency.id] || <BusinessCenter />;
+  const currentAgencyIcon = AGENCY_ICONS[currentAgency.id] || (
+    <BusinessCenter />
+  );
   const currentAgencyColor = AGENCY_COLORS[currentAgency.id] || '#1976d2';
 
   // Compact variant for smaller spaces
@@ -100,7 +105,7 @@ export function AgencySwitcher({
         <Button
           onClick={handleClick}
           disabled={disabled}
-          size="small"
+          size='small'
           sx={{
             minWidth: 'unset',
             px: 1,
@@ -111,7 +116,7 @@ export function AgencySwitcher({
               backgroundColor: `${currentAgencyColor}08`,
             },
           }}
-          variant="outlined"
+          variant='outlined'
           startIcon={currentAgencyIcon}
         >
           {currentAgency.id.toUpperCase()}
@@ -126,7 +131,7 @@ export function AgencySwitcher({
       <Button
         onClick={handleClick}
         disabled={disabled}
-        variant="outlined"
+        variant='outlined'
         endIcon={<ExpandMore />}
         startIcon={currentAgencyIcon}
         sx={{
@@ -140,12 +145,19 @@ export function AgencySwitcher({
           minWidth: 180,
         }}
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: 1 }}>
-          <Typography variant="body2" fontWeight="medium">
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            flex: 1,
+          }}
+        >
+          <Typography variant='body2' fontWeight='medium'>
             {currentAgency.name}
           </Typography>
           {showDepartmentCount && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant='caption' color='text.secondary'>
               {currentAgency.departments.length} departments
             </Typography>
           )}
@@ -153,7 +165,7 @@ export function AgencySwitcher({
       </Button>
 
       <Menu
-        id="agency-switcher-menu"
+        id='agency-switcher-menu'
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -168,13 +180,13 @@ export function AgencySwitcher({
         }}
       >
         <Box sx={{ px: 2, py: 1, bgcolor: 'grey.50' }}>
-          <Typography variant="subtitle2" color="text.secondary">
+          <Typography variant='subtitle2' color='text.secondary'>
             Switch Agency Context
           </Typography>
         </Box>
         <Divider />
-        
-        {availableAgencies.map((agency) => {
+
+        {availableAgencies.map(agency => {
           const isSelected = agency.id === currentAgency.id;
           const agencyIcon = AGENCY_ICONS[agency.id] || <BusinessCenter />;
           const agencyColor = AGENCY_COLORS[agency.id] || '#1976d2';
@@ -195,11 +207,12 @@ export function AgencySwitcher({
                 {agencyIcon}
               </ListItemIcon>
               <ListItemText>
-                <Typography variant="body2" fontWeight="medium">
+                <Typography variant='body2' fontWeight='medium'>
                   {agency.name}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {agency.departments.length} departments • {agency.averageResponseTime} day avg response
+                <Typography variant='caption' color='text.secondary'>
+                  {agency.departments.length} departments •{' '}
+                  {agency.averageResponseTime} day avg response
                 </Typography>
               </ListItemText>
               {isSelected && (
@@ -210,10 +223,12 @@ export function AgencySwitcher({
         })}
 
         <Divider sx={{ my: 1 }} />
-        
-        <Box sx={{ px: 2, py: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SwapHoriz fontSize="small" color="action" />
-          <Typography variant="caption" color="text.secondary">
+
+        <Box
+          sx={{ px: 2, py: 1, display: 'flex', alignItems: 'center', gap: 1 }}
+        >
+          <SwapHoriz fontSize='small' color='action' />
+          <Typography variant='caption' color='text.secondary'>
             Agency context affects data filtering and permissions
           </Typography>
         </Box>
@@ -229,14 +244,14 @@ interface AgencyIndicatorProps {
   showIcon?: boolean;
 }
 
-export function AgencyIndicator({ 
-  agencyId, 
-  size = 'small', 
-  showIcon = true, 
+export function AgencyIndicator({
+  agencyId,
+  size = 'small',
+  showIcon = true,
 }: AgencyIndicatorProps) {
   const { currentAgency, availableAgencies } = useAgency();
-  
-  const agency = agencyId 
+
+  const agency = agencyId
     ? availableAgencies.find(a => a.id === agencyId)
     : currentAgency;
 
@@ -260,7 +275,7 @@ export function AgencyIndicator({
           color: agencyColor,
         },
       }}
-      variant="outlined"
+      variant='outlined'
     />
   );
 }

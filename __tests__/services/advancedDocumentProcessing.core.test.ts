@@ -1,18 +1,17 @@
 /**
  * Core Advanced Document Processing Tests
- * 
+ *
  * Unit tests for core document processing functionality
  * without external service dependencies.
  */
 
-import { 
-  DocumentFileType, 
+import {
+  DocumentFileType,
   ProcessingStatus,
-  BatchProgress 
+  BatchProgress,
 } from '../../src/services/advancedDocumentProcessingService';
 
 describe('Advanced Document Processing - Core Functions', () => {
-  
   describe('DocumentFileType enum', () => {
     test('should have all expected file types', () => {
       expect(DocumentFileType.PDF).toBeDefined();
@@ -58,8 +57,9 @@ describe('Advanced Document Processing - Core Functions', () => {
         'image/gif': DocumentFileType.IMAGE_GIF,
         'text/plain': DocumentFileType.TXT,
         'application/msword': DocumentFileType.DOC,
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': DocumentFileType.DOCX,
-        'application/rtf': DocumentFileType.RTF
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+          DocumentFileType.DOCX,
+        'application/rtf': DocumentFileType.RTF,
       };
 
       Object.entries(mimeTypeMap).forEach(([mimeType, expectedType]) => {
@@ -79,7 +79,7 @@ describe('Advanced Document Processing - Core Functions', () => {
         'document.txt': DocumentFileType.TXT,
         'old-doc.doc': DocumentFileType.DOC,
         'new-doc.docx': DocumentFileType.DOCX,
-        'rich-text.rtf': DocumentFileType.RTF
+        'rich-text.rtf': DocumentFileType.RTF,
       };
 
       Object.entries(extensionMap).forEach(([filename, expectedType]) => {
@@ -95,10 +95,10 @@ describe('Advanced Document Processing - Core Functions', () => {
       const imageFormats = [
         DocumentFileType.IMAGE_PNG,
         DocumentFileType.IMAGE_JPEG,
-        DocumentFileType.IMAGE_GIF
+        DocumentFileType.IMAGE_GIF,
       ];
 
-      const requiresOCR = (fileType: DocumentFileType) => 
+      const requiresOCR = (fileType: DocumentFileType) =>
         imageFormats.includes(fileType);
 
       expect(requiresOCR(DocumentFileType.IMAGE_PNG)).toBe(true);
@@ -143,7 +143,7 @@ describe('Advanced Document Processing - Core Functions', () => {
 
   describe('Batch Progress Calculations', () => {
     test('should calculate progress correctly', () => {
-      const calculateProgress = (completed: number, total: number): number => 
+      const calculateProgress = (completed: number, total: number): number =>
         total === 0 ? 0 : Math.round((completed / total) * 100);
 
       expect(calculateProgress(0, 10)).toBe(0);
@@ -161,10 +161,14 @@ describe('Advanced Document Processing - Core Functions', () => {
         failed: 1,
         inProgress: 2,
         currentFile: 'processing.pdf',
-        overallProgress: 70
+        overallProgress: 70,
       };
 
-      expect(sampleProgress.completed + sampleProgress.failed + sampleProgress.inProgress).toBe(sampleProgress.total);
+      expect(
+        sampleProgress.completed +
+          sampleProgress.failed +
+          sampleProgress.inProgress
+      ).toBe(sampleProgress.total);
       expect(sampleProgress.overallProgress).toBe(70);
       expect(sampleProgress.batchId).toMatch(/^batch_\d+_[a-z0-9]+$/);
     });
@@ -172,20 +176,25 @@ describe('Advanced Document Processing - Core Functions', () => {
 
   describe('File Validation', () => {
     test('should validate file sizes', () => {
-      const validateFileSize = (size: number, maxSize: number): boolean => 
+      const validateFileSize = (size: number, maxSize: number): boolean =>
         size <= maxSize;
 
       const maxSize = 10 * 1024 * 1024; // 10MB
-      
+
       expect(validateFileSize(1024, maxSize)).toBe(true);
       expect(validateFileSize(maxSize, maxSize)).toBe(true);
       expect(validateFileSize(maxSize + 1, maxSize)).toBe(false);
     });
 
     test('should validate file types', () => {
-      const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'text/plain'];
-      
-      const validateFileType = (type: string): boolean => 
+      const allowedTypes = [
+        'application/pdf',
+        'image/png',
+        'image/jpeg',
+        'text/plain',
+      ];
+
+      const validateFileType = (type: string): boolean =>
         allowedTypes.includes(type);
 
       expect(validateFileType('application/pdf')).toBe(true);
@@ -200,19 +209,28 @@ describe('Advanced Document Processing - Core Functions', () => {
         size: number;
       }
 
-      const isDuplicate = (file: FileInfo, existingFiles: FileInfo[]): boolean => 
-        existingFiles.some(existing => 
-          existing.name === file.name && existing.size === file.size
+      const isDuplicate = (
+        file: FileInfo,
+        existingFiles: FileInfo[]
+      ): boolean =>
+        existingFiles.some(
+          existing => existing.name === file.name && existing.size === file.size
         );
 
       const existingFiles: FileInfo[] = [
         { name: 'test.pdf', size: 1024 },
-        { name: 'document.txt', size: 512 }
+        { name: 'document.txt', size: 512 },
       ];
 
-      expect(isDuplicate({ name: 'test.pdf', size: 1024 }, existingFiles)).toBe(true);
-      expect(isDuplicate({ name: 'test.pdf', size: 2048 }, existingFiles)).toBe(false);
-      expect(isDuplicate({ name: 'new.pdf', size: 1024 }, existingFiles)).toBe(false);
+      expect(isDuplicate({ name: 'test.pdf', size: 1024 }, existingFiles)).toBe(
+        true
+      );
+      expect(isDuplicate({ name: 'test.pdf', size: 2048 }, existingFiles)).toBe(
+        false
+      );
+      expect(isDuplicate({ name: 'new.pdf', size: 1024 }, existingFiles)).toBe(
+        false
+      );
     });
   });
 
@@ -231,7 +249,7 @@ describe('Advanced Document Processing - Core Functions', () => {
         enablePIIDetection: true,
         enableAgencyValidation: true,
         maxConcurrent: 3,
-        timeout: 30000
+        timeout: 30000,
       };
 
       expect(defaultConfig.enableOCR).toBe(true);
@@ -244,12 +262,12 @@ describe('Advanced Document Processing - Core Functions', () => {
         enableOCR: true,
         enablePIIDetection: true,
         maxConcurrent: 3,
-        timeout: 30000
+        timeout: 30000,
       };
 
       const userConfig = {
         enableOCR: false,
-        maxConcurrent: 5
+        maxConcurrent: 5,
       };
 
       const mergedConfig = { ...defaultConfig, ...userConfig };
@@ -280,7 +298,7 @@ describe('Advanced Document Processing - Core Functions', () => {
         status: ProcessingStatus.COMPLETED,
         extractedText: 'Sample content',
         processingTime: 1250,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       expect(sampleResult.id).toMatch(/^proc_\d+_[a-z0-9]+$/);
@@ -302,7 +320,7 @@ describe('Advanced Document Processing - Core Functions', () => {
       const sampleError: ProcessingError = {
         code: 'OCR_FAILED',
         message: 'OCR processing failed for image file',
-        details: { confidence: 0.2, attempts: 3 }
+        details: { confidence: 0.2, attempts: 3 },
       };
 
       expect(sampleError.code).toBeTruthy();
@@ -332,13 +350,14 @@ describe('Advanced Document Processing - Core Functions', () => {
       }
 
       const calculateMetrics = (
-        totalFiles: number, 
-        totalTime: number, 
+        totalFiles: number,
+        totalTime: number,
         successfulFiles: number
       ): PerformanceMetrics => ({
         filesPerSecond: totalTime === 0 ? 0 : totalFiles / (totalTime / 1000),
         averageProcessingTime: totalFiles === 0 ? 0 : totalTime / totalFiles,
-        successRate: totalFiles === 0 ? 0 : (successfulFiles / totalFiles) * 100
+        successRate:
+          totalFiles === 0 ? 0 : (successfulFiles / totalFiles) * 100,
       });
 
       const metrics = calculateMetrics(10, 15000, 9); // 10 files, 15 seconds, 9 successful

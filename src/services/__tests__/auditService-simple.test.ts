@@ -58,7 +58,7 @@ describe('AuditService - Basic Tests', () => {
         category: 'user_action',
       },
     ];
-    
+
     mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockEvents));
 
     const events = await auditService.getEvents();

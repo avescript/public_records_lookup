@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
+import {
   Description as DocumentIcon,
   FilterList as FilterIcon,
   Folder as FolderIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
-import { 
+import {
   Alert,
-  Box, 
+  Box,
   Card,
   CardContent,
   Checkbox,
@@ -49,7 +49,8 @@ const mockRecords: PublicRecord[] = [
     type: 'report',
     department: 'Transportation',
     dateCreated: '2024-01-15',
-    description: 'Comprehensive analysis of traffic patterns and safety incidents in the downtown district during Q4 2023.',
+    description:
+      'Comprehensive analysis of traffic patterns and safety incidents in the downtown district during Q4 2023.',
     relevanceScore: 95,
     tags: ['traffic', 'safety', 'downtown'],
   },
@@ -59,7 +60,8 @@ const mockRecords: PublicRecord[] = [
     type: 'email',
     department: 'Transportation',
     dateCreated: '2024-01-12',
-    description: 'Email correspondence between city council and transportation department regarding traffic concerns.',
+    description:
+      'Email correspondence between city council and transportation department regarding traffic concerns.',
     relevanceScore: 88,
     tags: ['email', 'traffic', 'council'],
   },
@@ -86,23 +88,29 @@ function getRelevanceColor(score: number): 'success' | 'warning' | 'error' {
 
 export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
   const router = useRouter();
-  const [records, setRecords] = useState<PublicRecord[]>(mockRecords.map(r => ({ ...r, selected: false })));
+  const [records, setRecords] = useState<PublicRecord[]>(
+    mockRecords.map(r => ({ ...r, selected: false }))
+  );
   const [searchTerm, setSearchTerm] = useState('');
 
   const selectedRecords = records.filter(r => r.selected);
   const isStepComplete = selectedRecords.length > 0;
 
   const handleRecordToggle = (recordId: string) => {
-    setRecords(prev => prev.map(record => 
-      record.id === recordId 
-        ? { ...record, selected: !record.selected }
-        : record
-    ));
+    setRecords(prev =>
+      prev.map(record =>
+        record.id === recordId
+          ? { ...record, selected: !record.selected }
+          : record
+      )
+    );
   };
 
   const handleSelectAll = () => {
     const allSelected = records.every(r => r.selected);
-    setRecords(prev => prev.map(record => ({ ...record, selected: !allSelected })));
+    setRecords(prev =>
+      prev.map(record => ({ ...record, selected: !allSelected }))
+    );
   };
 
   const handleProceedToRedact = () => {
@@ -114,21 +122,29 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
   return (
     <WorkflowPage
       requestId={requestId}
-      currentStep="locate"
+      currentStep='locate'
       completedSteps={completedSteps}
-      title="Locate Relevant Records"
-      subtitle="Search and select public records that are relevant to this request. Use the search and filters to find specific documents, emails, or reports."
+      title='Locate Relevant Records'
+      subtitle='Search and select public records that are relevant to this request. Use the search and filters to find specific documents, emails, or reports.'
     >
       {/* Simple Search and Action Bar */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           <Box sx={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
-            <SearchIcon sx={{ position: 'absolute', left: 1.5, top: '50%', transform: 'translateY(-50%)', color: 'text.secondary' }} />
+            <SearchIcon
+              sx={{
+                position: 'absolute',
+                left: 1.5,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'text.secondary',
+              }}
+            />
             <input
-              type="text"
-              placeholder="Search records by title, content, or tags..."
+              type='text'
+              placeholder='Search records by title, content, or tags...'
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               style={{
                 width: '100%',
                 padding: '12px 12px 12px 40px',
@@ -138,17 +154,22 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
               }}
             />
           </Box>
-          <Button variant="outline" size="md">
+          <Button variant='outline' size='md'>
             <FilterIcon />
             Filters
           </Button>
         </Box>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button variant="outline" size="md" onClick={handleSelectAll}>
+          <Button variant='outline' size='md' onClick={handleSelectAll}>
             {records.every(r => r.selected) ? 'Deselect All' : 'Select All'}
           </Button>
-          <Button variant="primary" size="md" disabled={!isStepComplete} onClick={handleProceedToRedact}>
+          <Button
+            variant='primary'
+            size='md'
+            disabled={!isStepComplete}
+            onClick={handleProceedToRedact}
+          >
             Proceed to Redact ({selectedRecords.length})
           </Button>
         </Box>
@@ -157,80 +178,109 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
       {/* Selection Summary */}
       {selectedRecords.length > 0 && (
         <Box sx={{ mb: 3 }}>
-          <Alert severity="info">
-            <Typography variant="body2">
-              <strong>{selectedRecords.length} record{selectedRecords.length !== 1 ? 's' : ''} selected</strong> - 
-              These records will be reviewed for redaction in the next step.
+          <Alert severity='info'>
+            <Typography variant='body2'>
+              <strong>
+                {selectedRecords.length} record
+                {selectedRecords.length !== 1 ? 's' : ''} selected
+              </strong>{' '}
+              - These records will be reviewed for redaction in the next step.
             </Typography>
           </Alert>
         </Box>
       )}
 
       {/* Search Results */}
-      <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))' }}>
-        {records.map((record) => (
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 2,
+          gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
+        }}
+      >
+        {records.map(record => (
           <Box key={record.id} sx={{ transition: 'all 0.2s ease-in-out' }}>
-            <Card sx={{ 
-              height: '100%',
-              border: record.selected ? 2 : 1,
-              borderColor: record.selected ? 'primary.main' : 'divider',
-              backgroundColor: record.selected ? 'primary.main08' : 'background.paper',
-              cursor: 'pointer',
-              '&:hover': {
-                boxShadow: 4,
-                transform: 'translateY(-2px)',
-              },
-            }}>
+            <Card
+              sx={{
+                height: '100%',
+                border: record.selected ? 2 : 1,
+                borderColor: record.selected ? 'primary.main' : 'divider',
+                backgroundColor: record.selected
+                  ? 'primary.main08'
+                  : 'background.paper',
+                cursor: 'pointer',
+                '&:hover': {
+                  boxShadow: 4,
+                  transform: 'translateY(-2px)',
+                },
+              }}
+            >
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    mb: 2,
+                  }}
+                >
                   <Box sx={{ display: 'flex', gap: 1.5, flex: 1 }}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      width: 40,
-                      height: 40,
-                      borderRadius: 1,
-                      backgroundColor: 'grey.100',
-                      color: 'text.secondary',
-                    }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 40,
+                        height: 40,
+                        borderRadius: 1,
+                        backgroundColor: 'grey.100',
+                        color: 'text.secondary',
+                      }}
+                    >
                       {getRecordIcon(record.type)}
                     </Box>
                     <Box sx={{ flex: 1 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                      <Typography
+                        variant='h6'
+                        sx={{ fontWeight: 600, mb: 0.5 }}
+                      >
                         {record.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {record.department} • {new Date(record.dateCreated).toLocaleDateString()}
+                      <Typography variant='body2' color='text.secondary'>
+                        {record.department} •{' '}
+                        {new Date(record.dateCreated).toLocaleDateString()}
                       </Typography>
                     </Box>
                   </Box>
-                  
+
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Chip
                       label={`${record.relevanceScore}% match`}
                       color={getRelevanceColor(record.relevanceScore)}
-                      size="small"
+                      size='small'
                     />
                     <Checkbox
                       checked={record.selected || false}
                       onChange={() => handleRecordToggle(record.id)}
-                      color="primary"
+                      color='primary'
                     />
                   </Box>
                 </Box>
 
-                <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+                <Typography
+                  variant='body2'
+                  sx={{ mb: 2, color: 'text.secondary' }}
+                >
                   {record.description}
                 </Typography>
-                
-                <Stack direction="row" spacing={1}>
-                  {record.tags.map((tag) => (
+
+                <Stack direction='row' spacing={1}>
+                  {record.tags.map(tag => (
                     <Chip
                       key={tag}
                       label={tag}
-                      size="small"
-                      variant="outlined"
+                      size='small'
+                      variant='outlined'
                     />
                   ))}
                 </Stack>

@@ -2,7 +2,10 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AgencyProvider } from '../../src/contexts/AgencyContext';
-import { AgencySwitcher, AgencyIndicator } from '../../src/components/shared/AgencySwitcher';
+import {
+  AgencySwitcher,
+  AgencyIndicator,
+} from '../../src/components/shared/AgencySwitcher';
 import { theme } from '../../src/theme';
 
 // Mock the entire AgencyContext module
@@ -44,7 +47,9 @@ jest.mock('../../src/contexts/AgencyContext', () => {
 
   return {
     useAgency: () => mockAgencyContext,
-    AgencyProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    AgencyProvider: ({ children }: { children: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
   };
 });
 
@@ -60,7 +65,7 @@ describe('AgencySwitcher', () => {
     it('should render compact variant with current agency', () => {
       render(
         <TestWrapper>
-          <AgencySwitcher variant="compact" />
+          <AgencySwitcher variant='compact' />
         </TestWrapper>
       );
 
@@ -72,12 +77,15 @@ describe('AgencySwitcher', () => {
     it('should have proper tooltip for compact variant', () => {
       render(
         <TestWrapper>
-          <AgencySwitcher variant="compact" />
+          <AgencySwitcher variant='compact' />
         </TestWrapper>
       );
 
       const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('aria-label', 'Current Agency: Police Department');
+      expect(button).toHaveAttribute(
+        'aria-label',
+        'Current Agency: Police Department'
+      );
     });
   });
 
@@ -85,7 +93,7 @@ describe('AgencySwitcher', () => {
     it('should render full variant with agency name and departments count', () => {
       render(
         <TestWrapper>
-          <AgencySwitcher variant="full" />
+          <AgencySwitcher variant='full' />
         </TestWrapper>
       );
 
@@ -155,7 +163,7 @@ describe('AgencyIndicator', () => {
   it('should render with custom size when provided', () => {
     render(
       <TestWrapper>
-        <AgencyIndicator size="medium" />
+        <AgencyIndicator size='medium' />
       </TestWrapper>
     );
 

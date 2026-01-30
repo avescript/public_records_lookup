@@ -56,7 +56,7 @@ function LoginPageContent() {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth='sm'>
       <Box
         sx={{
           display: 'flex',
@@ -69,45 +69,45 @@ function LoginPageContent() {
         <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400 }}>
           <Box sx={{ textAlign: 'center', mb: 3 }}>
             <LoginIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
-            <Typography variant="h4" gutterBottom>
+            <Typography variant='h4' gutterBottom>
               Staff Login
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant='body2' color='text.secondary'>
               Access the Public Records Management System
             </Typography>
           </Box>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity='error' sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit}>
+          <Box component='form' onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="Email"
-              type="email"
+              label='Email'
+              type='email'
               value={email}
               onChange={handleEmailChange}
-              margin="normal"
+              margin='normal'
               required
               autoFocus
             />
             <TextField
               fullWidth
-              label="Password"
-              type="password"
+              label='Password'
+              type='password'
               value={password}
               onChange={handlePasswordChange}
-              margin="normal"
+              margin='normal'
               required
             />
             <Button
-              type="submit"
+              type='submit'
               fullWidth
-              variant="contained"
-              size="large"
+              variant='contained'
+              size='large'
               disabled={isLoading}
               startIcon={
                 isLoading ? <CircularProgress size={20} /> : <LoginIcon />
@@ -120,15 +120,15 @@ function LoginPageContent() {
 
           <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
             <Typography
-              variant="caption"
-              color="text.secondary"
+              variant='caption'
+              color='text.secondary'
               gutterBottom
-              display="block"
+              display='block'
             >
               Development Credentials:
             </Typography>
             <Typography
-              variant="body2"
+              variant='body2'
               sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}
             >
               <strong>Admin:</strong> admin@records.gov / admin123
@@ -140,7 +140,7 @@ function LoginPageContent() {
           </Box>
         </Paper>
 
-        <Button component="a" href="/" variant="text" sx={{ mt: 2 }}>
+        <Button component='a' href='/' variant='text' sx={{ mt: 2 }}>
           ← Back to Public Portal
         </Button>
       </Box>

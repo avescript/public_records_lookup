@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo,useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 // Make sure this component only runs on the client side
@@ -36,9 +36,21 @@ import {
 // Configure PDF.js worker
 import '../../../lib/pdf-worker';
 
-import { piiDetectionService,PIIFinding, PIIType } from '../../../services/piiDetectionService';
-import { ManualRedaction, RedactionCoordinates, redactionService } from '../../../services/redactionService';
-import { CanvasDimensions,CoordinateTransformer, PDFPageDimensions } from '../../../utils/coordinateTransformer';
+import {
+  piiDetectionService,
+  PIIFinding,
+  PIIType,
+} from '../../../services/piiDetectionService';
+import {
+  ManualRedaction,
+  RedactionCoordinates,
+  redactionService,
+} from '../../../services/redactionService';
+import {
+  CanvasDimensions,
+  CoordinateTransformer,
+  PDFPageDimensions,
+} from '../../../utils/coordinateTransformer';
 import { RedactionCanvas } from '../../RedactionCanvas';
 import RedactionManagement from '../../RedactionManagement';
 
@@ -60,7 +72,7 @@ interface PIIOverlayProps {
 
 const PIITypeColors: Record<PIIType, string> = {
   [PIIType.SSN]: '#f44336', // Red
-  [PIIType.PHONE]: '#ff9800', // Orange  
+  [PIIType.PHONE]: '#ff9800', // Orange
   [PIIType.ADDRESS]: '#2196f3', // Blue
   [PIIType.PERSON_NAME]: '#4caf50', // Green
   [PIIType.EMAIL]: '#9c27b0', // Purple
@@ -81,7 +93,8 @@ const PIIOverlay: React.FC<PIIOverlayProps> = ({
   if (!showOverlays) return null;
 
   const pageFindings = findings.filter(
-    (finding) => finding.pageNumber === pageNumber && piiTypeFilters.has(finding.piiType)
+    finding =>
+      finding.pageNumber === pageNumber && piiTypeFilters.has(finding.piiType)
   );
 
   return (
@@ -115,7 +128,7 @@ const PIIOverlay: React.FC<PIIOverlayProps> = ({
         >
           <Chip
             label={finding.piiType}
-            size="small"
+            size='small'
             sx={{
               position: 'absolute',
               top: -20,
@@ -150,18 +163,22 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
   const [findings, setFindings] = useState<PIIFinding[]>([]);
   const [redactions, setRedactions] = useState<ManualRedaction[]>([]);
   const [showOverlays, setShowOverlays] = useState<boolean>(true);
-  const [piiTypeFilters, setPIITypeFilters] = useState<Set<PIIType>>(new Set(Object.values(PIIType)));
+  const [piiTypeFilters, setPIITypeFilters] = useState<Set<PIIType>>(
+    new Set(Object.values(PIIType))
+  );
   const [viewMode, setViewMode] = useState<'pii' | 'redaction'>('pii');
   const [pageWidth, setPageWidth] = useState<number>(595); // Default PDF page width
   const [pageHeight, setPageHeight] = useState<number>(842); // Default PDF page height
 
   // Phase 0: Use placeholder file path
-  const effectiveFilePath = filePath || `/mock-data/${fileName.replace('.pdf', '.txt')}`;
+  const effectiveFilePath =
+    filePath || `/mock-data/${fileName.replace('.pdf', '.txt')}`;
 
   useEffect(() => {
     const loadFindings = async () => {
       try {
-        const findingsResult = await piiDetectionService.getFindingsForRecord(recordId);
+        const findingsResult =
+          await piiDetectionService.getFindingsForRecord(recordId);
         setFindings(findingsResult.findings);
         onPIIFindingsLoad?.(findingsResult.findings);
       } catch (error) {
@@ -175,7 +192,10 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
   useEffect(() => {
     const loadRedactions = async () => {
       try {
-        const redactionsResult = await redactionService.getRedactionsForRecord(recordId, fileName);
+        const redactionsResult = await redactionService.getRedactionsForRecord(
+          recordId,
+          fileName
+        );
         setRedactions(redactionsResult);
         onRedactionsChange?.(redactionsResult);
       } catch (error) {
@@ -188,16 +208,17 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
 
   const currentPageFindings = useMemo(() => {
     return findings.filter(
-      (finding) => finding.fileName === fileName && finding.pageNumber === currentPage
+      finding =>
+        finding.fileName === fileName && finding.pageNumber === currentPage
     );
   }, [findings, fileName, currentPage]);
 
   const currentPageRedactions = useMemo(() => {
-    return redactions.filter((redaction) => redaction.pageNumber === currentPage);
+    return redactions.filter(redaction => redaction.pageNumber === currentPage);
   }, [redactions, currentPage]);
 
   const uniquePIITypes = useMemo(() => {
-    return Array.from(new Set(findings.map((finding) => finding.piiType)));
+    return Array.from(new Set(findings.map(finding => finding.piiType)));
   }, [findings]);
 
   const handleDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
@@ -226,14 +247,17 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
         currentPage,
         coordinates
       );
-      setRedactions((prev) => [...prev, newRedaction]);
+      setRedactions(prev => [...prev, newRedaction]);
       onRedactionsChange?.([...redactions, newRedaction]);
     } catch (error) {
       console.error('Error adding redaction:', error);
     }
   };
 
-  const handleRedactionUpdate = async (redactionId: string, coordinates: RedactionCoordinates) => {
+  const handleRedactionUpdate = async (
+    redactionId: string,
+    coordinates: RedactionCoordinates
+  ) => {
     try {
       const updatedRedaction = await redactionService.updateRedaction(
         recordId,
@@ -242,10 +266,12 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
         coordinates
       );
       if (updatedRedaction) {
-        setRedactions((prev) =>
-          prev.map((r) => (r.id === redactionId ? updatedRedaction : r))
+        setRedactions(prev =>
+          prev.map(r => (r.id === redactionId ? updatedRedaction : r))
         );
-        onRedactionsChange?.(redactions.map((r) => (r.id === redactionId ? updatedRedaction : r)));
+        onRedactionsChange?.(
+          redactions.map(r => (r.id === redactionId ? updatedRedaction : r))
+        );
       }
     } catch (error) {
       console.error('Error updating redaction:', error);
@@ -254,9 +280,13 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
 
   const handleRedactionDelete = async (redactionId: string) => {
     try {
-      const success = await redactionService.removeRedaction(recordId, fileName, redactionId);
+      const success = await redactionService.removeRedaction(
+        recordId,
+        fileName,
+        redactionId
+      );
       if (success) {
-        const updatedRedactions = redactions.filter((r) => r.id !== redactionId);
+        const updatedRedactions = redactions.filter(r => r.id !== redactionId);
         setRedactions(updatedRedactions);
         onRedactionsChange?.(updatedRedactions);
       }
@@ -266,15 +296,15 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
   };
 
   const handleViewModeToggle = () => {
-    setViewMode((prev) => (prev === 'pii' ? 'redaction' : 'pii'));
+    setViewMode(prev => (prev === 'pii' ? 'redaction' : 'pii'));
   };
 
   const handleZoomIn = () => {
-    setScale((prev) => Math.min(prev + 0.2, 3.0));
+    setScale(prev => Math.min(prev + 0.2, 3.0));
   };
 
   const handleZoomOut = () => {
-    setScale((prev) => Math.max(prev - 0.2, 0.5));
+    setScale(prev => Math.max(prev - 0.2, 0.5));
   };
 
   const handleFitToWidth = () => {
@@ -282,15 +312,15 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
   };
 
   const handlePrevPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
+    setCurrentPage(prev => Math.max(prev - 1, 1));
   };
 
   const handleNextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, numPages));
+    setCurrentPage(prev => Math.min(prev + 1, numPages));
   };
 
   const handleTogglePIIType = (piiType: PIIType) => {
-    setPIITypeFilters((prev) => {
+    setPIITypeFilters(prev => {
       const newFilters = new Set(prev);
       if (newFilters.has(piiType)) {
         newFilters.delete(piiType);
@@ -309,10 +339,15 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
     return (
       <Card>
         <CardContent>
-          <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-            <Stack alignItems="center" spacing={2}>
+          <Box
+            display='flex'
+            justifyContent='center'
+            alignItems='center'
+            minHeight='400px'
+          >
+            <Stack alignItems='center' spacing={2}>
               <CircularProgress />
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Loading PDF preview...
               </Typography>
             </Stack>
@@ -326,32 +361,33 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
     return (
       <Card>
         <CardContent>
-          <Alert severity="info" sx={{ mb: 2 }}>
-            <Typography variant="h6" gutterBottom>
+          <Alert severity='info' sx={{ mb: 2 }}>
+            <Typography variant='h6' gutterBottom>
               PDF Preview Not Available (Phase 0)
             </Typography>
-            <Typography variant="body2">
-              This is a Phase 0 implementation. In production, this would show a full PDF preview with PII overlays.
+            <Typography variant='body2'>
+              This is a Phase 0 implementation. In production, this would show a
+              full PDF preview with PII overlays.
             </Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>
+            <Typography variant='body2' sx={{ mt: 1 }}>
               <strong>File:</strong> {fileName}
             </Typography>
-            <Typography variant="body2">
+            <Typography variant='body2'>
               <strong>PII Findings:</strong> {findings.length} items detected
             </Typography>
           </Alert>
 
           {findings.length > 0 && (
             <Box>
-              <Typography variant="subtitle1" gutterBottom>
+              <Typography variant='subtitle1' gutterBottom>
                 Detected PII Types:
               </Typography>
-              <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
-                {uniquePIITypes.map((piiType) => (
+              <Stack direction='row' spacing={1} flexWrap='wrap' sx={{ mb: 2 }}>
+                {uniquePIITypes.map(piiType => (
                   <Chip
                     key={piiType}
                     label={piiType}
-                    size="small"
+                    size='small'
                     sx={{
                       backgroundColor: PIITypeColors[piiType],
                       color: 'white',
@@ -360,8 +396,9 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
                 ))}
               </Stack>
 
-              <Typography variant="body2" color="text.secondary">
-                In the production version, these would appear as colored overlays on the PDF pages.
+              <Typography variant='body2' color='text.secondary'>
+                In the production version, these would appear as colored
+                overlays on the PDF pages.
               </Typography>
             </Box>
           )}
@@ -373,16 +410,21 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant='h6' gutterBottom>
           PDF Preview: {fileName}
         </Typography>
 
         {/* Controls */}
         <Stack spacing={2} sx={{ mb: 2 }}>
           {/* Zoom and Navigation Controls */}
-          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+          <Stack
+            direction='row'
+            spacing={1}
+            alignItems='center'
+            flexWrap='wrap'
+          >
             <Button
-              size="small"
+              size='small'
               startIcon={<ZoomOutIcon />}
               onClick={handleZoomOut}
               disabled={scale <= 0.5}
@@ -390,14 +432,14 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
               Zoom Out
             </Button>
             <Button
-              size="small"
+              size='small'
               startIcon={<FitToWidthIcon />}
               onClick={handleFitToWidth}
             >
               Fit ({Math.round(scale * 100)}%)
             </Button>
             <Button
-              size="small"
+              size='small'
               startIcon={<ZoomInIcon />}
               onClick={handleZoomIn}
               disabled={scale >= 3.0}
@@ -405,21 +447,21 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
               Zoom In
             </Button>
 
-            <Divider orientation="vertical" flexItem />
+            <Divider orientation='vertical' flexItem />
 
             <Button
-              size="small"
+              size='small'
               startIcon={<PrevPageIcon />}
               onClick={handlePrevPage}
               disabled={currentPage <= 1}
             >
               Previous
             </Button>
-            <Typography variant="body2">
+            <Typography variant='body2'>
               Page {currentPage} of {numPages}
             </Typography>
             <Button
-              size="small"
+              size='small'
               startIcon={<NextPageIcon />}
               onClick={handleNextPage}
               disabled={currentPage >= numPages}
@@ -427,11 +469,11 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
               Next
             </Button>
 
-            <Divider orientation="vertical" flexItem />
+            <Divider orientation='vertical' flexItem />
 
             {/* View Mode Toggle */}
             <Button
-              size="small"
+              size='small'
               variant={viewMode === 'pii' ? 'contained' : 'outlined'}
               startIcon={<PreviewIcon />}
               onClick={handleViewModeToggle}
@@ -440,7 +482,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
               PII View
             </Button>
             <Button
-              size="small"
+              size='small'
               variant={viewMode === 'redaction' ? 'contained' : 'outlined'}
               startIcon={<EditIcon />}
               onClick={handleViewModeToggle}
@@ -453,7 +495,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
               recordId={recordId}
               fileName={fileName}
               currentRedactions={redactions}
-              onVersionLoad={(loadedRedactions) => {
+              onVersionLoad={loadedRedactions => {
                 setRedactions(loadedRedactions);
                 onRedactionsChange?.(loadedRedactions);
               }}
@@ -463,19 +505,22 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
           {/* View Mode Specific Controls */}
           {viewMode === 'redaction' && (
             <Stack spacing={1}>
-              <Typography variant="body2" color="text.secondary">
-                Click and drag to draw redaction boxes. Select boxes to resize or move them.
+              <Typography variant='body2' color='text.secondary'>
+                Click and drag to draw redaction boxes. Select boxes to resize
+                or move them.
               </Typography>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography variant="body2">
+              <Stack direction='row' spacing={1} alignItems='center'>
+                <Typography variant='body2'>
                   Redactions on this page: {currentPageRedactions.length}
                 </Typography>
                 {currentPageRedactions.length > 0 && (
                   <Button
-                    size="small"
-                    color="warning"
+                    size='small'
+                    color='warning'
                     onClick={async () => {
-                      if (window.confirm('Clear all redactions on this page?')) {
+                      if (
+                        window.confirm('Clear all redactions on this page?')
+                      ) {
                         for (const redaction of currentPageRedactions) {
                           await handleRedactionDelete(redaction.id);
                         }
@@ -504,19 +549,21 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
                 label={`Show PII Overlays (${currentPageFindings.length} on this page)`}
               />
 
-              <Stack direction="row" spacing={1} flexWrap="wrap">
-                {uniquePIITypes.map((piiType) => (
+              <Stack direction='row' spacing={1} flexWrap='wrap'>
+                {uniquePIITypes.map(piiType => (
                   <Chip
                     key={piiType}
                     label={piiType}
-                    size="small"
+                    size='small'
                     clickable
                     onClick={() => handleTogglePIIType(piiType)}
                     sx={{
                       backgroundColor: piiTypeFilters.has(piiType)
                         ? PIITypeColors[piiType]
                         : 'transparent',
-                      color: piiTypeFilters.has(piiType) ? 'white' : 'text.primary',
+                      color: piiTypeFilters.has(piiType)
+                        ? 'white'
+                        : 'text.primary',
                       border: `1px solid ${PIITypeColors[piiType]}`,
                     }}
                   />
@@ -545,12 +592,12 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
             onLoadError={handleDocumentLoadError}
           >
             <Box sx={{ position: 'relative' }}>
-              <Page 
-                pageNumber={currentPage} 
-                scale={scale} 
+              <Page
+                pageNumber={currentPage}
+                scale={scale}
                 onLoadSuccess={handlePageLoadSuccess}
               />
-              
+
               {/* PII Overlay - shown in PII view mode */}
               {viewMode === 'pii' && (
                 <PIIOverlay
@@ -561,7 +608,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
                   piiTypeFilters={piiTypeFilters}
                 />
               )}
-              
+
               {/* Redaction Canvas - shown in redaction mode */}
               {viewMode === 'redaction' && (
                 <Box
@@ -585,9 +632,9 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({
                     onRedactionDelete={handleRedactionDelete}
                     isDrawingMode={true}
                     pageNumber={currentPage}
-                    backgroundColor="transparent"
-                    redactionColor="rgba(255, 0, 0, 0.3)"
-                    selectedColor="rgba(255, 0, 0, 0.5)"
+                    backgroundColor='transparent'
+                    redactionColor='rgba(255, 0, 0, 0.3)'
+                    selectedColor='rgba(255, 0, 0, 0.5)'
                     showGrid={false}
                   />
                 </Box>

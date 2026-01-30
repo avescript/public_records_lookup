@@ -4,7 +4,7 @@
  * Admin interface for managing synthetic datasets and enhanced AI matching
  */
 
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Analytics as AnalyticsIcon,
   Assessment as AssessmentIcon,
@@ -92,7 +92,7 @@ export default function EnhancedDataManagement() {
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedAgency, setSelectedAgency] = useState<string | null>(null);
-  
+
   const [generateOptions, setGenerateOptions] = useState<GenerateOptions>({
     requestCount: 100,
     documentsPerAgency: 85,
@@ -122,17 +122,19 @@ export default function EnhancedDataManagement() {
   const handleInitializeDataset = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       await enhancedAIMatchingService.initialize(generateOptions);
       const analytics = enhancedAIMatchingService.getDatasetAnalytics();
       setStats(analytics);
       setInitialized(true);
       setGenerateDialogOpen(false);
-      
+
       console.log('✅ Enhanced synthetic dataset initialized successfully');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to initialize dataset');
+      setError(
+        err instanceof Error ? err.message : 'Failed to initialize dataset'
+      );
       console.error('❌ Failed to initialize dataset:', err);
     } finally {
       setLoading(false);
@@ -142,16 +144,18 @@ export default function EnhancedDataManagement() {
   const handleRegenerateDataset = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       await enhancedAIMatchingService.regenerateData(generateOptions);
       const analytics = enhancedAIMatchingService.getDatasetAnalytics();
       setStats(analytics);
       setGenerateDialogOpen(false);
-      
+
       console.log('✅ Enhanced synthetic dataset regenerated successfully');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to regenerate dataset');
+      setError(
+        err instanceof Error ? err.message : 'Failed to regenerate dataset'
+      );
       console.error('❌ Failed to regenerate dataset:', err);
     } finally {
       setLoading(false);
@@ -168,14 +172,21 @@ export default function EnhancedDataManagement() {
     setError(null);
 
     try {
-      const testQuery = 'police incident reports use of force body camera footage';
-      const result = await enhancedAIMatchingService.findMatches('test-request', testQuery, {
-        maxResults: 5,
-        minConfidence: 0.5,
-      });
-      
+      const testQuery =
+        'police incident reports use of force body camera footage';
+      const result = await enhancedAIMatchingService.findMatches(
+        'test-request',
+        testQuery,
+        {
+          maxResults: 5,
+          minConfidence: 0.5,
+        }
+      );
+
       console.log('🧪 Test matching result:', result);
-      alert(`Test matching completed successfully!\n\nFound ${result.candidates.length} matches in ${result.searchMetadata.processingTimeMs}ms\n\nCheck console for detailed results.`);
+      alert(
+        `Test matching completed successfully!\n\nFound ${result.candidates.length} matches in ${result.searchMetadata.processingTimeMs}ms\n\nCheck console for detailed results.`
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Test matching failed');
     } finally {
@@ -190,17 +201,17 @@ export default function EnhancedDataManagement() {
 
   const handleExportData = () => {
     if (!stats) return;
-    
+
     const dataToExport = {
       stats,
       exportedAt: new Date().toISOString(),
       version: '2.0',
     };
-    
+
     const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
       type: 'application/json',
     });
-    
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -217,10 +228,14 @@ export default function EnhancedDataManagement() {
 
   const getComplexityColor = (complexity: string) => {
     switch (complexity) {
-      case 'simple': return 'success';
-      case 'medium': return 'warning';
-      case 'complex': return 'error';
-      default: return 'default';
+      case 'simple':
+        return 'success';
+      case 'medium':
+        return 'warning';
+      case 'complex':
+        return 'error';
+      default:
+        return 'default';
     }
   };
 
@@ -230,17 +245,18 @@ export default function EnhancedDataManagement() {
         <CardContent>
           <Box sx={{ textAlign: 'center', py: 4 }}>
             <ScienceIcon sx={{ fontSize: 64, color: 'primary.main', mb: 2 }} />
-            <Typography variant="h5" gutterBottom>
+            <Typography variant='h5' gutterBottom>
               Enhanced Synthetic Data Generator v2
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-              Initialize the enhanced synthetic dataset with multi-agency support
+            <Typography variant='body1' color='text.secondary' sx={{ mb: 3 }}>
+              Initialize the enhanced synthetic dataset with multi-agency
+              support
             </Typography>
             <Button
-              variant="contained"
+              variant='contained'
               startIcon={<StorageIcon />}
               onClick={() => setGenerateDialogOpen(true)}
-              size="large"
+              size='large'
             >
               Initialize Dataset
             </Button>
@@ -253,8 +269,15 @@ export default function EnhancedDataManagement() {
   return (
     <Box>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+        }}
+      >
+        <Typography variant='h4' component='h1'>
           Enhanced Data Management v2
         </Typography>
         <Box>
@@ -284,7 +307,7 @@ export default function EnhancedDataManagement() {
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity='error' sx={{ mb: 3 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
@@ -297,74 +320,86 @@ export default function EnhancedDataManagement() {
           <Grid item xs={12}>
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography
+                  variant='h6'
+                  gutterBottom
+                  sx={{ display: 'flex', alignItems: 'center' }}
+                >
                   <AssessmentIcon sx={{ mr: 1 }} />
                   Dataset Overview
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={3}>
                     <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="h4" color="primary">
+                      <Typography variant='h4' color='primary'>
                         {stats.metadata.totalRequests}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant='body2' color='text.secondary'>
                         Total Requests
                       </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={3}>
                     <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="h4" color="secondary">
+                      <Typography variant='h4' color='secondary'>
                         {stats.metadata.totalDocuments}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant='body2' color='text.secondary'>
                         Total Documents
                       </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={3}>
                     <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="h4" color="success.main">
+                      <Typography variant='h4' color='success.main'>
                         {stats.metadata.agencies.length}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant='body2' color='text.secondary'>
                         Agencies
                       </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={3}>
                     <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="h4" color="info.main">
+                      <Typography variant='h4' color='info.main'>
                         {stats.analytics.averageExpectedMatches.toFixed(1)}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant='body2' color='text.secondary'>
                         Avg Matches/Request
                       </Typography>
                     </Box>
                   </Grid>
                 </Grid>
-                
+
                 <Divider sx={{ my: 2 }} />
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
                   <Box>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant='body2' color='text.secondary'>
                       Generated: {formatDate(stats.metadata.generatedAt)}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant='body2' color='text.secondary'>
                       Version: {stats.metadata.version}
                     </Typography>
                   </Box>
                   <Box>
-                    {Object.entries(stats.metadata.complexity).map(([complexity, count]) => (
-                      <Chip
-                        key={complexity}
-                        label={`${complexity}: ${count}`}
-                        color={getComplexityColor(complexity) as any}
-                        size="small"
-                        sx={{ mr: 1 }}
-                      />
-                    ))}
+                    {Object.entries(stats.metadata.complexity).map(
+                      ([complexity, count]) => (
+                        <Chip
+                          key={complexity}
+                          label={`${complexity}: ${count}`}
+                          color={getComplexityColor(complexity) as any}
+                          size='small'
+                          sx={{ mr: 1 }}
+                        />
+                      )
+                    )}
                   </Box>
                 </Box>
               </CardContent>
@@ -375,42 +410,51 @@ export default function EnhancedDataManagement() {
           <Grid item xs={12} md={6}>
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography
+                  variant='h6'
+                  gutterBottom
+                  sx={{ display: 'flex', alignItems: 'center' }}
+                >
                   <AnalyticsIcon sx={{ mr: 1 }} />
                   Requests by Agency
                 </Typography>
                 <TableContainer>
-                  <Table size="small">
+                  <Table size='small'>
                     <TableHead>
                       <TableRow>
                         <TableCell>Agency</TableCell>
-                        <TableCell align="right">Requests</TableCell>
-                        <TableCell align="right">Documents</TableCell>
-                        <TableCell align="center">Actions</TableCell>
+                        <TableCell align='right'>Requests</TableCell>
+                        <TableCell align='right'>Documents</TableCell>
+                        <TableCell align='center'>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {SYNTHETIC_AGENCIES.map((agency) => (
+                      {SYNTHETIC_AGENCIES.map(agency => (
                         <TableRow key={agency.id}>
                           <TableCell>
-                            <Typography variant="body2" fontWeight="medium">
+                            <Typography variant='body2' fontWeight='medium'>
                               {agency.name}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                              variant='caption'
+                              color='text.secondary'
+                            >
                               {agency.departments.length} departments
                             </Typography>
                           </TableCell>
-                          <TableCell align="right">
+                          <TableCell align='right'>
                             {stats.analytics.requestsByAgency[agency.id] || 0}
                           </TableCell>
-                          <TableCell align="right">
+                          <TableCell align='right'>
                             {stats.analytics.documentsByAgency[agency.id] || 0}
                           </TableCell>
-                          <TableCell align="center">
-                            <Tooltip title="View Details">
+                          <TableCell align='center'>
+                            <Tooltip title='View Details'>
                               <IconButton
-                                size="small"
-                                onClick={() => handleViewAgencyDetails(agency.id)}
+                                size='small'
+                                onClick={() =>
+                                  handleViewAgencyDetails(agency.id)
+                                }
                               >
                                 <VisibilityIcon />
                               </IconButton>
@@ -429,7 +473,7 @@ export default function EnhancedDataManagement() {
           <Grid item xs={12} md={6}>
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Test Scenarios
                 </Typography>
                 <List dense>
@@ -440,11 +484,11 @@ export default function EnhancedDataManagement() {
                         secondary={`Scenario type: ${scenario.split('_')[0]}`}
                       />
                       <ListItemSecondaryAction>
-                        <Chip 
-                          size="small" 
-                          label="Available" 
-                          color="success" 
-                          variant="outlined"
+                        <Chip
+                          size='small'
+                          label='Available'
+                          color='success'
+                          variant='outlined'
                         />
                       </ListItemSecondaryAction>
                     </ListItem>
@@ -457,139 +501,181 @@ export default function EnhancedDataManagement() {
       )}
 
       {/* Generate Dataset Dialog */}
-      <Dialog open={generateDialogOpen} onClose={() => setGenerateDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={generateDialogOpen}
+        onClose={() => setGenerateDialogOpen(false)}
+        maxWidth='sm'
+        fullWidth
+      >
         <DialogTitle>
-          {initialized ? 'Regenerate Enhanced Dataset' : 'Initialize Enhanced Dataset'}
+          {initialized
+            ? 'Regenerate Enhanced Dataset'
+            : 'Initialize Enhanced Dataset'}
         </DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Configure the synthetic data generation parameters for multi-agency testing.
+          <Typography variant='body2' color='text.secondary' sx={{ mb: 3 }}>
+            Configure the synthetic data generation parameters for multi-agency
+            testing.
           </Typography>
-          
+
           <TextField
-            label="Number of Requests"
-            type="number"
+            label='Number of Requests'
+            type='number'
             value={generateOptions.requestCount}
-            onChange={(e) => setGenerateOptions(prev => ({ 
-              ...prev, 
-              requestCount: parseInt(e.target.value) || 100, 
-            }))}
+            onChange={e =>
+              setGenerateOptions(prev => ({
+                ...prev,
+                requestCount: parseInt(e.target.value) || 100,
+              }))
+            }
             fullWidth
             sx={{ mb: 2 }}
           />
-          
+
           <TextField
-            label="Documents per Agency"
-            type="number"
+            label='Documents per Agency'
+            type='number'
             value={generateOptions.documentsPerAgency}
-            onChange={(e) => setGenerateOptions(prev => ({ 
-              ...prev, 
-              documentsPerAgency: parseInt(e.target.value) || 85, 
-            }))}
+            onChange={e =>
+              setGenerateOptions(prev => ({
+                ...prev,
+                documentsPerAgency: parseInt(e.target.value) || 85,
+              }))
+            }
             fullWidth
             sx={{ mb: 2 }}
           />
-          
+
           <FormControlLabel
             control={
               <Switch
                 checked={generateOptions.includeEdgeCases}
-                onChange={(e) => setGenerateOptions(prev => ({ 
-                  ...prev, 
-                  includeEdgeCases: e.target.checked, 
-                }))}
+                onChange={e =>
+                  setGenerateOptions(prev => ({
+                    ...prev,
+                    includeEdgeCases: e.target.checked,
+                  }))
+                }
               />
             }
-            label="Include Edge Cases"
+            label='Include Edge Cases'
             sx={{ display: 'block', mb: 1 }}
           />
-          
+
           <FormControlLabel
             control={
               <Switch
                 checked={generateOptions.includePerformanceData}
-                onChange={(e) => setGenerateOptions(prev => ({ 
-                  ...prev, 
-                  includePerformanceData: e.target.checked, 
-                }))}
+                onChange={e =>
+                  setGenerateOptions(prev => ({
+                    ...prev,
+                    includePerformanceData: e.target.checked,
+                  }))
+                }
               />
             }
-            label="Include Performance Test Data"
+            label='Include Performance Test Data'
             sx={{ display: 'block' }}
           />
-          
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-            Estimated generation time: {Math.ceil((generateOptions.requestCount + generateOptions.documentsPerAgency * 6) / 100)} seconds
+
+          <Typography
+            variant='caption'
+            color='text.secondary'
+            sx={{ mt: 2, display: 'block' }}
+          >
+            Estimated generation time:{' '}
+            {Math.ceil(
+              (generateOptions.requestCount +
+                generateOptions.documentsPerAgency * 6) /
+                100
+            )}{' '}
+            seconds
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setGenerateDialogOpen(false)}>Cancel</Button>
           <Button
-            onClick={initialized ? handleRegenerateDataset : handleInitializeDataset}
-            variant="contained"
+            onClick={
+              initialized ? handleRegenerateDataset : handleInitializeDataset
+            }
+            variant='contained'
             disabled={loading}
           >
-            {loading ? 'Generating...' : initialized ? 'Regenerate' : 'Initialize'}
+            {loading
+              ? 'Generating...'
+              : initialized
+                ? 'Regenerate'
+                : 'Initialize'}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Agency Details Dialog */}
-      <Dialog 
-        open={detailsDialogOpen} 
-        onClose={() => setDetailsDialogOpen(false)} 
-        maxWidth="md" 
+      <Dialog
+        open={detailsDialogOpen}
+        onClose={() => setDetailsDialogOpen(false)}
+        maxWidth='md'
         fullWidth
       >
         <DialogTitle>
-          Agency Details: {selectedAgency && SYNTHETIC_AGENCIES.find(a => a.id === selectedAgency)?.name}
+          Agency Details:{' '}
+          {selectedAgency &&
+            SYNTHETIC_AGENCIES.find(a => a.id === selectedAgency)?.name}
         </DialogTitle>
         <DialogContent>
           {selectedAgency && (
             <Box>
               {(() => {
-                const agency = SYNTHETIC_AGENCIES.find(a => a.id === selectedAgency);
+                const agency = SYNTHETIC_AGENCIES.find(
+                  a => a.id === selectedAgency
+                );
                 if (!agency) return null;
-                
-                const requestCount = stats?.analytics.requestsByAgency[selectedAgency] || 0;
-                const documentCount = stats?.analytics.documentsByAgency[selectedAgency] || 0;
-                
+
+                const requestCount =
+                  stats?.analytics.requestsByAgency[selectedAgency] || 0;
+                const documentCount =
+                  stats?.analytics.documentsByAgency[selectedAgency] || 0;
+
                 return (
                   <>
                     <Grid container spacing={2} sx={{ mb: 3 }}>
                       <Grid item xs={6}>
-                        <Typography variant="h6" color="primary">
+                        <Typography variant='h6' color='primary'>
                           {requestCount}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant='body2' color='text.secondary'>
                           Generated Requests
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography variant="h6" color="secondary">
+                        <Typography variant='h6' color='secondary'>
                           {documentCount}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant='body2' color='text.secondary'>
                           Generated Documents
                         </Typography>
                       </Grid>
                     </Grid>
-                    
+
                     <Accordion>
                       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography>Departments ({agency.departments.length})</Typography>
+                        <Typography>
+                          Departments ({agency.departments.length})
+                        </Typography>
                       </AccordionSummary>
                       <AccordionDetails>
                         <List dense>
                           {agency.departments.map((dept, index) => (
                             <ListItem key={index}>
-                              <ListItemText primary={dept.replace(/_/g, ' ').toUpperCase()} />
+                              <ListItemText
+                                primary={dept.replace(/_/g, ' ').toUpperCase()}
+                              />
                             </ListItem>
                           ))}
                         </List>
                       </AccordionDetails>
                     </Accordion>
-                    
+
                     <Accordion>
                       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography>Common Request Types</Typography>
@@ -598,19 +684,23 @@ export default function EnhancedDataManagement() {
                         <List dense>
                           {agency.commonRequestTypes.map((type, index) => (
                             <ListItem key={index}>
-                              <ListItemText primary={type.replace(/_/g, ' ').toUpperCase()} />
+                              <ListItemText
+                                primary={type.replace(/_/g, ' ').toUpperCase()}
+                              />
                             </ListItem>
                           ))}
                         </List>
                       </AccordionDetails>
                     </Accordion>
-                    
+
                     <Box sx={{ mt: 2 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Average Response Time: {agency.averageResponseTime} business days
+                      <Typography variant='body2' color='text.secondary'>
+                        Average Response Time: {agency.averageResponseTime}{' '}
+                        business days
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Complexity Weight: {(agency.complexityWeight * 100).toFixed(0)}%
+                      <Typography variant='body2' color='text.secondary'>
+                        Complexity Weight:{' '}
+                        {(agency.complexityWeight * 100).toFixed(0)}%
                       </Typography>
                     </Box>
                   </>

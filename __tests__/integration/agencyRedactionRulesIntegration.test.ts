@@ -1,17 +1,24 @@
 /**
  * Enhanced Redaction Service Integration Tests
  * Epic 9 Task 4: Agency-Specific Redaction Rules Integration
- * 
+ *
  * Tests for the integration between redactionService and agencyRedactionRulesService
  */
 
-import { redactionService, ManualRedaction } from '../../src/services/redactionService';
-import { 
+import {
+  redactionService,
+  ManualRedaction,
+} from '../../src/services/redactionService';
+import {
   agencyRedactionRulesService,
   RedactionRule,
-  SensitivityLevel
+  SensitivityLevel,
 } from '../../src/services/agencyRedactionRulesService';
-import { piiDetectionService, PIIFinding, PIIType } from '../../src/services/piiDetectionService';
+import {
+  piiDetectionService,
+  PIIFinding,
+  PIIType,
+} from '../../src/services/piiDetectionService';
 
 // Define PIIType values for testing (in case of import issues)
 const TestPIIType = {
@@ -52,7 +59,9 @@ jest.mock('../../src/services/piiDetectionService', () => ({
   },
 }));
 
-const mockPIIDetectionService = piiDetectionService as jest.Mocked<typeof piiDetectionService>;
+const mockPIIDetectionService = piiDetectionService as jest.Mocked<
+  typeof piiDetectionService
+>;
 
 describe('Redaction Service - Agency Rules Integration', () => {
   const testDocumentId = 'test-document-123';
@@ -79,7 +88,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
           id: 'pii-2',
           type: TestPIIType.PHONE,
           text: '(555) 123-4567',
-          confidence: 0.90,
+          confidence: 0.9,
           location: { x: 200, y: 100, width: 100, height: 20 },
         },
       ];
@@ -95,7 +104,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
 
       expect(appliedRedactions).toBeDefined();
       expect(appliedRedactions.length).toBeGreaterThan(0);
-      
+
       // Check that redactions have agency context
       appliedRedactions.forEach(redaction => {
         expect(redaction.agencyId).toBe(testAgencyId);
@@ -124,19 +133,23 @@ describe('Redaction Service - Agency Rules Integration', () => {
       );
 
       // Find auto-applied redactions
-      const autoAppliedRedactions = appliedRedactions.filter(r => 
+      const autoAppliedRedactions = appliedRedactions.filter(r =>
         r.reason?.includes('Auto-applied')
       );
 
       expect(autoAppliedRedactions.length).toBeGreaterThan(0);
-      
+
       // Auto-applied redactions should be approved if they don't require manual approval
-      const template = await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
-      const autoApplyRules = template?.rules.filter(rule => rule.autoApply && !rule.requiresApproval) || [];
-      
+      const template =
+        await agencyRedactionRulesService.getAgencyTemplate(testAgencyId);
+      const autoApplyRules =
+        template?.rules.filter(
+          rule => rule.autoApply && !rule.requiresApproval
+        ) || [];
+
       if (autoApplyRules.length > 0) {
-        const autoApprovedRedactions = autoAppliedRedactions.filter(r => 
-          r.approvalStatus === 'APPROVED'
+        const autoApprovedRedactions = autoAppliedRedactions.filter(
+          r => r.approvalStatus === 'APPROVED'
         );
         expect(autoApprovedRedactions.length).toBeGreaterThan(0);
       }
@@ -162,8 +175,8 @@ describe('Redaction Service - Agency Rules Integration', () => {
       );
 
       // Find redactions requiring approval
-      const pendingRedactions = appliedRedactions.filter(r => 
-        r.approvalStatus === 'PENDING'
+      const pendingRedactions = appliedRedactions.filter(
+        r => r.approvalStatus === 'PENDING'
       );
 
       if (pendingRedactions.length > 0) {
@@ -219,8 +232,10 @@ describe('Redaction Service - Agency Rules Integration', () => {
         testUserId
       );
 
-      const pendingRedaction = appliedRedactions.find(r => r.approvalStatus === 'PENDING');
-      
+      const pendingRedaction = appliedRedactions.find(
+        r => r.approvalStatus === 'PENDING'
+      );
+
       if (pendingRedaction) {
         const approverUserId = 'approver-123';
         const approvalComment = 'Approved for privacy protection';
@@ -234,8 +249,11 @@ describe('Redaction Service - Agency Rules Integration', () => {
         expect(success).toBe(true);
 
         // Verify approval was recorded
-        const redactions = await redactionService.getRedactionsForDocument(testDocumentId);
-        const approvedRedaction = redactions.find(r => r.id === pendingRedaction.id);
+        const redactions =
+          await redactionService.getRedactionsForDocument(testDocumentId);
+        const approvedRedaction = redactions.find(
+          r => r.id === pendingRedaction.id
+        );
 
         expect(approvedRedaction?.approvalStatus).toBe('APPROVED');
         expect(approvedRedaction?.reviewedBy).toBe(approverUserId);
@@ -263,8 +281,10 @@ describe('Redaction Service - Agency Rules Integration', () => {
         testUserId
       );
 
-      const pendingRedaction = appliedRedactions.find(r => r.approvalStatus === 'PENDING');
-      
+      const pendingRedaction = appliedRedactions.find(
+        r => r.approvalStatus === 'PENDING'
+      );
+
       if (pendingRedaction) {
         const reviewerUserId = 'reviewer-456';
         const rejectionComment = 'Not sufficient justification for redaction';
@@ -278,8 +298,11 @@ describe('Redaction Service - Agency Rules Integration', () => {
         expect(success).toBe(true);
 
         // Verify rejection was recorded
-        const redactions = await redactionService.getRedactionsForDocument(testDocumentId);
-        const rejectedRedaction = redactions.find(r => r.id === pendingRedaction.id);
+        const redactions =
+          await redactionService.getRedactionsForDocument(testDocumentId);
+        const rejectedRedaction = redactions.find(
+          r => r.id === pendingRedaction.id
+        );
 
         expect(rejectedRedaction?.approvalStatus).toBe('REJECTED');
         expect(rejectedRedaction?.reviewedBy).toBe(reviewerUserId);
@@ -315,14 +338,17 @@ describe('Redaction Service - Agency Rules Integration', () => {
         testUserId
       );
 
-      const pendingApprovals = await redactionService.getPendingApprovals(testAgencyId);
-      
+      const pendingApprovals =
+        await redactionService.getPendingApprovals(testAgencyId);
+
       expect(Array.isArray(pendingApprovals)).toBe(true);
-      
+
       // All pending approvals should be for the correct agency
       pendingApprovals.forEach(redaction => {
         expect(redaction.agencyId).toBe(testAgencyId);
-        expect(['PENDING', 'APPROVED', 'REJECTED']).toContain(redaction.approvalStatus);
+        expect(['PENDING', 'APPROVED', 'REJECTED']).toContain(
+          redaction.approvalStatus
+        );
       });
     });
   });
@@ -355,8 +381,9 @@ describe('Redaction Service - Agency Rules Integration', () => {
         testUserId
       );
 
-      const stats = await redactionService.getAgencyRedactionStats(testAgencyId);
-      
+      const stats =
+        await redactionService.getAgencyRedactionStats(testAgencyId);
+
       expect(stats).toBeDefined();
       expect(typeof stats.totalRedactions).toBe('number');
       expect(typeof stats.pendingApprovals).toBe('number');
@@ -369,7 +396,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
     test('should calculate statistics correctly', async () => {
       const documentId1 = 'stats-doc-1';
       const documentId2 = 'stats-doc-2';
-      
+
       // Create redactions for multiple documents
       const mockPIIFindings: PIIFinding[] = [
         {
@@ -384,20 +411,31 @@ describe('Redaction Service - Agency Rules Integration', () => {
       mockPIIDetectionService.detectPII.mockResolvedValue(mockPIIFindings);
 
       const [redactions1, redactions2] = await Promise.all([
-        redactionService.applyAgencyRules(documentId1, testAgencyId, testUserId),
-        redactionService.applyAgencyRules(documentId2, testAgencyId, testUserId),
+        redactionService.applyAgencyRules(
+          documentId1,
+          testAgencyId,
+          testUserId
+        ),
+        redactionService.applyAgencyRules(
+          documentId2,
+          testAgencyId,
+          testUserId
+        ),
       ]);
 
-      const stats = await redactionService.getAgencyRedactionStats(testAgencyId);
-      
-      expect(stats.totalRedactions).toBe(redactions1.length + redactions2.length);
-      
+      const stats =
+        await redactionService.getAgencyRedactionStats(testAgencyId);
+
+      expect(stats.totalRedactions).toBe(
+        redactions1.length + redactions2.length
+      );
+
       // Verify sensitivity level breakdown
       const allRedactions = [...redactions1, ...redactions2];
-      const expectedHighSensitivity = allRedactions.filter(r => 
-        r.sensitivityLevel === SensitivityLevel.HIGH
+      const expectedHighSensitivity = allRedactions.filter(
+        r => r.sensitivityLevel === SensitivityLevel.HIGH
       ).length;
-      
+
       if (expectedHighSensitivity > 0) {
         expect(stats.bySensitivityLevel.HIGH).toBe(expectedHighSensitivity);
       }
@@ -407,7 +445,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
   describe('Error Handling and Edge Cases', () => {
     test('should handle missing agency template gracefully', async () => {
       const nonExistentAgencyId = 'non-existent-agency';
-      
+
       const appliedRedactions = await redactionService.applyAgencyRules(
         testDocumentId,
         nonExistentAgencyId,
@@ -418,7 +456,9 @@ describe('Redaction Service - Agency Rules Integration', () => {
     });
 
     test('should handle PII detection service errors', async () => {
-      mockPIIDetectionService.detectPII.mockRejectedValue(new Error('PII detection failed'));
+      mockPIIDetectionService.detectPII.mockRejectedValue(
+        new Error('PII detection failed')
+      );
 
       const appliedRedactions = await redactionService.applyAgencyRules(
         testDocumentId,
@@ -442,7 +482,7 @@ describe('Redaction Service - Agency Rules Integration', () => {
     test('should validate agency rule application', async () => {
       const invalidRedaction: Omit<ManualRedaction, 'id'> = {
         x: -100, // Invalid negative coordinate
-        y: -50,  // Invalid negative coordinate
+        y: -50, // Invalid negative coordinate
         width: 0, // Invalid zero width
         height: 0, // Invalid zero height
         reason: '',
@@ -466,18 +506,29 @@ describe('Redaction Service - Agency Rules Integration', () => {
   describe('Performance and Scale Tests', () => {
     test('should handle large number of PII findings efficiently', async () => {
       // Generate many PII findings
-      const manyPIIFindings: PIIFinding[] = Array.from({ length: 50 }, (_, i) => ({
-        id: `perf-pii-${i}`,
-        type: i % 2 === 0 ? TestPIIType.SSN : TestPIIType.EMAIL,
-        text: i % 2 === 0 ? `${i}${i}${i}-${i}${i}-${i}${i}${i}${i}` : `test${i}@example.com`,
-        confidence: 0.8 + (i % 20) * 0.01,
-        location: { x: (i % 10) * 50, y: Math.floor(i / 10) * 30, width: 80, height: 20 },
-      }));
+      const manyPIIFindings: PIIFinding[] = Array.from(
+        { length: 50 },
+        (_, i) => ({
+          id: `perf-pii-${i}`,
+          type: i % 2 === 0 ? TestPIIType.SSN : TestPIIType.EMAIL,
+          text:
+            i % 2 === 0
+              ? `${i}${i}${i}-${i}${i}-${i}${i}${i}${i}`
+              : `test${i}@example.com`,
+          confidence: 0.8 + (i % 20) * 0.01,
+          location: {
+            x: (i % 10) * 50,
+            y: Math.floor(i / 10) * 30,
+            width: 80,
+            height: 20,
+          },
+        })
+      );
 
       mockPIIDetectionService.detectPII.mockResolvedValue(manyPIIFindings);
 
       const startTime = Date.now();
-      
+
       const appliedRedactions = await redactionService.applyAgencyRules(
         testDocumentId,
         testAgencyId,
@@ -493,13 +544,16 @@ describe('Redaction Service - Agency Rules Integration', () => {
 
     test('should handle concurrent approval operations', async () => {
       // Setup multiple pending redactions
-      const mockPIIFindings: PIIFinding[] = Array.from({ length: 5 }, (_, i) => ({
-        id: `concurrent-pii-${i}`,
-        type: TestPIIType.SSN,
-        text: `${i}${i}${i}-${i}${i}-${i}${i}${i}${i}`,
-        confidence: 0.95,
-        location: { x: i * 100, y: 50, width: 80, height: 20 },
-      }));
+      const mockPIIFindings: PIIFinding[] = Array.from(
+        { length: 5 },
+        (_, i) => ({
+          id: `concurrent-pii-${i}`,
+          type: TestPIIType.SSN,
+          text: `${i}${i}${i}-${i}${i}-${i}${i}${i}${i}`,
+          confidence: 0.95,
+          location: { x: i * 100, y: 50, width: 80, height: 20 },
+        })
+      );
 
       mockPIIDetectionService.detectPII.mockResolvedValue(mockPIIFindings);
 
@@ -509,20 +563,24 @@ describe('Redaction Service - Agency Rules Integration', () => {
         testUserId
       );
 
-      const pendingRedactions = appliedRedactions.filter(r => r.approvalStatus === 'PENDING');
+      const pendingRedactions = appliedRedactions.filter(
+        r => r.approvalStatus === 'PENDING'
+      );
 
       if (pendingRedactions.length > 0) {
         // Perform concurrent approvals
-        const approvalPromises = pendingRedactions.slice(0, 3).map(redaction =>
-          redactionService.approveRedaction(
-            redaction.id,
-            `approver-${redaction.id}`,
-            `Concurrent approval for ${redaction.id}`
-          )
-        );
+        const approvalPromises = pendingRedactions
+          .slice(0, 3)
+          .map(redaction =>
+            redactionService.approveRedaction(
+              redaction.id,
+              `approver-${redaction.id}`,
+              `Concurrent approval for ${redaction.id}`
+            )
+          );
 
         const results = await Promise.all(approvalPromises);
-        
+
         // All approvals should succeed
         results.forEach(result => {
           expect(result).toBe(true);

@@ -11,18 +11,18 @@ export const Footer: React.FC<FooterProps> = ({ showLinks = true }) => {
   return (
     <FooterRoot>
       <FooterContent>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant='body2' color='text.secondary'>
           © {currentYear} Public Records Request Portal. All rights reserved.
         </Typography>
         {showLinks && (
           <FooterLinks>
-            <Link href="/privacy" color="inherit" variant="body2">
+            <Link href='/privacy' color='inherit' variant='body2'>
               Privacy Policy
             </Link>
-            <Link href="/terms" color="inherit" variant="body2">
+            <Link href='/terms' color='inherit' variant='body2'>
               Terms of Service
             </Link>
-            <Link href="/contact" color="inherit" variant="body2">
+            <Link href='/contact' color='inherit' variant='body2'>
               Contact Us
             </Link>
           </FooterLinks>

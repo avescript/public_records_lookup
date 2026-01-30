@@ -46,7 +46,14 @@ import {
   Typography,
 } from '@mui/material';
 
-import { buildPackage, createPackageManifest, PackageManifest, PackageRecord, toggleRecordInclusion, updatePackageRecordOrder } from '../../../services/packageService';
+import {
+  buildPackage,
+  createPackageManifest,
+  PackageManifest,
+  PackageRecord,
+  toggleRecordInclusion,
+  updatePackageRecordOrder,
+} from '../../../services/packageService';
 import { AssociatedRecord } from '../../../services/requestService';
 
 interface PackageBuilderProps {
@@ -71,11 +78,15 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
   requestInfo,
   onPackageBuilt,
 }) => {
-  const [packageTitle, setPackageTitle] = useState(requestInfo.title || 'Public Records Package');
+  const [packageTitle, setPackageTitle] = useState(
+    requestInfo.title || 'Public Records Package'
+  );
   const [manifest, setManifest] = useState<PackageManifest | null>(null);
   const [isBuilding, setIsBuilding] = useState(false);
   const [buildResult, setBuildResult] = useState<any>(null);
-  const [step, setStep] = useState<'configure' | 'preview' | 'built'>('configure');
+  const [step, setStep] = useState<'configure' | 'preview' | 'built'>(
+    'configure'
+  );
 
   // Initialize package manifest
   const initializeManifest = async () => {
@@ -87,7 +98,9 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
         {
           name: requestInfo.contactEmail.split('@')[0], // Extract name from email
           department: requestInfo.department,
-          requestDate: new Date(requestInfo.submittedAt.toDate()).toLocaleDateString(),
+          requestDate: new Date(
+            requestInfo.submittedAt.toDate()
+          ).toLocaleDateString(),
         }
       );
       setManifest(newManifest);
@@ -153,17 +166,18 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth="md"
-      fullWidth
-    >
+    <Dialog open={open} onClose={handleClose} maxWidth='md' fullWidth>
       <DialogTitle>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FolderIcon color="primary" />
-            <Typography variant="h6">
+            <FolderIcon color='primary' />
+            <Typography variant='h6'>
               {step === 'configure' && 'Configure Package'}
               {step === 'preview' && 'Package Preview'}
               {step === 'built' && 'Package Ready'}
@@ -180,16 +194,16 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
         {step === 'configure' && (
           <Stack spacing={3}>
             <TextField
-              label="Package Title"
+              label='Package Title'
               value={packageTitle}
-              onChange={(e) => setPackageTitle(e.target.value)}
+              onChange={e => setPackageTitle(e.target.value)}
               fullWidth
-              variant="outlined"
+              variant='outlined'
             />
 
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Records to Include ({associatedRecords.length})
                 </Typography>
                 <List>
@@ -204,8 +218,14 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
                       />
                       <Chip
                         label={record.confidence.toUpperCase()}
-                        size="small"
-                        color={record.confidence === 'high' ? 'success' : record.confidence === 'medium' ? 'warning' : 'default'}
+                        size='small'
+                        color={
+                          record.confidence === 'high'
+                            ? 'success'
+                            : record.confidence === 'medium'
+                              ? 'warning'
+                              : 'default'
+                        }
                       />
                     </ListItem>
                   ))}
@@ -214,12 +234,19 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
             </Card>
 
             <Paper sx={{ p: 2, bgcolor: 'background.default' }}>
-              <Typography variant="body2" color="text.secondary">
-                <strong>Package will include:</strong><br />
-                • Cover sheet with request details<br />
-                • {associatedRecords.length} selected records<br />
-                • Table of contents with page numbers<br />
-                • Estimated total: {associatedRecords.reduce((sum, r) => sum + (r.metadata?.pageCount || 1), 0) + 1} pages
+              <Typography variant='body2' color='text.secondary'>
+                <strong>Package will include:</strong>
+                <br />
+                • Cover sheet with request details
+                <br />• {associatedRecords.length} selected records
+                <br />
+                • Table of contents with page numbers
+                <br />• Estimated total:{' '}
+                {associatedRecords.reduce(
+                  (sum, r) => sum + (r.metadata?.pageCount || 1),
+                  0
+                ) + 1}{' '}
+                pages
               </Typography>
             </Paper>
           </Stack>
@@ -230,31 +257,55 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
           <Stack spacing={3}>
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom>Cover Sheet Preview</Typography>
+                <Typography variant='h6' gutterBottom>
+                  Cover Sheet Preview
+                </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">Package Title</Typography>
-                    <Typography variant="body1">{manifest.title}</Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      Package Title
+                    </Typography>
+                    <Typography variant='body1'>{manifest.title}</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">Requestor</Typography>
-                    <Typography variant="body1">{manifest.coverSheet.requestorName}</Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      Requestor
+                    </Typography>
+                    <Typography variant='body1'>
+                      {manifest.coverSheet.requestorName}
+                    </Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">Department</Typography>
-                    <Typography variant="body1">{manifest.coverSheet.department}</Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      Department
+                    </Typography>
+                    <Typography variant='body1'>
+                      {manifest.coverSheet.department}
+                    </Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">Request Date</Typography>
-                    <Typography variant="body1">{manifest.coverSheet.requestDate}</Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      Request Date
+                    </Typography>
+                    <Typography variant='body1'>
+                      {manifest.coverSheet.requestDate}
+                    </Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">Total Records</Typography>
-                    <Typography variant="body1">{manifest.coverSheet.totalRecords}</Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      Total Records
+                    </Typography>
+                    <Typography variant='body1'>
+                      {manifest.coverSheet.totalRecords}
+                    </Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">Total Pages</Typography>
-                    <Typography variant="body1">{manifest.coverSheet.totalPages}</Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      Total Pages
+                    </Typography>
+                    <Typography variant='body1'>
+                      {manifest.coverSheet.totalPages}
+                    </Typography>
                   </Grid>
                 </Grid>
               </CardContent>
@@ -262,13 +313,20 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
 
             <Card>
               <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="h6">Record Order</Typography>
-                  <Chip 
-                    icon={<ReorderIcon />} 
-                    label="Use arrow buttons to reorder" 
-                    size="small" 
-                    variant="outlined" 
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    mb: 2,
+                  }}
+                >
+                  <Typography variant='h6'>Record Order</Typography>
+                  <Chip
+                    icon={<ReorderIcon />}
+                    label='Use arrow buttons to reorder'
+                    size='small'
+                    variant='outlined'
                   />
                 </Box>
 
@@ -285,30 +343,38 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
                       }}
                     >
                       <ListItemIcon>
-                        <Stack direction="column" spacing={0}>
+                        <Stack direction='column' spacing={0}>
                           <IconButton
-                            size="small"
+                            size='small'
                             onClick={() => handleMoveRecord(index, 'up')}
                             disabled={index === 0}
                           >
-                            <ArrowUpIcon fontSize="small" />
+                            <ArrowUpIcon fontSize='small' />
                           </IconButton>
                           <IconButton
-                            size="small"
+                            size='small'
                             onClick={() => handleMoveRecord(index, 'down')}
                             disabled={index === manifest.records.length - 1}
                           >
-                            <ArrowDownIcon fontSize="small" />
+                            <ArrowDownIcon fontSize='small' />
                           </IconButton>
                         </Stack>
                       </ListItemIcon>
                       <ListItemText
                         primary={
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography variant="body2" color="text.secondary">
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                            }}
+                          >
+                            <Typography variant='body2' color='text.secondary'>
                               {record.order}.
                             </Typography>
-                            <Typography variant="body1">{record.title}</Typography>
+                            <Typography variant='body1'>
+                              {record.title}
+                            </Typography>
                           </Box>
                         }
                         secondary={`${record.source} • ${record.pageCount} pages`}
@@ -318,10 +384,10 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
                           <Switch
                             checked={record.includeInPackage}
                             onChange={() => handleToggleRecord(record.recordId)}
-                            size="small"
+                            size='small'
                           />
                         }
-                        label="Include"
+                        label='Include'
                       />
                     </ListItem>
                   ))}
@@ -330,11 +396,14 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
             </Card>
 
             <Paper sx={{ p: 2, bgcolor: 'info.50' }}>
-              <Typography variant="body2">
-                <strong>Final Package Summary:</strong><br />
-                • {manifest.records.filter(r => r.includeInPackage).length} records included<br />
-                • {manifest.metadata.totalPages} total pages<br />
-                • Estimated size: {manifest.metadata.estimatedDeliverySize}
+              <Typography variant='body2'>
+                <strong>Final Package Summary:</strong>
+                <br />•{' '}
+                {manifest.records.filter(r => r.includeInPackage).length}{' '}
+                records included
+                <br />• {manifest.metadata.totalPages} total pages
+                <br />• Estimated size:{' '}
+                {manifest.metadata.estimatedDeliverySize}
               </Typography>
             </Paper>
           </Stack>
@@ -342,51 +411,75 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
 
         {/* Step 3: Package Built */}
         {step === 'built' && buildResult && (
-          <Stack spacing={3} alignItems="center">
+          <Stack spacing={3} alignItems='center'>
             <Box sx={{ textAlign: 'center' }}>
               <BuildIcon sx={{ fontSize: 64, color: 'success.main', mb: 2 }} />
-              <Typography variant="h5" gutterBottom>
+              <Typography variant='h5' gutterBottom>
                 Package Built Successfully!
               </Typography>
-              <Typography variant="body1" color="text.secondary" gutterBottom>
+              <Typography variant='body1' color='text.secondary' gutterBottom>
                 Package ID: {buildResult.manifest.id}
               </Typography>
             </Box>
 
             <Card sx={{ width: '100%' }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>Package Details</Typography>
+                <Typography variant='h6' gutterBottom>
+                  Package Details
+                </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">Status</Typography>
-                    <Chip label={buildResult.manifest.metadata.status.toUpperCase()} color="success" size="small" />
+                    <Typography variant='body2' color='text.secondary'>
+                      Status
+                    </Typography>
+                    <Chip
+                      label={buildResult.manifest.metadata.status.toUpperCase()}
+                      color='success'
+                      size='small'
+                    />
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">Created By</Typography>
-                    <Typography variant="body1">{buildResult.manifest.metadata.createdBy}</Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      Created By
+                    </Typography>
+                    <Typography variant='body1'>
+                      {buildResult.manifest.metadata.createdBy}
+                    </Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">Records Included</Typography>
-                    <Typography variant="body1">{buildResult.manifest.records.filter((r: any) => r.includeInPackage).length}</Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      Records Included
+                    </Typography>
+                    <Typography variant='body1'>
+                      {
+                        buildResult.manifest.records.filter(
+                          (r: any) => r.includeInPackage
+                        ).length
+                      }
+                    </Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2" color="text.secondary">File Size</Typography>
-                    <Typography variant="body1">{buildResult.manifest.metadata.estimatedDeliverySize}</Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      File Size
+                    </Typography>
+                    <Typography variant='body1'>
+                      {buildResult.manifest.metadata.estimatedDeliverySize}
+                    </Typography>
                   </Grid>
                 </Grid>
               </CardContent>
             </Card>
 
-            <Stack direction="row" spacing={2}>
+            <Stack direction='row' spacing={2}>
               <Button
-                variant="outlined"
+                variant='outlined'
                 startIcon={<PreviewIcon />}
                 onClick={() => window.open(buildResult.previewUrl, '_blank')}
               >
                 Preview Package
               </Button>
               <Button
-                variant="outlined"
+                variant='outlined'
                 startIcon={<DownloadIcon />}
                 onClick={() => window.open(buildResult.downloadUrl, '_blank')}
               >
@@ -402,7 +495,7 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
           <>
             <Button onClick={handleClose}>Cancel</Button>
             <Button
-              variant="contained"
+              variant='contained'
               onClick={initializeManifest}
               disabled={!packageTitle.trim()}
             >
@@ -416,11 +509,13 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
             <Button onClick={() => setStep('configure')}>Back</Button>
             <Button onClick={handleClose}>Cancel</Button>
             <Button
-              variant="contained"
+              variant='contained'
               startIcon={<BuildIcon />}
               onClick={handleBuildPackage}
-              disabled={isBuilding || !manifest?.records.some(r => r.includeInPackage)}
-              color="success"
+              disabled={
+                isBuilding || !manifest?.records.some(r => r.includeInPackage)
+              }
+              color='success'
             >
               {isBuilding ? 'Building...' : 'Build Package'}
             </Button>
@@ -430,7 +525,7 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
         {step === 'built' && (
           <>
             <Button
-              variant="outlined"
+              variant='outlined'
               startIcon={<EmailIcon />}
               onClick={() => {
                 console.log('TODO: Open delivery scheduler');
@@ -439,7 +534,7 @@ export const PackageBuilder: React.FC<PackageBuilderProps> = ({
             >
               Schedule Delivery
             </Button>
-            <Button variant="contained" onClick={handleClose}>
+            <Button variant='contained' onClick={handleClose}>
               Done
             </Button>
           </>

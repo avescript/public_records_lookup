@@ -20,8 +20,8 @@ jest.mock('../../../src/services/requestService', () => ({
 // Mock MUI Data Grid to avoid complex rendering issues
 jest.mock('@mui/x-data-grid', () => ({
   DataGrid: ({ rows, columns, onRowClick }: any) => (
-    <div data-testid="data-grid">
-      <div data-testid="grid-rows-count">{rows.length} rows</div>
+    <div data-testid='data-grid'>
+      <div data-testid='grid-rows-count'>{rows.length} rows</div>
       {rows.map((row: any, index: number) => (
         <div
           key={row.id || row.trackingId || index}
@@ -45,7 +45,7 @@ jest.mock('@mui/x-date-pickers', () => ({
         onChange && onChange(e.target.value ? new Date(e.target.value) : null)
       }
       value={value ? value.toISOString().split('T')[0] : ''}
-      type="date"
+      type='date'
     />
   ),
   LocalizationProvider: ({ children }: any) => children,

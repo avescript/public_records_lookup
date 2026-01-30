@@ -1,7 +1,7 @@
 /**
  * Cost Tracking Service
  * Epic 9 Task 6: Agency Dashboard & Analytics
- * 
+ *
  * Tier-based billing, usage tracking, and cost analytics system
  */
 
@@ -79,7 +79,11 @@ export interface CostBreakdown {
 export interface CostAlert {
   id: string;
   agencyId: string;
-  type: 'budget_warning' | 'budget_exceeded' | 'usage_spike' | 'tier_upgrade_recommended';
+  type:
+    | 'budget_warning'
+    | 'budget_exceeded'
+    | 'usage_spike'
+    | 'tier_upgrade_recommended';
   threshold: number;
   currentValue: number;
   message: string;
@@ -136,21 +140,21 @@ export class CostTrackingService {
         maxDocuments: 2000,
         maxUsers: 5,
         ocrIncluded: false,
-        apiCallsIncluded: 1000
+        apiCallsIncluded: 1000,
       },
       pricing: {
-        perRequest: 0.50,
-        perMB: 0.10,
+        perRequest: 0.5,
+        perMB: 0.1,
         perDocument: 0.25,
         perOCRPage: 0.05,
-        perAPICall: 0.01
+        perAPICall: 0.01,
       },
       features: [
         'Basic request processing',
         'Standard redaction tools',
         'Email support',
-        'Basic reporting'
-      ]
+        'Basic reporting',
+      ],
     },
     premium: {
       tier: 'premium',
@@ -163,14 +167,14 @@ export class CostTrackingService {
         maxDocuments: 10000,
         maxUsers: 25,
         ocrIncluded: true,
-        apiCallsIncluded: 5000
+        apiCallsIncluded: 5000,
       },
       pricing: {
         perRequest: 0.35,
         perMB: 0.08,
-        perDocument: 0.20,
+        perDocument: 0.2,
         perOCRPage: 0.03,
-        perAPICall: 0.008
+        perAPICall: 0.008,
       },
       features: [
         'Advanced processing workflows',
@@ -178,8 +182,8 @@ export class CostTrackingService {
         'Advanced redaction AI',
         'Priority support',
         'Advanced analytics',
-        'API access'
-      ]
+        'API access',
+      ],
     },
     enterprise: {
       tier: 'enterprise',
@@ -192,14 +196,14 @@ export class CostTrackingService {
         maxDocuments: 50000,
         maxUsers: 100,
         ocrIncluded: true,
-        apiCallsIncluded: 25000
+        apiCallsIncluded: 25000,
       },
       pricing: {
         perRequest: 0.25,
         perMB: 0.05,
         perDocument: 0.15,
         perOCRPage: 0.02,
-        perAPICall: 0.005
+        perAPICall: 0.005,
       },
       features: [
         'Unlimited processing workflows',
@@ -209,9 +213,9 @@ export class CostTrackingService {
         'Custom integrations',
         'Full API access',
         'Advanced security features',
-        'Custom reporting'
-      ]
-    }
+        'Custom reporting',
+      ],
+    },
   };
 
   /**
@@ -236,7 +240,7 @@ export class CostTrackingService {
       agencyId,
       date,
       ...usage,
-      costs
+      costs,
     };
 
     // Store record
@@ -277,27 +281,35 @@ export class CostTrackingService {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    
-    const daysElapsed = Math.floor((now.getTime() - startOfMonth.getTime()) / (24 * 60 * 60 * 1000));
+
+    const daysElapsed = Math.floor(
+      (now.getTime() - startOfMonth.getTime()) / (24 * 60 * 60 * 1000)
+    );
     const daysInMonth = endOfMonth.getDate();
     const daysRemaining = daysInMonth - daysElapsed;
-    
+
     const currentUsage = await this.getCurrentUsage(agencyId);
-    const currentCost = currentUsage.reduce((sum, record) => sum + record.costs.total, 0);
-    
+    const currentCost = currentUsage.reduce(
+      (sum, record) => sum + record.costs.total,
+      0
+    );
+
     // Calculate daily average
     const dailyAverage = daysElapsed > 0 ? currentCost / daysElapsed : 0;
     const projectedCost = dailyAverage * daysInMonth;
-    
+
     // Calculate trends
     const weeklyTrend = this.calculateWeeklyTrend(currentUsage);
-    const monthlyProjection = Math.max(projectedCost, currentCost + (dailyAverage * daysRemaining));
-    
+    const monthlyProjection = Math.max(
+      projectedCost,
+      currentCost + dailyAverage * daysRemaining
+    );
+
     // Generate recommendations
     const recommendations = await this.generateCostRecommendations(agencyId, {
       currentCost,
       projectedCost: monthlyProjection,
-      usage: currentUsage
+      usage: currentUsage,
     });
 
     return {
@@ -306,14 +318,14 @@ export class CostTrackingService {
         daysElapsed,
         daysRemaining,
         currentCost,
-        projectedCost: monthlyProjection
+        projectedCost: monthlyProjection,
       },
       trending: {
         dailyAverage,
         weeklyTrend,
-        monthlyProjection
+        monthlyProjection,
       },
-      recommendations
+      recommendations,
     };
   }
 
@@ -327,42 +339,58 @@ export class CostTrackingService {
   ): Promise<BillingCycle> {
     const tier = await this.getAgencyTier(agencyId);
     const usage = await this.getUsageForPeriod(agencyId, startDate, endDate);
-    
+
     // Calculate total usage
-    const totalUsage = usage.reduce((acc, record) => ({
-      requests: acc.requests + record.requests,
-      documents: acc.documents + record.documents,
-      storageUsed: Math.max(acc.storageUsed, record.storageUsed), // Max storage used
-      ocrPages: acc.ocrPages + record.ocrPages,
-      apiCalls: acc.apiCalls + record.apiCalls
-    }), {
-      requests: 0,
-      documents: 0,
-      storageUsed: 0,
-      ocrPages: 0,
-      apiCalls: 0
-    });
+    const totalUsage = usage.reduce(
+      (acc, record) => ({
+        requests: acc.requests + record.requests,
+        documents: acc.documents + record.documents,
+        storageUsed: Math.max(acc.storageUsed, record.storageUsed), // Max storage used
+        ocrPages: acc.ocrPages + record.ocrPages,
+        apiCalls: acc.apiCalls + record.apiCalls,
+      }),
+      {
+        requests: 0,
+        documents: 0,
+        storageUsed: 0,
+        ocrPages: 0,
+        apiCalls: 0,
+      }
+    );
 
     // Calculate costs
     const tierConfig = this.tiers[tier];
     const baseCost = tierConfig.monthlyBase;
-    
+
     // Calculate overages
-    const requestOverage = Math.max(0, totalUsage.requests - tierConfig.limits.maxRequests);
-    const storageOverage = Math.max(0, totalUsage.storageUsed - tierConfig.limits.maxStorage);
-    const documentOverage = Math.max(0, totalUsage.documents - tierConfig.limits.maxDocuments);
-    const apiOverage = Math.max(0, totalUsage.apiCalls - tierConfig.limits.apiCallsIncluded);
-    
+    const requestOverage = Math.max(
+      0,
+      totalUsage.requests - tierConfig.limits.maxRequests
+    );
+    const storageOverage = Math.max(
+      0,
+      totalUsage.storageUsed - tierConfig.limits.maxStorage
+    );
+    const documentOverage = Math.max(
+      0,
+      totalUsage.documents - tierConfig.limits.maxDocuments
+    );
+    const apiOverage = Math.max(
+      0,
+      totalUsage.apiCalls - tierConfig.limits.apiCallsIncluded
+    );
+
     // Calculate charges
-    const overageCharges = 
-      (requestOverage * tierConfig.pricing.perRequest) +
-      (storageOverage * tierConfig.pricing.perMB) +
-      (documentOverage * tierConfig.pricing.perDocument) +
-      (apiOverage * tierConfig.pricing.perAPICall);
-    
-    const ocrCharges = tierConfig.limits.ocrIncluded ? 0 : 
-      totalUsage.ocrPages * tierConfig.pricing.perOCRPage;
-    
+    const overageCharges =
+      requestOverage * tierConfig.pricing.perRequest +
+      storageOverage * tierConfig.pricing.perMB +
+      documentOverage * tierConfig.pricing.perDocument +
+      apiOverage * tierConfig.pricing.perAPICall;
+
+    const ocrCharges = tierConfig.limits.ocrIncluded
+      ? 0
+      : totalUsage.ocrPages * tierConfig.pricing.perOCRPage;
+
     const subtotal = baseCost + overageCharges + ocrCharges;
     const taxes = subtotal * 0.08; // 8% tax rate
     const total = subtotal + taxes;
@@ -374,7 +402,7 @@ export class CostTrackingService {
       apiCharges: apiOverage * tierConfig.pricing.perAPICall,
       taxes,
       discounts: 0,
-      total
+      total,
     };
 
     const billingCycle: BillingCycle = {
@@ -386,7 +414,7 @@ export class CostTrackingService {
       usageRecords: usage,
       breakdown,
       status: 'draft',
-      invoiceId: `INV-${agencyId}-${Date.now()}`
+      invoiceId: `INV-${agencyId}-${Date.now()}`,
     };
 
     // Store billing cycle
@@ -423,38 +451,43 @@ export class CostTrackingService {
   }> {
     const currentTier = await this.getAgencyTier(agencyId);
     const usage = await this.getCurrentUsage(agencyId);
-    
+
     if (usage.length === 0) {
       return {
         currentTier,
         recommendedTier: currentTier,
-        reasoning: 'Insufficient usage data for recommendation'
+        reasoning: 'Insufficient usage data for recommendation',
       };
     }
 
     // Calculate average monthly usage
-    const avgUsage = usage.reduce((acc, record) => ({
-      requests: acc.requests + record.requests,
-      documents: acc.documents + record.documents,
-      storageUsed: Math.max(acc.storageUsed, record.storageUsed),
-      ocrPages: acc.ocrPages + record.ocrPages,
-      apiCalls: acc.apiCalls + record.apiCalls
-    }), {
-      requests: 0,
-      documents: 0,
-      storageUsed: 0,
-      ocrPages: 0,
-      apiCalls: 0
-    });
+    const avgUsage = usage.reduce(
+      (acc, record) => ({
+        requests: acc.requests + record.requests,
+        documents: acc.documents + record.documents,
+        storageUsed: Math.max(acc.storageUsed, record.storageUsed),
+        ocrPages: acc.ocrPages + record.ocrPages,
+        apiCalls: acc.apiCalls + record.apiCalls,
+      }),
+      {
+        requests: 0,
+        documents: 0,
+        storageUsed: 0,
+        ocrPages: 0,
+        apiCalls: 0,
+      }
+    );
 
     // Calculate costs for each tier
-    const tierCosts = Object.entries(this.tiers).map(([tierName, tierConfig]) => ({
-      tier: tierName,
-      cost: this.calculateUsageCosts(tierName, avgUsage).total
-    }));
+    const tierCosts = Object.entries(this.tiers).map(
+      ([tierName, tierConfig]) => ({
+        tier: tierName,
+        cost: this.calculateUsageCosts(tierName, avgUsage).total,
+      })
+    );
 
     // Find most cost-effective tier
-    const cheapestTier = tierCosts.reduce((prev, curr) => 
+    const cheapestTier = tierCosts.reduce((prev, curr) =>
       curr.cost < prev.cost ? curr : prev
     );
 
@@ -480,7 +513,7 @@ export class CostTrackingService {
       recommendedTier: cheapestTier.tier,
       reasoning,
       potentialSavings,
-      potentialCosts
+      potentialCosts,
     };
   }
 
@@ -507,22 +540,25 @@ export class CostTrackingService {
   private async getAgencyTier(agencyId: string): Promise<string> {
     // Mock tier assignment - in production, this would come from database
     const tierMap: Record<string, string> = {
-      'police': 'enterprise',
-      'fire': 'enterprise',
-      'finance': 'premium',
-      'parks': 'basic',
-      'health': 'premium'
+      police: 'enterprise',
+      fire: 'enterprise',
+      finance: 'premium',
+      parks: 'basic',
+      health: 'premium',
     };
     return tierMap[agencyId] || 'basic';
   }
 
-  private calculateUsageCosts(tier: string, usage: {
-    requests: number;
-    documents: number;
-    storageUsed: number;
-    ocrPages: number;
-    apiCalls: number;
-  }): UsageCosts {
+  private calculateUsageCosts(
+    tier: string,
+    usage: {
+      requests: number;
+      documents: number;
+      storageUsed: number;
+      ocrPages: number;
+      apiCalls: number;
+    }
+  ): UsageCosts {
     const tierConfig = this.tiers[tier];
     if (!tierConfig) {
       throw new Error(`Unknown tier: ${tier}`);
@@ -531,21 +567,40 @@ export class CostTrackingService {
     const baseCost = tierConfig.monthlyBase;
 
     // Calculate overages
-    const requestOverage = Math.max(0, usage.requests - tierConfig.limits.maxRequests);
-    const storageOverage = Math.max(0, usage.storageUsed - tierConfig.limits.maxStorage);
-    const documentOverage = Math.max(0, usage.documents - tierConfig.limits.maxDocuments);
-    const apiOverage = Math.max(0, usage.apiCalls - tierConfig.limits.apiCallsIncluded);
+    const requestOverage = Math.max(
+      0,
+      usage.requests - tierConfig.limits.maxRequests
+    );
+    const storageOverage = Math.max(
+      0,
+      usage.storageUsed - tierConfig.limits.maxStorage
+    );
+    const documentOverage = Math.max(
+      0,
+      usage.documents - tierConfig.limits.maxDocuments
+    );
+    const apiOverage = Math.max(
+      0,
+      usage.apiCalls - tierConfig.limits.apiCallsIncluded
+    );
 
     // Calculate costs
     const requestOverageCost = requestOverage * tierConfig.pricing.perRequest;
     const storageOverageCost = storageOverage * tierConfig.pricing.perMB;
-    const documentOverageCost = documentOverage * tierConfig.pricing.perDocument;
-    const ocrCosts = tierConfig.limits.ocrIncluded ? 0 : 
-      usage.ocrPages * tierConfig.pricing.perOCRPage;
+    const documentOverageCost =
+      documentOverage * tierConfig.pricing.perDocument;
+    const ocrCosts = tierConfig.limits.ocrIncluded
+      ? 0
+      : usage.ocrPages * tierConfig.pricing.perOCRPage;
     const apiCosts = apiOverage * tierConfig.pricing.perAPICall;
 
-    const total = baseCost + requestOverageCost + storageOverageCost + 
-                 documentOverageCost + ocrCosts + apiCosts;
+    const total =
+      baseCost +
+      requestOverageCost +
+      storageOverageCost +
+      documentOverageCost +
+      ocrCosts +
+      apiCosts;
 
     return {
       baseCost,
@@ -554,7 +609,7 @@ export class CostTrackingService {
       documentOverage: documentOverageCost,
       ocrCosts,
       apiCosts,
-      total: Math.round(total * 100) / 100 // Round to cents
+      total: Math.round(total * 100) / 100, // Round to cents
     };
   }
 
@@ -564,8 +619,8 @@ export class CostTrackingService {
     endDate: string
   ): Promise<UsageRecord[]> {
     const records = this.usageRecords.get(agencyId) || [];
-    return records.filter(record => 
-      record.date >= startDate && record.date <= endDate
+    return records.filter(
+      record => record.date >= startDate && record.date <= endDate
     );
   }
 
@@ -574,12 +629,15 @@ export class CostTrackingService {
     usage: UsageRecord
   ): Promise<void> {
     const currentUsage = await this.getCurrentUsage(agencyId);
-    const totalCost = currentUsage.reduce((sum, record) => sum + record.costs.total, 0);
-    
+    const totalCost = currentUsage.reduce(
+      (sum, record) => sum + record.costs.total,
+      0
+    );
+
     const tier = await this.getAgencyTier(agencyId);
     const tierConfig = this.tiers[tier];
     const budgetThreshold = tierConfig.monthlyBase * 1.5; // 150% of base cost
-    
+
     const alerts: CostAlert[] = [];
 
     // Budget warning (80% of threshold)
@@ -592,7 +650,7 @@ export class CostTrackingService {
         currentValue: totalCost,
         message: `Current costs (${totalCost.toFixed(2)}) are approaching budget threshold`,
         timestamp: new Date().toISOString(),
-        resolved: false
+        resolved: false,
       });
     }
 
@@ -606,7 +664,7 @@ export class CostTrackingService {
         currentValue: totalCost,
         message: `Current costs (${totalCost.toFixed(2)}) exceed budget threshold`,
         timestamp: new Date().toISOString(),
-        resolved: false
+        resolved: false,
       });
     }
 
@@ -619,16 +677,24 @@ export class CostTrackingService {
 
   private calculateWeeklyTrend(usage: UsageRecord[]): number {
     if (usage.length < 7) return 0;
-    
+
     const recentWeek = usage.slice(-7);
     const previousWeek = usage.slice(-14, -7);
-    
+
     if (previousWeek.length === 0) return 0;
-    
-    const recentCost = recentWeek.reduce((sum, record) => sum + record.costs.total, 0);
-    const previousCost = previousWeek.reduce((sum, record) => sum + record.costs.total, 0);
-    
-    return previousCost > 0 ? ((recentCost - previousCost) / previousCost) * 100 : 0;
+
+    const recentCost = recentWeek.reduce(
+      (sum, record) => sum + record.costs.total,
+      0
+    );
+    const previousCost = previousWeek.reduce(
+      (sum, record) => sum + record.costs.total,
+      0
+    );
+
+    return previousCost > 0
+      ? ((recentCost - previousCost) / previousCost) * 100
+      : 0;
   }
 
   private async generateCostRecommendations(
@@ -648,25 +714,30 @@ export class CostTrackingService {
       recommendations.push({
         type: 'tier_change',
         title: 'Consider Tier Upgrade',
-        description: 'Your usage patterns suggest a higher tier might be more cost-effective',
+        description:
+          'Your usage patterns suggest a higher tier might be more cost-effective',
         impact: {
-          monthlySavings: data.projectedCost * 0.15
+          monthlySavings: data.projectedCost * 0.15,
         },
-        priority: 'high'
+        priority: 'high',
       });
     }
 
     // Usage optimization
-    if (data.usage.some(record => record.costs.ocrCosts > record.costs.baseCost * 0.3)) {
+    if (
+      data.usage.some(
+        record => record.costs.ocrCosts > record.costs.baseCost * 0.3
+      )
+    ) {
       recommendations.push({
         type: 'usage_optimization',
         title: 'Optimize OCR Usage',
         description: 'Consider pre-processing documents to reduce OCR costs',
         impact: {
           monthlySavings: data.projectedCost * 0.1,
-          efficiencyGain: 15
+          efficiencyGain: 15,
         },
-        priority: 'medium'
+        priority: 'medium',
       });
     }
 

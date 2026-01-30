@@ -26,7 +26,9 @@ describe('AgencyRedactionRulesService - Basic Tests', () => {
   let agencyRedactionRulesService: any;
 
   beforeAll(async () => {
-    const module = await import('../../src/services/agencyRedactionRulesService');
+    const module = await import(
+      '../../src/services/agencyRedactionRulesService'
+    );
     agencyRedactionRulesService = module.agencyRedactionRulesService;
   });
 
@@ -36,12 +38,15 @@ describe('AgencyRedactionRulesService - Basic Tests', () => {
 
   test('should load service successfully', () => {
     expect(agencyRedactionRulesService).toBeDefined();
-    expect(typeof agencyRedactionRulesService.getAgencyTemplate).toBe('function');
+    expect(typeof agencyRedactionRulesService.getAgencyTemplate).toBe(
+      'function'
+    );
   });
 
   test('should get default template for police agency', async () => {
-    const template = await agencyRedactionRulesService.getAgencyTemplate('police');
-    
+    const template =
+      await agencyRedactionRulesService.getAgencyTemplate('police');
+
     expect(template).toBeDefined();
     expect(template.agencyId).toBe('police');
     expect(template.agencyName).toBe('Police Department');
@@ -51,8 +56,9 @@ describe('AgencyRedactionRulesService - Basic Tests', () => {
   });
 
   test('should get default template for fire agency', async () => {
-    const template = await agencyRedactionRulesService.getAgencyTemplate('fire');
-    
+    const template =
+      await agencyRedactionRulesService.getAgencyTemplate('fire');
+
     expect(template).toBeDefined();
     expect(template.agencyId).toBe('fire');
     expect(template.agencyName).toBe('Fire Department');
@@ -62,16 +68,17 @@ describe('AgencyRedactionRulesService - Basic Tests', () => {
   });
 
   test('should return null for unknown agency', async () => {
-    const template = await agencyRedactionRulesService.getAgencyTemplate('unknown-agency');
+    const template =
+      await agencyRedactionRulesService.getAgencyTemplate('unknown-agency');
     expect(template).toBeNull();
   });
 
   test('should get all templates', async () => {
     const templates = await agencyRedactionRulesService.getAllTemplates();
-    
+
     expect(Array.isArray(templates)).toBe(true);
     expect(templates.length).toBe(5);
-    
+
     const agencyIds = templates.map((t: any) => t.agencyId);
     expect(agencyIds).toContain('police');
     expect(agencyIds).toContain('fire');
@@ -82,8 +89,9 @@ describe('AgencyRedactionRulesService - Basic Tests', () => {
 
   test('should get agency rules summary', async () => {
     const testAgencyId = 'police';
-    const summary = await agencyRedactionRulesService.getAgencyRulesSummary(testAgencyId);
-    
+    const summary =
+      await agencyRedactionRulesService.getAgencyRulesSummary(testAgencyId);
+
     expect(summary).toBeDefined();
     expect(typeof summary.totalRules).toBe('number');
     expect(typeof summary.autoApplyRules).toBe('number');
@@ -94,8 +102,9 @@ describe('AgencyRedactionRulesService - Basic Tests', () => {
 
   test('should get auto-apply rules', async () => {
     const testAgencyId = 'police';
-    const autoApplyRules = await agencyRedactionRulesService.getAutoApplyRules(testAgencyId);
-    
+    const autoApplyRules =
+      await agencyRedactionRulesService.getAutoApplyRules(testAgencyId);
+
     expect(Array.isArray(autoApplyRules)).toBe(true);
     autoApplyRules.forEach((rule: any) => {
       expect(rule.autoApply).toBe(true);
@@ -104,8 +113,9 @@ describe('AgencyRedactionRulesService - Basic Tests', () => {
 
   test('should get approval required rules', async () => {
     const testAgencyId = 'police';
-    const approvalRules = await agencyRedactionRulesService.getApprovalRequiredRules(testAgencyId);
-    
+    const approvalRules =
+      await agencyRedactionRulesService.getApprovalRequiredRules(testAgencyId);
+
     expect(Array.isArray(approvalRules)).toBe(true);
     approvalRules.forEach((rule: any) => {
       expect(rule.requiresApproval).toBe(true);

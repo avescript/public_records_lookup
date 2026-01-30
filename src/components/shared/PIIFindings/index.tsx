@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo,useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
@@ -72,10 +72,10 @@ const PIITypeColors: Record<PIIType, string> = {
 };
 
 const getConfidenceIcon = (confidence: number) => {
-  if (confidence >= 0.9) return <CheckCircleIcon color="success" />;
-  if (confidence >= 0.8) return <InfoIcon color="primary" />;
-  if (confidence >= 0.7) return <WarningIcon color="warning" />;
-  return <ErrorIcon color="error" />;
+  if (confidence >= 0.9) return <CheckCircleIcon color='success' />;
+  if (confidence >= 0.8) return <InfoIcon color='primary' />;
+  if (confidence >= 0.7) return <WarningIcon color='warning' />;
+  return <ErrorIcon color='error' />;
 };
 
 const getConfidenceLabel = (confidence: number) => {
@@ -100,48 +100,66 @@ const PIIFindingItem: React.FC<PIIFindingItemProps> = ({
         borderRadius: 1,
         mb: 1,
         cursor: onClick ? 'pointer' : 'default',
-        '&:hover': onClick ? {
-          backgroundColor: 'action.hover',
-        } : {},
+        '&:hover': onClick
+          ? {
+              backgroundColor: 'action.hover',
+            }
+          : {},
         flexDirection: 'column',
         alignItems: 'flex-start',
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-        <ListItemIcon>
-          {getConfidenceIcon(finding.confidence)}
-        </ListItemIcon>
+        <ListItemIcon>{getConfidenceIcon(finding.confidence)}</ListItemIcon>
         <Box sx={{ flexGrow: 1 }}>
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: showDetails ? 1 : 0 }}>
+          <Stack
+            direction='row'
+            alignItems='center'
+            spacing={1}
+            sx={{ mb: showDetails ? 1 : 0 }}
+          >
             <Chip
               label={finding.piiType}
-              size="small"
+              size='small'
               sx={{
                 backgroundColor: PIITypeColors[finding.piiType],
                 color: 'white',
                 fontWeight: 'bold',
               }}
             />
-            <Typography variant="body2" component="span">
+            <Typography variant='body2' component='span'>
               {finding.text}
             </Typography>
             <Chip
               label={`${Math.round(finding.confidence * 100)}%`}
-              size="small"
-              variant="outlined"
+              size='small'
+              variant='outlined'
               color={finding.confidence >= 0.8 ? 'success' : 'warning'}
             />
           </Stack>
           {showDetails && (
             <Box sx={{ pl: 0 }}>
-              <Typography variant="caption" color="text.secondary" component="div">
+              <Typography
+                variant='caption'
+                color='text.secondary'
+                component='div'
+              >
                 {finding.reasoning}
               </Typography>
-              <Typography variant="caption" color="text.secondary" component="div">
+              <Typography
+                variant='caption'
+                color='text.secondary'
+                component='div'
+              >
                 Location: Page {finding.pageNumber}, {finding.fileName}
               </Typography>
-              <Typography variant="caption" color="text.secondary" component="div">
-                Coordinates: ({finding.x}, {finding.y}) - {finding.width} × {finding.height}
+              <Typography
+                variant='caption'
+                color='text.secondary'
+                component='div'
+              >
+                Coordinates: ({finding.x}, {finding.y}) - {finding.width} ×{' '}
+                {finding.height}
               </Typography>
             </Box>
           )}
@@ -157,11 +175,14 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
   groupBy = 'type',
   showEmptyState = true,
 }) => {
-  const [findingsResult, setFindingsResult] = useState<PIIFindingsResult | null>(null);
+  const [findingsResult, setFindingsResult] =
+    useState<PIIFindingsResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [confidenceFilter, setConfidenceFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
+  const [confidenceFilter, setConfidenceFilter] = useState<
+    'all' | 'high' | 'medium' | 'low'
+  >('all');
   const [showOnlyHighRisk, setShowOnlyHighRisk] = useState(false);
 
   useEffect(() => {
@@ -171,12 +192,13 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
         setError(null);
         const result = await piiDetectionService.getFindingsForRecord(recordId);
         setFindingsResult(result);
-        
+
         // Auto-expand first few groups
         const firstGroups = new Set(['SSN', 'PHONE', 'ADDRESS'].slice(0, 2));
         setExpandedGroups(firstGroups);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load PII findings';
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to load PII findings';
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -195,18 +217,29 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
     if (confidenceFilter !== 'all') {
       filtered = filtered.filter(finding => {
         switch (confidenceFilter) {
-          case 'high': return finding.confidence >= 0.8;
-          case 'medium': return finding.confidence >= 0.7 && finding.confidence < 0.8;
-          case 'low': return finding.confidence < 0.7;
-          default: return true;
+          case 'high':
+            return finding.confidence >= 0.8;
+          case 'medium':
+            return finding.confidence >= 0.7 && finding.confidence < 0.8;
+          case 'low':
+            return finding.confidence < 0.7;
+          default:
+            return true;
         }
       });
     }
 
     // Apply high-risk filter
     if (showOnlyHighRisk) {
-      const highRiskTypes = [PIIType.SSN, PIIType.ACCOUNT_NUMBER, PIIType.MEDICAL_ID, PIIType.DRIVERS_LICENSE];
-      filtered = filtered.filter(finding => highRiskTypes.includes(finding.piiType));
+      const highRiskTypes = [
+        PIIType.SSN,
+        PIIType.ACCOUNT_NUMBER,
+        PIIType.MEDICAL_ID,
+        PIIType.DRIVERS_LICENSE,
+      ];
+      filtered = filtered.filter(finding =>
+        highRiskTypes.includes(finding.piiType)
+      );
     }
 
     return filtered;
@@ -219,7 +252,7 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
 
     filteredFindings.forEach(finding => {
       let key: string;
-      
+
       switch (groupBy) {
         case 'type':
           key = finding.piiType;
@@ -246,10 +279,13 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
     // Sort groups
     return Object.keys(groups)
       .sort()
-      .reduce((sorted, key) => {
-        sorted[key] = groups[key].sort((a, b) => b.confidence - a.confidence);
-        return sorted;
-      }, {} as Record<string, PIIFinding[]>);
+      .reduce(
+        (sorted, key) => {
+          sorted[key] = groups[key].sort((a, b) => b.confidence - a.confidence);
+          return sorted;
+        },
+        {} as Record<string, PIIFinding[]>
+      );
   }, [filteredFindings, groupBy]);
 
   const handleToggleGroup = (groupKey: string) => {
@@ -272,11 +308,11 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
     return (
       <Card>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             PII Detection Results
           </Typography>
           <LinearProgress />
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          <Typography variant='body2' color='text.secondary' sx={{ mt: 1 }}>
             Analyzing document for PII...
           </Typography>
         </CardContent>
@@ -288,12 +324,10 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
     return (
       <Card>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             PII Detection Results
           </Typography>
-          <Alert severity="error">
-            {error}
-          </Alert>
+          <Alert severity='error'>{error}</Alert>
         </CardContent>
       </Card>
     );
@@ -305,12 +339,13 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
     return (
       <Card>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             PII Detection Results
           </Typography>
-          <Alert severity="info" icon={<SecurityIcon />}>
-            <Typography variant="body2">
-              No PII detected in this record. The document appears to be safe for public release.
+          <Alert severity='info' icon={<SecurityIcon />}>
+            <Typography variant='body2'>
+              No PII detected in this record. The document appears to be safe
+              for public release.
             </Typography>
           </Alert>
         </CardContent>
@@ -323,52 +358,63 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
       <CardContent>
         <Stack spacing={2}>
           {/* Header */}
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6">
-              PII Detection Results
-            </Typography>
+          <Stack
+            direction='row'
+            justifyContent='space-between'
+            alignItems='center'
+          >
+            <Typography variant='h6'>PII Detection Results</Typography>
             <Chip
               label={`${filteredFindings.length} findings`}
-              color={findingsResult.highConfidenceFindings > 0 ? 'warning' : 'info'}
-              variant="outlined"
+              color={
+                findingsResult.highConfidenceFindings > 0 ? 'warning' : 'info'
+              }
+              variant='outlined'
             />
           </Stack>
 
           {/* Summary Stats */}
           <Box>
-            <Stack direction="row" spacing={1} flexWrap="wrap">
+            <Stack direction='row' spacing={1} flexWrap='wrap'>
               <Chip
-                size="small"
+                size='small'
                 label={`${findingsResult.totalFindings} total`}
-                variant="outlined"
+                variant='outlined'
               />
               <Chip
-                size="small"
+                size='small'
                 label={`${findingsResult.highConfidenceFindings} high confidence`}
-                color="warning"
-                variant="outlined"
+                color='warning'
+                variant='outlined'
               />
               <Chip
-                size="small"
+                size='small'
                 label={`${findingsResult.piiTypesDetected.length} types`}
-                variant="outlined"
+                variant='outlined'
               />
             </Stack>
           </Box>
 
           {/* Filters */}
-          <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-            <FormControl size="small" sx={{ minWidth: 120 }}>
+          <Stack
+            direction='row'
+            spacing={2}
+            alignItems='center'
+            flexWrap='wrap'
+          >
+            <FormControl size='small' sx={{ minWidth: 120 }}>
               <InputLabel>Confidence</InputLabel>
               <Select
                 value={confidenceFilter}
-                label="Confidence"
-                onChange={(e) => setConfidenceFilter(e.target.value as typeof confidenceFilter)}
+                label='Confidence'
+                onChange={e =>
+                  setConfidenceFilter(e.target.value as typeof confidenceFilter)
+                }
               >
-                <MenuItem value="all">All</MenuItem>
-                <MenuItem value="high">High (≥80%)</MenuItem>
-                <MenuItem value="medium">Medium (70-79%)</MenuItem>
-                <MenuItem value="low">Low (&lt;70%)</MenuItem>
+                <MenuItem value='all'>All</MenuItem>
+                <MenuItem value='high'>High (≥80%)</MenuItem>
+                <MenuItem value='medium'>Medium (70-79%)</MenuItem>
+                <MenuItem value='low'>Low (&lt;70%)</MenuItem>
               </Select>
             </FormControl>
 
@@ -376,16 +422,16 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
               control={
                 <Switch
                   checked={showOnlyHighRisk}
-                  onChange={(e) => setShowOnlyHighRisk(e.target.checked)}
-                  size="small"
+                  onChange={e => setShowOnlyHighRisk(e.target.checked)}
+                  size='small'
                 />
               }
-              label="High-risk only"
+              label='High-risk only'
             />
           </Stack>
 
           {filteredFindings.length === 0 && (
-            <Alert severity="info">
+            <Alert severity='info'>
               No findings match the current filters.
             </Alert>
           )}
@@ -398,16 +444,24 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
               onChange={() => handleToggleGroup(groupKey)}
             >
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Stack direction="row" alignItems="center" spacing={2} sx={{ width: '100%' }}>
-                  <Typography variant="subtitle1" sx={{ flexGrow: 1 }}>
+                <Stack
+                  direction='row'
+                  alignItems='center'
+                  spacing={2}
+                  sx={{ width: '100%' }}
+                >
+                  <Typography variant='subtitle1' sx={{ flexGrow: 1 }}>
                     {groupKey}
                   </Typography>
                   <Chip
-                    size="small"
+                    size='small'
                     label={findings.length}
                     color={groupBy === 'type' ? 'primary' : 'default'}
                     sx={{
-                      backgroundColor: groupBy === 'type' ? PIITypeColors[groupKey as PIIType] : undefined,
+                      backgroundColor:
+                        groupBy === 'type'
+                          ? PIITypeColors[groupKey as PIIType]
+                          : undefined,
                       color: groupBy === 'type' ? 'white' : undefined,
                     }}
                   />
@@ -419,7 +473,11 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
                     <PIIFindingItem
                       key={`${finding.recordId}-${finding.pageNumber}-${index}`}
                       finding={finding}
-                      onClick={onFindingSelect ? () => handleFindingClick(finding) : undefined}
+                      onClick={
+                        onFindingSelect
+                          ? () => handleFindingClick(finding)
+                          : undefined
+                      }
                     />
                   ))}
                 </List>

@@ -3,7 +3,7 @@
 import { useAuth } from '../contexts/AuthContext';
 
 export type UserRole = 'admin' | 'staff' | 'legal_reviewer';
-export type Permission = 
+export type Permission =
   | 'view_all_requests'
   | 'view_own_requests'
   | 'create_request'
@@ -135,15 +135,15 @@ export const FEATURES = {
   SYSTEM_SETTINGS: ['admin'] as UserRole[],
   AUDIT_LOGS: ['admin'] as UserRole[],
   AGENCY_MANAGEMENT: ['admin'] as UserRole[],
-  
+
   // Legal reviewer features
   LEGAL_REVIEW: ['admin', 'legal_reviewer'] as UserRole[],
   FINAL_APPROVAL: ['admin', 'legal_reviewer'] as UserRole[],
-  
+
   // Staff features
   DOCUMENT_PROCESSING: ['admin', 'staff'] as UserRole[],
   REDACTION_TOOLS: ['admin', 'staff'] as UserRole[],
-  
+
   // Shared features
   REPORTING: ['admin', 'legal_reviewer'] as UserRole[],
   REQUEST_VIEWING: ['admin', 'staff', 'legal_reviewer'] as UserRole[],
@@ -152,7 +152,10 @@ export const FEATURES = {
 /**
  * Check if a feature is available for a specific role
  */
-export function isFeatureAvailable(feature: keyof typeof FEATURES, role?: UserRole): boolean {
+export function isFeatureAvailable(
+  feature: keyof typeof FEATURES,
+  role?: UserRole
+): boolean {
   if (!role) return false;
   return FEATURES[feature].includes(role);
 }

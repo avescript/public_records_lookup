@@ -4,7 +4,12 @@ import { ClientProviders } from '../../../src/components/providers/ClientProvide
 
 // Mock the contexts to verify proper provider nesting
 const mockAuthContextValue = {
-  user: { id: '1', email: 'test@example.com', role: 'staff', name: 'Test User' },
+  user: {
+    id: '1',
+    email: 'test@example.com',
+    role: 'staff',
+    name: 'Test User',
+  },
   login: jest.fn(),
   logout: jest.fn(),
   loading: false,
@@ -15,7 +20,7 @@ const mockAgencyContextValue = {
     id: 'pdx-police',
     name: 'Portland Police Bureau',
     color: '#1976d2',
-    icon: 'Shield'
+    icon: 'Shield',
   },
   agencies: [],
   switchAgency: jest.fn(),
@@ -23,37 +28,33 @@ const mockAgencyContextValue = {
 
 jest.mock('../../../src/contexts/AuthContext', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="auth-provider">{children}</div>
+    <div data-testid='auth-provider'>{children}</div>
   ),
   useAuth: () => mockAuthContextValue,
 }));
 
 jest.mock('../../../src/contexts/AgencyContext', () => ({
   AgencyProvider: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="agency-provider">{children}</div>
+    <div data-testid='agency-provider'>{children}</div>
   ),
   useAgency: () => mockAgencyContextValue,
 }));
 
 // Test component that uses both contexts
 const TestComponent = () => {
-  return (
-    <div data-testid="test-component">
-      Test Component
-    </div>
-  );
+  return <div data-testid='test-component'>Test Component</div>;
 };
 
 // Test component that uses auth context
 const AuthTestComponent = () => {
   // This would normally use useAuth() but we'll just render for provider testing
-  return <div data-testid="auth-test-component">Auth Test Component</div>;
+  return <div data-testid='auth-test-component'>Auth Test Component</div>;
 };
 
 // Test component that uses agency context
 const AgencyTestComponent = () => {
   // This would normally use useAgency() but we'll just render for provider testing
-  return <div data-testid="agency-test-component">Agency Test Component</div>;
+  return <div data-testid='agency-test-component'>Agency Test Component</div>;
 };
 
 describe('ClientProviders', () => {
@@ -100,7 +101,7 @@ describe('ClientProviders', () => {
 
       const authProvider = screen.getByTestId('auth-provider');
       const agencyProvider = screen.getByTestId('agency-provider');
-      
+
       // AgencyProvider should be nested inside AuthProvider
       expect(authProvider).toContainElement(agencyProvider);
     });
@@ -110,9 +111,9 @@ describe('ClientProviders', () => {
     it('should render multiple children', () => {
       render(
         <ClientProviders>
-          <div data-testid="child-1">Child 1</div>
-          <div data-testid="child-2">Child 2</div>
-          <div data-testid="child-3">Child 3</div>
+          <div data-testid='child-1'>Child 1</div>
+          <div data-testid='child-2'>Child 2</div>
+          <div data-testid='child-3'>Child 3</div>
         </ClientProviders>
       );
 
@@ -124,9 +125,9 @@ describe('ClientProviders', () => {
     it('should handle complex nested children', () => {
       render(
         <ClientProviders>
-          <div data-testid="parent">
-            <div data-testid="nested-child-1">Nested 1</div>
-            <div data-testid="nested-child-2">Nested 2</div>
+          <div data-testid='parent'>
+            <div data-testid='nested-child-1'>Nested 1</div>
+            <div data-testid='nested-child-2'>Nested 2</div>
           </div>
         </ClientProviders>
       );
@@ -143,9 +144,7 @@ describe('ClientProviders', () => {
         // In a real scenario, this would use both useAuth() and useAgency()
         // For testing, we just verify the providers are present
         return (
-          <div data-testid="integrated-component">
-            Both providers available
-          </div>
+          <div data-testid='integrated-component'>Both providers available</div>
         );
       };
 
@@ -184,22 +183,14 @@ describe('ClientProviders', () => {
 
   describe('Props Handling', () => {
     it('should handle null children', () => {
-      render(
-        <ClientProviders>
-          {null}
-        </ClientProviders>
-      );
+      render(<ClientProviders>{null}</ClientProviders>);
 
       expect(screen.getByTestId('auth-provider')).toBeInTheDocument();
       expect(screen.getByTestId('agency-provider')).toBeInTheDocument();
     });
 
     it('should handle undefined children', () => {
-      render(
-        <ClientProviders>
-          {undefined}
-        </ClientProviders>
-      );
+      render(<ClientProviders>{undefined}</ClientProviders>);
 
       expect(screen.getByTestId('auth-provider')).toBeInTheDocument();
       expect(screen.getByTestId('agency-provider')).toBeInTheDocument();
@@ -207,10 +198,10 @@ describe('ClientProviders', () => {
 
     it('should handle conditional children', () => {
       const showChild = true;
-      
+
       render(
         <ClientProviders>
-          {showChild && <div data-testid="conditional-child">Conditional</div>}
+          {showChild && <div data-testid='conditional-child'>Conditional</div>}
         </ClientProviders>
       );
 
@@ -221,10 +212,10 @@ describe('ClientProviders', () => {
   describe('Performance Considerations', () => {
     it('should not re-render unnecessarily', () => {
       const renderSpy = jest.fn();
-      
+
       const TrackedComponent = () => {
         renderSpy();
-        return <div data-testid="tracked-component">Tracked</div>;
+        return <div data-testid='tracked-component'>Tracked</div>;
       };
 
       const { rerender } = render(

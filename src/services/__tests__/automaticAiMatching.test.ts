@@ -37,7 +37,7 @@ describe('Automatic AI Matching Integration', () => {
 
   it('should automatically trigger AI matching when creating a new request', async () => {
     console.log('🧪 Testing automatic AI matching on request creation...');
-    
+
     const requestData = {
       title: 'Automatic Matching Test',
       department: 'Police',
@@ -52,25 +52,27 @@ describe('Automatic AI Matching Integration', () => {
 
     // Create a new request - this should automatically trigger AI matching
     const result = await saveRequest(requestData);
-    
+
     console.log('✅ Request created with ID:', result.id);
     console.log('✅ Tracking ID:', result.trackingId);
-    
+
     // Verify that findMatches was called automatically
     expect(mockFindMatches).toHaveBeenCalledWith(
       result.id,
       requestData.description
     );
-    
+
     console.log('✅ AI matching was automatically triggered for new request');
   });
 
   it('should handle AI matching errors gracefully during request creation', async () => {
     console.log('🧪 Testing error handling in automatic AI matching...');
-    
+
     // Mock findMatches to throw an error
-    mockFindMatches.mockRejectedValue(new Error('AI matching service unavailable'));
-    
+    mockFindMatches.mockRejectedValue(
+      new Error('AI matching service unavailable')
+    );
+
     const requestData = {
       title: 'Error Handling Test',
       department: 'Fire',
@@ -85,31 +87,34 @@ describe('Automatic AI Matching Integration', () => {
 
     // Create a new request - AI matching should fail but request creation should succeed
     const result = await saveRequest(requestData);
-    
+
     console.log('✅ Request created successfully despite AI matching error');
     console.log('✅ Request ID:', result.id);
     console.log('✅ Tracking ID:', result.trackingId);
-    
+
     // Verify that findMatches was attempted
     expect(mockFindMatches).toHaveBeenCalledWith(
       result.id,
       requestData.description
     );
-    
+
     // Verify the request was still created successfully
     expect(result.id).toBeDefined();
     expect(result.trackingId).toBeDefined();
-    
-    console.log('✅ Error handling works correctly - request creation not affected by AI matching failures');
+
+    console.log(
+      '✅ Error handling works correctly - request creation not affected by AI matching failures'
+    );
   });
 
   it('should verify automatic AI matching passes correct parameters', async () => {
     console.log('🧪 Testing automatic AI matching parameter passing...');
-    
+
     const requestData = {
       title: 'Parameter Test Request',
       department: 'Health',
-      description: 'This is a detailed description for testing parameter passing to automatic AI matching',
+      description:
+        'This is a detailed description for testing parameter passing to automatic AI matching',
       dateRange: {
         startDate: '2024-03-01',
         endDate: '2024-03-31',
@@ -119,20 +124,20 @@ describe('Automatic AI Matching Integration', () => {
     };
 
     const result = await saveRequest(requestData);
-    
+
     // Verify findMatches was called with correct parameters
     expect(mockFindMatches).toHaveBeenCalledTimes(1);
     expect(mockFindMatches).toHaveBeenCalledWith(
-      result.id,                    // Request ID
-      requestData.description       // Request description for AI analysis
+      result.id, // Request ID
+      requestData.description // Request description for AI analysis
     );
-    
+
     // Get the actual call arguments
     const [requestId, description] = mockFindMatches.mock.calls[0];
-    
+
     expect(requestId).toBe(result.id);
     expect(description).toBe(requestData.description);
-    
+
     console.log('✅ Automatic AI matching called with correct parameters:');
     console.log('  - Request ID:', requestId);
     console.log('  - Description:', description);

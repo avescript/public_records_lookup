@@ -9,23 +9,23 @@ const localStorageMock = (() => {
   let store = {};
 
   return {
-    getItem: function(key) {
+    getItem: function (key) {
       return store[key] || null;
     },
-    setItem: function(key, value) {
+    setItem: function (key, value) {
       store[key] = value.toString();
     },
-    removeItem: function(key) {
+    removeItem: function (key) {
       delete store[key];
     },
-    clear: function() {
+    clear: function () {
       store = {};
-    }
+    },
   };
 })();
 
 Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
+  value: localStorageMock,
 });
 
 // Mock console.error to avoid noise in tests
@@ -47,8 +47,8 @@ Date.now = mockDateNow;
 // Mock crypto.randomUUID for consistent IDs in tests
 Object.defineProperty(window, 'crypto', {
   value: {
-    randomUUID: jest.fn(() => 'mock-uuid-12345')
-  }
+    randomUUID: jest.fn(() => 'mock-uuid-12345'),
+  },
 });
 
 // Mock IntersectionObserver
@@ -101,11 +101,9 @@ const originalWarn = console.warn;
 console.warn = (...args) => {
   if (
     typeof args[0] === 'string' &&
-    (
-      args[0].includes('componentWillReceiveProps') ||
+    (args[0].includes('componentWillReceiveProps') ||
       args[0].includes('componentWillUpdate') ||
-      args[0].includes('componentWillMount')
-    )
+      args[0].includes('componentWillMount'))
   ) {
     return;
   }

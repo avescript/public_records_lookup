@@ -11,14 +11,14 @@ export const Header: React.FC<HeaderProps> = ({
   showSearch = true,
 }) => {
   return (
-    <HeaderRoot position="sticky">
+    <HeaderRoot position='sticky'>
       <HeaderToolbar>
-        <Typography variant="h6" component="h1">
+        <Typography variant='h6' component='h1'>
           {title}
         </Typography>
         <HeaderActions>
           {showSearch && (
-            <IconButton color="inherit" aria-label="search">
+            <IconButton color='inherit' aria-label='search'>
               <SearchIcon />
             </IconButton>
           )}

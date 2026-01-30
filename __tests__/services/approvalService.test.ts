@@ -4,7 +4,12 @@
  * Tests all service methods, error handling, and edge cases
  */
 
-import { approvalService, ApprovalService, ApprovalWorkflow, ApprovalDecision } from '../../src/services/approvalService';
+import {
+  approvalService,
+  ApprovalService,
+  ApprovalWorkflow,
+  ApprovalDecision,
+} from '../../src/services/approvalService';
 
 // Mock localStorage
 const createLocalStorageMock = () => {
@@ -21,8 +26,12 @@ const createLocalStorageMock = () => {
     clear: jest.fn(() => {
       store = {};
     }),
-    get store() { return store; },
-    set store(newStore: Record<string, string>) { store = newStore; }
+    get store() {
+      return store;
+    },
+    set store(newStore: Record<string, string>) {
+      store = newStore;
+    },
   };
 };
 
@@ -38,15 +47,17 @@ describe('ApprovalService', () => {
 
   beforeEach(() => {
     service = new ApprovalService();
-    
+
     // Clear the store and reset all mocks
     localStorageMock.store = {};
     jest.clearAllMocks();
-    
+
     // Reset mock implementations to their defaults
-    localStorageMock.setItem.mockImplementation((key: string, value: string) => {
-      localStorageMock.store = { ...localStorageMock.store, [key]: value };
-    });
+    localStorageMock.setItem.mockImplementation(
+      (key: string, value: string) => {
+        localStorageMock.store = { ...localStorageMock.store, [key]: value };
+      }
+    );
     localStorageMock.getItem.mockImplementation((key: string) => {
       return localStorageMock.store[key] || null;
     });
@@ -112,8 +123,12 @@ describe('ApprovalService', () => {
 
     it('should assign reviewer to pending workflow', async () => {
       const reviewerId = 'reviewer-123';
-      
-      const workflow = await service.assignReviewer('record-1', 'doc.pdf', reviewerId);
+
+      const workflow = await service.assignReviewer(
+        'record-1',
+        'doc.pdf',
+        reviewerId
+      );
 
       expect(workflow.assignedReviewer).toBe(reviewerId);
       expect(workflow.status).toBe('under_review');
@@ -128,7 +143,7 @@ describe('ApprovalService', () => {
     it('should throw error for workflow not in pending status', async () => {
       // First assign a reviewer
       await service.assignReviewer('record-1', 'doc.pdf', 'reviewer-123');
-      
+
       // Try to assign again
       await expect(
         service.assignReviewer('record-1', 'doc.pdf', 'reviewer-456')
@@ -249,9 +264,9 @@ describe('ApprovalService', () => {
   describe('getWorkflow', () => {
     it('should return workflow for existing document', async () => {
       await service.submitForApproval('record-1', 'doc.pdf', 'version-1', 3);
-      
+
       const workflow = await service.getWorkflow('record-1', 'doc.pdf');
-      
+
       expect(workflow).toBeDefined();
       expect(workflow?.recordId).toBe('record-1');
       expect(workflow?.fileName).toBe('doc.pdf');
@@ -275,17 +290,35 @@ describe('ApprovalService', () => {
   describe('getAllWorkflows', () => {
     beforeEach(async () => {
       // Create multiple workflows
-      await service.submitForApproval('record-1', 'doc1.pdf', 'version-1', 3, 'high');
-      await service.submitForApproval('record-2', 'doc2.pdf', 'version-2', 5, 'low');
-      await service.submitForApproval('record-3', 'doc3.pdf', 'version-3', 2, 'urgent');
-      
+      await service.submitForApproval(
+        'record-1',
+        'doc1.pdf',
+        'version-1',
+        3,
+        'high'
+      );
+      await service.submitForApproval(
+        'record-2',
+        'doc2.pdf',
+        'version-2',
+        5,
+        'low'
+      );
+      await service.submitForApproval(
+        'record-3',
+        'doc3.pdf',
+        'version-3',
+        2,
+        'urgent'
+      );
+
       // Assign reviewer to one
       await service.assignReviewer('record-1', 'doc1.pdf', 'reviewer-123');
     });
 
     it('should return all workflows sorted by priority and date', async () => {
       const workflows = await service.getAllWorkflows();
-      
+
       expect(workflows).toHaveLength(3);
       // Should be sorted by priority: urgent, high, low
       expect(workflows[0].priority).toBe('urgent');
@@ -295,16 +328,20 @@ describe('ApprovalService', () => {
 
     it('should filter by status', async () => {
       const pendingWorkflows = await service.getAllWorkflows('pending_review');
-      const underReviewWorkflows = await service.getAllWorkflows('under_review');
-      
+      const underReviewWorkflows =
+        await service.getAllWorkflows('under_review');
+
       expect(pendingWorkflows).toHaveLength(2);
       expect(underReviewWorkflows).toHaveLength(1);
       expect(underReviewWorkflows[0].recordId).toBe('record-1');
     });
 
     it('should filter by reviewer', async () => {
-      const reviewerWorkflows = await service.getAllWorkflows(undefined, 'reviewer-123');
-      
+      const reviewerWorkflows = await service.getAllWorkflows(
+        undefined,
+        'reviewer-123'
+      );
+
       expect(reviewerWorkflows).toHaveLength(1);
       expect(reviewerWorkflows[0].assignedReviewer).toBe('reviewer-123');
     });
@@ -323,10 +360,10 @@ describe('ApprovalService', () => {
       await service.submitForApproval('record-2', 'doc2.pdf', 'version-2', 5);
       await service.assignReviewer('record-1', 'doc1.pdf', 'reviewer-123');
       await service.assignReviewer('record-2', 'doc2.pdf', 'reviewer-456');
-      
+
       // Add a small delay to ensure measurable review time
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       // Complete one approval
       await service.submitDecision(
         'record-1',
@@ -339,7 +376,7 @@ describe('ApprovalService', () => {
 
     it('should calculate summary statistics correctly', async () => {
       const summary = await service.getApprovalSummary();
-      
+
       expect(summary.totalPending).toBe(0);
       expect(summary.totalUnderReview).toBe(1);
       expect(summary.totalApproved).toBe(1);
@@ -351,7 +388,7 @@ describe('ApprovalService', () => {
     it('should handle empty workflows', async () => {
       localStorageMock.clear();
       const summary = await service.getApprovalSummary();
-      
+
       expect(summary.totalPending).toBe(0);
       expect(summary.totalUnderReview).toBe(0);
       expect(summary.totalApproved).toBe(0);
@@ -367,7 +404,7 @@ describe('ApprovalService', () => {
       await service.submitForApproval('record-2', 'doc2.pdf', 'version-2', 5);
       await service.assignReviewer('record-1', 'doc1.pdf', 'reviewer-123');
       await service.assignReviewer('record-2', 'doc2.pdf', 'reviewer-123');
-      
+
       await service.submitDecision(
         'record-1',
         'doc1.pdf',
@@ -387,13 +424,14 @@ describe('ApprovalService', () => {
 
     it('should return decisions for specific reviewer', async () => {
       const decisions = await service.getDecisionsByReviewer('reviewer-123');
-      
+
       expect(decisions).toHaveLength(2);
       expect(decisions[0].reviewerId).toBe('reviewer-123');
       expect(decisions[1].reviewerId).toBe('reviewer-123');
       // Should be sorted by timestamp (newest first)
-      expect(new Date(decisions[0].timestamp).getTime())
-        .toBeGreaterThanOrEqual(new Date(decisions[1].timestamp).getTime());
+      expect(new Date(decisions[0].timestamp).getTime()).toBeGreaterThanOrEqual(
+        new Date(decisions[1].timestamp).getTime()
+      );
     });
 
     it('should return empty array for non-existent reviewer', async () => {
@@ -414,7 +452,7 @@ describe('ApprovalService', () => {
   describe('Edge Cases and Error Handling', () => {
     it('should handle malformed JSON in localStorage', async () => {
       localStorageMock.getItem.mockReturnValueOnce('invalid-json');
-      
+
       const workflow = await service.getWorkflow('record-1', 'doc.pdf');
       expect(workflow).toBeNull();
     });
@@ -431,7 +469,12 @@ describe('ApprovalService', () => {
 
     it('should validate required parameters', async () => {
       // The service doesn't currently validate empty recordId, so this test should pass
-      const workflow = await service.submitForApproval('', 'doc.pdf', 'version-1', 3);
+      const workflow = await service.submitForApproval(
+        '',
+        'doc.pdf',
+        'version-1',
+        3
+      );
       expect(workflow.recordId).toBe('');
       expect(workflow.fileName).toBe('doc.pdf');
     });
@@ -479,7 +522,7 @@ describe('ApprovalService', () => {
     it('should handle revision workflow', async () => {
       await service.submitForApproval('record-1', 'doc.pdf', 'version-1', 3);
       await service.assignReviewer('record-1', 'doc.pdf', 'reviewer-123');
-      
+
       const decision = await service.submitDecision(
         'record-1',
         'doc.pdf',
@@ -505,7 +548,10 @@ describe('ApprovalService Singleton', () => {
 
   it('should maintain state across calls', async () => {
     await approvalService.submitForApproval('test-record', 'test.pdf', 'v1', 1);
-    const workflow = await approvalService.getWorkflow('test-record', 'test.pdf');
+    const workflow = await approvalService.getWorkflow(
+      'test-record',
+      'test.pdf'
+    );
     expect(workflow).toBeDefined();
   });
 });

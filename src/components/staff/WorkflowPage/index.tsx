@@ -3,9 +3,12 @@
 import React from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 
-import { WorkflowNavigation, WorkflowStep } from '@/components/staff/WorkflowNavigation';
+import {
+  WorkflowNavigation,
+  WorkflowStep,
+} from '@/components/staff/WorkflowNavigation';
 
-import { 
+import {
   StyledContentPaper,
   StyledPageContainer,
   StyledStepHeader,
@@ -39,22 +42,20 @@ export function WorkflowPage({
         disabled={disabled}
         showProgress
       />
-      
+
       <StyledContentPaper>
         <StyledStepHeader>
-          <Typography variant="h4" component="h1" className="step-title">
+          <Typography variant='h4' component='h1' className='step-title'>
             {title}
           </Typography>
           {subtitle && (
-            <Typography variant="body1" className="step-subtitle">
+            <Typography variant='body1' className='step-subtitle'>
               {subtitle}
             </Typography>
           )}
         </StyledStepHeader>
-        
-        <Box className="step-content">
-          {children}
-        </Box>
+
+        <Box className='step-content'>{children}</Box>
       </StyledContentPaper>
     </StyledPageContainer>
   );

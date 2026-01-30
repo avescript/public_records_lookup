@@ -2,7 +2,13 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
-import { withRoleAccess, withAdminAccess, withStaffAccess, withLegalAccess, withPermissions } from '../../../src/components/auth/withRoleAccess';
+import {
+  withRoleAccess,
+  withAdminAccess,
+  withStaffAccess,
+  withLegalAccess,
+  withPermissions,
+} from '../../../src/components/auth/withRoleAccess';
 import { usePermissions } from '../../../src/hooks/usePermissions';
 
 // Mock the usePermissions hook
@@ -10,7 +16,9 @@ jest.mock('../../../src/hooks/usePermissions', () => ({
   usePermissions: jest.fn(),
 }));
 
-const mockUsePermissions = usePermissions as jest.MockedFunction<typeof usePermissions>;
+const mockUsePermissions = usePermissions as jest.MockedFunction<
+  typeof usePermissions
+>;
 
 // Test theme
 const theme = createTheme();
@@ -27,15 +35,13 @@ interface TestComponentProps {
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ message, onClick }) => (
-  <div data-testid="test-component" onClick={onClick}>
+  <div data-testid='test-component' onClick={onClick}>
     {message}
   </div>
 );
 
 const FallbackComponent: React.FC<TestComponentProps> = ({ message }) => (
-  <div data-testid="fallback-component">
-    Fallback: {message}
-  </div>
+  <div data-testid='fallback-component'>Fallback: {message}</div>
 );
 
 describe('withRoleAccess HOC', () => {
@@ -46,9 +52,14 @@ describe('withRoleAccess HOC', () => {
   describe('Basic Role Access', () => {
     it('should render component when user has required role', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
-        hasRole: jest.fn((role) => role === 'admin'),
-        hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
+        hasRole: jest.fn(role => role === 'admin'),
+        hasAnyRole: jest.fn(roles => roles.includes('admin')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -64,7 +75,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <ProtectedComponent message="Admin Content" />
+          <ProtectedComponent message='Admin Content' />
         </TestWrapper>
       );
 
@@ -74,9 +85,14 @@ describe('withRoleAccess HOC', () => {
 
     it('should not render component when user lacks required role', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '2', email: 'staff@test.com', role: 'staff', name: 'Staff' },
-        hasRole: jest.fn((role) => role === 'staff'),
-        hasAnyRole: jest.fn((roles) => roles.includes('staff')),
+        user: {
+          id: '2',
+          email: 'staff@test.com',
+          role: 'staff',
+          name: 'Staff',
+        },
+        hasRole: jest.fn(role => role === 'staff'),
+        hasAnyRole: jest.fn(roles => roles.includes('staff')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -92,7 +108,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <ProtectedComponent message="Admin Content" />
+          <ProtectedComponent message='Admin Content' />
         </TestWrapper>
       );
 
@@ -101,9 +117,14 @@ describe('withRoleAccess HOC', () => {
 
     it('should render fallback component when access denied and fallback provided', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '2', email: 'staff@test.com', role: 'staff', name: 'Staff' },
-        hasRole: jest.fn((role) => role === 'staff'),
-        hasAnyRole: jest.fn((roles) => roles.includes('staff')),
+        user: {
+          id: '2',
+          email: 'staff@test.com',
+          role: 'staff',
+          name: 'Staff',
+        },
+        hasRole: jest.fn(role => role === 'staff'),
+        hasAnyRole: jest.fn(roles => roles.includes('staff')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -120,7 +141,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <ProtectedComponent message="Admin Content" />
+          <ProtectedComponent message='Admin Content' />
         </TestWrapper>
       );
 
@@ -131,9 +152,14 @@ describe('withRoleAccess HOC', () => {
 
     it('should handle requireAllRoles option', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
-        hasRole: jest.fn((role) => role === 'admin'),
-        hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
+        hasRole: jest.fn(role => role === 'admin'),
+        hasAnyRole: jest.fn(roles => roles.includes('admin')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -150,7 +176,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <ProtectedComponent message="Multi Role Content" />
+          <ProtectedComponent message='Multi Role Content' />
         </TestWrapper>
       );
 
@@ -161,12 +187,21 @@ describe('withRoleAccess HOC', () => {
   describe('Permission-Based Access', () => {
     it('should render component when user has required permission', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
-        hasPermission: jest.fn((permission) => permission === 'manage_users'),
-        hasAnyPermission: jest.fn((permissions) => permissions.includes('manage_users')),
-        hasAllPermissions: jest.fn((permissions) => permissions.every(p => p === 'manage_users')),
+        hasPermission: jest.fn(permission => permission === 'manage_users'),
+        hasAnyPermission: jest.fn(permissions =>
+          permissions.includes('manage_users')
+        ),
+        hasAllPermissions: jest.fn(permissions =>
+          permissions.every(p => p === 'manage_users')
+        ),
         getUserPermissions: jest.fn(() => ['manage_users']),
         isAdmin: true,
         isStaff: false,
@@ -179,7 +214,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <ProtectedComponent message="User Management" />
+          <ProtectedComponent message='User Management' />
         </TestWrapper>
       );
 
@@ -189,7 +224,12 @@ describe('withRoleAccess HOC', () => {
 
     it('should not render component when user lacks required permission', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '2', email: 'staff@test.com', role: 'staff', name: 'Staff' },
+        user: {
+          id: '2',
+          email: 'staff@test.com',
+          role: 'staff',
+          name: 'Staff',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
         hasPermission: jest.fn(() => false),
@@ -207,7 +247,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <ProtectedComponent message="User Management" />
+          <ProtectedComponent message='User Management' />
         </TestWrapper>
       );
 
@@ -216,13 +256,19 @@ describe('withRoleAccess HOC', () => {
 
     it('should handle requireAllPermissions option', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
-        hasPermission: jest.fn((permission) => permission === 'approve_request'),
+        hasPermission: jest.fn(permission => permission === 'approve_request'),
         hasAnyPermission: jest.fn(() => false),
-        hasAllPermissions: jest.fn((permissions) => 
-          permissions.length === 1 && permissions[0] === 'approve_request'
+        hasAllPermissions: jest.fn(
+          permissions =>
+            permissions.length === 1 && permissions[0] === 'approve_request'
         ),
         getUserPermissions: jest.fn(() => ['approve_request']),
         isAdmin: true,
@@ -237,7 +283,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <ProtectedComponent message="Full Approval Access" />
+          <ProtectedComponent message='Full Approval Access' />
         </TestWrapper>
       );
 
@@ -248,11 +294,18 @@ describe('withRoleAccess HOC', () => {
   describe('Combined Role and Permission Access', () => {
     it('should require both role and permission checks to pass', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
-        hasRole: jest.fn((role) => role === 'admin'),
-        hasAnyRole: jest.fn((roles) => roles.includes('admin')),
-        hasPermission: jest.fn((permission) => permission === 'manage_users'),
-        hasAnyPermission: jest.fn((permissions) => permissions.includes('manage_users')),
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
+        hasRole: jest.fn(role => role === 'admin'),
+        hasAnyRole: jest.fn(roles => roles.includes('admin')),
+        hasPermission: jest.fn(permission => permission === 'manage_users'),
+        hasAnyPermission: jest.fn(permissions =>
+          permissions.includes('manage_users')
+        ),
         hasAllPermissions: jest.fn(() => false),
         getUserPermissions: jest.fn(() => ['manage_users']),
         isAdmin: true,
@@ -267,7 +320,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <ProtectedComponent message="Admin User Management" />
+          <ProtectedComponent message='Admin User Management' />
         </TestWrapper>
       );
 
@@ -276,9 +329,14 @@ describe('withRoleAccess HOC', () => {
 
     it('should deny access when role check passes but permission check fails', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
-        hasRole: jest.fn((role) => role === 'admin'),
-        hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
+        hasRole: jest.fn(role => role === 'admin'),
+        hasAnyRole: jest.fn(roles => roles.includes('admin')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -295,7 +353,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <ProtectedComponent message="Admin User Management" />
+          <ProtectedComponent message='Admin User Management' />
         </TestWrapper>
       );
 
@@ -306,9 +364,14 @@ describe('withRoleAccess HOC', () => {
   describe('hideOnDenied Option', () => {
     it('should render component when hideOnDenied is false and access denied', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '2', email: 'staff@test.com', role: 'staff', name: 'Staff' },
-        hasRole: jest.fn((role) => role === 'staff'),
-        hasAnyRole: jest.fn((roles) => roles.includes('staff')),
+        user: {
+          id: '2',
+          email: 'staff@test.com',
+          role: 'staff',
+          name: 'Staff',
+        },
+        hasRole: jest.fn(role => role === 'staff'),
+        hasAnyRole: jest.fn(roles => roles.includes('staff')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -325,7 +388,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <ProtectedComponent message="Admin Content" />
+          <ProtectedComponent message='Admin Content' />
         </TestWrapper>
       );
 
@@ -337,9 +400,14 @@ describe('withRoleAccess HOC', () => {
   describe('Convenience HOCs', () => {
     it('withAdminAccess should work for admin users', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
-        hasRole: jest.fn((role) => role === 'admin'),
-        hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
+        hasRole: jest.fn(role => role === 'admin'),
+        hasAnyRole: jest.fn(roles => roles.includes('admin')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -353,7 +421,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <AdminComponent message="Admin Only" />
+          <AdminComponent message='Admin Only' />
         </TestWrapper>
       );
 
@@ -363,9 +431,14 @@ describe('withRoleAccess HOC', () => {
 
     it('withStaffAccess should work for staff users', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '2', email: 'staff@test.com', role: 'staff', name: 'Staff' },
-        hasRole: jest.fn((role) => role === 'staff'),
-        hasAnyRole: jest.fn((roles) => roles.includes('staff')),
+        user: {
+          id: '2',
+          email: 'staff@test.com',
+          role: 'staff',
+          name: 'Staff',
+        },
+        hasRole: jest.fn(role => role === 'staff'),
+        hasAnyRole: jest.fn(roles => roles.includes('staff')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -379,7 +452,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <StaffComponent message="Staff Access" />
+          <StaffComponent message='Staff Access' />
         </TestWrapper>
       );
 
@@ -389,9 +462,14 @@ describe('withRoleAccess HOC', () => {
 
     it('withLegalAccess should work for legal reviewer users', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '3', email: 'legal@test.com', role: 'legal_reviewer', name: 'Legal' },
-        hasRole: jest.fn((role) => role === 'legal_reviewer'),
-        hasAnyRole: jest.fn((roles) => roles.includes('legal_reviewer')),
+        user: {
+          id: '3',
+          email: 'legal@test.com',
+          role: 'legal_reviewer',
+          name: 'Legal',
+        },
+        hasRole: jest.fn(role => role === 'legal_reviewer'),
+        hasAnyRole: jest.fn(roles => roles.includes('legal_reviewer')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -405,7 +483,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <LegalComponent message="Legal Access" />
+          <LegalComponent message='Legal Access' />
         </TestWrapper>
       );
 
@@ -415,23 +493,34 @@ describe('withRoleAccess HOC', () => {
 
     it('withPermissions should work with specific permissions', () => {
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
         hasRole: jest.fn(() => false),
         hasAnyRole: jest.fn(() => false),
-        hasPermission: jest.fn((permission) => permission === 'manage_users'),
-        hasAnyPermission: jest.fn((permissions) => permissions.includes('manage_users')),
-        hasAllPermissions: jest.fn((permissions) => permissions.every(p => p === 'manage_users')),
+        hasPermission: jest.fn(permission => permission === 'manage_users'),
+        hasAnyPermission: jest.fn(permissions =>
+          permissions.includes('manage_users')
+        ),
+        hasAllPermissions: jest.fn(permissions =>
+          permissions.every(p => p === 'manage_users')
+        ),
         getUserPermissions: jest.fn(() => ['manage_users']),
         isAdmin: true,
         isStaff: false,
         isLegalReviewer: false,
       });
 
-      const UserManagementComponent = withPermissions(TestComponent, ['manage_users']);
+      const UserManagementComponent = withPermissions(TestComponent, [
+        'manage_users',
+      ]);
 
       render(
         <TestWrapper>
-          <UserManagementComponent message="User Management" />
+          <UserManagementComponent message='User Management' />
         </TestWrapper>
       );
 
@@ -442,9 +531,14 @@ describe('withRoleAccess HOC', () => {
     it('should preserve component props and functionality', () => {
       const mockClick = jest.fn();
       mockUsePermissions.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', role: 'admin', name: 'Admin' },
-        hasRole: jest.fn((role) => role === 'admin'),
-        hasAnyRole: jest.fn((roles) => roles.includes('admin')),
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          role: 'admin',
+          name: 'Admin',
+        },
+        hasRole: jest.fn(role => role === 'admin'),
+        hasAnyRole: jest.fn(roles => roles.includes('admin')),
         hasPermission: jest.fn(() => false),
         hasAnyPermission: jest.fn(() => false),
         hasAllPermissions: jest.fn(() => false),
@@ -458,7 +552,7 @@ describe('withRoleAccess HOC', () => {
 
       render(
         <TestWrapper>
-          <AdminComponent message="Clickable Admin" onClick={mockClick} />
+          <AdminComponent message='Clickable Admin' onClick={mockClick} />
         </TestWrapper>
       );
 

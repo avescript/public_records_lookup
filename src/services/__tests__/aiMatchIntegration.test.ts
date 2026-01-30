@@ -5,7 +5,11 @@
 import { format } from 'date-fns';
 
 import * as mockService from '../mockFirebaseService';
-import { addRecordToRequest, getRequestById, saveRequest } from '../requestService';
+import {
+  addRecordToRequest,
+  getRequestById,
+  saveRequest,
+} from '../requestService';
 
 // Mock environment to use mock service
 const originalEnv = process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE;
@@ -20,10 +24,10 @@ afterAll(() => {
 
 describe('AI Match Acceptance Integration', () => {
   let requestId: string;
-  
+
   beforeEach(async () => {
     mockService.clearAllData();
-    
+
     // Create a test request
     const result = await saveRequest({
       title: 'Integration Test Request',
@@ -37,7 +41,7 @@ describe('AI Match Acceptance Integration', () => {
       contactEmail: 'integration@test.com',
       files: [],
     });
-    
+
     requestId = result.id;
   });
 
@@ -67,7 +71,12 @@ describe('AI Match Acceptance Integration', () => {
       },
     };
 
-    await addRecordToRequest(requestId, candidateId, candidateData, 'Integration Test Staff');
+    await addRecordToRequest(
+      requestId,
+      candidateId,
+      candidateData,
+      'Integration Test Staff'
+    );
 
     // 3. Verify the request now has the associated record and updated status
     request = await getRequestById(requestId);
@@ -94,7 +103,9 @@ describe('AI Match Acceptance Integration', () => {
     expect(associatedRecord.keyPhrases).toEqual(candidateData.keyPhrases);
     expect(associatedRecord.metadata).toEqual(candidateData.metadata);
 
-    console.log('✅ Integration test passed - Full workflow working correctly!');
+    console.log(
+      '✅ Integration test passed - Full workflow working correctly!'
+    );
   });
 
   it('should handle multiple accepted matches', async () => {
@@ -117,7 +128,7 @@ describe('AI Match Acceptance Integration', () => {
       title: 'Second Record',
       description: 'Second test record',
       source: 'Source B',
-      recordType: 'type_b', 
+      recordType: 'type_b',
       agency: 'Agency B',
       dateCreated: '2024-01-02',
       relevanceScore: 0.75,
@@ -130,7 +141,7 @@ describe('AI Match Acceptance Integration', () => {
     const request = await getRequestById(requestId);
     expect(request!.associatedRecords).toHaveLength(2);
     expect(request!.status).toBe('under_review');
-    
+
     const titles = request!.associatedRecords!.map(r => r.title);
     expect(titles).toContain('First Record');
     expect(titles).toContain('Second Record');

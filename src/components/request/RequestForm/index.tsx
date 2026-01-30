@@ -110,16 +110,16 @@ export const RequestForm = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+    <Box component='form' onSubmit={handleSubmit(onSubmit)} noValidate>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         <Box>
           <Controller
-            name="title"
+            name='title'
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Request Title"
+                label='Request Title'
                 fullWidth
                 error={!!errors.title}
                 helperText={errors.title?.message}
@@ -138,16 +138,16 @@ export const RequestForm = () => {
         >
           <Box sx={{ flex: 1 }}>
             <Controller
-              name="department"
+              name='department'
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.department}>
                   <InputLabel>Department</InputLabel>
                   <Select
                     {...field}
-                    label="Department"
+                    label='Department'
                     disabled={isSubmitting}
-                    data-testid="department-select"
+                    data-testid='department-select'
                   >
                     {departments.map(dept => (
                       <MenuItem key={dept.id} value={dept.id}>
@@ -170,18 +170,18 @@ export const RequestForm = () => {
               errors.dateRange?.message || errors.dateRange?.startDate?.message
             }
             disabled={isSubmitting}
-            label="Records Date Range"
+            label='Records Date Range'
           />
         </Box>
 
         <Box>
           <Controller
-            name="description"
+            name='description'
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Request Description"
+                label='Request Description'
                 multiline
                 rows={4}
                 fullWidth
@@ -195,13 +195,13 @@ export const RequestForm = () => {
 
         <Box>
           <Controller
-            name="contactEmail"
+            name='contactEmail'
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Contact Email"
-                type="email"
+                label='Contact Email'
+                type='email'
                 fullWidth
                 error={!!errors.contactEmail}
                 helperText={errors.contactEmail?.message}
@@ -213,10 +213,10 @@ export const RequestForm = () => {
 
         <Box>
           <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             Supporting Documents (Optional)
           </Typography>
-          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+          <Typography variant='body2' color='textSecondary' sx={{ mb: 2 }}>
             Upload any documents that help clarify or support your records
             request.
           </Typography>
@@ -239,10 +239,10 @@ export const RequestForm = () => {
 
         <Box>
           <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            size="large"
+            type='submit'
+            variant='contained'
+            color='primary'
+            size='large'
             fullWidth
             disabled={isSubmitting}
             startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
@@ -263,7 +263,7 @@ export const RequestForm = () => {
       >
         <Alert
           severity={submitError ? 'error' : 'success'}
-          variant="filled"
+          variant='filled'
           onClose={() => {
             setSubmitError(null);
             setSubmitSuccess(false);

@@ -2,7 +2,11 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PIIFindings from '../../../src/components/shared/PIIFindings';
-import { piiDetectionService, PIIType, PIIFinding } from '../../../src/services/piiDetectionService';
+import {
+  piiDetectionService,
+  PIIType,
+  PIIFinding,
+} from '../../../src/services/piiDetectionService';
 
 // Mock PII Detection Service
 jest.mock('../../../src/services/piiDetectionService', () => ({
@@ -121,7 +125,9 @@ describe('PIIFindings', () => {
     });
 
     // Each group should show count
-    const ssnAccordion = screen.getByText('SSN').closest('.MuiAccordionSummary-root');
+    const ssnAccordion = screen
+      .getByText('SSN')
+      .closest('.MuiAccordionSummary-root');
     expect(ssnAccordion).toBeInTheDocument();
   });
 
@@ -218,8 +224,12 @@ describe('PIIFindings', () => {
     render(<PIIFindings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText('No PII detected in this record')).toBeInTheDocument();
-      expect(screen.getByText(/document appears to be safe for public release/)).toBeInTheDocument();
+      expect(
+        screen.getByText('No PII detected in this record')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/document appears to be safe for public release/)
+      ).toBeInTheDocument();
     });
   });
 
@@ -232,7 +242,9 @@ describe('PIIFindings', () => {
       piiTypesDetected: [],
     });
 
-    const { container } = render(<PIIFindings {...defaultProps} showEmptyState={false} />);
+    const { container } = render(
+      <PIIFindings {...defaultProps} showEmptyState={false} />
+    );
 
     await waitFor(() => {
       expect(container.firstChild).toBeNull();
@@ -262,11 +274,13 @@ describe('PIIFindings', () => {
 
     expect(screen.getByText('PII Detection Results')).toBeInTheDocument();
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
-    expect(screen.getByText('Analyzing document for PII...')).toBeInTheDocument();
+    expect(
+      screen.getByText('Analyzing document for PII...')
+    ).toBeInTheDocument();
   });
 
   it('should group findings by page when specified', async () => {
-    render(<PIIFindings {...defaultProps} groupBy="page" />);
+    render(<PIIFindings {...defaultProps} groupBy='page' />);
 
     await waitFor(() => {
       expect(screen.getByText('Page 1 (test.pdf)')).toBeInTheDocument();
@@ -275,7 +289,7 @@ describe('PIIFindings', () => {
   });
 
   it('should group findings by confidence level when specified', async () => {
-    render(<PIIFindings {...defaultProps} groupBy="confidence" />);
+    render(<PIIFindings {...defaultProps} groupBy='confidence' />);
 
     await waitFor(() => {
       expect(screen.getByText('High')).toBeInTheDocument(); // 0.95, 0.92, 0.88
@@ -284,7 +298,7 @@ describe('PIIFindings', () => {
   });
 
   it('should group findings by file when specified', async () => {
-    render(<PIIFindings {...defaultProps} groupBy="file" />);
+    render(<PIIFindings {...defaultProps} groupBy='file' />);
 
     await waitFor(() => {
       expect(screen.getByText('test.pdf')).toBeInTheDocument();
@@ -305,7 +319,9 @@ describe('PIIFindings', () => {
     fireEvent.click(lowOption);
 
     await waitFor(() => {
-      expect(screen.getByText('No findings match the current filters.')).toBeInTheDocument();
+      expect(
+        screen.getByText('No findings match the current filters.')
+      ).toBeInTheDocument();
     });
   });
 
@@ -316,7 +332,7 @@ describe('PIIFindings', () => {
       // High confidence findings should show success icon
       const highConfidenceChips = screen.getAllByText(/9[25]%/);
       expect(highConfidenceChips.length).toBeGreaterThan(0);
-      
+
       // Medium confidence findings
       expect(screen.getByText('88%')).toBeInTheDocument();
       expect(screen.getByText('75%')).toBeInTheDocument();
@@ -331,13 +347,15 @@ describe('PIIFindings', () => {
     });
 
     const ssnAccordion = screen.getByText('SSN').closest('[aria-expanded]');
-    const initialExpanded = ssnAccordion?.getAttribute('aria-expanded') === 'true';
-    
+    const initialExpanded =
+      ssnAccordion?.getAttribute('aria-expanded') === 'true';
+
     // Click to toggle
     fireEvent.click(screen.getByText('SSN'));
-    
+
     await waitFor(() => {
-      const newExpanded = ssnAccordion?.getAttribute('aria-expanded') === 'true';
+      const newExpanded =
+        ssnAccordion?.getAttribute('aria-expanded') === 'true';
       expect(newExpanded).toBe(!initialExpanded);
     });
   });
@@ -350,7 +368,9 @@ describe('PIIFindings', () => {
     });
 
     // Should show coordinate information
-    expect(screen.getByText(/Coordinates: \(100, 200\) - 120 × 15/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Coordinates: \(100, 200\) - 120 × 15/)
+    ).toBeInTheDocument();
   });
 
   it('should handle mixed confidence levels in filtering', async () => {

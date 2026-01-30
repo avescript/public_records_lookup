@@ -2,34 +2,38 @@
 
 import React from 'react';
 
-import { usePermissions, UserRole, Permission } from '../../hooks/usePermissions';
+import {
+  Permission,
+  usePermissions,
+  UserRole,
+} from '../../hooks/usePermissions';
 
 interface WithRoleAccessProps {
   /**
    * Required roles to access the component
    */
   roles?: UserRole[];
-  
+
   /**
    * Required permissions to access the component
    */
   permissions?: Permission[];
-  
+
   /**
    * Require ALL roles (default: false - requires ANY role)
    */
   requireAllRoles?: boolean;
-  
+
   /**
-   * Require ALL permissions (default: false - requires ANY permission) 
+   * Require ALL permissions (default: false - requires ANY permission)
    */
   requireAllPermissions?: boolean;
-  
+
   /**
    * Component to render when access is denied (optional)
    */
   fallback?: React.ComponentType<any>;
-  
+
   /**
    * Whether to render nothing when access is denied (default: true)
    */
@@ -53,12 +57,12 @@ export function withRoleAccess<P extends object>(
   } = options;
 
   return function RoleAccessComponent(props: P) {
-    const { 
-      hasAnyRole, 
+    const {
+      hasAnyRole,
       hasRole,
-      hasPermission, 
-      hasAnyPermission, 
-      hasAllPermissions 
+      hasPermission,
+      hasAnyPermission,
+      hasAllPermissions,
     } = usePermissions();
 
     // Check role access
@@ -88,7 +92,7 @@ export function withRoleAccess<P extends object>(
       if (FallbackComponent) {
         return <FallbackComponent {...props} />;
       }
-      
+
       if (hideOnDenied) {
         return null;
       }

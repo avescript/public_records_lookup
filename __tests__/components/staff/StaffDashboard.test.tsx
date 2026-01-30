@@ -28,7 +28,7 @@ jest.mock('@mui/x-date-pickers', () => ({
         onChange && onChange(e.target.value ? new Date(e.target.value) : null)
       }
       value={value ? value.toISOString().split('T')[0] : ''}
-      type="date"
+      type='date'
     />
   ),
   LocalizationProvider: ({ children }: any) => children,

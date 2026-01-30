@@ -1,6 +1,6 @@
 /**
  * Audit Service for Public Records AI Assistant
- * 
+ *
  * Provides immutable application audit logging with:
  * - Client event logger with structured data capture
  * - Privacy-first design (PII not logged in clear text)
@@ -21,7 +21,14 @@ export interface AuditEvent {
     sessionId?: string;
   };
   subject: {
-    type: 'request' | 'record' | 'package' | 'comment_thread' | 'change_request' | 'redaction' | 'system';
+    type:
+      | 'request'
+      | 'record'
+      | 'package'
+      | 'comment_thread'
+      | 'change_request'
+      | 'redaction'
+      | 'system';
     id: string;
     metadata?: Record<string, any>;
   };
@@ -38,7 +45,13 @@ export interface AuditEvent {
   };
   details: Record<string, any>;
   severity: 'info' | 'warning' | 'error' | 'critical';
-  category: 'user_action' | 'system_event' | 'security' | 'compliance' | 'performance' | 'error';
+  category:
+    | 'user_action'
+    | 'system_event'
+    | 'security'
+    | 'compliance'
+    | 'performance'
+    | 'error';
 }
 
 export interface AuditFilter {
@@ -62,7 +75,11 @@ export interface AuditSummary {
   eventsByCategory: Record<AuditEvent['category'], number>;
   eventsBySeverity: Record<AuditEvent['severity'], number>;
   eventsByService: Record<string, number>;
-  mostActiveActors: Array<{ actorId: string; actorName: string; eventCount: number }>;
+  mostActiveActors: Array<{
+    actorId: string;
+    actorName: string;
+    eventCount: number;
+  }>;
   recentActivity: AuditEvent[];
   timeRange: {
     earliest: string;
@@ -130,7 +147,9 @@ class AuditService {
         actor: { id: 'system', name: 'System', role: 'system' },
         subject: { type: 'system', id: 'audit_service' },
         context: {},
-        details: { error: error instanceof Error ? error.message : 'Unknown error' },
+        details: {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
         severity: 'error',
         category: 'error',
       };
@@ -162,67 +181,72 @@ class AuditService {
       }
 
       if (filter.services && filter.services.length > 0) {
-        filteredEvents = filteredEvents.filter(
-          event => filter.services!.includes(event.service)
+        filteredEvents = filteredEvents.filter(event =>
+          filter.services!.includes(event.service)
         );
       }
 
       if (filter.actions && filter.actions.length > 0) {
-        filteredEvents = filteredEvents.filter(
-          event => filter.actions!.includes(event.action)
+        filteredEvents = filteredEvents.filter(event =>
+          filter.actions!.includes(event.action)
         );
       }
 
       if (filter.actors && filter.actors.length > 0) {
-        filteredEvents = filteredEvents.filter(
-          event => filter.actors!.some(actor => 
-            event.actor.id.includes(actor) || event.actor.name.includes(actor)
+        filteredEvents = filteredEvents.filter(event =>
+          filter.actors!.some(
+            actor =>
+              event.actor.id.includes(actor) || event.actor.name.includes(actor)
           )
         );
       }
 
       if (filter.categories && filter.categories.length > 0) {
-        filteredEvents = filteredEvents.filter(
-          event => filter.categories!.includes(event.category)
+        filteredEvents = filteredEvents.filter(event =>
+          filter.categories!.includes(event.category)
         );
       }
 
       if (filter.severities && filter.severities.length > 0) {
-        filteredEvents = filteredEvents.filter(
-          event => filter.severities!.includes(event.severity)
+        filteredEvents = filteredEvents.filter(event =>
+          filter.severities!.includes(event.severity)
         );
       }
 
       if (filter.requestId) {
         filteredEvents = filteredEvents.filter(
-          event => event.context.requestId === filter.requestId ||
-                   event.subject.id === filter.requestId
+          event =>
+            event.context.requestId === filter.requestId ||
+            event.subject.id === filter.requestId
         );
       }
 
       if (filter.recordId) {
         filteredEvents = filteredEvents.filter(
-          event => event.context.recordId === filter.recordId ||
-                   event.subject.id === filter.recordId
+          event =>
+            event.context.recordId === filter.recordId ||
+            event.subject.id === filter.recordId
         );
       }
 
       if (filter.packageId) {
         filteredEvents = filteredEvents.filter(
-          event => event.context.packageId === filter.packageId ||
-                   event.subject.id === filter.packageId
+          event =>
+            event.context.packageId === filter.packageId ||
+            event.subject.id === filter.packageId
         );
       }
 
       // Sort by timestamp (newest first)
-      filteredEvents.sort((a, b) => 
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      filteredEvents.sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
 
       // Apply pagination
       const offset = filter.offset || 0;
       const limit = filter.limit || 100;
-      
+
       return filteredEvents.slice(offset, offset + limit);
     } catch (error) {
       console.error('Failed to get audit events:', error);
@@ -236,7 +260,7 @@ class AuditService {
   async getSummary(filter: AuditFilter = {}): Promise<AuditSummary> {
     try {
       const events = await this.getEvents({ ...filter, limit: 10000 }); // Get more for stats
-      
+
       const summary: AuditSummary = {
         totalEvents: events.length,
         eventsByCategory: {
@@ -257,8 +281,12 @@ class AuditService {
         mostActiveActors: [],
         recentActivity: events.slice(0, 10),
         timeRange: {
-          earliest: events.length > 0 ? events[events.length - 1].timestamp : new Date().toISOString(),
-          latest: events.length > 0 ? events[0].timestamp : new Date().toISOString(),
+          earliest:
+            events.length > 0
+              ? events[events.length - 1].timestamp
+              : new Date().toISOString(),
+          latest:
+            events.length > 0 ? events[0].timestamp : new Date().toISOString(),
         },
       };
 
@@ -273,7 +301,7 @@ class AuditService {
         summary.eventsBySeverity[event.severity]++;
 
         // Count by service
-        summary.eventsByService[event.service] = 
+        summary.eventsByService[event.service] =
           (summary.eventsByService[event.service] || 0) + 1;
 
         // Count by actor
@@ -307,7 +335,7 @@ class AuditService {
   async exportForBigQuery(filter: AuditFilter = {}): Promise<any[]> {
     try {
       const events = await this.getEvents({ ...filter, limit: 50000 });
-      
+
       return events.map(event => ({
         // BigQuery-compatible flattened structure
         event_id: event.id,
@@ -350,10 +378,10 @@ class AuditService {
       );
 
       const removedCount = allEvents.length - remainingEvents.length;
-      
+
       if (removedCount > 0) {
         localStorage.setItem(this.AUDIT_KEY, JSON.stringify(remainingEvents));
-        
+
         // Log the cleanup action (without await to avoid circular dependency in cleanup)
         this.logEvent(
           'AuditService',
@@ -415,7 +443,7 @@ class AuditService {
     const str = data + this.PII_HASH_SALT;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return `hashed_${Math.abs(hash).toString(16)}`;
@@ -432,7 +460,7 @@ class AuditService {
 
   private sanitizeDetails(details: Record<string, any>): Record<string, any> {
     const sanitized = { ...details };
-    
+
     // Remove or hash sensitive fields
     const sensitiveFields = ['email', 'phone', 'ssn', 'address', 'dob'];
     sensitiveFields.forEach(field => {
@@ -446,17 +474,20 @@ class AuditService {
 
   private sanitizeMetadata(metadata: any): Record<string, any> | undefined {
     if (!metadata) return undefined;
-    
+
     // Basic sanitization for metadata
-    return Object.keys(metadata).reduce((acc, key) => {
-      const value = metadata[key];
-      if (typeof value === 'string' && value.includes('@')) {
-        acc[key] = this.hashPII(value);
-      } else {
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, any>);
+    return Object.keys(metadata).reduce(
+      (acc, key) => {
+        const value = metadata[key];
+        if (typeof value === 'string' && value.includes('@')) {
+          acc[key] = this.hashPII(value);
+        } else {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, any>
+    );
   }
 
   private getSessionId(): string {
@@ -483,7 +514,7 @@ class AuditService {
 
   private detectBrowser(): string {
     if (typeof window === 'undefined') return 'unknown';
-    
+
     const ua = navigator.userAgent;
     if (ua.includes('Chrome')) return 'Chrome';
     if (ua.includes('Firefox')) return 'Firefox';

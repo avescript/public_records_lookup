@@ -2,7 +2,7 @@
  * Tests for AuditService
  */
 
-import { auditService, AuditEvent } from '@/services/auditService';
+import { AuditEvent,auditService } from '@/services/auditService';
 
 // Mock localStorage for testing
 const mockLocalStorage = (() => {
@@ -440,7 +440,6 @@ describe('AuditService', () => {
       Date.now = originalNow;
     });
     });
-
     it('should remove events older than specified days', async () => {
       const eventsBeforeCleanup = await auditService.getEvents();
       expect(eventsBeforeCleanup).toHaveLength(2);
@@ -453,7 +452,6 @@ describe('AuditService', () => {
       expect(eventsAfterCleanup[0].action).toBe('new_action');
     });
   });
-});
 
 describe('AuditService Error Handling', () => {
   it('should handle localStorage errors gracefully', async () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { Box,CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import dynamic from 'next/dynamic';
 
 // Client-only wrapper for PDFPreview to prevent SSR issues

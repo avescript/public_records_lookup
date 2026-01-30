@@ -1,4 +1,8 @@
-import { PIIDetectionService, PIIType, PIIFindingsResult } from '../../src/services/piiDetectionService';
+import {
+  PIIDetectionService,
+  PIIType,
+  PIIFindingsResult,
+} from '../../src/services/piiDetectionService';
 
 // Mock fetch function
 global.fetch = jest.fn();
@@ -17,7 +21,7 @@ describe('PIIDetectionService', () => {
     // Reset the service state
     (service as any).initialized = false;
     (service as any).findings = [];
-    
+
     // Mock successful fetch response
     (fetch as jest.Mock).mockResolvedValue({
       ok: true,
@@ -51,7 +55,9 @@ describe('PIIDetectionService', () => {
         statusText: 'Not Found',
       });
 
-      await expect(service.initialize()).rejects.toThrow('Failed to load redactions.csv: Not Found');
+      await expect(service.initialize()).rejects.toThrow(
+        'Failed to load redactions.csv: Not Found'
+      );
     });
 
     it('should handle network errors', async () => {
@@ -109,13 +115,13 @@ invalid,line
       });
 
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
-      
+
       await service.initialize();
       const findings = (service as any).findings;
 
       expect(findings).toHaveLength(2); // Should skip the malformed line
       expect(consoleSpy).toHaveBeenCalledWith('Skipping malformed CSV line 3');
-      
+
       consoleSpy.mockRestore();
     });
   });
@@ -132,7 +138,13 @@ invalid,line
       expect(result.totalFindings).toBe(3);
       expect(result.findings).toHaveLength(3);
       expect(result.highConfidenceFindings).toBe(3); // SSN (0.95), PHONE (0.88), and PERSON_NAME (0.91)
-      expect(result.piiTypesDetected).toEqual(expect.arrayContaining([PIIType.SSN, PIIType.PHONE, PIIType.PERSON_NAME]));
+      expect(result.piiTypesDetected).toEqual(
+        expect.arrayContaining([
+          PIIType.SSN,
+          PIIType.PHONE,
+          PIIType.PERSON_NAME,
+        ])
+      );
     });
 
     it('should return empty result for non-existent record', async () => {
@@ -161,7 +173,11 @@ invalid,line
     });
 
     it('should return findings for a specific file and page', async () => {
-      const findings = await service.getFindingsForPage('1', 'police_report_001.pdf', 1);
+      const findings = await service.getFindingsForPage(
+        '1',
+        'police_report_001.pdf',
+        1
+      );
 
       expect(findings).toHaveLength(2); // SSN and PHONE on page 1
       expect(findings[0].piiType).toBe('SSN');
@@ -169,7 +185,11 @@ invalid,line
     });
 
     it('should return empty array for non-matching criteria', async () => {
-      const findings = await service.getFindingsForPage('1', 'nonexistent.pdf', 1);
+      const findings = await service.getFindingsForPage(
+        '1',
+        'nonexistent.pdf',
+        1
+      );
 
       expect(findings).toHaveLength(0);
     });
@@ -183,12 +203,14 @@ invalid,line
     it('should return all unique PII types', async () => {
       const types = await service.getAllPIITypes();
 
-      expect(types).toEqual(expect.arrayContaining([
-        PIIType.SSN,
-        PIIType.PHONE,
-        PIIType.PERSON_NAME,
-        PIIType.DOB,
-      ]));
+      expect(types).toEqual(
+        expect.arrayContaining([
+          PIIType.SSN,
+          PIIType.PHONE,
+          PIIType.PERSON_NAME,
+          PIIType.DOB,
+        ])
+      );
       expect(types).toHaveLength(4);
     });
   });
@@ -233,29 +255,62 @@ invalid,line
 
   describe('parseCSVLine', () => {
     it('should handle simple comma-separated values', () => {
-      const line = '1,test.pdf,1,SSN,0.95,100,200,50,20,123-45-6789,Pattern match';
+      const line =
+        '1,test.pdf,1,SSN,0.95,100,200,50,20,123-45-6789,Pattern match';
       const result = (service as any).parseCSVLine(line);
 
       expect(result).toEqual([
-        '1', 'test.pdf', '1', 'SSN', '0.95', '100', '200', '50', '20', '123-45-6789', 'Pattern match'
+        '1',
+        'test.pdf',
+        '1',
+        'SSN',
+        '0.95',
+        '100',
+        '200',
+        '50',
+        '20',
+        '123-45-6789',
+        'Pattern match',
       ]);
     });
 
     it('should handle quoted values with commas', () => {
-      const line = '1,test.pdf,1,ADDRESS,0.85,100,200,150,30,"123 Main St, City, State","Address with commas"';
+      const line =
+        '1,test.pdf,1,ADDRESS,0.85,100,200,150,30,"123 Main St, City, State","Address with commas"';
       const result = (service as any).parseCSVLine(line);
 
       expect(result).toEqual([
-        '1', 'test.pdf', '1', 'ADDRESS', '0.85', '100', '200', '150', '30', '123 Main St, City, State', 'Address with commas'
+        '1',
+        'test.pdf',
+        '1',
+        'ADDRESS',
+        '0.85',
+        '100',
+        '200',
+        '150',
+        '30',
+        '123 Main St, City, State',
+        'Address with commas',
       ]);
     });
 
     it('should handle mixed quoted and unquoted values', () => {
-      const line = '1,"file name.pdf",1,SSN,0.95,100,200,50,20,"123-45-6789",Pattern match';
+      const line =
+        '1,"file name.pdf",1,SSN,0.95,100,200,50,20,"123-45-6789",Pattern match';
       const result = (service as any).parseCSVLine(line);
 
       expect(result).toEqual([
-        '1', 'file name.pdf', '1', 'SSN', '0.95', '100', '200', '50', '20', '123-45-6789', 'Pattern match'
+        '1',
+        'file name.pdf',
+        '1',
+        'SSN',
+        '0.95',
+        '100',
+        '200',
+        '50',
+        '20',
+        '123-45-6789',
+        'Pattern match',
       ]);
     });
   });
@@ -263,8 +318,16 @@ invalid,line
   describe('PIIType enum', () => {
     it('should have all expected PII types', () => {
       const expectedTypes = [
-        'SSN', 'PHONE', 'ADDRESS', 'PERSON_NAME', 'EMAIL', 'DOB',
-        'DRIVERS_LICENSE', 'ACCOUNT_NUMBER', 'ROUTING_NUMBER', 'MEDICAL_ID'
+        'SSN',
+        'PHONE',
+        'ADDRESS',
+        'PERSON_NAME',
+        'EMAIL',
+        'DOB',
+        'DRIVERS_LICENSE',
+        'ACCOUNT_NUMBER',
+        'ROUTING_NUMBER',
+        'MEDICAL_ID',
       ];
 
       expectedTypes.forEach(type => {

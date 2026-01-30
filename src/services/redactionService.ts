@@ -3,7 +3,7 @@
 // Provides CRUD operations for user-drawn redaction boxes
 // Integrates with agency-specific redaction rules
 
-import { SensitivityLevel, RedactionConfig } from './agencyTypes';
+import { RedactionConfig, SensitivityLevel } from './agencyTypes';
 
 export interface ManualRedaction {
   id: string;
@@ -92,23 +92,28 @@ export class RedactionService {
   ): Promise<ManualRedaction[]> {
     try {
       // Import here to avoid circular dependency
-      const { agencyRedactionRulesService } = await import('./agencyRedactionRulesService');
-      
-      const config = await agencyRedactionRulesService.getRedactionConfig(agencyId);
+      const { agencyRedactionRulesService } = await import(
+        './agencyRedactionRulesService'
+      );
+
+      const config =
+        await agencyRedactionRulesService.getRedactionConfig(agencyId);
       if (!config) {
         console.warn(`No redaction config found for agency: ${agencyId}`);
         return [];
       }
 
-      const autoApplyRules = await agencyRedactionRulesService.getAutoApplyRules(agencyId);
+      const autoApplyRules =
+        await agencyRedactionRulesService.getAutoApplyRules(agencyId);
       const appliedRedactions: ManualRedaction[] = [];
 
       // Apply auto-apply rules to PII findings
       for (const rule of autoApplyRules) {
         // Find PII findings that match this rule's types
-        const matchingFindings = piiFindings.filter(finding => 
-          rule.piiTypes.some(type => type === finding.piiType) &&
-          (pageNumber === undefined || finding.pageNumber === pageNumber)
+        const matchingFindings = piiFindings.filter(
+          finding =>
+            rule.piiTypes.some(type => type === finding.piiType) &&
+            (pageNumber === undefined || finding.pageNumber === pageNumber)
         );
 
         for (const finding of matchingFindings) {
@@ -128,7 +133,7 @@ export class RedactionService {
             rule.requiresApproval,
             `Applied by agency rule: ${rule.name}`
           );
-          
+
           appliedRedactions.push(redaction);
         }
       }
@@ -174,7 +179,10 @@ export class RedactionService {
     };
 
     // Get existing redactions
-    const existingRedactions = await this.getRedactionsForRecord(recordId, fileName);
+    const existingRedactions = await this.getRedactionsForRecord(
+      recordId,
+      fileName
+    );
     existingRedactions.push(redaction);
 
     // Save updated redactions
@@ -182,7 +190,13 @@ export class RedactionService {
     localStorage.setItem(storageKey, JSON.stringify(existingRedactions));
 
     // Create/update version
-    await this.createVersion(recordId, fileName, existingRedactions, 'draft', `Applied agency rule: ${ruleId}`);
+    await this.createVersion(
+      recordId,
+      fileName,
+      existingRedactions,
+      'draft',
+      `Applied agency rule: ${ruleId}`
+    );
 
     return redaction;
   }
@@ -190,23 +204,29 @@ export class RedactionService {
   /**
    * Get redactions that require approval for an agency
    */
-  async getRedactionsRequiringApproval(agencyId: string): Promise<ManualRedaction[]> {
+  async getRedactionsRequiringApproval(
+    agencyId: string
+  ): Promise<ManualRedaction[]> {
     const allRedactions = await this.getAllRedactions();
-    return allRedactions.filter(redaction => 
-      redaction.agencyId === agencyId && 
-      redaction.requiresApproval && 
-      !redaction.approvedBy
+    return allRedactions.filter(
+      redaction =>
+        redaction.agencyId === agencyId &&
+        redaction.requiresApproval &&
+        !redaction.approvedBy
     );
   }
 
   /**
    * Approve a redaction
    */
-  async approveRedaction(redactionId: string, approverId: string): Promise<boolean> {
+  async approveRedaction(
+    redactionId: string,
+    approverId: string
+  ): Promise<boolean> {
     try {
       const allRedactions = await this.getAllRedactions();
       const redactionIndex = allRedactions.findIndex(r => r.id === redactionId);
-      
+
       if (redactionIndex === -1) {
         return false;
       }
@@ -217,18 +237,23 @@ export class RedactionService {
 
       // Update storage
       const storageKey = `${this.STORAGE_KEY_PREFIX}_${redaction.recordId}_${redaction.fileName}`;
-      const recordRedactions = await this.getRedactionsForRecord(redaction.recordId, redaction.fileName);
-      const recordRedactionIndex = recordRedactions.findIndex(r => r.id === redactionId);
-      
+      const recordRedactions = await this.getRedactionsForRecord(
+        redaction.recordId,
+        redaction.fileName
+      );
+      const recordRedactionIndex = recordRedactions.findIndex(
+        r => r.id === redactionId
+      );
+
       if (recordRedactionIndex >= 0) {
         recordRedactions[recordRedactionIndex] = redaction;
         localStorage.setItem(storageKey, JSON.stringify(recordRedactions));
-        
+
         // Update version
         await this.createVersion(
-          redaction.recordId, 
-          redaction.fileName, 
-          recordRedactions, 
+          redaction.recordId,
+          redaction.fileName,
+          recordRedactions,
           'saved',
           `Approved redaction: ${redactionId}`
         );
@@ -246,7 +271,7 @@ export class RedactionService {
    */
   private async getAllRedactions(): Promise<ManualRedaction[]> {
     const allRedactions: ManualRedaction[] = [];
-    
+
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.startsWith(this.STORAGE_KEY_PREFIX)) {
@@ -260,7 +285,7 @@ export class RedactionService {
         }
       }
     }
-    
+
     return allRedactions;
   }
 
@@ -339,7 +364,10 @@ export class RedactionService {
     };
 
     // Get existing redactions
-    const existingRedactions = await this.getRedactionsForRecord(recordId, fileName);
+    const existingRedactions = await this.getRedactionsForRecord(
+      recordId,
+      fileName
+    );
     const updatedRedactions = [...existingRedactions, redaction];
 
     // Save to localStorage
@@ -359,7 +387,9 @@ export class RedactionService {
     recordId: string,
     fileName: string,
     redactionId: string,
-    updates: Partial<Pick<ManualRedaction, 'x' | 'y' | 'width' | 'height' | 'reason'>>
+    updates: Partial<
+      Pick<ManualRedaction, 'x' | 'y' | 'width' | 'height' | 'reason'>
+    >
   ): Promise<ManualRedaction | null> {
     const redactions = await this.getRedactionsForRecord(recordId, fileName);
     const redactionIndex = redactions.findIndex(r => r.id === redactionId);
@@ -388,7 +418,11 @@ export class RedactionService {
   /**
    * Remove a redaction
    */
-  async removeRedaction(recordId: string, fileName: string, redactionId: string): Promise<boolean> {
+  async removeRedaction(
+    recordId: string,
+    fileName: string,
+    redactionId: string
+  ): Promise<boolean> {
     const redactions = await this.getRedactionsForRecord(recordId, fileName);
     const filteredRedactions = redactions.filter(r => r.id !== redactionId);
 
@@ -409,17 +443,23 @@ export class RedactionService {
   /**
    * Get all redactions for a specific record and file
    */
-  async getRedactionsForRecord(recordId: string, fileName: string): Promise<ManualRedaction[]> {
+  async getRedactionsForRecord(
+    recordId: string,
+    fileName: string
+  ): Promise<ManualRedaction[]> {
     try {
       const storageKey = `${this.STORAGE_KEY_PREFIX}_${recordId}_${fileName}`;
       const stored = localStorage.getItem(storageKey);
-      
+
       if (!stored) {
         return [];
       }
 
       const redactions = JSON.parse(stored) as ManualRedaction[];
-      return redactions.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      return redactions.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
     } catch (error) {
       console.error('Error retrieving redactions:', error);
       return [];
@@ -473,17 +513,23 @@ export class RedactionService {
   /**
    * Get version history for a record
    */
-  async getVersionHistory(recordId: string, fileName: string): Promise<RedactionVersion[]> {
+  async getVersionHistory(
+    recordId: string,
+    fileName: string
+  ): Promise<RedactionVersion[]> {
     try {
       const versionKey = `${this.VERSION_KEY_PREFIX}_${recordId}_${fileName}`;
       const stored = localStorage.getItem(versionKey);
-      
+
       if (!stored) {
         return [];
       }
 
       const versions = JSON.parse(stored) as RedactionVersion[];
-      return versions.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      return versions.sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
     } catch (error) {
       console.error('Error retrieving version history:', error);
       return [];
@@ -493,10 +539,14 @@ export class RedactionService {
   /**
    * Load a specific version
    */
-  async loadVersion(recordId: string, fileName: string, versionId: string): Promise<ManualRedaction[]> {
+  async loadVersion(
+    recordId: string,
+    fileName: string,
+    versionId: string
+  ): Promise<ManualRedaction[]> {
     const versions = await this.getVersionHistory(recordId, fileName);
     const version = versions.find(v => v.versionId === versionId);
-    
+
     if (!version) {
       throw new Error(`Version ${versionId} not found`);
     }
@@ -511,15 +561,32 @@ export class RedactionService {
   /**
    * Save current draft as a finalized version
    */
-  async saveVersion(recordId: string, fileName: string, notes?: string): Promise<RedactionVersion> {
-    const currentRedactions = await this.getRedactionsForRecord(recordId, fileName);
-    return await this.createVersion(recordId, fileName, currentRedactions, 'saved', notes);
+  async saveVersion(
+    recordId: string,
+    fileName: string,
+    notes?: string
+  ): Promise<RedactionVersion> {
+    const currentRedactions = await this.getRedactionsForRecord(
+      recordId,
+      fileName
+    );
+    return await this.createVersion(
+      recordId,
+      fileName,
+      currentRedactions,
+      'saved',
+      notes
+    );
   }
 
   /**
    * Mark version as exported
    */
-  async markVersionExported(recordId: string, fileName: string, versionId: string): Promise<boolean> {
+  async markVersionExported(
+    recordId: string,
+    fileName: string,
+    versionId: string
+  ): Promise<boolean> {
     const versions = await this.getVersionHistory(recordId, fileName);
     const versionIndex = versions.findIndex(v => v.versionId === versionId);
 
@@ -539,7 +606,10 @@ export class RedactionService {
   /**
    * Get redaction summary statistics
    */
-  async getRedactionSummary(recordId: string, fileName: string): Promise<RedactionSummary> {
+  async getRedactionSummary(
+    recordId: string,
+    fileName: string
+  ): Promise<RedactionSummary> {
     const redactions = await this.getRedactionsForRecord(recordId, fileName);
     const versions = await this.getVersionHistory(recordId, fileName);
 
@@ -556,9 +626,10 @@ export class RedactionService {
     });
 
     // Find last modified date
-    const lastModified = redactions.length > 0 
-      ? Math.max(...redactions.map(r => new Date(r.createdAt).getTime()))
-      : Date.now();
+    const lastModified =
+      redactions.length > 0
+        ? Math.max(...redactions.map(r => new Date(r.createdAt).getTime()))
+        : Date.now();
 
     // Get current version (most recent)
     const currentVersion = versions.length > 0 ? versions[0].versionId : '';
@@ -577,12 +648,24 @@ export class RedactionService {
   /**
    * Clear all redactions for a record (with confirmation)
    */
-  async clearAllRedactions(recordId: string, fileName: string): Promise<boolean> {
+  async clearAllRedactions(
+    recordId: string,
+    fileName: string
+  ): Promise<boolean> {
     try {
       // Create final version before clearing
-      const currentRedactions = await this.getRedactionsForRecord(recordId, fileName);
+      const currentRedactions = await this.getRedactionsForRecord(
+        recordId,
+        fileName
+      );
       if (currentRedactions.length > 0) {
-        await this.createVersion(recordId, fileName, currentRedactions, 'draft', 'Cleared all redactions');
+        await this.createVersion(
+          recordId,
+          fileName,
+          currentRedactions,
+          'draft',
+          'Cleared all redactions'
+        );
       }
 
       // Clear current redactions
@@ -606,14 +689,24 @@ export class RedactionService {
     coordinates: RedactionCoordinates,
     threshold: number = 0.1 // 10% overlap threshold
   ): Promise<ManualRedaction[]> {
-    const pageRedactions = await this.getRedactionsForPage(recordId, fileName, pageNumber);
-    
+    const pageRedactions = await this.getRedactionsForPage(
+      recordId,
+      fileName,
+      pageNumber
+    );
+
     return pageRedactions.filter(existing => {
       // Calculate overlap area
       const left = Math.max(coordinates.x, existing.x);
       const top = Math.max(coordinates.y, existing.y);
-      const right = Math.min(coordinates.x + coordinates.width, existing.x + existing.width);
-      const bottom = Math.min(coordinates.y + coordinates.height, existing.y + existing.height);
+      const right = Math.min(
+        coordinates.x + coordinates.width,
+        existing.x + existing.width
+      );
+      const bottom = Math.min(
+        coordinates.y + coordinates.height,
+        existing.y + existing.height
+      );
 
       if (left >= right || top >= bottom) {
         return false; // No overlap
@@ -622,7 +715,7 @@ export class RedactionService {
       const overlapArea = (right - left) * (bottom - top);
       const newArea = coordinates.width * coordinates.height;
       const existingArea = existing.width * existing.height;
-      
+
       const overlapRatio = overlapArea / Math.min(newArea, existingArea);
       return overlapRatio > threshold;
     });

@@ -27,11 +27,13 @@ import * as mockService from './mockFirebaseService';
 
 // Check if we should use mock service (when Firebase is unavailable)
 const useMockService = () => {
-  const shouldUseMock = process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE === 'true' || 
-         (typeof window !== 'undefined' && window.location.hostname === 'localhost');
+  const shouldUseMock =
+    process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE === 'true' ||
+    (typeof window !== 'undefined' && window.location.hostname === 'localhost');
   console.log('🤔 [Request Service] useMockService check:', shouldUseMock, {
     env: process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE,
-    hostname: typeof window !== 'undefined' ? window.location.hostname : 'server-side',
+    hostname:
+      typeof window !== 'undefined' ? window.location.hostname : 'server-side',
   });
   return shouldUseMock;
 };
@@ -109,23 +111,36 @@ export const saveRequest = async (
   requestData: RequestFormDataWithFiles
 ): Promise<{ id: string; trackingId: string }> => {
   console.log('💾 [Request Service] Saving request:', requestData.title);
-  
+
   // Use mock service if Firebase is unavailable
   if (useMockService()) {
     console.log('🔄 [Request Service] Using mock service for saveRequest');
     const result = await mockService.saveRequest(requestData);
-    console.log('✅ [Request Service] Mock service saved request:', result.trackingId);
-    
+    console.log(
+      '✅ [Request Service] Mock service saved request:',
+      result.trackingId
+    );
+
     // 🤖 Automatically trigger AI matching for the new request (mock service path)
     try {
-      console.log('🤖 [Request Service] Starting automatic AI matching for mock request:', result.trackingId);
+      console.log(
+        '🤖 [Request Service] Starting automatic AI matching for mock request:',
+        result.trackingId
+      );
       await findMatches(result.id, requestData.description);
-      console.log('✅ [Request Service] Automatic AI matching completed for mock request:', result.trackingId);
+      console.log(
+        '✅ [Request Service] Automatic AI matching completed for mock request:',
+        result.trackingId
+      );
     } catch (matchError) {
-      console.warn('⚠️ [Request Service] Automatic AI matching failed for mock request:', result.trackingId, matchError);
+      console.warn(
+        '⚠️ [Request Service] Automatic AI matching failed for mock request:',
+        result.trackingId,
+        matchError
+      );
       // Don't fail the request creation if AI matching fails
     }
-    
+
     return result;
   }
 
@@ -153,34 +168,57 @@ export const saveRequest = async (
     // Add to Firestore
     const docRef = await addDoc(collection(firestore, 'requests'), requestDoc);
     console.log('Request saved with ID:', docRef.id);
-    
+
     // 🤖 Automatically trigger AI matching for the new request
     try {
-      console.log('🤖 [Request Service] Starting automatic AI matching for request:', trackingId);
+      console.log(
+        '🤖 [Request Service] Starting automatic AI matching for request:',
+        trackingId
+      );
       await findMatches(docRef.id, requestData.description);
-      console.log('✅ [Request Service] Automatic AI matching completed for request:', trackingId);
+      console.log(
+        '✅ [Request Service] Automatic AI matching completed for request:',
+        trackingId
+      );
     } catch (matchError) {
-      console.warn('⚠️ [Request Service] Automatic AI matching failed for request:', trackingId, matchError);
+      console.warn(
+        '⚠️ [Request Service] Automatic AI matching failed for request:',
+        trackingId,
+        matchError
+      );
       // Don't fail the request creation if AI matching fails
     }
-    
+
     return { id: docRef.id, trackingId };
   } catch (error) {
     console.error('Error saving request:', error);
     console.log('🔄 Falling back to mock service due to Firebase error');
     const result = await mockService.saveRequest(requestData);
-    console.log('✅ [Request Service] Mock service fallback saved request:', result.trackingId);
-    
+    console.log(
+      '✅ [Request Service] Mock service fallback saved request:',
+      result.trackingId
+    );
+
     // 🤖 Also trigger AI matching for mock service requests
     try {
-      console.log('🤖 [Request Service] Starting automatic AI matching for mock request:', result.trackingId);
+      console.log(
+        '🤖 [Request Service] Starting automatic AI matching for mock request:',
+        result.trackingId
+      );
       await findMatches(result.id, requestData.description);
-      console.log('✅ [Request Service] Automatic AI matching completed for mock request:', result.trackingId);
+      console.log(
+        '✅ [Request Service] Automatic AI matching completed for mock request:',
+        result.trackingId
+      );
     } catch (matchError) {
-      console.warn('⚠️ [Request Service] Automatic AI matching failed for mock request:', result.trackingId, matchError);
+      console.warn(
+        '⚠️ [Request Service] Automatic AI matching failed for mock request:',
+        result.trackingId,
+        matchError
+      );
       // Don't fail the request creation if AI matching fails
     }
-    
+
     return result;
   }
 };
@@ -221,7 +259,7 @@ export const getRequestById = async (
   id: string
 ): Promise<StoredRequest | null> => {
   console.log('🔍 [Request Service] Getting request by ID:', id);
-  
+
   // Use mock service if Firebase is unavailable
   if (useMockService()) {
     console.log('🔄 [Request Service] Using mock service for getRequestById');
@@ -251,19 +289,32 @@ export const getRequestById = async (
 };
 
 // Get all requests (for admin/staff views) with optional agency filtering
-export const getAllRequests = async (agencyFilter?: string): Promise<StoredRequest[]> => {
+export const getAllRequests = async (
+  agencyFilter?: string
+): Promise<StoredRequest[]> => {
   console.log('🔍 [Request Service] Getting all requests...', { agencyFilter });
-  
+
   // Use mock service if Firebase is unavailable
   if (useMockService()) {
     console.log('🔄 [Request Service] Using mock service for getAllRequests');
     const result = await mockService.getAllRequests();
-    console.log('📊 [Request Service] Mock service returned:', result.length, 'requests');
-    
+    console.log(
+      '📊 [Request Service] Mock service returned:',
+      result.length,
+      'requests'
+    );
+
     // Apply agency filtering for mock service
     if (agencyFilter) {
-      const filtered = result.filter(request => request.agency === agencyFilter);
-      console.log('🔍 [Request Service] Agency filtered results:', filtered.length, 'requests for agency:', agencyFilter);
+      const filtered = result.filter(
+        request => request.agency === agencyFilter
+      );
+      console.log(
+        '🔍 [Request Service] Agency filtered results:',
+        filtered.length,
+        'requests for agency:',
+        agencyFilter
+      );
       return filtered;
     }
     return result;
@@ -275,7 +326,7 @@ export const getAllRequests = async (agencyFilter?: string): Promise<StoredReque
       collection(firestore, 'requests'),
       orderBy('submittedAt', 'desc')
     );
-    
+
     // Add agency filter if specified
     if (agencyFilter) {
       q = query(
@@ -290,19 +341,35 @@ export const getAllRequests = async (agencyFilter?: string): Promise<StoredReque
       id: doc.id,
       ...(doc.data() as Omit<StoredRequest, 'id'>),
     }));
-    
-    console.log('📊 [Request Service] Firebase returned:', results.length, 'requests', { agencyFilter });
+
+    console.log(
+      '📊 [Request Service] Firebase returned:',
+      results.length,
+      'requests',
+      { agencyFilter }
+    );
     return results;
   } catch (error) {
     console.error('Error fetching all requests:', error);
     console.log('🔄 Falling back to mock service due to Firebase error');
     const result = await mockService.getAllRequests();
-    console.log('📊 [Request Service] Mock service fallback returned:', result.length, 'requests');
-    
+    console.log(
+      '📊 [Request Service] Mock service fallback returned:',
+      result.length,
+      'requests'
+    );
+
     // Apply agency filtering for fallback as well
     if (agencyFilter) {
-      const filtered = result.filter(request => request.agency === agencyFilter);
-      console.log('🔍 [Request Service] Agency filtered fallback results:', filtered.length, 'requests for agency:', agencyFilter);
+      const filtered = result.filter(
+        request => request.agency === agencyFilter
+      );
+      console.log(
+        '🔍 [Request Service] Agency filtered fallback results:',
+        filtered.length,
+        'requests for agency:',
+        agencyFilter
+      );
       return filtered;
     }
     return result;
@@ -389,7 +456,7 @@ export const addInternalNote = async (
 ): Promise<void> => {
   try {
     const docRef = doc(firestore, 'requests', requestId);
-    
+
     // Create new note
     const newNote: InternalNote = {
       id: generateTrackingId(), // Reuse tracking ID generator for note IDs
@@ -443,19 +510,30 @@ export const addRecordToRequest = async (
   },
   acceptedBy: string = 'Staff User'
 ): Promise<void> => {
-  console.log('📎 [Request Service] Adding record to request:', requestId, candidateId);
-  
+  console.log(
+    '📎 [Request Service] Adding record to request:',
+    requestId,
+    candidateId
+  );
+
   // Use mock service if Firebase is unavailable
   if (useMockService()) {
-    console.log('🔄 [Request Service] Using mock service for addRecordToRequest');
-    await mockService.addRecordToRequest(requestId, candidateId, candidateData, acceptedBy);
+    console.log(
+      '🔄 [Request Service] Using mock service for addRecordToRequest'
+    );
+    await mockService.addRecordToRequest(
+      requestId,
+      candidateId,
+      candidateData,
+      acceptedBy
+    );
     console.log('✅ [Request Service] Mock record added to request');
     return;
   }
 
   try {
     const docRef = doc(firestore, 'requests', requestId);
-    
+
     // Create new associated record
     const newRecord: AssociatedRecord = {
       candidateId,
@@ -474,9 +552,14 @@ export const addRecordToRequest = async (
     const currentRecords = currentData.associatedRecords || [];
 
     // Check if record already exists (prevent duplicates)
-    const existingRecord = currentRecords.find(record => record.candidateId === candidateId);
+    const existingRecord = currentRecords.find(
+      record => record.candidateId === candidateId
+    );
     if (existingRecord) {
-      console.log('⚠️ [Request Service] Record already associated with request:', candidateId);
+      console.log(
+        '⚠️ [Request Service] Record already associated with request:',
+        candidateId
+      );
       return;
     }
 
@@ -484,29 +567,49 @@ export const addRecordToRequest = async (
       associatedRecords: [...currentRecords, newRecord],
       updatedAt: Timestamp.now(),
       // Potentially update status when first record is added
-      ...(currentRecords.length === 0 && { status: 'under_review' as RequestStatus }),
+      ...(currentRecords.length === 0 && {
+        status: 'under_review' as RequestStatus,
+      }),
     };
 
     await updateDoc(docRef, updateData);
-    console.log('✅ [Request Service] Record added to request:', requestId, candidateId);
+    console.log(
+      '✅ [Request Service] Record added to request:',
+      requestId,
+      candidateId
+    );
   } catch (error) {
-    console.error('❌ [Request Service] Error adding record to request:', error);
+    console.error(
+      '❌ [Request Service] Error adding record to request:',
+      error
+    );
     throw new Error('Failed to add record to request');
   }
 };
 
 // Cross-agency request routing - reassign request to different agency
 export const routeRequestToAgency = async (
-  requestId: string, 
-  targetAgency: string, 
+  requestId: string,
+  targetAgency: string,
   reason: string,
   routedBy: string
 ): Promise<void> => {
-  console.log('🔄 [Request Service] Routing request to agency:', { requestId, targetAgency, reason });
-  
+  console.log('🔄 [Request Service] Routing request to agency:', {
+    requestId,
+    targetAgency,
+    reason,
+  });
+
   if (useMockService()) {
-    console.log('🔄 [Request Service] Using mock service for routeRequestToAgency');
-    await mockService.routeRequestToAgency(requestId, targetAgency, reason, routedBy);
+    console.log(
+      '🔄 [Request Service] Using mock service for routeRequestToAgency'
+    );
+    await mockService.routeRequestToAgency(
+      requestId,
+      targetAgency,
+      reason,
+      routedBy
+    );
     console.log('✅ [Request Service] Mock request routed to agency');
     return;
   }
@@ -527,27 +630,37 @@ export const routeRequestToAgency = async (
         addedBy: routedBy,
         addedAt: Timestamp.fromDate(new Date()),
       };
-      
-      updateData.internalNotes = [...(request.internalNotes || []), routingNote];
+
+      updateData.internalNotes = [
+        ...(request.internalNotes || []),
+        routingNote,
+      ];
     }
 
     await updateDoc(docRef, updateData);
-    
+
     auditService.logEvent({
       service: 'RequestService',
       action: 'routeRequestToAgency',
       severity: 'info',
-      details: { requestId, targetAgency, reason, routedBy }
+      details: { requestId, targetAgency, reason, routedBy },
     });
-    
+
     console.log('✅ [Request Service] Successfully routed request to agency');
   } catch (error) {
-    console.error('❌ [Request Service] Error routing request to agency:', error);
+    console.error(
+      '❌ [Request Service] Error routing request to agency:',
+      error
+    );
     auditService.logEvent({
       service: 'RequestService',
       action: 'routeRequestToAgency',
       severity: 'error',
-      details: { error: error instanceof Error ? error.message : 'Unknown error', requestId, targetAgency }
+      details: {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        requestId,
+        targetAgency,
+      },
     });
     throw error;
   }

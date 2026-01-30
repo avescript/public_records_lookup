@@ -12,10 +12,11 @@ This document provides comprehensive test scenarios for the Public Records Looku
 ## Test Scenarios Overview
 
 ### 1. **Existing Unfulfilled Requests** (10 requests)
+
 Realistic requests that admins need to process, representing typical public records inquiries:
 
 - **Police Use of Force Incidents** - Journalist requesting Q3 2025 reports
-- **Criminal Case Discovery** - Defense attorney needing case documents  
+- **Criminal Case Discovery** - Defense attorney needing case documents
 - **City Budget Analysis** - Citizen seeking Public Works expenditures
 - **Building Code Violations** - Business researching downtown properties
 - **Fire Emergency Response** - Academic researcher studying response times
@@ -26,19 +27,23 @@ Realistic requests that admins need to process, representing typical public reco
 - **Building Permit Data** - Contractor analyzing fees and processing
 
 ### 2. **Sample Request** (For Requester Testing)
+
 Pre-configured request perfect for testing the citizen experience:
+
 - **Title:** Traffic Citation Data - Speed Enforcement
-- **Department:** Police  
+- **Department:** Police
 - **Description:** Highway 99 speed citations for August 2025
 - **Email:** community.watch@residents.org
 
 ## Complete Demo Script
 
 ### Step 1: Requester Submits Request
+
 **Role:** Public Citizen  
 **URL:** `localhost:3000`
 
 **Actions:**
+
 1. Fill out request form using sample data:
    - Title: "Traffic Citation Data - Speed Enforcement"
    - Department: Police Department
@@ -48,42 +53,51 @@ Pre-configured request perfect for testing the citizen experience:
 
 2. Submit request and save the tracking ID
 
-**Expected Outcome:** 
+**Expected Outcome:**
+
 - Confirmation page with tracking ID
 - Request successfully stored in system
 
-### Step 2: Requester Checks Status  
+### Step 2: Requester Checks Status
+
 **Role:** Public Citizen  
 **URL:** `localhost:3000/status`
 
 **Actions:**
+
 1. Enter tracking ID from Step 1
 2. Click "Search Request"
 
 **Expected Outcome:**
+
 - View request details and current status
 - See submission date and description
 
 ### Step 3: Admin Reviews Queue
+
 **Role:** Staff/Admin  
 **URL:** `localhost:3000/admin/staff`
 
 **Actions:**
+
 1. View staff dashboard with all pending requests
 2. Use filters to find specific requests
 3. Notice SLA tracking and priority indicators
 4. Click on the sample request from Step 1
 
 **Expected Outcome:**
+
 - See comprehensive request queue
 - Filter and sort functionality working
 - Request details drawer opens
 
 ### Step 4: Admin Processes Request (Epic 4 Features)
+
 **Role:** Staff/Admin  
 **URL:** `localhost:3000/admin/staff`
 
 **Actions:**
+
 1. Open request details drawer
 2. Update status to "Processing"
 3. Add internal note: "Searching for citation records"
@@ -93,22 +107,26 @@ Pre-configured request perfect for testing the citizen experience:
 7. Submit for approval workflow
 
 **Expected Outcome:**
+
 - Status updates working
 - Epic 4 PII detection active
 - Redaction canvas functional
 - Approval workflow initiated
 
 ### Step 5: Complete Request Workflow
+
 **Role:** Staff/Admin  
 **URL:** `localhost:3000/admin/staff`
 
 **Actions:**
+
 1. Process through approval workflow
 2. Update status to "Completed"
 3. Add final note: "Records prepared and ready for release"
 4. View complete audit trail
 
 **Expected Outcome:**
+
 - Full workflow demonstrated
 - Status tracking complete
 - Audit trail visible
@@ -118,45 +136,53 @@ Pre-configured request perfect for testing the citizen experience:
 The test data includes realistic personas for different user types:
 
 ### 🗞️ **Sarah Mitchell** - Journalist
+
 - Email: sarah.mitchell@localnews.com
 - Focus: Investigative reporting on municipal government
 - Typical Requests: Police reports, city council minutes, budget data
 
-### ⚖️ **Marcus Rodriguez** - Defense Attorney  
+### ⚖️ **Marcus Rodriguez** - Defense Attorney
+
 - Email: mrodriguez@defenderslaw.com
 - Focus: Criminal defense case discovery
 - Typical Requests: Police reports, evidence logs, officer records
 
 ### 🏠 **Jennifer Chen** - Citizen Advocate
-- Email: jennifer.chen.inquirer@gmail.com  
+
+- Email: jennifer.chen.inquirer@gmail.com
 - Focus: Community transparency and oversight
 - Typical Requests: Budget data, environmental reports, city policies
 
 ### 🏗️ **David Thompson** - Business Owner
+
 - Email: dthompson@constructionplus.com
 - Focus: Construction and development projects
 - Typical Requests: Building permits, inspections, code violations
 
 ### 🎓 **Dr. Angela Foster** - Academic Researcher
+
 - Email: afoster@university.edu
-- Focus: Urban policy and emergency services research  
+- Focus: Urban policy and emergency services research
 - Typical Requests: Statistical data, response times, policy documents
 
 ## Testing Workflows
 
 ### For Development Testing:
+
 1. Use **"Create Existing Requests"** to populate admin queue
 2. Test filtering, sorting, and search in staff dashboard
 3. Practice Epic 4 features on various request types
 4. Validate status updates and audit trails
 
 ### For Client Demos:
+
 1. Use **"Complete Setup"** for full demonstration
 2. Follow demo script for smooth presentation
 3. Highlight Epic 4 features (PII detection, redaction, approval)
 4. Show both requester and admin perspectives
 
 ### For User Training:
+
 1. Create **"Sample Request"** for hands-on training
 2. Let users practice the complete workflow
 3. Use existing requests for queue management training
@@ -171,6 +197,7 @@ The test data includes realistic personas for different user types:
 ## Tracking IDs
 
 After creating test data, tracking IDs are displayed in the admin tools. Sample format:
+
 - `PR-123456-ABCD` - Format for all tracking IDs
 - Use these IDs for status lookup testing
 - Each request gets a unique, timestamped ID
@@ -180,7 +207,7 @@ After creating test data, tracking IDs are displayed in the admin tools. Sample 
 The test scenarios are specifically designed to showcase Epic 4 features:
 
 1. **PII Detection:** Documents contain various PII types for testing
-2. **Redaction Drawing:** Canvas tools for manual redaction creation  
+2. **Redaction Drawing:** Canvas tools for manual redaction creation
 3. **Approval Workflow:** Multi-step approval process with comments
 4. **Staff Interface:** Professional dashboard for processing requests
 
@@ -193,4 +220,4 @@ The test scenarios are specifically designed to showcase Epic 4 features:
 
 ---
 
-*This guide ensures comprehensive testing coverage and smooth demonstrations of all application features.*
+_This guide ensures comprehensive testing coverage and smooth demonstrations of all application features._

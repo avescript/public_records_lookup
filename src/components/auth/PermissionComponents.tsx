@@ -1,26 +1,30 @@
 'use client';
 
 import React from 'react';
-import { 
-  Button, 
-  ButtonProps, 
-  IconButton, 
+import {
+  AdminPanelSettings as AdminIcon,
+  Gavel as LegalIcon,
+  Security as SecurityIcon,
+  Work as StaffIcon,
+} from '@mui/icons-material';
+import {
+  Alert,
+  Button,
+  ButtonProps,
+  Chip,
+  ChipProps,
+  IconButton,
   IconButtonProps,
   MenuItem,
   MenuItemProps,
-  Chip,
-  ChipProps,
-  Alert,
-  Typography
+  Typography,
 } from '@mui/material';
-import { 
-  Security as SecurityIcon,
-  AdminPanelSettings as AdminIcon,
-  Work as StaffIcon,
-  Gavel as LegalIcon
-} from '@mui/icons-material';
 
-import { usePermissions, UserRole, Permission } from '../../hooks/usePermissions';
+import {
+  Permission,
+  usePermissions,
+  UserRole,
+} from '../../hooks/usePermissions';
 
 // Permission-aware Button component
 interface PermissionButtonProps extends ButtonProps {
@@ -38,17 +42,12 @@ export function PermissionButton({
   requireAllRoles = false,
   requireAllPermissions = false,
   showAccessDenied = false,
-  accessDeniedMessage = "You don't have permission for this action.",
+  accessDeniedMessage = 'You don\'t have permission for this action.',
   children,
   ...buttonProps
 }: PermissionButtonProps) {
-  const { 
-    hasAnyRole, 
-    hasRole,
-    hasAnyPermission, 
-    hasAllPermissions,
-    user 
-  } = usePermissions();
+  const { hasAnyRole, hasRole, hasAnyPermission, hasAllPermissions, user } =
+    usePermissions();
 
   // Check role access
   let hasRoleAccess = true;
@@ -75,8 +74,8 @@ export function PermissionButton({
   if (!hasAccess) {
     if (showAccessDenied) {
       return (
-        <Alert severity="warning" sx={{ my: 1, maxWidth: 'fit-content' }}>
-          <Typography variant="body2">{accessDeniedMessage}</Typography>
+        <Alert severity='warning' sx={{ my: 1, maxWidth: 'fit-content' }}>
+          <Typography variant='body2'>{accessDeniedMessage}</Typography>
         </Alert>
       );
     }
@@ -102,12 +101,8 @@ export function PermissionIconButton({
   children,
   ...buttonProps
 }: PermissionIconButtonProps) {
-  const { 
-    hasAnyRole, 
-    hasRole,
-    hasAnyPermission, 
-    hasAllPermissions 
-  } = usePermissions();
+  const { hasAnyRole, hasRole, hasAnyPermission, hasAllPermissions } =
+    usePermissions();
 
   // Check role access
   let hasRoleAccess = true;
@@ -154,12 +149,8 @@ export function PermissionMenuItem({
   children,
   ...menuItemProps
 }: PermissionMenuItemProps) {
-  const { 
-    hasAnyRole, 
-    hasRole,
-    hasAnyPermission, 
-    hasAllPermissions 
-  } = usePermissions();
+  const { hasAnyRole, hasRole, hasAnyPermission, hasAllPermissions } =
+    usePermissions();
 
   // Check role access
   let hasRoleAccess = true;
@@ -196,7 +187,11 @@ interface RoleChipProps extends Omit<ChipProps, 'label'> {
   showIcon?: boolean;
 }
 
-export function RoleChip({ role, showIcon = true, ...chipProps }: RoleChipProps) {
+export function RoleChip({
+  role,
+  showIcon = true,
+  ...chipProps
+}: RoleChipProps) {
   const { user } = usePermissions();
   const currentRole = role || user?.role;
 
@@ -238,39 +233,45 @@ export function RoleChip({ role, showIcon = true, ...chipProps }: RoleChipProps)
       label={config.label}
       color={config.color}
       icon={config.icon}
-      size="small"
+      size='small'
       {...chipProps}
     />
   );
 }
 
 // Quick access role components
-export function AdminButton(props: Omit<PermissionButtonProps, 'requiredRoles'>) {
+export function AdminButton(
+  props: Omit<PermissionButtonProps, 'requiredRoles'>
+) {
   return <PermissionButton requiredRoles={['admin']} {...props} />;
 }
 
-export function StaffButton(props: Omit<PermissionButtonProps, 'requiredRoles'>) {
+export function StaffButton(
+  props: Omit<PermissionButtonProps, 'requiredRoles'>
+) {
   return <PermissionButton requiredRoles={['admin', 'staff']} {...props} />;
 }
 
-export function LegalButton(props: Omit<PermissionButtonProps, 'requiredRoles'>) {
-  return <PermissionButton requiredRoles={['admin', 'legal_reviewer']} {...props} />;
-}
-
-export function ApprovalButton(props: Omit<PermissionButtonProps, 'requiredPermissions'>) {
+export function LegalButton(
+  props: Omit<PermissionButtonProps, 'requiredRoles'>
+) {
   return (
-    <PermissionButton 
-      requiredPermissions={['approve_request']} 
-      {...props} 
-    />
+    <PermissionButton requiredRoles={['admin', 'legal_reviewer']} {...props} />
   );
 }
 
-export function RejectButton(props: Omit<PermissionButtonProps, 'requiredPermissions'>) {
+export function ApprovalButton(
+  props: Omit<PermissionButtonProps, 'requiredPermissions'>
+) {
   return (
-    <PermissionButton 
-      requiredPermissions={['reject_request']} 
-      {...props} 
-    />
+    <PermissionButton requiredPermissions={['approve_request']} {...props} />
+  );
+}
+
+export function RejectButton(
+  props: Omit<PermissionButtonProps, 'requiredPermissions'>
+) {
+  return (
+    <PermissionButton requiredPermissions={['reject_request']} {...props} />
   );
 }

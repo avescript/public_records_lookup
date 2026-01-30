@@ -5,7 +5,13 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StaffDashboard } from '../../src/components/staff/StaffDashboard';
 import { AgencyProvider } from '../../src/contexts/AgencyContext';
@@ -111,46 +117,62 @@ describe('StaffDashboard Multi-Agency Features', () => {
     localStorageMock.clear();
     localStorageMock.setItem('selected_agency', 'police');
     mockGet.mockReturnValue(null);
-    
+
     // Set up default mock response that resolves immediately
-    (requestService.getAllRequests as jest.Mock).mockImplementation((agencyFilter) => {
-      if (agencyFilter === 'police') {
-        return Promise.resolve([mockRequests[0]]);
+    (requestService.getAllRequests as jest.Mock).mockImplementation(
+      agencyFilter => {
+        if (agencyFilter === 'police') {
+          return Promise.resolve([mockRequests[0]]);
+        }
+        return Promise.resolve(mockRequests);
       }
-      return Promise.resolve(mockRequests);
-    });
-    (requestService.routeRequestToAgency as jest.Mock).mockResolvedValue(undefined);
+    );
+    (requestService.routeRequestToAgency as jest.Mock).mockResolvedValue(
+      undefined
+    );
   });
 
   describe('Agency Context Integration', () => {
     it('should fetch requests for current agency by default', async () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
-      await waitFor(() => {
-        expect(requestService.getAllRequests).toHaveBeenCalledWith('police');
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(requestService.getAllRequests).toHaveBeenCalledWith('police');
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('should display request data after loading', async () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for loading to complete and data to appear
-      await waitFor(() => {
-        expect(screen.getByText('Police Report Request')).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Police Report Request')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('should show toggle button for all agencies view', async () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for component to load
-      await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
-      await waitFor(() => {
-        expect(screen.getByText('Show All Agencies')).toBeInTheDocument();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Show All Agencies')).toBeInTheDocument();
+        },
+        { timeout: 1000 }
+      );
     });
   });
 
@@ -160,9 +182,12 @@ describe('StaffDashboard Multi-Agency Features', () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // Find and click toggle button
       const toggleButton = await screen.findByText('Show All Agencies');
@@ -173,7 +198,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Show Current Agency Only')).toBeInTheDocument();
+        expect(
+          screen.getByText('Show Current Agency Only')
+        ).toBeInTheDocument();
         expect(requestService.getAllRequests).toHaveBeenCalledWith(undefined);
       });
     });
@@ -183,9 +210,12 @@ describe('StaffDashboard Multi-Agency Features', () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // Click toggle to show all agencies
       const toggleButton = await screen.findByText('Show All Agencies');
@@ -195,7 +225,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
 
       // Wait for the toggle to complete and show "Show Current Agency Only" text
       await waitFor(() => {
-        expect(screen.getByText('Show Current Agency Only')).toBeInTheDocument();
+        expect(
+          screen.getByText('Show Current Agency Only')
+        ).toBeInTheDocument();
       });
 
       // Now verify the agencies filter is present by checking for additional form controls
@@ -211,9 +243,12 @@ describe('StaffDashboard Multi-Agency Features', () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // Switch to all agencies view
       const toggleButton = await screen.findByText('Show All Agencies');
@@ -223,7 +258,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
 
       // Wait for toggle to complete
       await waitFor(() => {
-        expect(screen.getByText('Show Current Agency Only')).toBeInTheDocument();
+        expect(
+          screen.getByText('Show Current Agency Only')
+        ).toBeInTheDocument();
       });
 
       // Verify additional form controls are present (indicating agencies filter is shown)
@@ -236,7 +273,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
       await waitFor(() => {
         expect(screen.getByText('Police Report Request')).toBeInTheDocument();
         expect(screen.getByText('Fire Department Records')).toBeInTheDocument();
-        expect(screen.getByText('Finance Budget Information')).toBeInTheDocument();
+        expect(
+          screen.getByText('Finance Budget Information')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -247,9 +286,12 @@ describe('StaffDashboard Multi-Agency Features', () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // Switch to all agencies view
       const toggleButton = await screen.findByText('Show All Agencies');
@@ -269,9 +311,12 @@ describe('StaffDashboard Multi-Agency Features', () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // Switch to all agencies view
       const toggleButton = await screen.findByText('Show All Agencies');
@@ -292,7 +337,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Route Request to Another Agency')).toBeInTheDocument();
+        expect(
+          screen.getByText('Route Request to Another Agency')
+        ).toBeInTheDocument();
       });
     });
 
@@ -301,9 +348,12 @@ describe('StaffDashboard Multi-Agency Features', () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // Switch to all agencies and open routing
       const toggleButton = await screen.findByText('Show All Agencies');
@@ -323,7 +373,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
 
       // Wait for dialog to open
       await waitFor(() => {
-        expect(screen.getByText('Route Request to Another Agency')).toBeInTheDocument();
+        expect(
+          screen.getByText('Route Request to Another Agency')
+        ).toBeInTheDocument();
       });
 
       // Try to find agency select by role instead of label
@@ -334,9 +386,10 @@ describe('StaffDashboard Multi-Agency Features', () => {
 
       const agencySelects = screen.getAllByRole('combobox');
       // Find the agency select (should be one of the comboboxes in the dialog)
-      const agencySelect = agencySelects.find(select => 
-        select.getAttribute('aria-haspopup') === 'listbox' &&
-        !select.classList.contains('MuiSelect-nativeInput')
+      const agencySelect = agencySelects.find(
+        select =>
+          select.getAttribute('aria-haspopup') === 'listbox' &&
+          !select.classList.contains('MuiSelect-nativeInput')
       );
 
       if (agencySelect) {
@@ -350,7 +403,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
           expect(options.length).toBeGreaterThan(0);
         });
 
-        const fireOption = screen.getByRole('option', { name: /Fire Department/i });
+        const fireOption = screen.getByRole('option', {
+          name: /Fire Department/i,
+        });
         await act(async () => {
           await user.click(fireOption);
         });
@@ -362,9 +417,11 @@ describe('StaffDashboard Multi-Agency Features', () => {
         });
 
         // Submit routing
-        const routeButton = screen.getByRole('button', { name: 'Route Request' });
+        const routeButton = screen.getByRole('button', {
+          name: 'Route Request',
+        });
         expect(routeButton).not.toBeDisabled();
-        
+
         await act(async () => {
           await user.click(routeButton);
         });
@@ -386,9 +443,12 @@ describe('StaffDashboard Multi-Agency Features', () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for initial load and data
-      await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       await waitFor(() => {
         expect(screen.getByText('Police Report Request')).toBeInTheDocument();
@@ -405,9 +465,12 @@ describe('StaffDashboard Multi-Agency Features', () => {
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for load and switch to all agencies
-      await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       const toggleButton = await screen.findByText('Show All Agencies');
       await act(async () => {
@@ -418,7 +481,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
       await waitFor(() => {
         expect(screen.getByText('Police Report Request')).toBeInTheDocument();
         expect(screen.getByText('Fire Department Records')).toBeInTheDocument();
-        expect(screen.getByText('Finance Budget Information')).toBeInTheDocument();
+        expect(
+          screen.getByText('Finance Budget Information')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -426,26 +491,38 @@ describe('StaffDashboard Multi-Agency Features', () => {
   describe('Error Handling', () => {
     it('should handle request loading errors', async () => {
       const loadingError = new Error('Failed to load requests');
-      (requestService.getAllRequests as jest.Mock).mockRejectedValue(loadingError);
+      (requestService.getAllRequests as jest.Mock).mockRejectedValue(
+        loadingError
+      );
 
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
-      await waitFor(() => {
-        expect(screen.getByText(/Failed to load requests/)).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText(/Failed to load requests/)
+          ).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('should handle routing errors gracefully', async () => {
       const user = userEvent.setup();
       const routingError = new Error('Routing failed');
-      (requestService.routeRequestToAgency as jest.Mock).mockRejectedValue(routingError);
+      (requestService.routeRequestToAgency as jest.Mock).mockRejectedValue(
+        routingError
+      );
 
       render(<StaffDashboard />, { wrapper: TestWrapper });
 
       // Wait for load and setup routing
-      await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       const toggleButton = await screen.findByText('Show All Agencies');
       await act(async () => {
@@ -465,7 +542,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
 
       // Wait for dialog to open
       await waitFor(() => {
-        expect(screen.getByText('Route Request to Another Agency')).toBeInTheDocument();
+        expect(
+          screen.getByText('Route Request to Another Agency')
+        ).toBeInTheDocument();
       });
 
       // Try to find form elements more flexibly
@@ -475,9 +554,10 @@ describe('StaffDashboard Multi-Agency Features', () => {
       });
 
       const agencySelects = screen.getAllByRole('combobox');
-      const agencySelect = agencySelects.find(select => 
-        select.getAttribute('aria-haspopup') === 'listbox' &&
-        !select.classList.contains('MuiSelect-nativeInput')
+      const agencySelect = agencySelects.find(
+        select =>
+          select.getAttribute('aria-haspopup') === 'listbox' &&
+          !select.classList.contains('MuiSelect-nativeInput')
       );
 
       if (agencySelect) {
@@ -490,7 +570,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
           expect(options.length).toBeGreaterThan(0);
         });
 
-        const fireOption = screen.getByRole('option', { name: /Fire Department/i });
+        const fireOption = screen.getByRole('option', {
+          name: /Fire Department/i,
+        });
         await act(async () => {
           await user.click(fireOption);
         });
@@ -500,7 +582,9 @@ describe('StaffDashboard Multi-Agency Features', () => {
           await user.type(reasonField, 'Test routing failure');
         });
 
-        const routeButton = screen.getByRole('button', { name: 'Route Request' });
+        const routeButton = screen.getByRole('button', {
+          name: 'Route Request',
+        });
         await act(async () => {
           await user.click(routeButton);
         });

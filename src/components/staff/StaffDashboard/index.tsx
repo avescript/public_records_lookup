@@ -5,9 +5,9 @@ import {
   Clear as ClearIcon,
   Error as ErrorIcon,
   Search as SearchIcon,
+  SwapHoriz as SwapHorizIcon,
   Visibility as ViewIcon,
   Warning as WarningIcon,
-  SwapHoriz as SwapHorizIcon,
 } from '@mui/icons-material';
 import {
   Alert,
@@ -50,14 +50,14 @@ import {
 } from 'date-fns';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { useAgency } from '../../../contexts/AgencyContext';
+import { SYNTHETIC_AGENCIES } from '../../../data/syntheticDataTemplates';
 import {
   getAllRequests,
   RequestStatus,
-  StoredRequest,
   routeRequestToAgency,
+  StoredRequest,
 } from '../../../services/requestService';
-import { useAgency } from '../../../contexts/AgencyContext';
-import { SYNTHETIC_AGENCIES } from '../../../data/syntheticDataTemplates';
 
 // SLA Configuration (in business days)
 const SLA_DAYS = 10;
@@ -84,9 +84,9 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
   const [selectedAgencies, setSelectedAgencies] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');  
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [showAllAgencies, setShowAllAgencies] = useState(false);
-  
+
   // Cross-agency routing state
   const [routingDialog, setRoutingDialog] = useState<{
     open: boolean;
@@ -113,7 +113,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
     { value: 'completed', label: 'Completed' },
     { value: 'rejected', label: 'Rejected' },
   ];
-  
+
   const agencyOptions = SYNTHETIC_AGENCIES.map(agency => ({
     value: agency.id,
     label: agency.name,
@@ -223,19 +223,30 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
     }, 300); // Debounce URL updates
 
     return () => clearTimeout(timeoutId);
-  }, [selectedDepartments, selectedStatuses, selectedAgencies, startDate, endDate, searchQuery, showAllAgencies]);
+  }, [
+    selectedDepartments,
+    selectedStatuses,
+    selectedAgencies,
+    startDate,
+    endDate,
+    searchQuery,
+    showAllAgencies,
+  ]);
 
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      
+
       // Determine agency filter based on context and settings
       let agencyFilter: string | undefined = undefined;
       if (!showAllAgencies && currentAgency) {
         agencyFilter = currentAgency.id;
       }
-      
-      console.log('📋 [StaffDashboard] Fetching requests:', { agencyFilter, showAllAgencies });
+
+      console.log('📋 [StaffDashboard] Fetching requests:', {
+        agencyFilter,
+        showAllAgencies,
+      });
       const requestData = await getAllRequests(agencyFilter);
       setRequests(requestData);
       setError(null);
@@ -251,8 +262,8 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
 
     // Filter by agencies (additional filtering beyond fetch-level agency filter)
     if (selectedAgencies.length > 0) {
-      filtered = filtered.filter(request =>
-        request.agency && selectedAgencies.includes(request.agency)
+      filtered = filtered.filter(
+        request => request.agency && selectedAgencies.includes(request.agency)
       );
     }
 
@@ -369,12 +380,17 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
         reason.trim(),
         'current-user' // TODO: Get from auth context
       );
-      
+
       // Refresh requests after routing
       await fetchRequests();
-      
+
       // Close dialog and reset state
-      setRoutingDialog({ open: false, request: null, targetAgency: '', reason: '' });
+      setRoutingDialog({
+        open: false,
+        request: null,
+        targetAgency: '',
+        reason: '',
+      });
     } catch (error) {
       console.error('Error routing request:', error);
       // TODO: Show error message to user
@@ -382,7 +398,12 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
   };
 
   const handleRouteRequestCancel = () => {
-    setRoutingDialog({ open: false, request: null, targetAgency: '', reason: '' });
+    setRoutingDialog({
+      open: false,
+      request: null,
+      targetAgency: '',
+      reason: '',
+    });
   };
 
   const hasActiveFilters =
@@ -488,7 +509,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
           <Chip
             label={agency ? agency.name : params.value || 'Unknown'}
             color={isCurrentAgency ? 'primary' : 'default'}
-            size="small"
+            size='small'
             variant={isCurrentAgency ? 'filled' : 'outlined'}
           />
         );
@@ -502,7 +523,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
         <Chip
           label={params.value.replace('_', ' ').toUpperCase()}
           color={getStatusColor(params.value)}
-          size="small"
+          size='small'
         />
       ),
     },
@@ -537,10 +558,10 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
             >
               <Chip
                 icon={<ErrorIcon />}
-                label="OVERDUE"
-                color="error"
-                size="small"
-                variant="filled"
+                label='OVERDUE'
+                color='error'
+                size='small'
+                variant='filled'
               />
             </Tooltip>
           );
@@ -551,20 +572,20 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
             >
               <Chip
                 icon={<WarningIcon />}
-                label="DUE SOON"
-                color="warning"
-                size="small"
-                variant="filled"
+                label='DUE SOON'
+                color='warning'
+                size='small'
+                variant='filled'
               />
             </Tooltip>
           );
         } else {
           return (
             <Chip
-              label="ON TIME"
-              color="success"
-              size="small"
-              variant="outlined"
+              label='ON TIME'
+              color='success'
+              size='small'
+              variant='outlined'
             />
           );
         }
@@ -582,20 +603,20 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
       sortable: false,
       filterable: false,
       renderCell: (params: GridRenderCellParams) => (
-        <Stack direction="row" spacing={0.5}>
-          <Tooltip title="View Details">
+        <Stack direction='row' spacing={0.5}>
+          <Tooltip title='View Details'>
             <IconButton
-              size="small"
+              size='small'
               onClick={() => onRequestSelect?.(params.row)}
             >
               <ViewIcon />
             </IconButton>
           </Tooltip>
           {showAllAgencies && (
-            <Tooltip title="Route to Agency">
+            <Tooltip title='Route to Agency'>
               <IconButton
-                size="small"
-                onClick={(e) => {
+                size='small'
+                onClick={e => {
                   e.stopPropagation();
                   handleRouteRequest(params.row);
                 }}
@@ -616,10 +637,10 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
   if (loading) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="400px"
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        minHeight='400px'
       >
         <CircularProgress />
       </Box>
@@ -628,7 +649,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
 
   if (error) {
     return (
-      <Alert severity="error" sx={{ m: 2 }}>
+      <Alert severity='error' sx={{ m: 2 }}>
         {error}
       </Alert>
     );
@@ -637,16 +658,16 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box sx={{ p: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+        <Typography variant='h4' component='h1' gutterBottom>
           Request Queue
         </Typography>
-        <Typography variant="body1" color="text.secondary" gutterBottom>
+        <Typography variant='body1' color='text.secondary' gutterBottom>
           Manage and track public records requests
         </Typography>
 
         {/* Filter Controls */}
         <Paper elevation={1} sx={{ p: 2, mt: 2, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             Filters & Search
           </Typography>
 
@@ -654,8 +675,8 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
           <Box sx={{ mb: 2 }}>
             <TextField
               fullWidth
-              size="small"
-              placeholder="Search requests by title, description, tracking ID, or contact email..."
+              size='small'
+              placeholder='Search requests by title, description, tracking ID, or contact email...'
               value={searchQuery}
               onChange={handleSearchChange}
               InputProps={{
@@ -663,7 +684,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
                   <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
                 ),
                 endAdornment: searchQuery && (
-                  <IconButton size="small" onClick={() => setSearchQuery('')}>
+                  <IconButton size='small' onClick={() => setSearchQuery('')}>
                     <ClearIcon />
                   </IconButton>
                 ),
@@ -674,16 +695,16 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={2}
-            alignItems="center"
-            flexWrap="wrap"
+            alignItems='center'
+            flexWrap='wrap'
           >
-            <FormControl sx={{ minWidth: 200 }} size="small">
+            <FormControl sx={{ minWidth: 200 }} size='small'>
               <InputLabel>Departments</InputLabel>
               <Select
                 multiple
                 value={selectedDepartments}
                 onChange={handleDepartmentChange}
-                input={<OutlinedInput label="Departments" />}
+                input={<OutlinedInput label='Departments' />}
                 renderValue={selected => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selected.map(value => {
@@ -694,9 +715,9 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
                         <Chip
                           key={value}
                           label={option?.label || value}
-                          size="small"
-                          color="primary"
-                          variant="outlined"
+                          size='small'
+                          color='primary'
+                          variant='outlined'
                         />
                       );
                     })}
@@ -711,13 +732,13 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ minWidth: 200 }} size="small">
+            <FormControl sx={{ minWidth: 200 }} size='small'>
               <InputLabel>Status</InputLabel>
               <Select
                 multiple
                 value={selectedStatuses}
                 onChange={handleStatusChange}
-                input={<OutlinedInput label="Status" />}
+                input={<OutlinedInput label='Status' />}
                 renderValue={selected => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selected.map(value => {
@@ -728,9 +749,9 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
                         <Chip
                           key={value}
                           label={option?.label || value}
-                          size="small"
-                          color="secondary"
-                          variant="outlined"
+                          size='small'
+                          color='secondary'
+                          variant='outlined'
                         />
                       );
                     })}
@@ -747,13 +768,13 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
 
             {/* Agency Filter - only show when viewing all agencies */}
             {showAllAgencies && (
-              <FormControl sx={{ minWidth: 200 }} size="small">
+              <FormControl sx={{ minWidth: 200 }} size='small'>
                 <InputLabel>Agencies</InputLabel>
                 <Select
                   multiple
                   value={selectedAgencies}
                   onChange={handleAgencyChange}
-                  input={<OutlinedInput label="Agencies" />}
+                  input={<OutlinedInput label='Agencies' />}
                   renderValue={selected => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selected.map(value => {
@@ -764,9 +785,9 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
                           <Chip
                             key={value}
                             label={option?.label || value}
-                            size="small"
-                            color="info"
-                            variant="outlined"
+                            size='small'
+                            color='info'
+                            variant='outlined'
                           />
                         );
                       })}
@@ -784,16 +805,18 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
 
             {/* Toggle for showing all agencies */}
             <Button
-              variant={showAllAgencies ? "contained" : "outlined"}
-              size="small"
+              variant={showAllAgencies ? 'contained' : 'outlined'}
+              size='small'
               onClick={toggleShowAllAgencies}
               sx={{ whiteSpace: 'nowrap' }}
             >
-              {showAllAgencies ? 'Show Current Agency Only' : 'Show All Agencies'}
+              {showAllAgencies
+                ? 'Show Current Agency Only'
+                : 'Show All Agencies'}
             </Button>
 
             <DatePicker
-              label="Start Date"
+              label='Start Date'
               value={startDate}
               onChange={newValue => setStartDate(newValue)}
               slotProps={{
@@ -805,7 +828,7 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
             />
 
             <DatePicker
-              label="End Date"
+              label='End Date'
               value={endDate}
               onChange={newValue => setEndDate(newValue)}
               slotProps={{
@@ -818,18 +841,18 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
 
             {hasActiveFilters && (
               <Chip
-                label="Clear All Filters"
+                label='Clear All Filters'
                 onClick={clearAllFilters}
                 onDelete={clearAllFilters}
-                color="default"
-                variant="outlined"
-                size="small"
+                color='default'
+                variant='outlined'
+                size='small'
               />
             )}
 
             <Typography
-              variant="body2"
-              color="text.secondary"
+              variant='body2'
+              color='text.secondary'
               sx={{ ml: 'auto' }}
             >
               Showing {filteredRequests.length} of {requests.length} requests
@@ -869,34 +892,44 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
         <Dialog
           open={routingDialog.open}
           onClose={handleRouteRequestCancel}
-          maxWidth="sm"
+          maxWidth='sm'
           fullWidth
         >
-          <DialogTitle>
-            Route Request to Another Agency
-          </DialogTitle>
+          <DialogTitle>Route Request to Another Agency</DialogTitle>
           <DialogContent>
             <Stack spacing={3} sx={{ pt: 1 }}>
               {routingDialog.request && (
                 <Box>
-                  <Typography variant="subtitle2" gutterBottom>
+                  <Typography variant='subtitle2' gutterBottom>
                     Request: {routingDialog.request.title}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Current Agency: {SYNTHETIC_AGENCIES.find(a => a.id === routingDialog.request?.agency)?.name || routingDialog.request.agency || 'Unknown'}
+                  <Typography variant='body2' color='text.secondary'>
+                    Current Agency:{' '}
+                    {SYNTHETIC_AGENCIES.find(
+                      a => a.id === routingDialog.request?.agency
+                    )?.name ||
+                      routingDialog.request.agency ||
+                      'Unknown'}
                   </Typography>
                 </Box>
               )}
-              
+
               <FormControl fullWidth>
                 <InputLabel>Target Agency</InputLabel>
                 <Select
                   value={routingDialog.targetAgency}
-                  onChange={(e) => setRoutingDialog(prev => ({ ...prev, targetAgency: e.target.value }))}
-                  label="Target Agency"
+                  onChange={e =>
+                    setRoutingDialog(prev => ({
+                      ...prev,
+                      targetAgency: e.target.value,
+                    }))
+                  }
+                  label='Target Agency'
                 >
                   {agencyOptions
-                    .filter(option => option.value !== routingDialog.request?.agency)
+                    .filter(
+                      option => option.value !== routingDialog.request?.agency
+                    )
                     .map(option => (
                       <MenuItem key={option.value} value={option.value}>
                         {option.label}
@@ -906,24 +939,29 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
               </FormControl>
 
               <TextField
-                label="Reason for Routing"
+                label='Reason for Routing'
                 multiline
                 rows={3}
                 value={routingDialog.reason}
-                onChange={(e) => setRoutingDialog(prev => ({ ...prev, reason: e.target.value }))}
-                placeholder="Explain why this request should be handled by the target agency..."
+                onChange={e =>
+                  setRoutingDialog(prev => ({
+                    ...prev,
+                    reason: e.target.value,
+                  }))
+                }
+                placeholder='Explain why this request should be handled by the target agency...'
                 helperText="This will be added to the request's internal notes."
               />
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleRouteRequestCancel}>
-              Cancel
-            </Button>
-            <Button 
+            <Button onClick={handleRouteRequestCancel}>Cancel</Button>
+            <Button
               onClick={handleRouteRequestConfirm}
-              variant="contained"
-              disabled={!routingDialog.targetAgency || !routingDialog.reason.trim()}
+              variant='contained'
+              disabled={
+                !routingDialog.targetAgency || !routingDialog.reason.trim()
+              }
             >
               Route Request
             </Button>

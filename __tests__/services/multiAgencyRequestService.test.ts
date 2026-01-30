@@ -4,7 +4,10 @@
  * Tests for agency filtering and cross-agency request routing
  */
 
-import { getAllRequests, routeRequestToAgency } from '../../src/services/requestService';
+import {
+  getAllRequests,
+  routeRequestToAgency,
+} from '../../src/services/requestService';
 import * as mockService from '../../src/services/mockFirebaseService';
 
 // Mock the mock service
@@ -57,7 +60,10 @@ describe('Multi-Agency Request Service', () => {
       expect(mockService.getAllRequests).toHaveBeenCalledTimes(1);
       expect(result).toHaveLength(2);
       expect(result.every(req => req.agency === 'police')).toBe(true);
-      expect(result.map(req => req.title)).toEqual(['Police Request 1', 'Police Request 2']);
+      expect(result.map(req => req.title)).toEqual([
+        'Police Request 1',
+        'Police Request 2',
+      ]);
     });
 
     it('should return empty array when no requests match agency filter', async () => {
@@ -96,7 +102,9 @@ describe('Multi-Agency Request Service', () => {
       const reason = 'This request involves fire safety regulations';
       const routedBy = 'admin-user';
 
-      (mockService.routeRequestToAgency as jest.Mock).mockResolvedValue(undefined);
+      (mockService.routeRequestToAgency as jest.Mock).mockResolvedValue(
+        undefined
+      );
 
       await routeRequestToAgency(requestId, targetAgency, reason, routedBy);
 
@@ -116,11 +124,13 @@ describe('Multi-Agency Request Service', () => {
       const routedBy = 'admin-user';
 
       const errorMessage = 'Request not found';
-      (mockService.routeRequestToAgency as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (mockService.routeRequestToAgency as jest.Mock).mockRejectedValue(
+        new Error(errorMessage)
+      );
 
-      await expect(routeRequestToAgency(requestId, targetAgency, reason, routedBy))
-        .rejects
-        .toThrow(errorMessage);
+      await expect(
+        routeRequestToAgency(requestId, targetAgency, reason, routedBy)
+      ).rejects.toThrow(errorMessage);
 
       expect(mockService.routeRequestToAgency).toHaveBeenCalledWith(
         requestId,
@@ -140,7 +150,9 @@ describe('Multi-Agency Request Service', () => {
         { targetAgency: 'parks', reason: 'Parks and recreation matter' },
       ];
 
-      (mockService.routeRequestToAgency as jest.Mock).mockResolvedValue(undefined);
+      (mockService.routeRequestToAgency as jest.Mock).mockResolvedValue(
+        undefined
+      );
 
       for (const testCase of testCases) {
         await routeRequestToAgency(
@@ -151,7 +163,9 @@ describe('Multi-Agency Request Service', () => {
         );
       }
 
-      expect(mockService.routeRequestToAgency).toHaveBeenCalledTimes(testCases.length);
+      expect(mockService.routeRequestToAgency).toHaveBeenCalledTimes(
+        testCases.length
+      );
     });
   });
 
@@ -159,7 +173,7 @@ describe('Multi-Agency Request Service', () => {
     it('should correctly map departments to agencies in new requests', () => {
       // This test verifies the department-to-agency mapping logic
       // Since this is tested in the mock service, we verify the mapping indirectly
-      
+
       const departmentAgencyMappings = [
         { department: 'police', expectedAgency: 'police' },
         { department: 'patrol', expectedAgency: 'police' },
@@ -179,7 +193,7 @@ describe('Multi-Agency Request Service', () => {
       // This is a structural test - the actual mapping is tested
       // in the mock service and integration tests
       expect(departmentAgencyMappings.length).toBeGreaterThan(0);
-      
+
       departmentAgencyMappings.forEach(mapping => {
         expect(mapping.department).toBeDefined();
         expect(mapping.expectedAgency).toBeDefined();
@@ -218,21 +232,29 @@ describe('Multi-Agency Request Service', () => {
       const allRequests = await getAllRequests();
 
       expect(allRequests).toHaveLength(3);
-      expect(allRequests.map(req => req.agency)).toEqual(['police', 'fire', 'finance']);
+      expect(allRequests.map(req => req.agency)).toEqual([
+        'police',
+        'fire',
+        'finance',
+      ]);
     });
   });
 
   describe('Error Handling', () => {
     it('should handle service errors gracefully', async () => {
       const errorMessage = 'Database connection failed';
-      (mockService.getAllRequests as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (mockService.getAllRequests as jest.Mock).mockRejectedValue(
+        new Error(errorMessage)
+      );
 
       await expect(getAllRequests()).rejects.toThrow(errorMessage);
     });
 
     it('should handle routing errors with proper error propagation', async () => {
       const routingError = new Error('Routing operation failed');
-      (mockService.routeRequestToAgency as jest.Mock).mockRejectedValue(routingError);
+      (mockService.routeRequestToAgency as jest.Mock).mockRejectedValue(
+        routingError
+      );
 
       await expect(
         routeRequestToAgency('test-id', 'police', 'test reason', 'admin')

@@ -45,14 +45,12 @@ const createWrapper = () => {
       },
     },
   });
-  
+
   const theme = createTheme();
-  
+
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        {children}
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </QueryClientProvider>
   );
 };
@@ -146,7 +144,7 @@ describe('EnhancedDataManagement', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Reset mock implementations
     mockService.initialize.mockResolvedValue(undefined);
     mockService.regenerateData.mockResolvedValue(undefined);
@@ -172,26 +170,36 @@ describe('EnhancedDataManagement', () => {
         confidenceThreshold: 0.5,
       },
     });
-    
+
     // Mock the service instance
-    (EnhancedAIMatchingService as jest.MockedClass<typeof EnhancedAIMatchingService>).mockImplementation(() => mockService as any);
+    (
+      EnhancedAIMatchingService as jest.MockedClass<
+        typeof EnhancedAIMatchingService
+      >
+    ).mockImplementation(() => mockService as any);
   });
 
   describe('Component Rendering', () => {
     it('should render the main interface', () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
-      expect(screen.getByText('Enhanced Synthetic Data Management')).toBeInTheDocument();
-      expect(screen.getByText('Multi-Agency Dataset Generation & AI Matching Validation')).toBeInTheDocument();
+
+      expect(
+        screen.getByText('Enhanced Synthetic Data Management')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Multi-Agency Dataset Generation & AI Matching Validation'
+        )
+      ).toBeInTheDocument();
     });
 
     it('should render dataset overview section', async () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       await waitFor(() => {
         expect(screen.getByText('Dataset Overview')).toBeInTheDocument();
       });
-      
+
       expect(screen.getByText('Total Requests: 100')).toBeInTheDocument();
       expect(screen.getByText('Total Documents: 300')).toBeInTheDocument();
       expect(screen.getByText('Agencies: 6')).toBeInTheDocument();
@@ -199,17 +207,21 @@ describe('EnhancedDataManagement', () => {
 
     it('should render generation controls section', () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
-      expect(screen.getByText('Dataset Generation Controls')).toBeInTheDocument();
+
+      expect(
+        screen.getByText('Dataset Generation Controls')
+      ).toBeInTheDocument();
       expect(screen.getByLabelText('Number of Requests')).toBeInTheDocument();
       expect(screen.getByLabelText('Documents per Agency')).toBeInTheDocument();
       expect(screen.getByLabelText('Include Edge Cases')).toBeInTheDocument();
-      expect(screen.getByLabelText('Include Performance Test Data')).toBeInTheDocument();
+      expect(
+        screen.getByLabelText('Include Performance Test Data')
+      ).toBeInTheDocument();
     });
 
     it('should render AI matching testing section', () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       expect(screen.getByText('AI Matching Testing')).toBeInTheDocument();
       expect(screen.getByLabelText('Test Query')).toBeInTheDocument();
       expect(screen.getByText('Test AI Search')).toBeInTheDocument();
@@ -217,7 +229,7 @@ describe('EnhancedDataManagement', () => {
 
     it('should render synthetic data tabs', () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       expect(screen.getByText('Requests')).toBeInTheDocument();
       expect(screen.getByText('Documents')).toBeInTheDocument();
       expect(screen.getByText('Analytics')).toBeInTheDocument();
@@ -228,7 +240,7 @@ describe('EnhancedDataManagement', () => {
   describe('Dataset Initialization', () => {
     it('should initialize dataset with default options on mount', async () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       await waitFor(() => {
         expect(mockService.initialize).toHaveBeenCalledWith({
           requestCount: 50,
@@ -240,20 +252,24 @@ describe('EnhancedDataManagement', () => {
     });
 
     it('should handle initialization errors gracefully', async () => {
-      mockService.initialize.mockRejectedValue(new Error('Initialization failed'));
-      
+      mockService.initialize.mockRejectedValue(
+        new Error('Initialization failed')
+      );
+
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       await waitFor(() => {
-        expect(screen.getByText(/failed to initialize dataset/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/failed to initialize dataset/i)
+        ).toBeInTheDocument();
       });
     });
 
     it('should show loading state during initialization', () => {
       mockService.initialize.mockImplementation(() => new Promise(() => {})); // Never resolves
-      
+
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       expect(screen.getByText('Initializing Dataset...')).toBeInTheDocument();
     });
   });
@@ -261,27 +277,29 @@ describe('EnhancedDataManagement', () => {
   describe('Dataset Generation', () => {
     it('should regenerate dataset with custom parameters', async () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       // Wait for initial load
       await waitFor(() => {
         expect(mockService.initialize).toHaveBeenCalled();
       });
-      
+
       // Change generation parameters
       const requestCountInput = screen.getByLabelText('Number of Requests');
       const documentsInput = screen.getByLabelText('Documents per Agency');
       const edgeCasesCheckbox = screen.getByLabelText('Include Edge Cases');
-      const performanceCheckbox = screen.getByLabelText('Include Performance Test Data');
-      
+      const performanceCheckbox = screen.getByLabelText(
+        'Include Performance Test Data'
+      );
+
       fireEvent.change(requestCountInput, { target: { value: '75' } });
       fireEvent.change(documentsInput, { target: { value: '30' } });
       fireEvent.click(edgeCasesCheckbox); // Uncheck
       fireEvent.click(performanceCheckbox); // Check
-      
+
       // Click regenerate
       const regenerateButton = screen.getByText('Regenerate Dataset');
       fireEvent.click(regenerateButton);
-      
+
       await waitFor(() => {
         expect(mockService.regenerateData).toHaveBeenCalledWith({
           requestCount: 75,
@@ -293,60 +311,68 @@ describe('EnhancedDataManagement', () => {
     });
 
     it('should show loading state during regeneration', async () => {
-      mockService.regenerateData.mockImplementation(() => new Promise(() => {})); // Never resolves
-      
+      mockService.regenerateData.mockImplementation(
+        () => new Promise(() => {})
+      ); // Never resolves
+
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       // Wait for initial load
       await waitFor(() => {
         expect(mockService.initialize).toHaveBeenCalled();
       });
-      
+
       const regenerateButton = screen.getByText('Regenerate Dataset');
       fireEvent.click(regenerateButton);
-      
+
       expect(screen.getByText('Regenerating...')).toBeInTheDocument();
       expect(regenerateButton).toBeDisabled();
     });
 
     it('should handle regeneration errors', async () => {
-      mockService.regenerateData.mockRejectedValue(new Error('Regeneration failed'));
-      
+      mockService.regenerateData.mockRejectedValue(
+        new Error('Regeneration failed')
+      );
+
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       // Wait for initial load
       await waitFor(() => {
         expect(mockService.initialize).toHaveBeenCalled();
       });
-      
+
       const regenerateButton = screen.getByText('Regenerate Dataset');
       fireEvent.click(regenerateButton);
-      
+
       await waitFor(() => {
-        expect(screen.getByText(/failed to regenerate dataset/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/failed to regenerate dataset/i)
+        ).toBeInTheDocument();
       });
     });
 
     it('should validate generation parameters', async () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       // Wait for initial load
       await waitFor(() => {
         expect(mockService.initialize).toHaveBeenCalled();
       });
-      
+
       // Set invalid parameters
       const requestCountInput = screen.getByLabelText('Number of Requests');
       fireEvent.change(requestCountInput, { target: { value: '0' } });
-      
+
       const regenerateButton = screen.getByText('Regenerate Dataset');
       fireEvent.click(regenerateButton);
-      
+
       // Should show validation error
       await waitFor(() => {
-        expect(screen.getByText(/request count must be greater than 0/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/request count must be greater than 0/i)
+        ).toBeInTheDocument();
       });
-      
+
       // Should not call regenerateData
       expect(mockService.regenerateData).not.toHaveBeenCalled();
     });
@@ -355,7 +381,7 @@ describe('EnhancedDataManagement', () => {
   describe('AI Matching Testing', () => {
     beforeEach(async () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       // Wait for initial load
       await waitFor(() => {
         expect(mockService.initialize).toHaveBeenCalled();
@@ -364,13 +390,13 @@ describe('EnhancedDataManagement', () => {
 
     it('should perform AI search with test query', async () => {
       const testQuery = 'police incident reports use of force';
-      
+
       const queryInput = screen.getByLabelText('Test Query');
       fireEvent.change(queryInput, { target: { value: testQuery } });
-      
+
       const searchButton = screen.getByText('Test AI Search');
       fireEvent.click(searchButton);
-      
+
       await waitFor(() => {
         expect(mockService.findMatches).toHaveBeenCalledWith(
           expect.any(String),
@@ -399,7 +425,8 @@ describe('EnhancedDataManagement', () => {
           semanticSimilarity: 0.75,
           keywordOverlap: 0.6,
           contextualRelevance: 0.8,
-          reasoningSummary: 'Strong match based on law enforcement terminology and incident reporting context.',
+          reasoningSummary:
+            'Strong match based on law enforcement terminology and incident reporting context.',
         },
         searchMetadata: {
           totalCandidatesScanned: 150,
@@ -408,23 +435,27 @@ describe('EnhancedDataManagement', () => {
           confidenceThreshold: 0.3,
         },
       };
-      
+
       mockService.findMatches.mockResolvedValue(mockSearchResults);
-      
+
       const testQuery = 'police incident reports';
       const queryInput = screen.getByLabelText('Test Query');
       fireEvent.change(queryInput, { target: { value: testQuery } });
-      
+
       const searchButton = screen.getByText('Test AI Search');
       fireEvent.click(searchButton);
-      
+
       await waitFor(() => {
-        expect(screen.getByText('Search Results (1 found)')).toBeInTheDocument();
-        expect(screen.getByText('Police Use of Force Report')).toBeInTheDocument();
+        expect(
+          screen.getByText('Search Results (1 found)')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Police Use of Force Report')
+        ).toBeInTheDocument();
         expect(screen.getByText('Relevance: 85%')).toBeInTheDocument();
         expect(screen.getByText('Police Department')).toBeInTheDocument();
       });
-      
+
       // Check search explanation
       expect(screen.getByText('Search Explanation')).toBeInTheDocument();
       expect(screen.getByText('Semantic Similarity: 75%')).toBeInTheDocument();
@@ -451,28 +482,32 @@ describe('EnhancedDataManagement', () => {
           confidenceThreshold: 0.3,
         },
       });
-      
+
       const queryInput = screen.getByLabelText('Test Query');
       fireEvent.change(queryInput, { target: { value: 'nonsense query' } });
-      
+
       const searchButton = screen.getByText('Test AI Search');
       fireEvent.click(searchButton);
-      
+
       await waitFor(() => {
-        expect(screen.getByText('Search Results (0 found)')).toBeInTheDocument();
-        expect(screen.getByText('No matches found for your query.')).toBeInTheDocument();
+        expect(
+          screen.getByText('Search Results (0 found)')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('No matches found for your query.')
+        ).toBeInTheDocument();
       });
     });
 
     it('should handle search errors', async () => {
       mockService.findMatches.mockRejectedValue(new Error('Search failed'));
-      
+
       const queryInput = screen.getByLabelText('Test Query');
       fireEvent.change(queryInput, { target: { value: 'test query' } });
-      
+
       const searchButton = screen.getByText('Test AI Search');
       fireEvent.click(searchButton);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/search failed/i)).toBeInTheDocument();
       });
@@ -481,16 +516,18 @@ describe('EnhancedDataManagement', () => {
     it('should prevent search with empty query', () => {
       const searchButton = screen.getByText('Test AI Search');
       fireEvent.click(searchButton);
-      
+
       expect(mockService.findMatches).not.toHaveBeenCalled();
-      expect(screen.getByText(/please enter a test query/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/please enter a test query/i)
+      ).toBeInTheDocument();
     });
   });
 
   describe('Data Tabs Navigation', () => {
     beforeEach(async () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       // Wait for initial load
       await waitFor(() => {
         expect(mockService.initialize).toHaveBeenCalled();
@@ -500,29 +537,33 @@ describe('EnhancedDataManagement', () => {
     it('should switch between tabs', () => {
       // Default should be Requests tab
       expect(screen.getByText('Synthetic Requests (2)')).toBeInTheDocument();
-      
+
       // Click Documents tab
       const documentsTab = screen.getByText('Documents');
       fireEvent.click(documentsTab);
-      
+
       expect(screen.getByText('All Documents (2)')).toBeInTheDocument();
-      
+
       // Click Analytics tab
       const analyticsTab = screen.getByText('Analytics');
       fireEvent.click(analyticsTab);
-      
+
       expect(screen.getByText('Requests by Agency')).toBeInTheDocument();
-      
+
       // Click Agency Details tab
       const agencyTab = screen.getByText('Agency Details');
       fireEvent.click(agencyTab);
-      
+
       expect(screen.getByText('Select Agency')).toBeInTheDocument();
     });
 
     it('should display synthetic requests data', () => {
-      expect(screen.getByText('Police incident reports from last quarter')).toBeInTheDocument();
-      expect(screen.getByText('Fire department response times analysis')).toBeInTheDocument();
+      expect(
+        screen.getByText('Police incident reports from last quarter')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Fire department response times analysis')
+      ).toBeInTheDocument();
       expect(screen.getByText('Complexity: moderate')).toBeInTheDocument();
       expect(screen.getByText('Persona: journalist')).toBeInTheDocument();
     });
@@ -530,9 +571,13 @@ describe('EnhancedDataManagement', () => {
     it('should display documents when Documents tab is active', () => {
       const documentsTab = screen.getByText('Documents');
       fireEvent.click(documentsTab);
-      
-      expect(screen.getByText('Police Use of Force Report')).toBeInTheDocument();
-      expect(screen.getByText('Fire Emergency Response Log')).toBeInTheDocument();
+
+      expect(
+        screen.getByText('Police Use of Force Report')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Fire Emergency Response Log')
+      ).toBeInTheDocument();
       expect(screen.getByText('Agency: police')).toBeInTheDocument();
       expect(screen.getByText('Type: incident_report')).toBeInTheDocument();
     });
@@ -540,12 +585,12 @@ describe('EnhancedDataManagement', () => {
     it('should display analytics when Analytics tab is active', () => {
       const analyticsTab = screen.getByText('Analytics');
       fireEvent.click(analyticsTab);
-      
+
       expect(screen.getByText('Requests by Agency')).toBeInTheDocument();
       expect(screen.getByText('Documents by Agency')).toBeInTheDocument();
       expect(screen.getByText('Complexity Distribution')).toBeInTheDocument();
       expect(screen.getByText('Persona Distribution')).toBeInTheDocument();
-      
+
       // Check some specific values
       expect(screen.getByText('police: 25')).toBeInTheDocument();
       expect(screen.getByText('fire: 20')).toBeInTheDocument();
@@ -556,18 +601,18 @@ describe('EnhancedDataManagement', () => {
     it('should display agency details when Agency Details tab is active', async () => {
       const agencyTab = screen.getByText('Agency Details');
       fireEvent.click(agencyTab);
-      
+
       const agencySelect = screen.getByLabelText('Select Agency');
       fireEvent.mouseDown(agencySelect);
-      
+
       // Should show agency options
       await waitFor(() => {
         expect(screen.getByText('police')).toBeInTheDocument();
         expect(screen.getByText('fire')).toBeInTheDocument();
       });
-      
+
       fireEvent.click(screen.getByText('police'));
-      
+
       await waitFor(() => {
         expect(mockService.getDocumentsByAgency).toHaveBeenCalledWith('police');
       });
@@ -577,53 +622,57 @@ describe('EnhancedDataManagement', () => {
   describe('Error Handling and Edge Cases', () => {
     it('should handle missing analytics data gracefully', () => {
       mockService.getDatasetAnalytics.mockReturnValue(null);
-      
+
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       expect(screen.getByText('No dataset loaded')).toBeInTheDocument();
     });
 
     it('should handle empty document arrays', () => {
       mockService.getAllDocuments.mockReturnValue([]);
       mockService.getSyntheticRequests.mockReturnValue([]);
-      
+
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       const documentsTab = screen.getByText('Documents');
       fireEvent.click(documentsTab);
-      
-      expect(screen.getByText('No documents generated yet')).toBeInTheDocument();
+
+      expect(
+        screen.getByText('No documents generated yet')
+      ).toBeInTheDocument();
     });
 
     it('should handle service method failures gracefully', async () => {
       mockService.getAllDocuments.mockImplementation(() => {
         throw new Error('Service error');
       });
-      
+
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       const documentsTab = screen.getByText('Documents');
       fireEvent.click(documentsTab);
-      
+
       await waitFor(() => {
-        expect(screen.getByText(/error loading documents/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/error loading documents/i)
+        ).toBeInTheDocument();
       });
     });
 
     it('should handle rapid user interactions', async () => {
       render(<EnhancedDataManagement />, { wrapper: createWrapper() });
-      
+
       // Wait for initial load
       await waitFor(() => {
         expect(mockService.initialize).toHaveBeenCalled();
       });
-      
+
       // Rapid clicking should not cause multiple API calls
       const regenerateButton = screen.getByText('Regenerate Dataset');
       fireEvent.click(regenerateButton);
       fireEvent.click(regenerateButton);
       fireEvent.click(regenerateButton);
-      
+
       await waitFor(() => {
         expect(mockService.regenerateData).toHaveBeenCalledTimes(1);
       });

@@ -3,7 +3,10 @@
  * Comprehensive tests for comment threads, change requests, and package approvals
  */
 
-import { legalReviewService, LegalReviewService } from '../../src/services/legalReviewService';
+import {
+  legalReviewService,
+  LegalReviewService,
+} from '../../src/services/legalReviewService';
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -132,7 +135,10 @@ describe('LegalReviewService', () => {
         expect(comment.authorRole).toBe('legal_reviewer');
         expect(comment.threadId).toBe(threadId);
 
-        const threads = await service.getCommentThreadsForRecord('record-123', 'document.pdf');
+        const threads = await service.getCommentThreadsForRecord(
+          'record-123',
+          'document.pdf'
+        );
         expect(threads[0].comments).toHaveLength(2);
       });
 
@@ -148,7 +154,10 @@ describe('LegalReviewService', () => {
 
         expect(comment.isResolution).toBe(true);
 
-        const threads = await service.getCommentThreadsForRecord('record-123', 'document.pdf');
+        const threads = await service.getCommentThreadsForRecord(
+          'record-123',
+          'document.pdf'
+        );
         expect(threads[0].status).toBe('resolved');
       });
 
@@ -208,20 +217,24 @@ describe('LegalReviewService', () => {
       });
 
       it('should filter by fileName when provided', async () => {
-        const threads = await service.getCommentThreadsForRecord('record-123', 'doc1.pdf');
+        const threads = await service.getCommentThreadsForRecord(
+          'record-123',
+          'doc1.pdf'
+        );
         expect(threads).toHaveLength(1);
         expect(threads[0].fileName).toBe('doc1.pdf');
       });
 
       it('should return empty array for non-existent record', async () => {
-        const threads = await service.getCommentThreadsForRecord('non-existent');
+        const threads =
+          await service.getCommentThreadsForRecord('non-existent');
         expect(threads).toHaveLength(0);
       });
 
       it('should sort threads by updated date (newest first)', async () => {
         const threads = await service.getCommentThreadsForRecord('record-123');
         expect(threads).toHaveLength(2);
-        
+
         // Threads should be sorted by updatedAt in descending order
         const dates = threads.map(t => new Date(t.updatedAt).getTime());
         expect(dates[0]).toBeGreaterThanOrEqual(dates[1]);
@@ -245,8 +258,11 @@ describe('LegalReviewService', () => {
       });
 
       it('should update thread status', async () => {
-        const updatedThread = await service.updateThreadStatus(threadId, 'resolved');
-        
+        const updatedThread = await service.updateThreadStatus(
+          threadId,
+          'resolved'
+        );
+
         expect(updatedThread.status).toBe('resolved');
         expect(updatedThread.updatedAt).toBeDefined();
       });
@@ -272,7 +288,7 @@ describe('LegalReviewService', () => {
           'urgent',
           {
             page: 2,
-            coordinates: { x: 100, y: 200, width: 150, height: 20 }
+            coordinates: { x: 100, y: 200, width: 150, height: 20 },
           }
         );
 
@@ -387,7 +403,10 @@ describe('LegalReviewService', () => {
       });
 
       it('should filter by fileName when provided', async () => {
-        const requests = await service.getChangeRequestsForRecord('record-123', 'doc1.pdf');
+        const requests = await service.getChangeRequestsForRecord(
+          'record-123',
+          'doc1.pdf'
+        );
         expect(requests).toHaveLength(1);
         expect(requests[0].fileName).toBe('doc1.pdf');
       });
@@ -395,7 +414,7 @@ describe('LegalReviewService', () => {
       it('should sort by creation date (newest first)', async () => {
         const requests = await service.getChangeRequestsForRecord('record-123');
         expect(requests).toHaveLength(2);
-        
+
         const dates = requests.map(r => new Date(r.createdAt).getTime());
         expect(dates[0]).toBeGreaterThanOrEqual(dates[1]);
       });
@@ -413,7 +432,11 @@ describe('LegalReviewService', () => {
 
         expect(packageApproval).toBeDefined();
         expect(packageApproval.requestId).toBe('request-123');
-        expect(packageApproval.recordIds).toEqual(['record-1', 'record-2', 'record-3']);
+        expect(packageApproval.recordIds).toEqual([
+          'record-1',
+          'record-2',
+          'record-3',
+        ]);
         expect(packageApproval.totalRecords).toBe(3);
         expect(packageApproval.packageId).toBe('custom-package-id');
         expect(packageApproval.status).toBe('pending');
@@ -519,14 +542,16 @@ describe('LegalReviewService', () => {
       });
 
       it('should return package approval by ID', async () => {
-        const packageApproval = await service.getPackageApproval(packageApprovalId);
-        
+        const packageApproval =
+          await service.getPackageApproval(packageApprovalId);
+
         expect(packageApproval).toBeDefined();
         expect(packageApproval!.id).toBe(packageApprovalId);
       });
 
       it('should return null for non-existent ID', async () => {
-        const packageApproval = await service.getPackageApproval('non-existent');
+        const packageApproval =
+          await service.getPackageApproval('non-existent');
         expect(packageApproval).toBeNull();
       });
     });
@@ -539,20 +564,25 @@ describe('LegalReviewService', () => {
       });
 
       it('should return package approvals for specific request', async () => {
-        const approvals = await service.getPackageApprovalsByRequest('request-123');
+        const approvals =
+          await service.getPackageApprovalsByRequest('request-123');
         expect(approvals).toHaveLength(2);
-        expect(approvals.every(pa => pa.requestId === 'request-123')).toBe(true);
+        expect(approvals.every(pa => pa.requestId === 'request-123')).toBe(
+          true
+        );
       });
 
       it('should return empty array for non-existent request', async () => {
-        const approvals = await service.getPackageApprovalsByRequest('non-existent');
+        const approvals =
+          await service.getPackageApprovalsByRequest('non-existent');
         expect(approvals).toHaveLength(0);
       });
 
       it('should sort by creation date (newest first)', async () => {
-        const approvals = await service.getPackageApprovalsByRequest('request-123');
+        const approvals =
+          await service.getPackageApprovalsByRequest('request-123');
         expect(approvals).toHaveLength(2);
-        
+
         const dates = approvals.map(pa => new Date(pa.createdAt).getTime());
         expect(dates[0]).toBeGreaterThanOrEqual(dates[1]);
       });
@@ -562,18 +592,22 @@ describe('LegalReviewService', () => {
       beforeEach(async () => {
         // Create pending package
         await service.createPackageApproval('request-1', ['record-1']);
-        
+
         // Create and approve another package
-        const approved = await service.createPackageApproval('request-2', ['record-2']);
+        const approved = await service.createPackageApproval('request-2', [
+          'record-2',
+        ]);
         await service.submitPackageApproval(
           approved.id,
           'approved',
           'reviewer-001',
           'Reviewer'
         );
-        
+
         // Create and reject another package
-        const rejected = await service.createPackageApproval('request-3', ['record-3']);
+        const rejected = await service.createPackageApproval('request-3', [
+          'record-3',
+        ]);
         await service.submitPackageApproval(
           rejected.id,
           'rejected',
@@ -596,7 +630,9 @@ describe('LegalReviewService', () => {
 
       beforeEach(async () => {
         // Create and approve a package
-        const approved = await service.createPackageApproval('request-1', ['record-1']);
+        const approved = await service.createPackageApproval('request-1', [
+          'record-1',
+        ]);
         await service.submitPackageApproval(
           approved.id,
           'approved',
@@ -606,27 +642,29 @@ describe('LegalReviewService', () => {
         approvedPackageId = approved.id;
 
         // Create a pending package
-        const pending = await service.createPackageApproval('request-2', ['record-2']);
+        const pending = await service.createPackageApproval('request-2', [
+          'record-2',
+        ]);
         pendingPackageId = pending.id;
       });
 
       it('should lock approved package', async () => {
         const lockedPackage = await service.lockPackage(approvedPackageId);
-        
+
         expect(lockedPackage.isLocked).toBe(true);
         expect(lockedPackage.lockTimestamp).toBeDefined();
       });
 
       it('should throw error for non-approved package', async () => {
-        await expect(
-          service.lockPackage(pendingPackageId)
-        ).rejects.toThrow('Package must be approved before locking');
+        await expect(service.lockPackage(pendingPackageId)).rejects.toThrow(
+          'Package must be approved before locking'
+        );
       });
 
       it('should throw error for non-existent package', async () => {
-        await expect(
-          service.lockPackage('non-existent')
-        ).rejects.toThrow('Failed to lock package');
+        await expect(service.lockPackage('non-existent')).rejects.toThrow(
+          'Failed to lock package'
+        );
       });
     });
   });
@@ -644,7 +682,7 @@ describe('LegalReviewService', () => {
         'legal_reviewer',
         'high'
       );
-      
+
       const thread2 = await service.createCommentThread(
         'record-2',
         'doc2.pdf',
@@ -655,7 +693,7 @@ describe('LegalReviewService', () => {
         'records_officer',
         'medium'
       );
-      
+
       // Resolve one thread
       await service.updateThreadStatus(thread2.id, 'resolved');
 
@@ -669,7 +707,7 @@ describe('LegalReviewService', () => {
         'User 1',
         'high'
       );
-      
+
       const change2 = await service.createChangeRequest(
         'record-2',
         'doc2.pdf',
@@ -679,14 +717,16 @@ describe('LegalReviewService', () => {
         'User 2',
         'medium'
       );
-      
+
       // Complete one change request
       await service.updateChangeRequestStatus(change2.id, 'completed');
 
       // Create package approvals
       await service.createPackageApproval('request-1', ['record-1']);
-      
-      const approved = await service.createPackageApproval('request-2', ['record-2']);
+
+      const approved = await service.createPackageApproval('request-2', [
+        'record-2',
+      ]);
       await service.submitPackageApproval(
         approved.id,
         'approved',
@@ -724,8 +764,9 @@ describe('LegalReviewService', () => {
         'Test User',
         'legal_reviewer'
       );
-      
-      const threads = await legalReviewService.getCommentThreadsForRecord('test-record');
+
+      const threads =
+        await legalReviewService.getCommentThreadsForRecord('test-record');
       expect(threads).toHaveLength(1);
     });
   });
@@ -758,7 +799,7 @@ describe('LegalReviewService', () => {
     it('should handle corrupted localStorage data', async () => {
       // Set corrupted data
       localStorage.setItem('legal_review_comment_threads', 'invalid-json');
-      
+
       // Should return empty results instead of throwing
       const threads = await service.getCommentThreadsForRecord('any-record');
       expect(threads).toEqual([]);

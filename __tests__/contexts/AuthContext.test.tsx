@@ -22,28 +22,28 @@ function TestComponent() {
 
   return (
     <div>
-      <div data-testid="loading">{isLoading.toString()}</div>
-      <div data-testid="authenticated">{isAuthenticated.toString()}</div>
-      <div data-testid="user">{user ? JSON.stringify(user) : 'null'}</div>
+      <div data-testid='loading'>{isLoading.toString()}</div>
+      <div data-testid='authenticated'>{isAuthenticated.toString()}</div>
+      <div data-testid='user'>{user ? JSON.stringify(user) : 'null'}</div>
       <button
-        data-testid="login-admin"
+        data-testid='login-admin'
         onClick={() => login('admin@records.gov', 'admin123')}
       >
         Login Admin
       </button>
       <button
-        data-testid="login-staff"
+        data-testid='login-staff'
         onClick={() => login('staff@records.gov', 'staff123')}
       >
         Login Staff
       </button>
       <button
-        data-testid="login-invalid"
+        data-testid='login-invalid'
         onClick={() => login('invalid@test.com', 'wrong')}
       >
         Login Invalid
       </button>
-      <button data-testid="logout" onClick={logout}>
+      <button data-testid='logout' onClick={logout}>
         Logout
       </button>
     </div>

@@ -1,57 +1,60 @@
 /**
  * Agency-Aware Redaction Canvas
  * Epic 9 Task 4: Agency-Specific Redaction Rules
- * 
+ *
  * Enhanced RedactionCanvas with agency-specific rule integration
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Chip,
-  Alert,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  IconButton,
-  Tooltip,
-  Switch,
-  FormControlLabel,
-  Snackbar,
-} from '@mui/material';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AutoAwesome as AutoAwesomeIcon,
-  Security as SecurityIcon,
-  Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
   Info as InfoIcon,
+  Security as SecurityIcon,
   Settings as SettingsIcon,
   Visibility as PreviewIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  IconButton,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Paper,
+  Select,
+  Snackbar,
+  Switch,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+
 import { useAgency } from '../../../contexts/AgencyContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { redactionService, ManualRedaction } from '../../../services/redactionService';
-import { 
-  agencyRedactionRulesService,
-} from '../../../services/agencyRedactionRulesService';
+import { agencyRedactionRulesService } from '../../../services/agencyRedactionRulesService';
+import { RedactionRule, SensitivityLevel } from '../../../services/agencyTypes';
 import {
-  RedactionRule,
-  SensitivityLevel,
-} from '../../../services/agencyTypes';
-import { piiDetectionService, PIIFinding, PIIType } from '../../../services/piiDetectionService';
+  piiDetectionService,
+  PIIFinding,
+  PIIType,
+} from '../../../services/piiDetectionService';
+import {
+  ManualRedaction,
+  redactionService,
+} from '../../../services/redactionService';
 
 interface AgencyRedactionCanvasProps {
   documentId: string;
@@ -81,25 +84,34 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
   const { currentAgency } = useAgency();
   const { user } = useAuth();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   const [redactions, setRedactions] = useState<ManualRedaction[]>([]);
   const [agencyRules, setAgencyRules] = useState<RedactionRule[]>([]);
   const [piiFindings, setPiiFindings] = useState<PIIFinding[]>([]);
-  const [pendingAutoRedactions, setPendingAutoRedactions] = useState<PendingAutoRedaction[]>([]);
+  const [pendingAutoRedactions, setPendingAutoRedactions] = useState<
+    PendingAutoRedaction[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [autoApplyEnabled, setAutoApplyEnabled] = useState(true);
   const [showRulePreview, setShowRulePreview] = useState(false);
   const [selectedRule, setSelectedRule] = useState<RedactionRule | null>(null);
-  const [notification, setNotification] = useState<{open: boolean; message: string; severity: 'success' | 'info' | 'warning' | 'error'}>({
+  const [notification, setNotification] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'info' | 'warning' | 'error';
+  }>({
     open: false,
     message: '',
-    severity: 'info'
+    severity: 'info',
   });
 
   // Drawing state
   const [isDrawing, setIsDrawing] = useState(false);
-  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
-  const [currentRedaction, setCurrentRedaction] = useState<Partial<ManualRedaction> | null>(null);
+  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(
+    null
+  );
+  const [currentRedaction, setCurrentRedaction] =
+    useState<Partial<ManualRedaction> | null>(null);
 
   // Load agency rules and existing redactions
   const loadAgencyData = useCallback(async () => {
@@ -107,12 +119,13 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
 
     try {
       setLoading(true);
-      
-      const [agencyTemplate, existingRedactions, detectedPII] = await Promise.all([
-        agencyRedactionRulesService.getAgencyTemplate(currentAgency.id),
-        redactionService.getRedactionsForDocument(documentId),
-        piiDetectionService.detectPII(documentId, 'document') // Analyze document for PII
-      ]);
+
+      const [agencyTemplate, existingRedactions, detectedPII] =
+        await Promise.all([
+          agencyRedactionRulesService.getAgencyTemplate(currentAgency.id),
+          redactionService.getRedactionsForDocument(documentId),
+          piiDetectionService.detectPII(documentId, 'document'), // Analyze document for PII
+        ]);
 
       setAgencyRules(agencyTemplate?.rules || []);
       setRedactions(existingRedactions);
@@ -135,71 +148,79 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
   }, [loadAgencyData]);
 
   // Apply auto-redaction rules
-  const applyAutoRedactionRules = useCallback(async (rules: RedactionRule[], findings: PIIFinding[]) => {
-    const autoApplyRules = rules.filter(rule => rule.autoApply);
-    const newPendingRedactions: PendingAutoRedaction[] = [];
+  const applyAutoRedactionRules = useCallback(
+    async (rules: RedactionRule[], findings: PIIFinding[]) => {
+      const autoApplyRules = rules.filter(rule => rule.autoApply);
+      const newPendingRedactions: PendingAutoRedaction[] = [];
 
-    for (const rule of autoApplyRules) {
-      const applicableFindings = findings.filter(finding => 
-        rule.piiTypes.includes(finding.type as PIIType)
-      );
+      for (const rule of autoApplyRules) {
+        const applicableFindings = findings.filter(finding =>
+          rule.piiTypes.includes(finding.type as PIIType)
+        );
 
-      if (applicableFindings.length > 0) {
-        const ruleRedactions: ManualRedaction[] = applicableFindings.map(finding => ({
-          id: `auto_${rule.id}_${finding.id}`,
-          x: finding.location?.x || 0,
-          y: finding.location?.y || 0,
-          width: finding.location?.width || 100,
-          height: finding.location?.height || 20,
-          reason: `Auto-applied: ${rule.name}`,
-          createdAt: new Date().toISOString(),
-          createdBy: user?.uid || 'system',
-          agencyRuleId: rule.id,
-          agencyId: currentAgency?.id,
-          approvalStatus: rule.requiresApproval ? 'PENDING' : 'APPROVED',
-          sensitivityLevel: rule.sensitivityLevel,
-        }));
+        if (applicableFindings.length > 0) {
+          const ruleRedactions: ManualRedaction[] = applicableFindings.map(
+            finding => ({
+              id: `auto_${rule.id}_${finding.id}`,
+              x: finding.location?.x || 0,
+              y: finding.location?.y || 0,
+              width: finding.location?.width || 100,
+              height: finding.location?.height || 20,
+              reason: `Auto-applied: ${rule.name}`,
+              createdAt: new Date().toISOString(),
+              createdBy: user?.uid || 'system',
+              agencyRuleId: rule.id,
+              agencyId: currentAgency?.id,
+              approvalStatus: rule.requiresApproval ? 'PENDING' : 'APPROVED',
+              sensitivityLevel: rule.sensitivityLevel,
+            })
+          );
 
-        newPendingRedactions.push({
-          id: `pending_${rule.id}`,
-          rule,
-          findings: applicableFindings,
-          redactions: ruleRedactions,
-          requiresApproval: rule.requiresApproval,
-        });
+          newPendingRedactions.push({
+            id: `pending_${rule.id}`,
+            rule,
+            findings: applicableFindings,
+            redactions: ruleRedactions,
+            requiresApproval: rule.requiresApproval,
+          });
+        }
       }
-    }
 
-    setPendingAutoRedactions(newPendingRedactions);
+      setPendingAutoRedactions(newPendingRedactions);
 
-    // Auto-approve non-approval-required redactions
-    const autoApprovedRedactions = newPendingRedactions
-      .filter(pending => !pending.requiresApproval)
-      .flatMap(pending => pending.redactions);
+      // Auto-approve non-approval-required redactions
+      const autoApprovedRedactions = newPendingRedactions
+        .filter(pending => !pending.requiresApproval)
+        .flatMap(pending => pending.redactions);
 
-    if (autoApprovedRedactions.length > 0) {
-      setRedactions(prev => [...prev, ...autoApprovedRedactions]);
-      showNotification(
-        `Applied ${autoApprovedRedactions.length} automatic redaction${autoApprovedRedactions.length !== 1 ? 's' : ''}`,
-        'success'
-      );
-    }
+      if (autoApprovedRedactions.length > 0) {
+        setRedactions(prev => [...prev, ...autoApprovedRedactions]);
+        showNotification(
+          `Applied ${autoApprovedRedactions.length} automatic redaction${autoApprovedRedactions.length !== 1 ? 's' : ''}`,
+          'success'
+        );
+      }
 
-    // Show notification for approval-required redactions
-    const approvalRequiredCount = newPendingRedactions
-      .filter(pending => pending.requiresApproval)
-      .reduce((sum, pending) => sum + pending.redactions.length, 0);
+      // Show notification for approval-required redactions
+      const approvalRequiredCount = newPendingRedactions
+        .filter(pending => pending.requiresApproval)
+        .reduce((sum, pending) => sum + pending.redactions.length, 0);
 
-    if (approvalRequiredCount > 0) {
-      showNotification(
-        `${approvalRequiredCount} redaction${approvalRequiredCount !== 1 ? 's' : ''} require${approvalRequiredCount === 1 ? 's' : ''} approval`,
-        'warning'
-      );
-    }
-  }, [currentAgency?.id, user?.uid]);
+      if (approvalRequiredCount > 0) {
+        showNotification(
+          `${approvalRequiredCount} redaction${approvalRequiredCount !== 1 ? 's' : ''} require${approvalRequiredCount === 1 ? 's' : ''} approval`,
+          'warning'
+        );
+      }
+    },
+    [currentAgency?.id, user?.uid]
+  );
 
   // Apply pending auto-redactions
-  const applyPendingRedactions = async (pendingId: string, approved: boolean) => {
+  const applyPendingRedactions = async (
+    pendingId: string,
+    approved: boolean
+  ) => {
     const pending = pendingAutoRedactions.find(p => p.id === pendingId);
     if (!pending) return;
 
@@ -212,9 +233,15 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
       }));
 
       setRedactions(prev => [...prev, ...approvedRedactions]);
-      showNotification(`Applied ${approvedRedactions.length} redactions from ${pending.rule.name}`, 'success');
+      showNotification(
+        `Applied ${approvedRedactions.length} redactions from ${pending.rule.name}`,
+        'success'
+      );
     } else {
-      showNotification(`Rejected ${pending.redactions.length} redactions from ${pending.rule.name}`, 'info');
+      showNotification(
+        `Rejected ${pending.redactions.length} redactions from ${pending.rule.name}`,
+        'info'
+      );
     }
 
     setPendingAutoRedactions(prev => prev.filter(p => p.id !== pendingId));
@@ -265,9 +292,12 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
   const handleMouseUp = () => {
     if (!isDrawing || !currentRedaction || !currentAgency) return;
 
-    if (currentRedaction.width && currentRedaction.height && 
-        currentRedaction.width > 10 && currentRedaction.height > 10) {
-      
+    if (
+      currentRedaction.width &&
+      currentRedaction.height &&
+      currentRedaction.width > 10 &&
+      currentRedaction.height > 10
+    ) {
       const newRedaction: ManualRedaction = {
         id: `manual_${Date.now()}`,
         x: currentRedaction.x!,
@@ -304,16 +334,22 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
 
     // Draw existing redactions
     redactions.forEach(redaction => {
-      ctx.fillStyle = redaction.approvalStatus === 'PENDING' 
-        ? 'rgba(255, 193, 7, 0.7)' 
-        : 'rgba(0, 0, 0, 0.8)';
+      ctx.fillStyle =
+        redaction.approvalStatus === 'PENDING'
+          ? 'rgba(255, 193, 7, 0.7)'
+          : 'rgba(0, 0, 0, 0.8)';
       ctx.fillRect(redaction.x, redaction.y, redaction.width, redaction.height);
-      
+
       // Add border for pending redactions
       if (redaction.approvalStatus === 'PENDING') {
         ctx.strokeStyle = '#ff9800';
         ctx.lineWidth = 2;
-        ctx.strokeRect(redaction.x, redaction.y, redaction.width, redaction.height);
+        ctx.strokeRect(
+          redaction.x,
+          redaction.y,
+          redaction.width,
+          redaction.height
+        );
       }
     });
 
@@ -321,20 +357,40 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
     pendingAutoRedactions.forEach(pending => {
       pending.redactions.forEach(redaction => {
         ctx.fillStyle = 'rgba(33, 150, 243, 0.5)';
-        ctx.fillRect(redaction.x, redaction.y, redaction.width, redaction.height);
+        ctx.fillRect(
+          redaction.x,
+          redaction.y,
+          redaction.width,
+          redaction.height
+        );
         ctx.strokeStyle = '#2196f3';
         ctx.lineWidth = 2;
-        ctx.strokeRect(redaction.x, redaction.y, redaction.width, redaction.height);
+        ctx.strokeRect(
+          redaction.x,
+          redaction.y,
+          redaction.width,
+          redaction.height
+        );
       });
     });
 
     // Draw current redaction being drawn
     if (currentRedaction && currentRedaction.width && currentRedaction.height) {
       ctx.fillStyle = 'rgba(76, 175, 80, 0.5)';
-      ctx.fillRect(currentRedaction.x!, currentRedaction.y!, currentRedaction.width!, currentRedaction.height!);
+      ctx.fillRect(
+        currentRedaction.x!,
+        currentRedaction.y!,
+        currentRedaction.width!,
+        currentRedaction.height!
+      );
       ctx.strokeStyle = '#4caf50';
       ctx.lineWidth = 2;
-      ctx.strokeRect(currentRedaction.x!, currentRedaction.y!, currentRedaction.width!, currentRedaction.height!);
+      ctx.strokeRect(
+        currentRedaction.x!,
+        currentRedaction.y!,
+        currentRedaction.width!,
+        currentRedaction.height!
+      );
     }
   }, [redactions, pendingAutoRedactions, currentRedaction]);
 
@@ -344,24 +400,37 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
   }, [drawCanvas]);
 
   // Show notification
-  const showNotification = (message: string, severity: 'success' | 'info' | 'warning' | 'error') => {
+  const showNotification = (
+    message: string,
+    severity: 'success' | 'info' | 'warning' | 'error'
+  ) => {
     setNotification({ open: true, message, severity });
   };
 
   // Get sensitivity level color
   const getSensitivityColor = (level: SensitivityLevel): string => {
     switch (level) {
-      case SensitivityLevel.LOW: return '#4caf50';
-      case SensitivityLevel.MEDIUM: return '#ff9800';
-      case SensitivityLevel.HIGH: return '#f44336';
-      case SensitivityLevel.CRITICAL: return '#9c27b0';
-      default: return '#757575';
+      case SensitivityLevel.LOW:
+        return '#4caf50';
+      case SensitivityLevel.MEDIUM:
+        return '#ff9800';
+      case SensitivityLevel.HIGH:
+        return '#f44336';
+      case SensitivityLevel.CRITICAL:
+        return '#9c27b0';
+      default:
+        return '#757575';
     }
   };
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <Box
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        minHeight='400px'
+      >
         <Typography>Loading agency redaction rules...</Typography>
       </Box>
     );
@@ -369,7 +438,7 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
 
   if (!currentAgency) {
     return (
-      <Alert severity="warning">
+      <Alert severity='warning'>
         Please select an agency to enable agency-specific redaction features.
       </Alert>
     );
@@ -379,25 +448,30 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
     <Box>
       {/* Agency Rules Control Panel */}
       <Paper sx={{ p: 2, mb: 2 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6">
+        <Box
+          display='flex'
+          justifyContent='space-between'
+          alignItems='center'
+          mb={2}
+        >
+          <Typography variant='h6'>
             Agency Redaction Rules - {currentAgency.name}
           </Typography>
-          <Box display="flex" gap={1}>
+          <Box display='flex' gap={1}>
             <FormControlLabel
               control={
                 <Switch
                   checked={autoApplyEnabled}
-                  onChange={(e) => setAutoApplyEnabled(e.target.checked)}
+                  onChange={e => setAutoApplyEnabled(e.target.checked)}
                 />
               }
-              label="Auto-apply rules"
+              label='Auto-apply rules'
             />
             <Button
               startIcon={<PreviewIcon />}
               onClick={() => setShowRulePreview(true)}
-              variant="outlined"
-              size="small"
+              variant='outlined'
+              size='small'
             >
               Preview Rules
             </Button>
@@ -405,12 +479,12 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
         </Box>
 
         {agencyRules.length > 0 && (
-          <Box display="flex" flexWrap="wrap" gap={1}>
+          <Box display='flex' flexWrap='wrap' gap={1}>
             {agencyRules.map(rule => (
               <Chip
                 key={rule.id}
                 label={rule.name}
-                size="small"
+                size='small'
                 sx={{
                   backgroundColor: getSensitivityColor(rule.sensitivityLevel),
                   color: 'white',
@@ -425,41 +499,51 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
       {/* Pending Auto-Redactions */}
       {pendingAutoRedactions.length > 0 && (
         <Paper sx={{ p: 2, mb: 2 }}>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             Pending Auto-Redactions
           </Typography>
           {pendingAutoRedactions.map(pending => (
             <Box key={pending.id} sx={{ mb: 2 }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+              <Box
+                display='flex'
+                justifyContent='space-between'
+                alignItems='center'
+                mb={1}
+              >
                 <Box>
-                  <Typography variant="subtitle1">{pending.rule.name}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {pending.redactions.length} redaction{pending.redactions.length !== 1 ? 's' : ''} found
+                  <Typography variant='subtitle1'>
+                    {pending.rule.name}
+                  </Typography>
+                  <Typography variant='body2' color='textSecondary'>
+                    {pending.redactions.length} redaction
+                    {pending.redactions.length !== 1 ? 's' : ''} found
                     {pending.requiresApproval && ' (requires approval)'}
                   </Typography>
                 </Box>
-                <Box display="flex" gap={1}>
+                <Box display='flex' gap={1}>
                   {pending.requiresApproval ? (
                     <>
                       <Button
-                        size="small"
-                        color="success"
+                        size='small'
+                        color='success'
                         onClick={() => applyPendingRedactions(pending.id, true)}
                       >
                         Approve
                       </Button>
                       <Button
-                        size="small"
-                        color="error"
-                        onClick={() => applyPendingRedactions(pending.id, false)}
+                        size='small'
+                        color='error'
+                        onClick={() =>
+                          applyPendingRedactions(pending.id, false)
+                        }
                       >
                         Reject
                       </Button>
                     </>
                   ) : (
                     <Button
-                      size="small"
-                      color="primary"
+                      size='small'
+                      color='primary'
                       onClick={() => applyPendingRedactions(pending.id, true)}
                     >
                       Apply
@@ -467,21 +551,23 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
                   )}
                 </Box>
               </Box>
-              <Box display="flex" flexWrap="wrap" gap={1}>
+              <Box display='flex' flexWrap='wrap' gap={1}>
                 <Chip
                   label={pending.rule.sensitivityLevel.toUpperCase()}
-                  size="small"
+                  size='small'
                   sx={{
-                    backgroundColor: getSensitivityColor(pending.rule.sensitivityLevel),
+                    backgroundColor: getSensitivityColor(
+                      pending.rule.sensitivityLevel
+                    ),
                     color: 'white',
                   }}
                 />
                 {pending.requiresApproval && (
                   <Chip
                     icon={<WarningIcon />}
-                    label="Requires Approval"
-                    size="small"
-                    color="warning"
+                    label='Requires Approval'
+                    size='small'
+                    color='warning'
                   />
                 )}
               </Box>
@@ -492,11 +578,11 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
 
       {/* Redaction Canvas */}
       <Paper sx={{ p: 2, position: 'relative' }}>
-        <Box position="relative" display="inline-block">
-          <img 
-            src={imageUrl} 
-            alt="Document"
-            style={{ 
+        <Box position='relative' display='inline-block'>
+          <img
+            src={imageUrl}
+            alt='Document'
+            style={{
               width: width,
               height: height,
               maxWidth: '100%',
@@ -521,13 +607,20 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
           />
         </Box>
 
-        <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="body2" color="textSecondary">
-            {redactions.length} redaction{redactions.length !== 1 ? 's' : ''} applied
-            {pendingAutoRedactions.length > 0 && ` • ${pendingAutoRedactions.length} pending auto-redaction${pendingAutoRedactions.length !== 1 ? 's' : ''}`}
+        <Box
+          mt={2}
+          display='flex'
+          justifyContent='space-between'
+          alignItems='center'
+        >
+          <Typography variant='body2' color='textSecondary'>
+            {redactions.length} redaction{redactions.length !== 1 ? 's' : ''}{' '}
+            applied
+            {pendingAutoRedactions.length > 0 &&
+              ` • ${pendingAutoRedactions.length} pending auto-redaction${pendingAutoRedactions.length !== 1 ? 's' : ''}`}
           </Typography>
           {!readOnly && (
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant='body2' color='textSecondary'>
               Click and drag to create manual redactions
             </Typography>
           )}
@@ -535,7 +628,12 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
       </Paper>
 
       {/* Rule Preview Dialog */}
-      <Dialog open={showRulePreview} onClose={() => setShowRulePreview(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={showRulePreview}
+        onClose={() => setShowRulePreview(false)}
+        maxWidth='md'
+        fullWidth
+      >
         <DialogTitle>Agency Redaction Rules Preview</DialogTitle>
         <DialogContent>
           <List>
@@ -548,21 +646,33 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
                   primary={rule.name}
                   secondary={
                     <Box>
-                      <Typography variant="body2">{rule.description}</Typography>
-                      <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
+                      <Typography variant='body2'>
+                        {rule.description}
+                      </Typography>
+                      <Box display='flex' flexWrap='wrap' gap={1} mt={1}>
                         <Chip
                           label={rule.sensitivityLevel.toUpperCase()}
-                          size="small"
+                          size='small'
                           sx={{
-                            backgroundColor: getSensitivityColor(rule.sensitivityLevel),
+                            backgroundColor: getSensitivityColor(
+                              rule.sensitivityLevel
+                            ),
                             color: 'white',
                           }}
                         />
                         {rule.autoApply && (
-                          <Chip label="Auto-Apply" size="small" color="primary" />
+                          <Chip
+                            label='Auto-Apply'
+                            size='small'
+                            color='primary'
+                          />
                         )}
                         {rule.requiresApproval && (
-                          <Chip label="Requires Approval" size="small" color="warning" />
+                          <Chip
+                            label='Requires Approval'
+                            size='small'
+                            color='warning'
+                          />
                         )}
                       </Box>
                     </Box>
@@ -583,8 +693,8 @@ export const AgencyRedactionCanvas: React.FC<AgencyRedactionCanvasProps> = ({
         autoHideDuration={6000}
         onClose={() => setNotification({ ...notification, open: false })}
       >
-        <Alert 
-          severity={notification.severity} 
+        <Alert
+          severity={notification.severity}
           onClose={() => setNotification({ ...notification, open: false })}
         >
           {notification.message}

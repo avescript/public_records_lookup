@@ -96,22 +96,49 @@ const mockRequests: ExtendedStoredRequest[] = [
   // Add more mock requests as needed
 ];
 
-function getStatusColor(status: string): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' {
+function getStatusColor(
+  status: string
+):
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'error'
+  | 'info'
+  | 'success'
+  | 'warning' {
   switch (status) {
-    case 'pending': return 'warning';
-    case 'in_progress': return 'info';
-    case 'completed': return 'success';
-    case 'rejected': return 'error';
-    default: return 'default';
+    case 'pending':
+      return 'warning';
+    case 'in_progress':
+      return 'info';
+    case 'completed':
+      return 'success';
+    case 'rejected':
+      return 'error';
+    default:
+      return 'default';
   }
 }
 
-function getPriorityColor(priority: string): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' {
+function getPriorityColor(
+  priority: string
+):
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'error'
+  | 'info'
+  | 'success'
+  | 'warning' {
   switch (priority) {
-    case 'high': return 'error';
-    case 'medium': return 'warning';
-    case 'low': return 'info';
-    default: return 'default';
+    case 'high':
+      return 'error';
+    case 'medium':
+      return 'warning';
+    case 'low':
+      return 'info';
+    default:
+      return 'default';
   }
 }
 
@@ -122,7 +149,7 @@ export function EnhancedDashboard({ onRequestSelect }: EnhancedDashboardProps) {
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
-    newViewMode: 'cards' | 'table' | null,
+    newViewMode: 'cards' | 'table' | null
   ) => {
     if (newViewMode !== null) {
       setViewMode(newViewMode);
@@ -139,10 +166,11 @@ export function EnhancedDashboard({ onRequestSelect }: EnhancedDashboardProps) {
     }
   };
 
-  const filteredRequests = mockRequests.filter(request =>
-    request.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    request.trackingId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    request.department.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredRequests = mockRequests.filter(
+    request =>
+      request.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.trackingId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.department.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (viewMode === 'table') {
@@ -152,29 +180,29 @@ export function EnhancedDashboard({ onRequestSelect }: EnhancedDashboardProps) {
   return (
     <StyledDashboardContainer>
       <StyledDashboardHeader>
-        <Box className="header-content">
-          <Typography variant="h4" component="h1" className="page-title">
+        <Box className='header-content'>
+          <Typography variant='h4' component='h1' className='page-title'>
             Staff Dashboard
           </Typography>
-          <Typography variant="body1" className="page-subtitle">
+          <Typography variant='body1' className='page-subtitle'>
             Manage public records requests with guided workflows
           </Typography>
         </Box>
 
         <StyledControlsContainer>
-          <Box className="search-section">
+          <Box className='search-section'>
             <TextField
-              placeholder="Search requests..."
-              variant="outlined"
-              size="small"
+              placeholder='Search requests...'
+              variant='outlined'
+              size='small'
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               InputProps={{
-                startAdornment: <SearchIcon className="search-icon" />,
+                startAdornment: <SearchIcon className='search-icon' />,
               }}
-              className="search-field"
+              className='search-field'
             />
-            <IconButton className="filter-button">
+            <IconButton className='filter-button'>
               <FilterIcon />
             </IconButton>
           </Box>
@@ -183,14 +211,14 @@ export function EnhancedDashboard({ onRequestSelect }: EnhancedDashboardProps) {
             value={viewMode}
             exclusive
             onChange={handleViewModeChange}
-            size="small"
-            className="view-toggle"
+            size='small'
+            className='view-toggle'
           >
-            <ToggleButton value="cards" className="toggle-button">
+            <ToggleButton value='cards' className='toggle-button'>
               <CardViewIcon />
               Cards
             </ToggleButton>
-            <ToggleButton value="table" className="toggle-button">
+            <ToggleButton value='table' className='toggle-button'>
               <TableViewIcon />
               Table
             </ToggleButton>
@@ -201,37 +229,47 @@ export function EnhancedDashboard({ onRequestSelect }: EnhancedDashboardProps) {
       {/* Metrics Cards */}
       <StyledMetricsContainer>
         <StyledMetricCard>
-          <Card className="metric-card">
+          <Card className='metric-card'>
             <CardContent>
-              <Typography className="metric-value">{mockMetrics.totalRequests}</Typography>
-              <Typography className="metric-label">Total Requests</Typography>
+              <Typography className='metric-value'>
+                {mockMetrics.totalRequests}
+              </Typography>
+              <Typography className='metric-label'>Total Requests</Typography>
             </CardContent>
           </Card>
         </StyledMetricCard>
 
         <StyledMetricCard>
-          <Card className="metric-card">
+          <Card className='metric-card'>
             <CardContent>
-              <Typography className="metric-value">{mockMetrics.pendingRequests}</Typography>
-              <Typography className="metric-label">Pending Review</Typography>
+              <Typography className='metric-value'>
+                {mockMetrics.pendingRequests}
+              </Typography>
+              <Typography className='metric-label'>Pending Review</Typography>
             </CardContent>
           </Card>
         </StyledMetricCard>
 
         <StyledMetricCard>
-          <Card className="metric-card">
+          <Card className='metric-card'>
             <CardContent>
-              <Typography className="metric-value">{mockMetrics.completedToday}</Typography>
-              <Typography className="metric-label">Completed Today</Typography>
+              <Typography className='metric-value'>
+                {mockMetrics.completedToday}
+              </Typography>
+              <Typography className='metric-label'>Completed Today</Typography>
             </CardContent>
           </Card>
         </StyledMetricCard>
 
         <StyledMetricCard>
-          <Card className="metric-card">
+          <Card className='metric-card'>
             <CardContent>
-              <Typography className="metric-value">{mockMetrics.avgResponseTime}</Typography>
-              <Typography className="metric-label">Avg Response Time</Typography>
+              <Typography className='metric-value'>
+                {mockMetrics.avgResponseTime}
+              </Typography>
+              <Typography className='metric-label'>
+                Avg Response Time
+              </Typography>
             </CardContent>
           </Card>
         </StyledMetricCard>
@@ -239,49 +277,52 @@ export function EnhancedDashboard({ onRequestSelect }: EnhancedDashboardProps) {
 
       {/* Requests Grid */}
       <StyledRequestsGrid>
-        {filteredRequests.map((request) => (
+        {filteredRequests.map(request => (
           <StyledRequestCard key={request.id}>
-            <Card className="request-card" onClick={() => handleRequestClick(request)}>
+            <Card
+              className='request-card'
+              onClick={() => handleRequestClick(request)}
+            >
               <CardContent>
-                <Box className="request-header">
-                  <Typography variant="h6" className="request-id">
+                <Box className='request-header'>
+                  <Typography variant='h6' className='request-id'>
                     {request.trackingId}
                   </Typography>
-                  <Box className="request-badges">
+                  <Box className='request-badges'>
                     <Chip
                       label={request.status.replace('_', ' ')}
                       color={getStatusColor(request.status)}
-                      size="small"
-                      className="status-chip"
+                      size='small'
+                      className='status-chip'
                     />
                     <Chip
                       label={request.priority}
                       color={getPriorityColor(request.priority)}
-                      size="small"
-                      variant="outlined"
-                      className="priority-chip"
+                      size='small'
+                      variant='outlined'
+                      className='priority-chip'
                     />
                   </Box>
                 </Box>
 
-                <Typography variant="body1" className="request-description">
+                <Typography variant='body1' className='request-description'>
                   {request.description}
                 </Typography>
 
-                <Box className="request-meta">
-                  <Typography variant="body2" className="request-department">
+                <Box className='request-meta'>
+                  <Typography variant='body2' className='request-department'>
                     {request.department} Department
                   </Typography>
-                  <Typography variant="body2" className="request-date">
+                  <Typography variant='body2' className='request-date'>
                     Due: {new Date(request.dueDate).toLocaleDateString()}
                   </Typography>
                 </Box>
 
-                <Box className="request-actions">
+                <Box className='request-actions'>
                   <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={(e) => {
+                    variant='primary'
+                    size='sm'
+                    onClick={e => {
                       e.stopPropagation();
                       handleRequestClick(request);
                     }}

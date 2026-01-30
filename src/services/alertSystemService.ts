@@ -1,7 +1,7 @@
 /**
  * Alert System Service
  * Epic 9 Task 6: Agency Dashboard & Analytics
- * 
+ *
  * Comprehensive alert system for performance thresholds, budget overages,
  * and system health monitoring with real-time notifications
  */
@@ -23,7 +23,7 @@ export interface AlertRule {
   updatedAt: string;
 }
 
-export type AlertType = 
+export type AlertType =
   | 'performance'
   | 'cost'
   | 'system_health'
@@ -35,7 +35,12 @@ export type AlertPriority = 'low' | 'medium' | 'high' | 'critical';
 
 export interface AlertCondition {
   metric: string;
-  operator: 'greater_than' | 'less_than' | 'equals' | 'not_equals' | 'percentage_change';
+  operator:
+    | 'greater_than'
+    | 'less_than'
+    | 'equals'
+    | 'not_equals'
+    | 'percentage_change';
   value: number;
   duration?: number; // minutes - how long condition must persist
   comparison?: 'previous_period' | 'baseline' | 'absolute';
@@ -133,14 +138,14 @@ export class AlertSystemService {
         metric: 'response_time',
         operator: 'greater_than',
         value: 1000,
-        duration: 5
+        duration: 5,
       },
       threshold: {
         warning: 1000,
         critical: 2000,
-        unit: 'ms'
+        unit: 'ms',
       },
-      priority: 'high'
+      priority: 'high',
     },
     budget_exceeded: {
       name: 'Budget Exceeded',
@@ -150,9 +155,9 @@ export class AlertSystemService {
         metric: 'monthly_cost',
         operator: 'greater_than',
         value: 0,
-        comparison: 'baseline'
+        comparison: 'baseline',
       },
-      priority: 'critical'
+      priority: 'critical',
     },
     system_downtime: {
       name: 'System Downtime',
@@ -162,14 +167,14 @@ export class AlertSystemService {
         metric: 'uptime',
         operator: 'less_than',
         value: 99,
-        duration: 1
+        duration: 1,
       },
       threshold: {
         warning: 99,
         critical: 95,
-        unit: '%'
+        unit: '%',
       },
-      priority: 'critical'
+      priority: 'critical',
     },
     usage_spike: {
       name: 'Usage Spike',
@@ -179,10 +184,10 @@ export class AlertSystemService {
         metric: 'request_volume',
         operator: 'percentage_change',
         value: 150,
-        comparison: 'previous_period'
+        comparison: 'previous_period',
       },
-      priority: 'medium'
-    }
+      priority: 'medium',
+    },
   };
 
   /**
@@ -191,23 +196,26 @@ export class AlertSystemService {
   async initializeAgencyMonitoring(agencyId: string): Promise<void> {
     // Load existing rules or create defaults
     await this.loadAlertRules(agencyId);
-    
+
     // Start monitoring
     this.startMonitoring(agencyId);
-    
+
     console.log(`Alert monitoring initialized for agency: ${agencyId}`);
   }
 
   /**
    * Create a new alert rule
    */
-  async createAlertRule(agencyId: string, rule: Omit<AlertRule, 'id' | 'createdAt' | 'updatedAt'>): Promise<AlertRule> {
+  async createAlertRule(
+    agencyId: string,
+    rule: Omit<AlertRule, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<AlertRule> {
     const newRule: AlertRule = {
       ...rule,
       id: `rule_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       agencyId,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     // Store rule
@@ -224,16 +232,20 @@ export class AlertSystemService {
   /**
    * Update an alert rule
    */
-  async updateAlertRule(agencyId: string, ruleId: string, updates: Partial<AlertRule>): Promise<AlertRule | null> {
+  async updateAlertRule(
+    agencyId: string,
+    ruleId: string,
+    updates: Partial<AlertRule>
+  ): Promise<AlertRule | null> {
     const rules = this.alertRules.get(agencyId) || [];
     const ruleIndex = rules.findIndex(r => r.id === ruleId);
-    
+
     if (ruleIndex === -1) return null;
 
     const updatedRule = {
       ...rules[ruleIndex],
       ...updates,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     rules[ruleIndex] = updatedRule;
@@ -251,7 +263,7 @@ export class AlertSystemService {
   async deleteAlertRule(agencyId: string, ruleId: string): Promise<boolean> {
     const rules = this.alertRules.get(agencyId) || [];
     const filteredRules = rules.filter(r => r.id !== ruleId);
-    
+
     if (filteredRules.length === rules.length) return false;
 
     this.alertRules.set(agencyId, filteredRules);
@@ -284,7 +296,7 @@ export class AlertSystemService {
     limit?: number
   ): Promise<Alert[]> {
     let history = this.alertHistory.get(agencyId) || [];
-    
+
     // Filter by date range if provided
     if (startDate) {
       history = history.filter(alert => alert.timestamp >= startDate);
@@ -292,15 +304,18 @@ export class AlertSystemService {
     if (endDate) {
       history = history.filter(alert => alert.timestamp <= endDate);
     }
-    
+
     // Sort by timestamp (newest first)
-    history.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    
+    history.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+
     // Apply limit
     if (limit && limit > 0) {
       history = history.slice(0, limit);
     }
-    
+
     return history;
   }
 
@@ -315,7 +330,7 @@ export class AlertSystemService {
   ): Promise<boolean> {
     const alerts = this.activeAlerts.get(agencyId) || [];
     const alert = alerts.find(a => a.id === alertId);
-    
+
     if (!alert) return false;
 
     alert.status = 'acknowledged';
@@ -339,7 +354,7 @@ export class AlertSystemService {
   ): Promise<boolean> {
     const alerts = this.activeAlerts.get(agencyId) || [];
     const alertIndex = alerts.findIndex(a => a.id === alertId);
-    
+
     if (alertIndex === -1) return false;
 
     const alert = alerts[alertIndex];
@@ -365,7 +380,12 @@ export class AlertSystemService {
    */
   async getAlertSummary(agencyId: string): Promise<AlertSummary> {
     const activeAlerts = await this.getActiveAlerts(agencyId);
-    const recent = await this.getAlertHistory(agencyId, undefined, undefined, 10);
+    const recent = await this.getAlertHistory(
+      agencyId,
+      undefined,
+      undefined,
+      10
+    );
 
     const summary: AlertSummary = {
       total: activeAlerts.length,
@@ -373,7 +393,7 @@ export class AlertSystemService {
         low: 0,
         medium: 0,
         high: 0,
-        critical: 0
+        critical: 0,
       },
       byType: {
         performance: 0,
@@ -381,15 +401,15 @@ export class AlertSystemService {
         system_health: 0,
         usage: 0,
         security: 0,
-        compliance: 0
+        compliance: 0,
       },
       byStatus: {
         active: 0,
         acknowledged: 0,
         resolved: 0,
-        suppressed: 0
+        suppressed: 0,
       },
-      recent
+      recent,
     };
 
     // Count by priority, type, and status
@@ -409,9 +429,13 @@ export class AlertSystemService {
     agencyId: string,
     timeRange: { startDate: string; endDate: string }
   ): Promise<AlertMetrics> {
-    const history = await this.getAlertHistory(agencyId, timeRange.startDate, timeRange.endDate);
+    const history = await this.getAlertHistory(
+      agencyId,
+      timeRange.startDate,
+      timeRange.endDate
+    );
     const activeAlerts = await this.getActiveAlerts(agencyId);
-    
+
     // Calculate resolution times
     const resolvedAlerts = history.filter(a => a.resolvedAt);
     const resolutionTimes = resolvedAlerts.map(alert => {
@@ -419,14 +443,16 @@ export class AlertSystemService {
       const end = new Date(alert.resolvedAt!).getTime();
       return (end - start) / (1000 * 60); // minutes
     });
-    
-    const averageResolutionTime = resolutionTimes.length > 0 
-      ? resolutionTimes.reduce((sum, time) => sum + time, 0) / resolutionTimes.length
-      : 0;
+
+    const averageResolutionTime =
+      resolutionTimes.length > 0
+        ? resolutionTimes.reduce((sum, time) => sum + time, 0) /
+          resolutionTimes.length
+        : 0;
 
     // Count alerts today
     const today = new Date().toISOString().split('T')[0];
-    const alertsToday = history.filter(alert => 
+    const alertsToday = history.filter(alert =>
       alert.timestamp.startsWith(today)
     ).length;
 
@@ -435,7 +461,7 @@ export class AlertSystemService {
     history.forEach(alert => {
       typeCounts[alert.type] = (typeCounts[alert.type] || 0) + 1;
     });
-    
+
     const topAlertTypes = Object.entries(typeCounts)
       .map(([type, count]) => ({ type: type as AlertType, count }))
       .sort((a, b) => b.count - a.count)
@@ -450,21 +476,27 @@ export class AlertSystemService {
       alertsToday,
       averageResolutionTime: Math.round(averageResolutionTime * 100) / 100,
       topAlertTypes,
-      alertTrend
+      alertTrend,
     };
   }
 
   /**
    * Test an alert rule
    */
-  async testAlertRule(agencyId: string, rule: AlertRule): Promise<{
+  async testAlertRule(
+    agencyId: string,
+    rule: AlertRule
+  ): Promise<{
     wouldTrigger: boolean;
     currentValue: number;
     reason: string;
   }> {
-    const currentValue = await this.getCurrentMetricValue(agencyId, rule.condition.metric);
+    const currentValue = await this.getCurrentMetricValue(
+      agencyId,
+      rule.condition.metric
+    );
     const wouldTrigger = this.evaluateCondition(rule.condition, currentValue);
-    
+
     let reason = '';
     if (wouldTrigger) {
       reason = `Current ${rule.condition.metric} (${currentValue}) ${rule.condition.operator} threshold (${rule.condition.value})`;
@@ -475,7 +507,7 @@ export class AlertSystemService {
     return {
       wouldTrigger,
       currentValue,
-      reason
+      reason,
     };
   }
 
@@ -506,12 +538,15 @@ export class AlertSystemService {
         {
           type: 'dashboard' as const,
           config: {},
-          enabled: true
-        }
-      ]
+          enabled: true,
+        },
+      ],
     };
 
-    return await this.createAlertRule(agencyId, ruleData as Omit<AlertRule, 'id' | 'createdAt' | 'updatedAt'>);
+    return await this.createAlertRule(
+      agencyId,
+      ruleData as Omit<AlertRule, 'id' | 'createdAt' | 'updatedAt'>
+    );
   }
 
   // Private helper methods
@@ -527,10 +562,12 @@ export class AlertSystemService {
       this.createAlertFromTemplate(agencyId, 'high_response_time'),
       this.createAlertFromTemplate(agencyId, 'budget_exceeded'),
       this.createAlertFromTemplate(agencyId, 'system_downtime'),
-      this.createAlertFromTemplate(agencyId, 'usage_spike')
+      this.createAlertFromTemplate(agencyId, 'usage_spike'),
     ]);
 
-    console.log(`Created ${defaultRules.filter(Boolean).length} default alert rules for ${agencyId}`);
+    console.log(
+      `Created ${defaultRules.filter(Boolean).length} default alert rules for ${agencyId}`
+    );
   }
 
   private startMonitoring(agencyId: string): void {
@@ -563,15 +600,18 @@ export class AlertSystemService {
           const lastTriggered = new Date(rule.lastTriggered).getTime();
           const now = Date.now();
           const cooldownMs = rule.cooldownPeriod * 60 * 1000;
-          
+
           if (now - lastTriggered < cooldownMs) {
             continue; // Still in cooldown
           }
         }
 
         // Get current metric value
-        const currentValue = await this.getCurrentMetricValue(agencyId, rule.condition.metric);
-        
+        const currentValue = await this.getCurrentMetricValue(
+          agencyId,
+          rule.condition.metric
+        );
+
         // Evaluate condition
         if (this.evaluateCondition(rule.condition, currentValue)) {
           await this.triggerAlert(rule, currentValue);
@@ -582,7 +622,10 @@ export class AlertSystemService {
     }
   }
 
-  private async getCurrentMetricValue(agencyId: string, metric: string): Promise<number> {
+  private async getCurrentMetricValue(
+    agencyId: string,
+    metric: string
+  ): Promise<number> {
     // Mock metric values - in production, this would fetch from actual services
     const mockMetrics: Record<string, () => number> = {
       response_time: () => Math.random() * 2000 + 100,
@@ -592,14 +635,17 @@ export class AlertSystemService {
       cpu_usage: () => Math.random() * 100,
       memory_usage: () => Math.random() * 100,
       error_rate: () => Math.random() * 5,
-      storage_usage: () => Math.random() * 100
+      storage_usage: () => Math.random() * 100,
     };
 
     const generator = mockMetrics[metric];
     return generator ? generator() : 0;
   }
 
-  private evaluateCondition(condition: AlertCondition, currentValue: number): boolean {
+  private evaluateCondition(
+    condition: AlertCondition,
+    currentValue: number
+  ): boolean {
     switch (condition.operator) {
       case 'greater_than':
         return currentValue > condition.value;
@@ -617,7 +663,10 @@ export class AlertSystemService {
     }
   }
 
-  private async triggerAlert(rule: AlertRule, currentValue: number): Promise<void> {
+  private async triggerAlert(
+    rule: AlertRule,
+    currentValue: number
+  ): Promise<void> {
     // Create alert
     const alert: Alert = {
       id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -635,8 +684,8 @@ export class AlertSystemService {
       status: 'active',
       metadata: {
         rule: rule.name,
-        condition: rule.condition
-      }
+        condition: rule.condition,
+      },
     };
 
     // Store alert
@@ -653,7 +702,10 @@ export class AlertSystemService {
     console.log(`Alert triggered: ${alert.title} for agency ${rule.agencyId}`);
   }
 
-  private async executeAlertActions(alert: Alert, actions: AlertAction[]): Promise<void> {
+  private async executeAlertActions(
+    alert: Alert,
+    actions: AlertAction[]
+  ): Promise<void> {
     for (const action of actions.filter(a => a.enabled)) {
       try {
         await this.executeAlertAction(alert, action);
@@ -663,13 +715,16 @@ export class AlertSystemService {
     }
   }
 
-  private async executeAlertAction(alert: Alert, action: AlertAction): Promise<void> {
+  private async executeAlertAction(
+    alert: Alert,
+    action: AlertAction
+  ): Promise<void> {
     const notification: AlertNotification = {
       id: `notification_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       alertId: alert.id,
       action,
       status: 'pending',
-      attempts: 0
+      attempts: 0,
     };
 
     try {
@@ -697,7 +752,8 @@ export class AlertSystemService {
       notification.status = 'sent';
     } catch (error) {
       notification.status = 'failed';
-      notification.error = error instanceof Error ? error.message : 'Unknown error';
+      notification.error =
+        error instanceof Error ? error.message : 'Unknown error';
     } finally {
       notification.attempts++;
       notification.lastAttempt = new Date().toISOString();
@@ -709,62 +765,81 @@ export class AlertSystemService {
     }
   }
 
-  private async sendEmailNotification(alert: Alert, action: AlertAction): Promise<void> {
+  private async sendEmailNotification(
+    alert: Alert,
+    action: AlertAction
+  ): Promise<void> {
     // Mock email implementation
     console.log(`Sending email notification for alert ${alert.id}`, {
       recipients: action.config.recipients,
       subject: action.config.subject || `Alert: ${alert.title}`,
-      message: this.formatAlertMessage(alert, action.config.template)
+      message: this.formatAlertMessage(alert, action.config.template),
     });
-    
+
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  private async sendSMSNotification(alert: Alert, action: AlertAction): Promise<void> {
+  private async sendSMSNotification(
+    alert: Alert,
+    action: AlertAction
+  ): Promise<void> {
     // Mock SMS implementation
     console.log(`Sending SMS notification for alert ${alert.id}`, {
       recipients: action.config.recipients,
-      message: this.formatAlertMessage(alert, action.config.template, true)
+      message: this.formatAlertMessage(alert, action.config.template, true),
     });
-    
+
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  private async sendWebhookNotification(alert: Alert, action: AlertAction): Promise<void> {
+  private async sendWebhookNotification(
+    alert: Alert,
+    action: AlertAction
+  ): Promise<void> {
     // Mock webhook implementation
     console.log(`Sending webhook notification for alert ${alert.id}`, {
       url: action.config.url,
       payload: {
         alert,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
-    
+
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  private async sendSlackNotification(alert: Alert, action: AlertAction): Promise<void> {
+  private async sendSlackNotification(
+    alert: Alert,
+    action: AlertAction
+  ): Promise<void> {
     // Mock Slack implementation
     console.log(`Sending Slack notification for alert ${alert.id}`, {
       channel: action.config.channel,
-      message: this.formatAlertMessage(alert, action.config.template)
+      message: this.formatAlertMessage(alert, action.config.template),
     });
-    
+
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  private async sendTeamsNotification(alert: Alert, action: AlertAction): Promise<void> {
+  private async sendTeamsNotification(
+    alert: Alert,
+    action: AlertAction
+  ): Promise<void> {
     // Mock Teams implementation
     console.log(`Sending Teams notification for alert ${alert.id}`, {
       channel: action.config.channel,
-      message: this.formatAlertMessage(alert, action.config.template)
+      message: this.formatAlertMessage(alert, action.config.template),
     });
-    
+
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  private formatAlertMessage(alert: Alert, template?: string, short = false): string {
+  private formatAlertMessage(
+    alert: Alert,
+    template?: string,
+    short = false
+  ): string {
     if (template) {
       return template
         .replace('{{title}}', alert.title)
@@ -795,19 +870,19 @@ Time: ${new Date(alert.timestamp).toLocaleString()}
     const trend: Array<{ date: string; count: number }> = [];
     const start = new Date(timeRange.startDate);
     const end = new Date(timeRange.endDate);
-    
+
     // Generate daily counts
     const current = new Date(start);
     while (current <= end) {
       const dateStr = current.toISOString().split('T')[0];
-      const count = alerts.filter(alert => 
+      const count = alerts.filter(alert =>
         alert.timestamp.startsWith(dateStr)
       ).length;
-      
+
       trend.push({ date: dateStr, count });
       current.setDate(current.getDate() + 1);
     }
-    
+
     return trend;
   }
 

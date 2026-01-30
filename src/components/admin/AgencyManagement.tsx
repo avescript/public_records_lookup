@@ -1,14 +1,16 @@
 /**
  * Agency Management Interface
  * Epic 9 Task 6: Agency Dashboard & Analytics
- * 
+ *
  * Comprehensive admin interface for agency management, monitoring, and configuration
  */
 
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+
 import { agencyAnalyticsService } from '../../services/agencyAnalyticsService';
+
 import AgencyDashboard from './AgencyDashboard';
 
 interface Agency {
@@ -59,7 +61,7 @@ const AgencyManagement: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Mock agencies data (in production, this would come from API)
       const mockAgencies: Agency[] = [
         {
@@ -73,7 +75,7 @@ const AgencyManagement: React.FC = () => {
           currentUsage: 3200,
           contactEmail: 'admin@police.gov',
           department: 'Public Safety',
-          setupDate: '2024-01-15T00:00:00Z'
+          setupDate: '2024-01-15T00:00:00Z',
         },
         {
           id: 'fire',
@@ -86,7 +88,7 @@ const AgencyManagement: React.FC = () => {
           currentUsage: 2100,
           contactEmail: 'admin@fire.gov',
           department: 'Public Safety',
-          setupDate: '2024-02-01T00:00:00Z'
+          setupDate: '2024-02-01T00:00:00Z',
         },
         {
           id: 'finance',
@@ -99,7 +101,7 @@ const AgencyManagement: React.FC = () => {
           currentUsage: 980,
           contactEmail: 'admin@finance.gov',
           department: 'Administration',
-          setupDate: '2024-03-10T00:00:00Z'
+          setupDate: '2024-03-10T00:00:00Z',
         },
         {
           id: 'parks',
@@ -107,12 +109,14 @@ const AgencyManagement: React.FC = () => {
           tier: 'basic',
           status: 'active',
           requestCount: 180,
-          lastActivity: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+          lastActivity: new Date(
+            Date.now() - 12 * 60 * 60 * 1000
+          ).toISOString(),
           monthlyBudget: 800,
           currentUsage: 420,
           contactEmail: 'admin@parks.gov',
           department: 'Recreation',
-          setupDate: '2024-04-20T00:00:00Z'
+          setupDate: '2024-04-20T00:00:00Z',
         },
         {
           id: 'health',
@@ -120,13 +124,15 @@ const AgencyManagement: React.FC = () => {
           tier: 'premium',
           status: 'suspended',
           requestCount: 75,
-          lastActivity: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          lastActivity: new Date(
+            Date.now() - 7 * 24 * 60 * 60 * 1000
+          ).toISOString(),
           monthlyBudget: 1500,
           currentUsage: 1800, // Over budget
           contactEmail: 'admin@health.gov',
           department: 'Public Health',
-          setupDate: '2024-05-05T00:00:00Z'
-        }
+          setupDate: '2024-05-05T00:00:00Z',
+        },
       ];
 
       setAgencies(mockAgencies);
@@ -143,11 +149,13 @@ const AgencyManagement: React.FC = () => {
 
   // Filtering
   const filteredAgencies = agencies.filter(agency => {
-    const matchesSearch = agency.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         agency.department.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      agency.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agency.department.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTier = filterTier === 'all' || agency.tier === filterTier;
-    const matchesStatus = filterStatus === 'all' || agency.status === filterStatus;
-    
+    const matchesStatus =
+      filterStatus === 'all' || agency.status === filterStatus;
+
     return matchesSearch && matchesTier && matchesStatus;
   });
 
@@ -169,9 +177,9 @@ const AgencyManagement: React.FC = () => {
       notificationSettings: {
         email: true,
         sms: false,
-        webhooks: true
+        webhooks: true,
       },
-      reportingFrequency: 'weekly'
+      reportingFrequency: 'weekly',
     };
 
     setAgencyConfig(mockConfig);
@@ -181,9 +189,9 @@ const AgencyManagement: React.FC = () => {
 
   const handleSuspendAgency = async (agencyId: string) => {
     if (confirm('Are you sure you want to suspend this agency?')) {
-      setAgencies(prev => 
-        prev.map(agency => 
-          agency.id === agencyId 
+      setAgencies(prev =>
+        prev.map(agency =>
+          agency.id === agencyId
             ? { ...agency, status: 'suspended' as const }
             : agency
         )
@@ -192,9 +200,9 @@ const AgencyManagement: React.FC = () => {
   };
 
   const handleActivateAgency = async (agencyId: string) => {
-    setAgencies(prev => 
-      prev.map(agency => 
-        agency.id === agencyId 
+    setAgencies(prev =>
+      prev.map(agency =>
+        agency.id === agencyId
           ? { ...agency, status: 'active' as const }
           : agency
       )
@@ -202,7 +210,11 @@ const AgencyManagement: React.FC = () => {
   };
 
   const handleDeleteAgency = async (agencyId: string) => {
-    if (confirm('Are you sure you want to delete this agency? This action cannot be undone.')) {
+    if (
+      confirm(
+        'Are you sure you want to delete this agency? This action cannot be undone.'
+      )
+    ) {
       setAgencies(prev => prev.filter(agency => agency.id !== agencyId));
     }
   };
@@ -236,7 +248,7 @@ const AgencyManagement: React.FC = () => {
       currentUsage: 0,
       contactEmail: formData.contactEmail!,
       department: formData.department!,
-      setupDate: new Date().toISOString()
+      setupDate: new Date().toISOString(),
     };
 
     setAgencies(prev => [...prev, newAgency]);
@@ -250,16 +262,16 @@ const AgencyManagement: React.FC = () => {
     suspendedAgencies: agencies.filter(a => a.status === 'suspended').length,
     totalRequests: agencies.reduce((sum, a) => sum + a.requestCount, 0),
     totalUsage: agencies.reduce((sum, a) => sum + a.currentUsage, 0),
-    totalBudget: agencies.reduce((sum, a) => sum + a.monthlyBudget, 0)
+    totalBudget: agencies.reduce((sum, a) => sum + a.monthlyBudget, 0),
   };
 
   if (showDashboard && selectedAgency) {
     return (
       <div>
-        <div className="mb-4">
+        <div className='mb-4'>
           <button
             onClick={() => setShowDashboard(false)}
-            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+            className='px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700'
           >
             ← Back to Agency Management
           </button>
@@ -271,10 +283,10 @@ const AgencyManagement: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading agencies...</p>
+      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4'></div>
+          <p className='text-gray-600'>Loading agencies...</p>
         </div>
       </div>
     );
@@ -282,13 +294,13 @@ const AgencyManagement: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 text-xl mb-4">⚠️ Error</div>
-          <p className="text-gray-600 mb-4">{error}</p>
+      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='text-red-600 text-xl mb-4'>⚠️ Error</div>
+          <p className='text-gray-600 mb-4'>{error}</p>
           <button
             onClick={loadAgencies}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700'
           >
             Retry
           </button>
@@ -298,92 +310,92 @@ const AgencyManagement: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className='min-h-screen bg-gray-50 p-6'>
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <div className='mb-8'>
+        <h1 className='text-3xl font-bold text-gray-900 mb-2'>
           Agency Management
         </h1>
-        <p className="text-gray-600">
+        <p className='text-gray-600'>
           Manage agencies, monitor usage, and configure settings
         </p>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
         <SummaryCard
-          title="Total Agencies"
+          title='Total Agencies'
           value={summaryStats.totalAgencies}
           subtitle={`${summaryStats.activeAgencies} active`}
-          icon="🏢"
+          icon='🏢'
         />
         <SummaryCard
-          title="Total Requests"
+          title='Total Requests'
           value={summaryStats.totalRequests.toLocaleString()}
-          subtitle="This month"
-          icon="📄"
+          subtitle='This month'
+          icon='📄'
         />
         <SummaryCard
-          title="Usage Cost"
+          title='Usage Cost'
           value={`$${summaryStats.totalUsage.toLocaleString()}`}
           subtitle={`Budget: $${summaryStats.totalBudget.toLocaleString()}`}
-          icon="💰"
+          icon='💰'
         />
         <SummaryCard
-          title="System Health"
-          value="98.5%"
-          subtitle="Uptime"
-          icon="📊"
+          title='System Health'
+          value='98.5%'
+          subtitle='Uptime'
+          icon='📊'
         />
       </div>
 
       {/* Controls */}
-      <div className="mb-6 bg-white p-4 rounded-lg shadow-sm border">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className='mb-6 bg-white p-4 rounded-lg shadow-sm border'>
+        <div className='flex flex-wrap items-center justify-between gap-4'>
           {/* Search and Filters */}
-          <div className="flex items-center space-x-4">
+          <div className='flex items-center space-x-4'>
             <input
-              type="text"
-              placeholder="Search agencies..."
+              type='text'
+              placeholder='Search agencies...'
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={e => setSearchTerm(e.target.value)}
+              className='px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
-            
+
             <select
               value={filterTier}
-              onChange={(e) => setFilterTier(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={e => setFilterTier(e.target.value)}
+              className='px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
-              <option value="all">All Tiers</option>
-              <option value="basic">Basic</option>
-              <option value="premium">Premium</option>
-              <option value="enterprise">Enterprise</option>
+              <option value='all'>All Tiers</option>
+              <option value='basic'>Basic</option>
+              <option value='premium'>Premium</option>
+              <option value='enterprise'>Enterprise</option>
             </select>
 
             <select
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={e => setFilterStatus(e.target.value)}
+              className='px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-              <option value="inactive">Inactive</option>
+              <option value='all'>All Status</option>
+              <option value='active'>Active</option>
+              <option value='suspended'>Suspended</option>
+              <option value='inactive'>Inactive</option>
             </select>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center space-x-2">
+          <div className='flex items-center space-x-2'>
             <button
               onClick={() => setShowAddForm(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
             >
               Add Agency
             </button>
             <button
               onClick={loadAgencies}
-              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+              className='px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700'
             >
               Refresh
             </button>
@@ -392,36 +404,36 @@ const AgencyManagement: React.FC = () => {
       </div>
 
       {/* Agencies Table */}
-      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+      <div className='bg-white rounded-lg shadow-sm border overflow-hidden'>
+        <div className='overflow-x-auto'>
+          <table className='min-w-full divide-y divide-gray-200'>
+            <thead className='bg-gray-50'>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                   Agency
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                   Tier
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                   Requests
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                   Usage/Budget
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                   Last Activity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredAgencies.map((agency) => (
+            <tbody className='bg-white divide-y divide-gray-200'>
+              {filteredAgencies.map(agency => (
                 <AgencyRow
                   key={agency.id}
                   agency={agency}
@@ -466,13 +478,13 @@ const SummaryCard: React.FC<{
   subtitle: string;
   icon: string;
 }> = ({ title, value, subtitle, icon }) => (
-  <div className="bg-white p-6 rounded-lg shadow-sm border">
-    <div className="flex items-center justify-between mb-2">
-      <h3 className="text-sm font-medium text-gray-600">{title}</h3>
-      <span className="text-2xl">{icon}</span>
+  <div className='bg-white p-6 rounded-lg shadow-sm border'>
+    <div className='flex items-center justify-between mb-2'>
+      <h3 className='text-sm font-medium text-gray-600'>{title}</h3>
+      <span className='text-2xl'>{icon}</span>
     </div>
-    <div className="text-3xl font-bold text-gray-900 mb-1">{value}</div>
-    <div className="text-sm text-gray-500">{subtitle}</div>
+    <div className='text-3xl font-bold text-gray-900 mb-1'>{value}</div>
+    <div className='text-sm text-gray-500'>{subtitle}</div>
   </div>
 );
 
@@ -483,7 +495,14 @@ const AgencyRow: React.FC<{
   onSuspend: (id: string) => void;
   onActivate: (id: string) => void;
   onDelete: (id: string) => void;
-}> = ({ agency, onViewDashboard, onEditConfig, onSuspend, onActivate, onDelete }) => {
+}> = ({
+  agency,
+  onViewDashboard,
+  onEditConfig,
+  onSuspend,
+  onActivate,
+  onDelete,
+}) => {
   const tierColors = {
     basic: 'bg-gray-100 text-gray-800',
     premium: 'bg-blue-100 text-blue-800',
@@ -500,75 +519,81 @@ const AgencyRow: React.FC<{
   const isOverBudget = usagePercentage > 100;
 
   return (
-    <tr className="hover:bg-gray-50">
-      <td className="px-6 py-4 whitespace-nowrap">
+    <tr className='hover:bg-gray-50'>
+      <td className='px-6 py-4 whitespace-nowrap'>
         <div>
-          <div className="text-sm font-medium text-gray-900">{agency.name}</div>
-          <div className="text-sm text-gray-500">{agency.department}</div>
-          <div className="text-xs text-gray-400">{agency.contactEmail}</div>
+          <div className='text-sm font-medium text-gray-900'>{agency.name}</div>
+          <div className='text-sm text-gray-500'>{agency.department}</div>
+          <div className='text-xs text-gray-400'>{agency.contactEmail}</div>
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${tierColors[agency.tier]}`}>
+      <td className='px-6 py-4 whitespace-nowrap'>
+        <span
+          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${tierColors[agency.tier]}`}
+        >
           {agency.tier}
         </span>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[agency.status]}`}>
+      <td className='px-6 py-4 whitespace-nowrap'>
+        <span
+          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[agency.status]}`}
+        >
           {agency.status}
         </span>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
         {agency.requestCount.toLocaleString()}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm text-gray-900">
+      <td className='px-6 py-4 whitespace-nowrap'>
+        <div className='text-sm text-gray-900'>
           <span className={isOverBudget ? 'text-red-600' : 'text-gray-900'}>
             ${agency.currentUsage.toLocaleString()}
           </span>
-          <span className="text-gray-500">/${agency.monthlyBudget.toLocaleString()}</span>
+          <span className='text-gray-500'>
+            /${agency.monthlyBudget.toLocaleString()}
+          </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+        <div className='w-full bg-gray-200 rounded-full h-2 mt-1'>
           <div
             className={`h-2 rounded-full ${isOverBudget ? 'bg-red-500' : 'bg-green-500'}`}
             style={{ width: `${Math.min(usagePercentage, 100)}%` }}
           />
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
         {new Date(agency.lastActivity).toLocaleDateString()}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+      <td className='px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2'>
         <button
           onClick={() => onViewDashboard(agency.id)}
-          className="text-blue-600 hover:text-blue-900"
+          className='text-blue-600 hover:text-blue-900'
         >
           Dashboard
         </button>
         <button
           onClick={() => onEditConfig(agency.id)}
-          className="text-green-600 hover:text-green-900"
+          className='text-green-600 hover:text-green-900'
         >
           Config
         </button>
         {agency.status === 'active' ? (
           <button
             onClick={() => onSuspend(agency.id)}
-            className="text-red-600 hover:text-red-900"
+            className='text-red-600 hover:text-red-900'
           >
             Suspend
           </button>
         ) : (
           <button
             onClick={() => onActivate(agency.id)}
-            className="text-green-600 hover:text-green-900"
+            className='text-green-600 hover:text-green-900'
           >
             Activate
           </button>
         )}
         <button
           onClick={() => onDelete(agency.id)}
-          className="text-red-600 hover:text-red-900"
+          className='text-red-600 hover:text-red-900'
         >
           Delete
         </button>
@@ -586,7 +611,7 @@ const AddAgencyModal: React.FC<{
     tier: 'basic' as Agency['tier'],
     department: '',
     contactEmail: '',
-    monthlyBudget: 1000
+    monthlyBudget: 1000,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -595,89 +620,105 @@ const AddAgencyModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Add New Agency</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+      <div className='bg-white rounded-lg p-6 w-full max-w-md'>
+        <h2 className='text-xl font-bold mb-4'>Add New Agency</h2>
+        <form onSubmit={handleSubmit} className='space-y-4'>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
               Agency Name
             </label>
             <input
-              type="text"
+              type='text'
               value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              onChange={e =>
+                setFormData(prev => ({ ...prev, name: e.target.value }))
+              }
+              className='w-full px-3 py-2 border border-gray-300 rounded-md'
               required
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
               Department
             </label>
             <input
-              type="text"
+              type='text'
               value={formData.department}
-              onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              onChange={e =>
+                setFormData(prev => ({ ...prev, department: e.target.value }))
+              }
+              className='w-full px-3 py-2 border border-gray-300 rounded-md'
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
               Contact Email
             </label>
             <input
-              type="email"
+              type='email'
               value={formData.contactEmail}
-              onChange={(e) => setFormData(prev => ({ ...prev, contactEmail: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              onChange={e =>
+                setFormData(prev => ({ ...prev, contactEmail: e.target.value }))
+              }
+              className='w-full px-3 py-2 border border-gray-300 rounded-md'
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
               Tier
             </label>
             <select
               value={formData.tier}
-              onChange={(e) => setFormData(prev => ({ ...prev, tier: e.target.value as Agency['tier'] }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              onChange={e =>
+                setFormData(prev => ({
+                  ...prev,
+                  tier: e.target.value as Agency['tier'],
+                }))
+              }
+              className='w-full px-3 py-2 border border-gray-300 rounded-md'
             >
-              <option value="basic">Basic</option>
-              <option value="premium">Premium</option>
-              <option value="enterprise">Enterprise</option>
+              <option value='basic'>Basic</option>
+              <option value='premium'>Premium</option>
+              <option value='enterprise'>Enterprise</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
               Monthly Budget
             </label>
             <input
-              type="number"
+              type='number'
               value={formData.monthlyBudget}
-              onChange={(e) => setFormData(prev => ({ ...prev, monthlyBudget: Number(e.target.value) }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              min="0"
+              onChange={e =>
+                setFormData(prev => ({
+                  ...prev,
+                  monthlyBudget: Number(e.target.value),
+                }))
+              }
+              className='w-full px-3 py-2 border border-gray-300 rounded-md'
+              min='0'
               required
             />
           </div>
 
-          <div className="flex space-x-4 pt-4">
+          <div className='flex space-x-4 pt-4'>
             <button
-              type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              type='submit'
+              className='flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
             >
               Add Agency
             </button>
             <button
-              type="button"
+              type='button'
               onClick={onCancel}
-              className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+              className='flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400'
             >
               Cancel
             </button>
@@ -696,46 +737,63 @@ const ConfigModal: React.FC<{
   onCancel: () => void;
 }> = ({ agencyId, config, onConfigChange, onSave, onCancel }) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Agency Configuration: {agencyId}</h2>
-        
-        <div className="space-y-6">
+    <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+      <div className='bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto'>
+        <h2 className='text-xl font-bold mb-4'>
+          Agency Configuration: {agencyId}
+        </h2>
+
+        <div className='space-y-6'>
           {/* Limits */}
           <div>
-            <h3 className="text-lg font-medium mb-3">Usage Limits</h3>
-            <div className="grid grid-cols-3 gap-4">
+            <h3 className='text-lg font-medium mb-3'>Usage Limits</h3>
+            <div className='grid grid-cols-3 gap-4'>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className='block text-sm font-medium text-gray-700 mb-1'>
                   Max Requests
                 </label>
                 <input
-                  type="number"
+                  type='number'
                   value={config.maxRequests}
-                  onChange={(e) => onConfigChange({ ...config, maxRequests: Number(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  onChange={e =>
+                    onConfigChange({
+                      ...config,
+                      maxRequests: Number(e.target.value),
+                    })
+                  }
+                  className='w-full px-3 py-2 border border-gray-300 rounded-md'
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className='block text-sm font-medium text-gray-700 mb-1'>
                   Max Storage (MB)
                 </label>
                 <input
-                  type="number"
+                  type='number'
                   value={config.maxStorage}
-                  onChange={(e) => onConfigChange({ ...config, maxStorage: Number(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  onChange={e =>
+                    onConfigChange({
+                      ...config,
+                      maxStorage: Number(e.target.value),
+                    })
+                  }
+                  className='w-full px-3 py-2 border border-gray-300 rounded-md'
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className='block text-sm font-medium text-gray-700 mb-1'>
                   Max Documents
                 </label>
                 <input
-                  type="number"
+                  type='number'
                   value={config.maxDocuments}
-                  onChange={(e) => onConfigChange({ ...config, maxDocuments: Number(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  onChange={e =>
+                    onConfigChange({
+                      ...config,
+                      maxDocuments: Number(e.target.value),
+                    })
+                  }
+                  className='w-full px-3 py-2 border border-gray-300 rounded-md'
                 />
               </div>
             </div>
@@ -743,23 +801,30 @@ const ConfigModal: React.FC<{
 
           {/* Features */}
           <div>
-            <h3 className="text-lg font-medium mb-3">Features</h3>
-            <div className="space-y-2">
-              <label className="flex items-center">
+            <h3 className='text-lg font-medium mb-3'>Features</h3>
+            <div className='space-y-2'>
+              <label className='flex items-center'>
                 <input
-                  type="checkbox"
+                  type='checkbox'
                   checked={config.ocrEnabled}
-                  onChange={(e) => onConfigChange({ ...config, ocrEnabled: e.target.checked })}
-                  className="mr-2"
+                  onChange={e =>
+                    onConfigChange({ ...config, ocrEnabled: e.target.checked })
+                  }
+                  className='mr-2'
                 />
                 OCR Processing Enabled
               </label>
-              <label className="flex items-center">
+              <label className='flex items-center'>
                 <input
-                  type="checkbox"
+                  type='checkbox'
                   checked={config.autoApproval}
-                  onChange={(e) => onConfigChange({ ...config, autoApproval: e.target.checked })}
-                  className="mr-2"
+                  onChange={e =>
+                    onConfigChange({
+                      ...config,
+                      autoApproval: e.target.checked,
+                    })
+                  }
+                  className='mr-2'
                 />
                 Auto Approval for Low-Risk Redactions
               </label>
@@ -768,41 +833,56 @@ const ConfigModal: React.FC<{
 
           {/* Notifications */}
           <div>
-            <h3 className="text-lg font-medium mb-3">Notifications</h3>
-            <div className="space-y-2">
-              <label className="flex items-center">
+            <h3 className='text-lg font-medium mb-3'>Notifications</h3>
+            <div className='space-y-2'>
+              <label className='flex items-center'>
                 <input
-                  type="checkbox"
+                  type='checkbox'
                   checked={config.notificationSettings.email}
-                  onChange={(e) => onConfigChange({
-                    ...config,
-                    notificationSettings: { ...config.notificationSettings, email: e.target.checked }
-                  })}
-                  className="mr-2"
+                  onChange={e =>
+                    onConfigChange({
+                      ...config,
+                      notificationSettings: {
+                        ...config.notificationSettings,
+                        email: e.target.checked,
+                      },
+                    })
+                  }
+                  className='mr-2'
                 />
                 Email Notifications
               </label>
-              <label className="flex items-center">
+              <label className='flex items-center'>
                 <input
-                  type="checkbox"
+                  type='checkbox'
                   checked={config.notificationSettings.sms}
-                  onChange={(e) => onConfigChange({
-                    ...config,
-                    notificationSettings: { ...config.notificationSettings, sms: e.target.checked }
-                  })}
-                  className="mr-2"
+                  onChange={e =>
+                    onConfigChange({
+                      ...config,
+                      notificationSettings: {
+                        ...config.notificationSettings,
+                        sms: e.target.checked,
+                      },
+                    })
+                  }
+                  className='mr-2'
                 />
                 SMS Notifications
               </label>
-              <label className="flex items-center">
+              <label className='flex items-center'>
                 <input
-                  type="checkbox"
+                  type='checkbox'
                   checked={config.notificationSettings.webhooks}
-                  onChange={(e) => onConfigChange({
-                    ...config,
-                    notificationSettings: { ...config.notificationSettings, webhooks: e.target.checked }
-                  })}
-                  className="mr-2"
+                  onChange={e =>
+                    onConfigChange({
+                      ...config,
+                      notificationSettings: {
+                        ...config.notificationSettings,
+                        webhooks: e.target.checked,
+                      },
+                    })
+                  }
+                  className='mr-2'
                 />
                 Webhook Notifications
               </label>
@@ -811,34 +891,40 @@ const ConfigModal: React.FC<{
 
           {/* Reporting */}
           <div>
-            <h3 className="text-lg font-medium mb-3">Reporting</h3>
+            <h3 className='text-lg font-medium mb-3'>Reporting</h3>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className='block text-sm font-medium text-gray-700 mb-1'>
                 Report Frequency
               </label>
               <select
                 value={config.reportingFrequency}
-                onChange={(e) => onConfigChange({ ...config, reportingFrequency: e.target.value as AgencyConfig['reportingFrequency'] })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                onChange={e =>
+                  onConfigChange({
+                    ...config,
+                    reportingFrequency: e.target
+                      .value as AgencyConfig['reportingFrequency'],
+                  })
+                }
+                className='w-full px-3 py-2 border border-gray-300 rounded-md'
               >
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
+                <option value='daily'>Daily</option>
+                <option value='weekly'>Weekly</option>
+                <option value='monthly'>Monthly</option>
               </select>
             </div>
           </div>
         </div>
 
-        <div className="flex space-x-4 pt-6">
+        <div className='flex space-x-4 pt-6'>
           <button
             onClick={onSave}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className='flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
           >
             Save Configuration
           </button>
           <button
             onClick={onCancel}
-            className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+            className='flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400'
           >
             Cancel
           </button>
