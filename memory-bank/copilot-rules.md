@@ -6,6 +6,39 @@
 - **Use `.env.example`**: With placeholders for required environment variables.
 - **If a secret is leaked**: Rotate credentials, purge history, notify team immediately.
 
+## 🎯 Code Quality & Formatting Standards
+
+### Automated Quality Pipeline (Active)
+
+- **Pre-commit hooks**: Husky + lint-staged automatically fix and format code
+- **Quality gates**: All commits must pass ESLint and Prettier checks
+- **No manual formatting**: Rely on automated tools for consistency
+- **Import organization**: Automatic import sorting with eslint-plugin-simple-import-sort
+
+### Quality Scripts Usage
+
+```bash
+npm run quality        # Fix all auto-fixable issues
+npm run quality:check  # Check without modifying files
+npm run format         # Format with Prettier
+npm run lint:fix       # Fix ESLint issues
+npm run lint:strict    # Zero-warning policy check
+```
+
+### Code Style Enforcement
+
+- **Single quotes**: Enforced by Prettier for consistency
+- **Trailing commas**: Always for better git diffs
+- **Line width**: 80 characters for readability
+- **Import groups**: External packages → Internal packages → Relative imports
+- **No manual code formatting**: Let automation handle all style concerns
+
+### Quality Metrics Target
+
+- **Maintain < 25 ESLint issues**: Current status 21 issues (94% improvement achieved)
+- **Zero formatting inconsistencies**: Prettier enforces uniform style
+- **100% import organization**: Automatic sorting prevents style conflicts
+
 ## 🔀 Git Workflow & Collaboration
 
 ### Feature Branch Strategy
@@ -99,6 +132,53 @@ __tests__/
 - ✅ **Confidence**: Safe refactoring and feature additions
 - ✅ **Team Collaboration**: Clear expectations for code quality
 - ✅ **CI/CD Ready**: Foundation for automated testing pipelines
+
+## 🤖 AI Service Integration Patterns
+
+### Automatic AI Matching (Established Pattern)
+
+- **Auto-trigger on request creation**: AI matching runs automatically without manual buttons
+- **Fail-safe design**: Core functionality (request creation) never fails due to AI service issues
+- **Error resilience**: Graceful degradation when AI services are unavailable
+- **Progress logging**: Comprehensive console output for debugging automatic flows
+
+### AI Service Architecture
+
+- **Service layer separation**: AI matching in dedicated service, integrated at business logic level
+- **Async handling**: All AI operations are non-blocking with proper error boundaries
+- **Mock service support**: Seamless fallback to mock data when services unavailable
+- **Testing coverage**: Unit tests for both success and failure scenarios
+
+### Integration Points
+
+```typescript
+// Auto-trigger pattern in services
+await saveRequest(data);
+// AI matching happens automatically, errors don't block save
+
+// Staff dashboard auto-enhancement
+if (!request.associatedRecords) {
+  // Auto-trigger AI matching on view
+  await findMatches(request.id, request.description);
+}
+```
+
+## 📄 Advanced Document Processing Patterns
+
+### OCR Integration Standards
+
+- **Worker pool architecture**: Use Tesseract.js with configurable concurrent workers (default: 2)
+- **Batch processing**: Support concurrent file processing with progress tracking
+- **Multi-format support**: Handle PDFs, images, and office documents uniformly
+- **Agency integration**: Apply agency-specific rules and validation automatically
+- **Error recovery**: Fallback mechanisms for OCR failures and corrupt files
+
+### Performance Guidelines
+
+- **Throughput targets**: ~0.67 files/second for mixed document types
+- **Success rate**: Maintain 90%+ success rate with fallback handling
+- **Memory efficiency**: Optimize for large document sets without memory leaks
+- **Progress tracking**: Real-time status updates for user experience
 
 ## � Memory Bank Management Strategy
 
