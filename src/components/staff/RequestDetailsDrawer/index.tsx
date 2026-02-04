@@ -106,6 +106,11 @@ import { CommentThreadComponent } from '../CommentThread';
 import { PackageApprovalComponent } from '../PackageApproval';
 import { PackageBuilder } from '../PackageBuilder';
 
+import { AttachmentManager } from './AttachmentManager';
+import { RequesterContactInfo } from './RequesterContactInfo';
+import { RequestTimeline } from './RequestTimeline';
+import { SLAMonitoring } from './SLAMonitoring';
+
 // Dynamically import PDFPreview to prevent SSR issues with browser-specific APIs
 const PDFPreview = dynamic(
   () => import('../../shared/PDFPreview/ClientWrapper'),
@@ -449,16 +454,14 @@ export function RequestDetailsDrawer({
             )}
           </Paper>
 
+          {/* SLA Monitoring */}
+          <SLAMonitoring request={request} />
+
           {/* Contact Information */}
-          <Paper elevation={1} sx={{ p: 3 }}>
-            <Typography variant='h6' gutterBottom>
-              Contact Information
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <EmailIcon color='action' />
-              <Typography variant='body1'>{request.contactEmail}</Typography>
-            </Box>
-          </Paper>
+          <RequesterContactInfo request={request} />
+
+          {/* Timeline */}
+          <RequestTimeline request={request} />
 
           {/* Associated Records */}
           {request.associatedRecords &&
@@ -566,7 +569,7 @@ export function RequestDetailsDrawer({
                           try {
                             return format(
                               convertToDate(record.acceptedAt),
-                              'MMM d, yyyy \'at\' h:mm a'
+                              "MMM d, yyyy 'at' h:mm a"
                             );
                           } catch (error) {
                             console.error(
@@ -658,23 +661,7 @@ export function RequestDetailsDrawer({
           </Paper>
 
           {/* Attachments */}
-          <Paper elevation={1} sx={{ p: 3 }}>
-            <Typography variant='h6' gutterBottom>
-              Attachments
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <AttachFileIcon color='action' />
-              <Typography variant='body1'>
-                {request.attachmentCount} file
-                {request.attachmentCount !== 1 ? 's' : ''} attached
-              </Typography>
-            </Box>
-            {request.attachmentCount === 0 && (
-              <Typography variant='body2' color='text.secondary' sx={{ mt: 1 }}>
-                No attachments provided
-              </Typography>
-            )}
-          </Paper>
+          <AttachmentManager request={request} />
 
           {/* AI Matching */}
           <Paper elevation={1} sx={{ p: 3 }}>

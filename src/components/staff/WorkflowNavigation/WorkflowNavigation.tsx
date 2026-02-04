@@ -25,8 +25,9 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Button } from '@mui/material';
 import { useRouter } from 'next/navigation';
+
+import { Button } from '@/components/core/Button';
 
 import { StepSummaryCards } from './StepSummaryCards';
 import {
@@ -254,7 +255,7 @@ export function WorkflowNavigation({
               startIcon={<DashboardIcon />}
               onClick={handleDashboardClick}
               variant='text'
-              size='small'
+              size='sm'
               className='breadcrumb-button'
             >
               Dashboard
