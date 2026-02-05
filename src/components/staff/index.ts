@@ -1,6 +1,9 @@
 // Enhanced Dashboard Components
 export * from './EnhancedDashboard';
 
+// Enhanced Search Components - V2-2
+export * from './EnhancedSearch';
+
 // Workflow Navigation Components
 export * from './WorkflowNavigation';
 

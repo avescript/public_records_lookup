@@ -28,6 +28,7 @@
     "@mui/x-date-pickers": "^8.11.3",
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.19",
     "firebase": "^12.2.1",
     "next": "^15.5.2",
     "pdfjs-dist": "^5.4.149",
