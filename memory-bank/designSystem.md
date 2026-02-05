@@ -28,6 +28,13 @@ src/
       EnhancedDashboard/    # V2-1: Enhanced request management dashboard
         EnhancedDashboard.tsx
         DashboardFilters.tsx
+      InteractiveRedactionEditor/  # V2-3: Advanced redaction editing system
+        InteractiveRedactionCanvas.tsx
+        RedactionLayersManager.tsx
+        RedactionHistoryManager.tsx
+        RedactionCollaborationPanel.tsx
+        types.ts
+        index.ts
         MetricsPanel.tsx
         BulkOperations.tsx
       RequestDetailsDrawer/ # V2-1: Enhanced request details interface
