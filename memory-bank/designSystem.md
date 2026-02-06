@@ -480,3 +480,60 @@ const ResponsiveGrid = styled(Grid)`
 - i18n integration
 - Performance optimizations
 - Additional accessibility features
+
+## Testing Strategy
+
+### Interactive Redaction Editor Testing Approach
+
+The Interactive Redaction Editor system employs a comprehensive dual-layer testing approach:
+
+#### Integration Tests (`InteractiveRedactionEditor.integration.test.tsx`)
+
+- **Purpose**: Test current working functionality and component interactions
+- **Coverage**: 28 comprehensive integration tests covering:
+  - Canvas initialization and data loading
+  - Drawing tools and shape selection
+  - AI suggestions integration
+  - Mouse interactions and keyboard shortcuts
+  - Quality assessment integration
+  - Error handling and service integration
+- **Current Status**: Tests validate existing component functionality
+- **File Location**: `__tests__/components/InteractiveRedactionEditor.integration.test.tsx`
+
+#### Unit Tests (Specification Tests)
+
+- **Purpose**: Serve as detailed specifications for complete component functionality
+- **Coverage**: 550+ focused unit tests across 4 component files:
+  - `InteractiveRedactionCanvas.unit.test.tsx` (200+ tests)
+  - `RedactionLayersManager.unit.test.tsx` (150+ tests)
+  - `RedactionHistoryManager.unit.test.tsx` (100+ tests)
+  - `RedactionCollaborationPanel.unit.test.tsx` (100+ tests)
+- **Focus Areas**: Component initialization, props validation, accessibility, error handling, performance
+- **Enhancement Roadmap**: These tests define advanced features for future implementation
+
+#### Testing Philosophy
+
+1. **Integration Tests**: Validate working features and component integration
+2. **Unit Tests**: Define complete feature specifications and enhancement roadmap
+3. **Quality Assurance**: Comprehensive coverage ensures reliability and maintainability
+4. **Developer Guidance**: Unit tests provide clear implementation specifications
+
+#### Running Tests
+
+```bash
+# Run integration tests (current functionality)
+npm test -- --testPathPattern="InteractiveRedactionEditor.integration.test"
+
+# Run unit tests (specifications)
+npm test -- --testPathPattern="unit.test"
+
+# Run all Interactive Redaction Editor tests
+npm test -- --testPathPattern="InteractiveRedaction|unit.test"
+```
+
+### General Testing Principles
+
+- **Dual-Layer Approach**: Integration tests for working features + Unit tests as specifications
+- **Comprehensive Coverage**: All components have both functional tests and enhancement roadmaps
+- **Quality Assurance**: Testing ensures reliability, maintainability, and accessibility
+- **Developer Experience**: Tests serve as documentation and implementation guides

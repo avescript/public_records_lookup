@@ -237,20 +237,6 @@ export const InteractiveRedactionCanvas: React.FC<
   >([]);
 
   /**
-   * Initialize canvas and load data
-   */
-  useEffect(() => {
-    loadCanvasData();
-  }, [
-    documentId,
-    recordId,
-    fileName,
-    pageNumber,
-    sensitivityMode,
-    loadCanvasData,
-  ]);
-
-  /**
    * Load existing redactions and AI analysis
    */
   const loadCanvasData = useCallback(async () => {
@@ -316,6 +302,20 @@ export const InteractiveRedactionCanvas: React.FC<
       setIsLoading(false);
     }
   }, [recordId, fileName, pageNumber, sensitivityMode, showAISuggestions]);
+
+  /**
+   * Initialize canvas and load data
+   */
+  useEffect(() => {
+    loadCanvasData();
+  }, [
+    documentId,
+    recordId,
+    fileName,
+    pageNumber,
+    sensitivityMode,
+    loadCanvasData,
+  ]);
 
   /**
    * Generate mock PII findings for development
