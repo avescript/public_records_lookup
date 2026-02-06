@@ -67,7 +67,7 @@ export default function StatusLookupPage() {
   const formatDate = (timestamp: any) => {
     if (!timestamp) return '';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return format(date, 'MMMM d, yyyy \'at\' h:mm a');
+    return format(date, "MMMM d, yyyy 'at' h:mm a");
   };
 
   const getDepartmentDisplayName = (department: string) => {
@@ -280,9 +280,9 @@ export default function StatusLookupPage() {
             Need Help?
           </Typography>
           <Typography variant='body2' color='text.secondary'>
-            If you can't find your request or have questions about the status,
-            please contact the relevant department directly or call our main
-            office for assistance.
+            If you can&rsquo;t find your request or have questions about the
+            status, please contact the relevant department directly or call our
+            main office for assistance.
           </Typography>
         </Box>
       </Box>

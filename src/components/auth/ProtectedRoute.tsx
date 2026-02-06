@@ -62,7 +62,7 @@ export function ProtectedRoute({
           Access Denied
         </Typography>
         <Typography variant='body2' color='text.secondary'>
-          You don't have permission to access this page.
+          You don&rsquo;t have permission to access this page.
         </Typography>
       </Box>
     );

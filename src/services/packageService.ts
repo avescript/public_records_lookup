@@ -10,7 +10,7 @@ import { Timestamp } from 'firebase/firestore';
 import * as mockService from './mockFirebaseService';
 
 // Check if we should use mock service
-const useMockService = () => {
+const shouldUseMockService = () => {
   const shouldUseMock =
     process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE === 'true' ||
     (typeof window !== 'undefined' && window.location.hostname === 'localhost');
@@ -201,7 +201,7 @@ export const buildPackage = async (
   console.log('🏗️ [Package Service] Building package:', manifest.id);
 
   // Use mock service if Firebase is unavailable
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     console.log('🔄 [Package Service] Using mock service for buildPackage');
     return await mockService.buildPackage(manifest);
   }
@@ -242,7 +242,7 @@ export const getPackageById = async (
 ): Promise<PackageManifest | null> => {
   console.log('🔍 [Package Service] Getting package by ID:', packageId);
 
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     console.log('🔄 [Package Service] Using mock service for getPackageById');
     return await mockService.getPackageById(packageId);
   }
@@ -265,7 +265,7 @@ export const getPackagesForRequest = async (
 ): Promise<PackageManifest[]> => {
   console.log('🔍 [Package Service] Getting packages for request:', requestId);
 
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     console.log(
       '🔄 [Package Service] Using mock service for getPackagesForRequest'
     );

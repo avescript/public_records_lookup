@@ -412,8 +412,8 @@ export const AgencyRedactionRulesManager: React.FC = () => {
             </Grid>
           ) : (
             <Alert severity='info'>
-              No redaction rules configured for this agency. Click "Add Rule" to
-              create your first rule.
+              No redaction rules configured for this agency. Click &ldquo;Add
+              Rule&rdquo; to create your first rule.
             </Alert>
           )}
         </TabPanel>

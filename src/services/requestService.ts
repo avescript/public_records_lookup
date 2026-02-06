@@ -26,15 +26,21 @@ import { auditService } from './auditService';
 import * as mockService from './mockFirebaseService';
 
 // Check if we should use mock service (when Firebase is unavailable)
-const useMockService = () => {
+const shouldUseMockService = () => {
   const shouldUseMock =
     process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE === 'true' ||
     (typeof window !== 'undefined' && window.location.hostname === 'localhost');
-  console.log('🤔 [Request Service] useMockService check:', shouldUseMock, {
-    env: process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE,
-    hostname:
-      typeof window !== 'undefined' ? window.location.hostname : 'server-side',
-  });
+  console.log(
+    '🤔 [Request Service] shouldUseMockService check:',
+    shouldUseMock,
+    {
+      env: process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE,
+      hostname:
+        typeof window !== 'undefined'
+          ? window.location.hostname
+          : 'server-side',
+    }
+  );
   return shouldUseMock;
 };
 
@@ -113,7 +119,7 @@ export const saveRequest = async (
   console.log('💾 [Request Service] Saving request:', requestData.title);
 
   // Use mock service if Firebase is unavailable
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     console.log('🔄 [Request Service] Using mock service for saveRequest');
     const result = await mockService.saveRequest(requestData);
     console.log(
@@ -228,7 +234,7 @@ export const getRequestByTrackingId = async (
   trackingId: string
 ): Promise<StoredRequest | null> => {
   // Use mock service if Firebase is unavailable
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     return mockService.getRequestByTrackingId(trackingId);
   }
 
@@ -261,7 +267,7 @@ export const getRequestById = async (
   console.log('🔍 [Request Service] Getting request by ID:', id);
 
   // Use mock service if Firebase is unavailable
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     console.log('🔄 [Request Service] Using mock service for getRequestById');
     return await mockService.getRequestById(id);
   }
@@ -295,7 +301,7 @@ export const getAllRequests = async (
   console.log('🔍 [Request Service] Getting all requests...', { agencyFilter });
 
   // Use mock service if Firebase is unavailable
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     console.log('🔄 [Request Service] Using mock service for getAllRequests');
     const result = await mockService.getAllRequests();
     console.log(
@@ -382,7 +388,7 @@ export const updateRequestStatus = async (
   status: RequestStatus
 ): Promise<void> => {
   // Use mock service if Firebase is unavailable
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     return mockService.updateRequestStatus(id, status);
   }
 
@@ -517,7 +523,7 @@ export const addRecordToRequest = async (
   );
 
   // Use mock service if Firebase is unavailable
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     console.log(
       '🔄 [Request Service] Using mock service for addRecordToRequest'
     );
@@ -600,7 +606,7 @@ export const routeRequestToAgency = async (
     reason,
   });
 
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     console.log(
       '🔄 [Request Service] Using mock service for routeRequestToAgency'
     );

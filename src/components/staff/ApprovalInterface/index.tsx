@@ -75,33 +75,33 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
 
   // Load workflow data when dialog opens
   useEffect(() => {
+    const loadWorkflow = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const workflowData = await approvalService.getWorkflow(
+          recordId,
+          fileName
+        );
+        setWorkflow(workflowData);
+
+        if (!workflowData) {
+          setError(
+            'Workflow not found. The document may not be submitted for approval.'
+          );
+        }
+      } catch (err) {
+        setError('Failed to load approval workflow.');
+        console.error('Error loading workflow:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (open && recordId && fileName) {
       loadWorkflow();
     }
   }, [open, recordId, fileName]);
-
-  const loadWorkflow = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const workflowData = await approvalService.getWorkflow(
-        recordId,
-        fileName
-      );
-      setWorkflow(workflowData);
-
-      if (!workflowData) {
-        setError(
-          'Workflow not found. The document may not be submitted for approval.'
-        );
-      }
-    } catch (err) {
-      setError('Failed to load approval workflow.');
-      console.error('Error loading workflow:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmitDecision = async () => {
     if (!workflow || !reviewerName.trim()) {

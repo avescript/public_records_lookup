@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   CalendarToday as DateIcon,
   Close as CloseIcon,
@@ -112,6 +112,85 @@ export const RecordComparisonView: React.FC<RecordComparisonViewProps> = ({
 
   // Load detailed record data
   useEffect(() => {
+    // Helper functions for comparison calculations
+    const calculateTextSimilarity = (text1: string, text2: string): number => {
+      const words1 = new Set(text1.split(/\s+/));
+      const words2 = new Set(text2.split(/\s+/));
+      const intersection = new Set(
+        [...words1].filter(word => words2.has(word))
+      );
+      const union = new Set([...words1, ...words2]);
+
+      return union.size > 0 ? intersection.size / union.size : 0;
+    };
+
+    const compareRecordPair = (
+      record1: RecordComparisonData,
+      record2: RecordComparisonData
+    ): ComparisonMetrics => {
+      const fields1 = new Set(Object.keys(record1.metadata || {}));
+      const fields2 = new Set(Object.keys(record2.metadata || {}));
+
+      const commonFields = Array.from(fields1).filter(field =>
+        fields2.has(field)
+      );
+      const differentFields = [
+        ...Array.from(fields1).filter(field => !fields2.has(field)),
+        ...Array.from(fields2).filter(field => !fields1.has(field)),
+      ];
+
+      // Simple content similarity calculation
+      const content1 = (
+        record1.fullContent ||
+        record1.snippet ||
+        ''
+      ).toLowerCase();
+      const content2 = (
+        record2.fullContent ||
+        record2.snippet ||
+        ''
+      ).toLowerCase();
+      const contentSimilarity = calculateTextSimilarity(content1, content2);
+
+      // Metadata similarity
+      let metadataSimilarity = 0;
+      if (commonFields.length > 0) {
+        const matchingValues = commonFields.filter(
+          field => record1.metadata?.[field] === record2.metadata?.[field]
+        );
+        metadataSimilarity = matchingValues.length / commonFields.length;
+      }
+
+      const similarityScore =
+        contentSimilarity * 0.7 + metadataSimilarity * 0.3;
+
+      return {
+        similarityScore,
+        commonFields,
+        differentFields,
+        contentSimilarity,
+        metadataSimilarity,
+      };
+    };
+    // Calculate comparison metrics
+    const calculateComparisonMetrics = (
+      records: Map<string, RecordComparisonData>
+    ) => {
+      const recordArray = Array.from(records.values());
+      const metrics: ComparisonMetrics[] = [];
+
+      for (let i = 0; i < recordArray.length; i++) {
+        for (let j = i + 1; j < recordArray.length; j++) {
+          const record1 = recordArray[i];
+          const record2 = recordArray[j];
+
+          const metric = compareRecordPair(record1, record2);
+          metrics.push(metric);
+        }
+      }
+
+      setComparisonMetrics(metrics);
+    };
     const loadRecordDetails = async () => {
       setLoading(true);
       const detailedRecords = new Map<string, RecordComparisonData>();
@@ -151,84 +230,7 @@ export const RecordComparisonView: React.FC<RecordComparisonViewProps> = ({
     };
 
     loadRecordDetails();
-  }, [compareRecords, searchQuery, calculateComparisonMetrics]);
-
-  // Calculate comparison metrics
-  const calculateComparisonMetrics = (
-    records: Map<string, RecordComparisonData>
-  ) => {
-    const recordArray = Array.from(records.values());
-    const metrics: ComparisonMetrics[] = [];
-
-    for (let i = 0; i < recordArray.length; i++) {
-      for (let j = i + 1; j < recordArray.length; j++) {
-        const record1 = recordArray[i];
-        const record2 = recordArray[j];
-
-        const metric = compareRecordPair(record1, record2);
-        metrics.push(metric);
-      }
-    }
-
-    setComparisonMetrics(metrics);
-  };
-
-  const compareRecordPair = (
-    record1: RecordComparisonData,
-    record2: RecordComparisonData
-  ): ComparisonMetrics => {
-    const fields1 = new Set(Object.keys(record1.metadata || {}));
-    const fields2 = new Set(Object.keys(record2.metadata || {}));
-
-    const commonFields = Array.from(fields1).filter(field =>
-      fields2.has(field)
-    );
-    const differentFields = [
-      ...Array.from(fields1).filter(field => !fields2.has(field)),
-      ...Array.from(fields2).filter(field => !fields1.has(field)),
-    ];
-
-    // Simple content similarity calculation
-    const content1 = (
-      record1.fullContent ||
-      record1.snippet ||
-      ''
-    ).toLowerCase();
-    const content2 = (
-      record2.fullContent ||
-      record2.snippet ||
-      ''
-    ).toLowerCase();
-    const contentSimilarity = calculateTextSimilarity(content1, content2);
-
-    // Metadata similarity
-    let metadataSimilarity = 0;
-    if (commonFields.length > 0) {
-      const matchingValues = commonFields.filter(
-        field => record1.metadata?.[field] === record2.metadata?.[field]
-      );
-      metadataSimilarity = matchingValues.length / commonFields.length;
-    }
-
-    const similarityScore = contentSimilarity * 0.7 + metadataSimilarity * 0.3;
-
-    return {
-      similarityScore,
-      commonFields,
-      differentFields,
-      contentSimilarity,
-      metadataSimilarity,
-    };
-  };
-
-  const calculateTextSimilarity = (text1: string, text2: string): number => {
-    const words1 = new Set(text1.split(/\s+/));
-    const words2 = new Set(text2.split(/\s+/));
-    const intersection = new Set([...words1].filter(word => words2.has(word)));
-    const union = new Set([...words1, ...words2]);
-
-    return union.size > 0 ? intersection.size / union.size : 0;
-  };
+  }, [compareRecords, searchQuery]);
 
   const handleScrollSync = (
     event: React.UIEvent<HTMLDivElement>,

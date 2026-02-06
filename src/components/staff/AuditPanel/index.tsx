@@ -303,31 +303,31 @@ export const AuditPanel: React.FC<AuditPanelProps> = ({
 
   // Load data
   useEffect(() => {
+    const loadAuditData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [eventsData, summaryData] = await Promise.all([
+          auditService.getEvents({
+            ...filters,
+            limit: 1000, // Load more for local filtering
+          }),
+          auditService.getSummary(filters),
+        ]);
+
+        setEvents(eventsData);
+        setSummary(summaryData);
+      } catch (err) {
+        console.error('Failed to load audit data:', err);
+        setError('Failed to load audit data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadAuditData();
   }, [filters]);
-
-  const loadAuditData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const [eventsData, summaryData] = await Promise.all([
-        auditService.getEvents({
-          ...filters,
-          limit: 1000, // Load more for local filtering
-        }),
-        auditService.getSummary(filters),
-      ]);
-
-      setEvents(eventsData);
-      setSummary(summaryData);
-    } catch (err) {
-      console.error('Failed to load audit data:', err);
-      setError('Failed to load audit data');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Filter events based on local search
   const filteredEvents = useMemo(() => {

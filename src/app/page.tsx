@@ -16,8 +16,8 @@ export default function HomePage() {
           align='center'
           color='text.secondary'
         >
-          Submit a request for public records. Fill out the form below and we'll
-          process your request.
+          Submit a request for public records. Fill out the form below and
+          we&rsquo;ll process your request.
         </Typography>
         <RequestForm />
       </Box>

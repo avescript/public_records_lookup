@@ -2,12 +2,12 @@
  * Tests for AuditService
  */
 
-import { AuditEvent,auditService } from '@/services/auditService';
+import { AuditEvent, auditService } from '@/services/auditService';
 
 // Mock localStorage for testing
 const mockLocalStorage = (() => {
   let store: Record<string, string> = {};
-  
+
   return {
     getItem: (key: string) => store[key] || null,
     setItem: (key: string, value: string) => {
@@ -25,7 +25,7 @@ const mockLocalStorage = (() => {
 // Mock sessionStorage for testing
 const mockSessionStorage = (() => {
   let store: Record<string, string> = {};
-  
+
   return {
     getItem: (key: string) => store[key] || null,
     setItem: (key: string, value: string) => {
@@ -148,7 +148,9 @@ describe('AuditService', () => {
       );
 
       expect(event.context.clientInfo).toBeDefined();
-      expect(event.context.clientInfo?.userAgent).toBe('Mozilla/5.0 (Test) TestBrowser/1.0');
+      expect(event.context.clientInfo?.userAgent).toBe(
+        'Mozilla/5.0 (Test) TestBrowser/1.0'
+      );
       expect(event.context.clientInfo?.browser).toBe('Other');
     });
 
@@ -240,7 +242,9 @@ describe('AuditService', () => {
     });
 
     it('should filter events by category', async () => {
-      const events = await auditService.getEvents({ categories: ['compliance'] });
+      const events = await auditService.getEvents({
+        categories: ['compliance'],
+      });
       expect(events).toHaveLength(1);
       expect(events[0].category).toBe('compliance');
     });
@@ -265,7 +269,7 @@ describe('AuditService', () => {
     it('should sort events by timestamp (newest first)', async () => {
       const events = await auditService.getEvents();
       expect(events).toHaveLength(3);
-      
+
       // Check that timestamps are in descending order
       for (let i = 1; i < events.length; i++) {
         const current = new Date(events[i].timestamp);
@@ -352,9 +356,9 @@ describe('AuditService', () => {
 
       expect(summary.timeRange.earliest).toBeDefined();
       expect(summary.timeRange.latest).toBeDefined();
-      expect(new Date(summary.timeRange.latest).getTime()).toBeGreaterThanOrEqual(
-        new Date(summary.timeRange.earliest).getTime()
-      );
+      expect(
+        new Date(summary.timeRange.latest).getTime()
+      ).toBeGreaterThanOrEqual(new Date(summary.timeRange.earliest).getTime());
     });
   });
 
@@ -379,7 +383,7 @@ describe('AuditService', () => {
       const exportData = await auditService.exportForBigQuery();
 
       expect(exportData).toHaveLength(1);
-      
+
       const event = exportData[0];
       expect(event.event_id).toBeDefined();
       expect(event.timestamp).toBeDefined();
@@ -392,7 +396,7 @@ describe('AuditService', () => {
       expect(event.context_request_id).toBe('req_123');
       expect(event.severity).toBe('info');
       expect(event.category).toBe('user_action');
-      
+
       // Details should be stringified JSON
       const details = JSON.parse(event.details);
       expect(details.testData).toBe('value');
@@ -405,7 +409,7 @@ describe('AuditService', () => {
       const today = new Date();
       const oldDate = new Date();
       oldDate.setDate(today.getDate() - 60); // 60 days ago
-      
+
       const recentDate = new Date();
       recentDate.setDate(today.getDate() - 15); // 15 days ago
 
@@ -439,19 +443,19 @@ describe('AuditService', () => {
       // Restore original Date.now
       Date.now = originalNow;
     });
-    });
-    it('should remove events older than specified days', async () => {
-      const eventsBeforeCleanup = await auditService.getEvents();
-      expect(eventsBeforeCleanup).toHaveLength(2);
-
-      const removedCount = await auditService.clearOldEvents(30);
-      expect(removedCount).toBe(1);
-
-      const eventsAfterCleanup = await auditService.getEvents();
-      expect(eventsAfterCleanup).toHaveLength(1);
-      expect(eventsAfterCleanup[0].action).toBe('new_action');
-    });
   });
+  it('should remove events older than specified days', async () => {
+    const eventsBeforeCleanup = await auditService.getEvents();
+    expect(eventsBeforeCleanup).toHaveLength(2);
+
+    const removedCount = await auditService.clearOldEvents(30);
+    expect(removedCount).toBe(1);
+
+    const eventsAfterCleanup = await auditService.getEvents();
+    expect(eventsAfterCleanup).toHaveLength(1);
+    expect(eventsAfterCleanup[0].action).toBe('new_action');
+  });
+});
 
 describe('AuditService Error Handling', () => {
   it('should handle localStorage errors gracefully', async () => {
@@ -471,7 +475,7 @@ describe('AuditService Error Handling', () => {
         'request',
         'req_123'
       );
-      
+
       // Should not reach here if error is properly thrown
       expect(false).toBe(true);
     } catch (error) {
