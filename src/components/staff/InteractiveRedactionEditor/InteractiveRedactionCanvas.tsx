@@ -581,8 +581,8 @@ export const InteractiveRedactionCanvas: React.FC<
         isSelected: selectedRedactionIds.has(redaction.id),
       }))
     );
-    redrawCanvas();
-  }, [selectedRedactionIds, redrawCanvas]);
+    // Redraw will be triggered by the useEffect that watches redactions
+  }, [selectedRedactionIds]);
 
   /**
    * Implement AI suggestion
@@ -702,22 +702,130 @@ export const InteractiveRedactionCanvas: React.FC<
       ctx.globalAlpha = 0.3;
     }
 
+    // Helper function to draw a redaction
+    const drawRedactionHelper = (
+      redaction: Partial<InteractiveRedaction>,
+      isPreview = false
+    ) => {
+      if (!redaction.x || !redaction.y || !redaction.width || !redaction.height)
+        return;
+
+      ctx.save();
+
+      // Set style
+      ctx.fillStyle = redaction.color || theme.palette.error.main;
+      ctx.globalAlpha = isPreview ? 0.5 : redaction.opacity || 0.8;
+
+      // Draw based on shape
+      switch (redaction.shape) {
+        case RedactionShape.RECTANGLE:
+          ctx.fillRect(
+            redaction.x,
+            redaction.y,
+            redaction.width,
+            redaction.height
+          );
+          break;
+
+        case RedactionShape.ELLIPSE:
+          ctx.beginPath();
+          ctx.ellipse(
+            redaction.x + redaction.width / 2,
+            redaction.y + redaction.height / 2,
+            redaction.width / 2,
+            redaction.height / 2,
+            0,
+            0,
+            2 * Math.PI
+          );
+          ctx.fill();
+          break;
+
+        case RedactionShape.FREEFORM:
+          // For now, draw as rectangle with rounded corners
+          ctx.beginPath();
+          ctx.roundRect(
+            redaction.x,
+            redaction.y,
+            redaction.width,
+            redaction.height,
+            5
+          );
+          ctx.fill();
+          break;
+      }
+
+      // Draw selection outline
+      if (redaction.isSelected) {
+        ctx.strokeStyle = theme.palette.primary.main;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeRect(
+          redaction.x - 2,
+          redaction.y - 2,
+          redaction.width + 4,
+          redaction.height + 4
+        );
+        ctx.setLineDash([]);
+      }
+
+      // Draw confidence score for AI suggestions
+      if (redaction.isAISuggested && redaction.confidenceScore) {
+        ctx.fillStyle = theme.palette.background.paper;
+        ctx.font = '12px Arial';
+        ctx.fillText(
+          `${Math.round(redaction.confidenceScore)}%`,
+          redaction.x + 2,
+          redaction.y - 5
+        );
+      }
+
+      ctx.restore();
+    };
+
+    // Helper function to draw a suggestion
+    const drawSuggestionHelper = (suggestion: RedactionSuggestion) => {
+      if (!suggestion.targetCoordinates) return;
+
+      const { x, y, width, height } = suggestion.targetCoordinates;
+      ctx.save();
+
+      // Different style for suggestions
+      ctx.strokeStyle = theme.palette.warning.main;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([10, 5]);
+      ctx.strokeRect(x, y, width, height);
+
+      // Fill with transparent overlay
+      ctx.fillStyle = theme.palette.warning.light;
+      ctx.globalAlpha = 0.2;
+      ctx.fillRect(x, y, width, height);
+
+      // Draw suggestion icon
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = theme.palette.warning.main;
+      ctx.font = 'bold 12px Arial';
+      ctx.fillText('AI', x + 2, y + 14);
+
+      ctx.restore();
+    };
+
     // Draw existing redactions
     [...redactions]
       .sort((a, b) => a.zIndex - b.zIndex)
       .forEach(redaction => {
-        drawRedaction(ctx, redaction);
+        drawRedactionHelper(redaction);
       });
 
     // Draw current drawing
     if (currentDraw && isDrawing) {
-      drawRedaction(ctx, currentDraw as InteractiveRedaction, true);
+      drawRedactionHelper(currentDraw as InteractiveRedaction, true);
     }
 
     // Draw AI suggestions if enabled
     if (showSuggestions) {
       suggestions.forEach(suggestion => {
-        drawSuggestion(ctx, suggestion);
+        drawSuggestionHelper(suggestion);
       });
     }
 
@@ -729,8 +837,6 @@ export const InteractiveRedactionCanvas: React.FC<
     suggestions,
     showSuggestions,
     previewMode,
-    drawRedaction,
-    drawSuggestion,
   ]);
 
   /**
@@ -865,7 +971,14 @@ export const InteractiveRedactionCanvas: React.FC<
   // Update canvas when redactions change
   useEffect(() => {
     redrawCanvas();
-  }, [redrawCanvas]);
+  }, [
+    redactions,
+    currentDraw,
+    isDrawing,
+    suggestions,
+    showSuggestions,
+    previewMode,
+  ]);
 
   // Load image
   useEffect(() => {
@@ -875,7 +988,7 @@ export const InteractiveRedactionCanvas: React.FC<
       redrawCanvas();
     };
     img.src = imageUrl;
-  }, [imageUrl, redrawCanvas]);
+  }, [imageUrl]);
 
   // Keyboard shortcuts
   useEffect(() => {
