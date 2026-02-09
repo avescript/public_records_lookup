@@ -332,7 +332,7 @@ export function MatchResults({
                 on{' '}
                 {format(
                   new Date(decision.decidedAt),
-                  'MMM d, yyyy \'at\' h:mm a'
+                  "MMM d, yyyy 'at' h:mm a"
                 )}
                 {decision.notes && (
                   <>

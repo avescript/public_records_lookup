@@ -61,7 +61,7 @@ export function RequestConfirmation({
         return 'Invalid Date';
       }
 
-      return format(date, 'MMMM d, yyyy \'at\' h:mm a');
+      return format(date, "MMMM d, yyyy 'at' h:mm a");
     } catch (error) {
       console.error('Error formatting date:', error, timestamp);
       return 'Invalid Date';

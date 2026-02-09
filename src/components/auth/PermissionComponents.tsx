@@ -42,7 +42,7 @@ export function PermissionButton({
   requireAllRoles = false,
   requireAllPermissions = false,
   showAccessDenied = false,
-  accessDeniedMessage = 'You don\'t have permission for this action.',
+  accessDeniedMessage = "You don't have permission for this action.",
   children,
   ...buttonProps
 }: PermissionButtonProps) {

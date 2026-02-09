@@ -13,6 +13,7 @@ import {
   Alert,
   Box,
   Button,
+  Checkbox,
   Chip,
   CircularProgress,
   Dialog,
@@ -58,6 +59,8 @@ import {
   routeRequestToAgency,
   StoredRequest,
 } from '../../../services/requestService';
+import { BulkOperationsPanel } from './BulkOperationsPanel';
+import { QuickMetricsPanel } from './QuickMetricsPanel';
 
 // SLA Configuration (in business days)
 const SLA_DAYS = 10;
@@ -86,6 +89,8 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showAllAgencies, setShowAllAgencies] = useState(false);
+  const [selectedRequestIds, setSelectedRequestIds] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'list' | 'cards'>('list');
 
   // Cross-agency routing state
   const [routingDialog, setRoutingDialog] = useState<{
@@ -406,6 +411,94 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
     });
   };
 
+  const handleBulkAction = async (action: any, data?: any) => {
+    console.log('🔄 [StaffDashboard] Bulk action:', action, data);
+
+    try {
+      switch (action.type) {
+        case 'assign':
+          // TODO: Implement bulk assignment logic
+          console.log(
+            'Assigning requests:',
+            selectedRequestIds,
+            'to user:',
+            data.userId
+          );
+          break;
+        case 'status':
+          // TODO: Implement bulk status update logic
+          console.log(
+            'Updating status for requests:',
+            selectedRequestIds,
+            'to:',
+            data.status
+          );
+          break;
+        case 'export':
+          // TODO: Implement export functionality
+          console.log(
+            'Exporting requests:',
+            selectedRequestIds,
+            'as:',
+            data.format
+          );
+          // For now, generate and download a simple CSV
+          generateCSVExport(selectedRequestIds, data.format);
+          break;
+        case 'delete':
+          // TODO: Implement bulk delete logic (with proper authorization)
+          console.log('Deleting requests:', selectedRequestIds);
+          break;
+        default:
+          console.warn('Unknown bulk action:', action.type);
+      }
+
+      // Clear selection after successful action
+      setSelectedRequestIds([]);
+
+      // Refresh data
+      await fetchRequests();
+    } catch (error) {
+      console.error('Bulk action failed:', error);
+      throw error;
+    }
+  };
+
+  const generateCSVExport = (requestIds: string[], format: string) => {
+    const selectedRequests = requests.filter(r => requestIds.includes(r.id));
+
+    if (format === 'csv') {
+      const headers = [
+        'Tracking ID',
+        'Title',
+        'Department',
+        'Status',
+        'Submitted',
+        'Contact Email',
+      ];
+      const csvContent = [
+        headers.join(','),
+        ...selectedRequests.map(req =>
+          [
+            req.trackingId,
+            `"${req.title.replace(/"/g, '""')}"`,
+            req.department,
+            req.status,
+            formatDate(req.submittedAt),
+            req.contactEmail,
+          ].join(',')
+        ),
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `public_records_export_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+    // TODO: Add JSON and PDF export formats
+  };
+
   const hasActiveFilters =
     selectedDepartments.length > 0 ||
     selectedStatuses.length > 0 ||
@@ -477,6 +570,50 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
   };
 
   const columns: GridColDef[] = [
+    {
+      field: 'selection',
+      headerName: '',
+      width: 50,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      renderHeader: () => (
+        <Checkbox
+          checked={
+            selectedRequestIds.length === filteredRequests.length &&
+            filteredRequests.length > 0
+          }
+          indeterminate={
+            selectedRequestIds.length > 0 &&
+            selectedRequestIds.length < filteredRequests.length
+          }
+          onChange={e => {
+            if (e.target.checked) {
+              setSelectedRequestIds(filteredRequests.map(r => r.id));
+            } else {
+              setSelectedRequestIds([]);
+            }
+          }}
+          color='primary'
+        />
+      ),
+      renderCell: (params: GridRenderCellParams) => (
+        <Checkbox
+          checked={selectedRequestIds.includes(params.row.id)}
+          onChange={e => {
+            if (e.target.checked) {
+              setSelectedRequestIds(prev => [...prev, params.row.id]);
+            } else {
+              setSelectedRequestIds(prev =>
+                prev.filter(id => id !== params.row.id)
+              );
+            }
+          }}
+          color='primary'
+          onClick={e => e.stopPropagation()}
+        />
+      ),
+    },
     {
       field: 'trackingId',
       headerName: 'Tracking ID',
@@ -659,11 +796,26 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box sx={{ p: 3 }}>
         <Typography variant='h4' component='h1' gutterBottom>
-          Request Queue
+          Request Queue - V2.4 Enhanced
         </Typography>
         <Typography variant='body1' color='text.secondary' gutterBottom>
-          Manage and track public records requests
+          Manage and track public records requests with advanced filtering and
+          bulk operations
         </Typography>
+
+        {/* Quick Metrics Panel */}
+        <Box sx={{ mb: 3 }}>
+          <QuickMetricsPanel requests={filteredRequests} loading={loading} />
+        </Box>
+
+        {/* Bulk Operations Panel */}
+        <BulkOperationsPanel
+          selectedRequestIds={selectedRequestIds}
+          requests={filteredRequests}
+          onSelectionChange={setSelectedRequestIds}
+          onBulkAction={handleBulkAction}
+          loading={loading}
+        />
 
         {/* Filter Controls */}
         <Paper elevation={1} sx={{ p: 2, mt: 2, mb: 3 }}>

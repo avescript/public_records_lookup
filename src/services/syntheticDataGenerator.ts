@@ -360,7 +360,7 @@ export class SyntheticDataGenerator {
       this.createEdgeCaseRequest(
         'Highly Specific No-Match Request',
         'UFO sighting reports filed with the Department of Extraterrestrial Affairs on February 30, 2025',
-        'Looking for documentation of alien encounters reported to the city\'s UFO investigation unit',
+        "Looking for documentation of alien encounters reported to the city's UFO investigation unit",
         [], // No matches expected
         'citizen',
         'no_matches_test'
