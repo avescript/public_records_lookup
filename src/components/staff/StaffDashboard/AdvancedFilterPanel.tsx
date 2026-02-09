@@ -24,4 +24,345 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
-} from '@mui/material';\nimport { DatePicker } from '@mui/x-date-pickers';\n\nexport interface FilterState {\n  departments: string[];\n  statuses: string[];\n  agencies: string[];\n  startDate: Date | null;\n  endDate: Date | null;\n  searchQuery: string;\n  sortBy: 'date' | 'title' | 'priority' | 'status';\n  sortOrder: 'asc' | 'desc';\n}\n\ninterface AdvancedFilterPanelProps {\n  filters: FilterState;\n  onFiltersChange: (filters: Partial<FilterState>) => void;\n  onClearFilters: () => void;\n  viewMode: 'list' | 'cards';\n  onViewModeChange: (mode: 'list' | 'cards') => void;\n  showAllAgencies: boolean;\n  onShowAllAgenciesChange: (show: boolean) => void;\n  departmentOptions: Array<{ value: string; label: string }>;\n  statusOptions: Array<{ value: string; label: string }>;\n  agencyOptions: Array<{ value: string; label: string }>;\n  expanded?: boolean;\n  onExpandedChange?: (expanded: boolean) => void;\n}\n\nexport const AdvancedFilterPanel: React.FC<AdvancedFilterPanelProps> = ({\n  filters,\n  onFiltersChange,\n  onClearFilters,\n  viewMode,\n  onViewModeChange,\n  showAllAgencies,\n  onShowAllAgenciesChange,\n  departmentOptions,\n  statusOptions,\n  agencyOptions,\n  expanded = false,\n  onExpandedChange,\n}) => {\n  const hasActiveFilters = \n    filters.departments.length > 0 ||\n    filters.statuses.length > 0 ||\n    filters.agencies.length > 0 ||\n    filters.startDate !== null ||\n    filters.endDate !== null ||\n    filters.searchQuery.trim() !== '' ||\n    showAllAgencies;\n\n  const activeFilterCount = [\n    filters.departments.length > 0,\n    filters.statuses.length > 0,\n    filters.agencies.length > 0,\n    filters.startDate !== null,\n    filters.endDate !== null,\n    filters.searchQuery.trim() !== '',\n    showAllAgencies\n  ].filter(Boolean).length;\n\n  return (\n    <Card variant=\"outlined\" sx={{ mb: 3 }}>\n      <CardContent sx={{ pb: 2 }}>\n        {/* Header Row */}\n        <Box display=\"flex\" justifyContent=\"space-between\" alignItems=\"center\" mb={2}>\n          <Box display=\"flex\" alignItems=\"center\" gap={2}>\n            <Typography variant=\"h6\" display=\"flex\" alignItems=\"center\" gap={1}>\n              <FilterIcon color=\"primary\" />\n              Advanced Filters\n              {activeFilterCount > 0 && (\n                <Chip \n                  label={`${activeFilterCount} active`}\n                  size=\"small\"\n                  color=\"primary\"\n                  variant=\"outlined\"\n                />\n              )}\n            </Typography>\n            \n            {hasActiveFilters && (\n              <Button\n                size=\"small\"\n                onClick={onClearFilters}\n                color=\"secondary\"\n              >\n                Clear All\n              </Button>\n            )}\n          </Box>\n\n          {/* View Mode Toggle */}\n          <Box display=\"flex\" alignItems=\"center\" gap={2}>\n            <ToggleButtonGroup\n              value={viewMode}\n              exclusive\n              onChange={(_, newMode) => newMode && onViewModeChange(newMode)}\n              size=\"small\"\n            >\n              <ToggleButton value=\"list\" aria-label=\"List View\">\n                <ListViewIcon fontSize=\"small\" />\n              </ToggleButton>\n              <ToggleButton value=\"cards\" aria-label=\"Card View\">\n                <GridViewIcon fontSize=\"small\" />\n              </ToggleButton>\n            </ToggleButtonGroup>\n\n            {onExpandedChange && (\n              <Button\n                size=\"small\"\n                onClick={() => onExpandedChange(!expanded)}\n                endIcon={<FilterIcon />}\n              >\n                {expanded ? 'Simple' : 'Advanced'}\n              </Button>\n            )}\n          </Box>\n        </Box>\n\n        {/* Quick Search */}\n        <TextField\n          fullWidth\n          size=\"small\"\n          placeholder=\"Search by title, description, tracking ID, or contact email...\"\n          value={filters.searchQuery}\n          onChange={(e) => onFiltersChange({ searchQuery: e.target.value })}\n          sx={{ mb: 2 }}\n        />\n\n        {/* Collapsible Advanced Filters */}\n        <Collapse in={expanded}>\n          <Stack spacing={3}>\n            {/* Filter Row 1 */}\n            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>\n              {/* Department Filter */}\n              <FormControl size=\"small\" sx={{ minWidth: 160 }}>\n                <InputLabel>Department</InputLabel>\n                <Select\n                  multiple\n                  value={filters.departments}\n                  onChange={(e) => onFiltersChange({ \n                    departments: typeof e.target.value === 'string' ? \n                      [e.target.value] : e.target.value \n                  })}\n                  label=\"Department\"\n                  renderValue={(selected) => (\n                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>\n                      {selected.map((value) => {\n                        const option = departmentOptions.find(opt => opt.value === value);\n                        return (\n                          <Chip\n                            key={value}\n                            label={option?.label || value}\n                            size=\"small\"\n                            variant=\"outlined\"\n                          />\n                        );\n                      })}\n                    </Box>\n                  )}\n                >\n                  {departmentOptions.map((option) => (\n                    <MenuItem key={option.value} value={option.value}>\n                      {option.label}\n                    </MenuItem>\n                  ))}\n                </Select>\n              </FormControl>\n\n              {/* Status Filter */}\n              <FormControl size=\"small\" sx={{ minWidth: 160 }}>\n                <InputLabel>Status</InputLabel>\n                <Select\n                  multiple\n                  value={filters.statuses}\n                  onChange={(e) => onFiltersChange({ \n                    statuses: typeof e.target.value === 'string' ? \n                      [e.target.value] : e.target.value \n                  })}\n                  label=\"Status\"\n                  renderValue={(selected) => (\n                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>\n                      {selected.map((value) => {\n                        const option = statusOptions.find(opt => opt.value === value);\n                        return (\n                          <Chip\n                            key={value}\n                            label={option?.label || value}\n                            size=\"small\"\n                            variant=\"outlined\"\n                          />\n                        );\n                      })}\n                    </Box>\n                  )}\n                >\n                  {statusOptions.map((option) => (\n                    <MenuItem key={option.value} value={option.value}>\n                      {option.label}\n                    </MenuItem>\n                  ))}\n                </Select>\n              </FormControl>\n\n              {/* Agency Filter */}\n              <FormControl size=\"small\" sx={{ minWidth: 160 }}>\n                <InputLabel>Agency</InputLabel>\n                <Select\n                  multiple\n                  value={filters.agencies}\n                  onChange={(e) => onFiltersChange({ \n                    agencies: typeof e.target.value === 'string' ? \n                      [e.target.value] : e.target.value \n                  })}\n                  label=\"Agency\"\n                  disabled={!showAllAgencies}\n                  renderValue={(selected) => (\n                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>\n                      {selected.map((value) => {\n                        const option = agencyOptions.find(opt => opt.value === value);\n                        return (\n                          <Chip\n                            key={value}\n                            label={option?.label || value}\n                            size=\"small\"\n                            variant=\"outlined\"\n                          />\n                        );\n                      })}\n                    </Box>\n                  )}\n                >\n                  {agencyOptions.map((option) => (\n                    <MenuItem key={option.value} value={option.value}>\n                      {option.label}\n                    </MenuItem>\n                  ))}\n                </Select>\n              </FormControl>\n            </Stack>\n\n            {/* Filter Row 2 */}\n            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>\n              {/* Date Range */}\n              <DatePicker\n                label=\"Start Date\"\n                value={filters.startDate}\n                onChange={(date) => onFiltersChange({ startDate: date })}\n                slotProps={{ textField: { size: 'small' } }}\n              />\n              \n              <DatePicker\n                label=\"End Date\"\n                value={filters.endDate}\n                onChange={(date) => onFiltersChange({ endDate: date })}\n                slotProps={{ textField: { size: 'small' } }}\n              />\n\n              {/* Sort Options */}\n              <FormControl size=\"small\" sx={{ minWidth: 120 }}>\n                <InputLabel>Sort By</InputLabel>\n                <Select\n                  value={filters.sortBy}\n                  onChange={(e) => onFiltersChange({ sortBy: e.target.value as any })}\n                  label=\"Sort By\"\n                >\n                  <MenuItem value=\"date\">Date</MenuItem>\n                  <MenuItem value=\"title\">Title</MenuItem>\n                  <MenuItem value=\"priority\">Priority</MenuItem>\n                  <MenuItem value=\"status\">Status</MenuItem>\n                </Select>\n              </FormControl>\n\n              <ButtonGroup size=\"small\">\n                <Button\n                  variant={filters.sortOrder === 'asc' ? 'contained' : 'outlined'}\n                  onClick={() => onFiltersChange({ sortOrder: 'asc' })}\n                >\n                  ASC\n                </Button>\n                <Button\n                  variant={filters.sortOrder === 'desc' ? 'contained' : 'outlined'}\n                  onClick={() => onFiltersChange({ sortOrder: 'desc' })}\n                >\n                  DESC\n                </Button>\n              </ButtonGroup>\n            </Stack>\n\n            {/* Agency Toggle */}\n            <Box>\n              <Button\n                variant={showAllAgencies ? 'contained' : 'outlined'}\n                onClick={() => onShowAllAgenciesChange(!showAllAgencies)}\n                size=\"small\"\n              >\n                {showAllAgencies ? 'Show Current Agency Only' : 'Show All Agencies'}\n              </Button>\n              {showAllAgencies && (\n                <Typography variant=\"caption\" color=\"text.secondary\" sx={{ ml: 2 }}>\n                  Viewing requests from all agencies\n                </Typography>\n              )}\n            </Box>\n          </Stack>\n        </Collapse>\n      </CardContent>\n    </Card>\n  );\n};
+} from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
+
+export interface FilterState {
+  departments: string[];
+  statuses: string[];
+  agencies: string[];
+  startDate: Date | null;
+  endDate: Date | null;
+  searchQuery: string;
+  sortBy: 'date' | 'title' | 'priority' | 'status';
+  sortOrder: 'asc' | 'desc';
+}
+
+interface AdvancedFilterPanelProps {
+  filters: FilterState;
+  onFiltersChange: (filters: Partial<FilterState>) => void;
+  onClearFilters: () => void;
+  viewMode: 'list' | 'cards';
+  onViewModeChange: (mode: 'list' | 'cards') => void;
+  showAllAgencies: boolean;
+  onShowAllAgenciesChange: (show: boolean) => void;
+  departmentOptions: Array<{ value: string; label: string }>;
+  statusOptions: Array<{ value: string; label: string }>;
+  agencyOptions: Array<{ value: string; label: string }>;
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
+}
+
+export const AdvancedFilterPanel: React.FC<AdvancedFilterPanelProps> = ({
+  filters,
+  onFiltersChange,
+  onClearFilters,
+  viewMode,
+  onViewModeChange,
+  showAllAgencies,
+  onShowAllAgenciesChange,
+  departmentOptions,
+  statusOptions,
+  agencyOptions,
+  expanded = false,
+  onExpandedChange,
+}) => {
+  const hasActiveFilters =
+    filters.departments.length > 0 ||
+    filters.statuses.length > 0 ||
+    filters.agencies.length > 0 ||
+    filters.startDate !== null ||
+    filters.endDate !== null ||
+    filters.searchQuery.trim() !== '' ||
+    showAllAgencies;
+
+  const activeFilterCount = [
+    filters.departments.length > 0,
+    filters.statuses.length > 0,
+    filters.agencies.length > 0,
+    filters.startDate !== null,
+    filters.endDate !== null,
+    filters.searchQuery.trim() !== '',
+    showAllAgencies,
+  ].filter(Boolean).length;
+
+  return (
+    <Card variant='outlined' sx={{ mb: 3 }}>
+      <CardContent sx={{ pb: 2 }}>
+        {/* Header Row */}
+        <Box
+          display='flex'
+          justifyContent='space-between'
+          alignItems='center'
+          mb={2}
+        >
+          <Box display='flex' alignItems='center' gap={2}>
+            <Typography variant='h6' display='flex' alignItems='center' gap={1}>
+              <FilterIcon color='primary' />
+              Advanced Filters
+              {activeFilterCount > 0 && (
+                <Chip
+                  label={`${activeFilterCount} active`}
+                  size='small'
+                  color='primary'
+                  variant='outlined'
+                />
+              )}
+            </Typography>
+
+            {hasActiveFilters && (
+              <Button size='small' onClick={onClearFilters} color='secondary'>
+                Clear All
+              </Button>
+            )}
+          </Box>
+
+          {/* View Mode Toggle */}
+          <Box display='flex' alignItems='center' gap={2}>
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={(_, newMode) => newMode && onViewModeChange(newMode)}
+              size='small'
+            >
+              <ToggleButton value='list' aria-label='List View'>
+                <ListViewIcon fontSize='small' />
+              </ToggleButton>
+              <ToggleButton value='cards' aria-label='Card View'>
+                <GridViewIcon fontSize='small' />
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            {onExpandedChange && (
+              <Button
+                size='small'
+                onClick={() => onExpandedChange(!expanded)}
+                endIcon={<FilterIcon />}
+              >
+                {expanded ? 'Simple' : 'Advanced'}
+              </Button>
+            )}
+          </Box>
+        </Box>
+
+        {/* Quick Search */}
+        <TextField
+          fullWidth
+          size='small'
+          placeholder='Search by title, description, tracking ID, or contact email...'
+          value={filters.searchQuery}
+          onChange={e => onFiltersChange({ searchQuery: e.target.value })}
+          sx={{ mb: 2 }}
+        />
+
+        {/* Collapsible Advanced Filters */}
+        <Collapse in={expanded}>
+          <Stack spacing={3}>
+            {/* Filter Row 1 */}
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              {/* Department Filter */}
+              <FormControl size='small' sx={{ minWidth: 160 }}>
+                <InputLabel>Department</InputLabel>
+                <Select
+                  multiple
+                  value={filters.departments}
+                  onChange={e =>
+                    onFiltersChange({
+                      departments:
+                        typeof e.target.value === 'string'
+                          ? [e.target.value]
+                          : e.target.value,
+                    })
+                  }
+                  label='Department'
+                  renderValue={selected => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map(value => {
+                        const option = departmentOptions.find(
+                          opt => opt.value === value
+                        );
+                        return (
+                          <Chip
+                            key={value}
+                            label={option?.label || value}
+                            size='small'
+                            variant='outlined'
+                          />
+                        );
+                      })}
+                    </Box>
+                  )}
+                >
+                  {departmentOptions.map(option => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {/* Status Filter */}
+              <FormControl size='small' sx={{ minWidth: 160 }}>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  multiple
+                  value={filters.statuses}
+                  onChange={e =>
+                    onFiltersChange({
+                      statuses:
+                        typeof e.target.value === 'string'
+                          ? [e.target.value]
+                          : e.target.value,
+                    })
+                  }
+                  label='Status'
+                  renderValue={selected => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map(value => {
+                        const option = statusOptions.find(
+                          opt => opt.value === value
+                        );
+                        return (
+                          <Chip
+                            key={value}
+                            label={option?.label || value}
+                            size='small'
+                            variant='outlined'
+                          />
+                        );
+                      })}
+                    </Box>
+                  )}
+                >
+                  {statusOptions.map(option => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {/* Agency Filter */}
+              <FormControl size='small' sx={{ minWidth: 160 }}>
+                <InputLabel>Agency</InputLabel>
+                <Select
+                  multiple
+                  value={filters.agencies}
+                  onChange={e =>
+                    onFiltersChange({
+                      agencies:
+                        typeof e.target.value === 'string'
+                          ? [e.target.value]
+                          : e.target.value,
+                    })
+                  }
+                  label='Agency'
+                  disabled={!showAllAgencies}
+                  renderValue={selected => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map(value => {
+                        const option = agencyOptions.find(
+                          opt => opt.value === value
+                        );
+                        return (
+                          <Chip
+                            key={value}
+                            label={option?.label || value}
+                            size='small'
+                            variant='outlined'
+                          />
+                        );
+                      })}
+                    </Box>
+                  )}
+                >
+                  {agencyOptions.map(option => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
+
+            {/* Filter Row 2 */}
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              {/* Date Range */}
+              <DatePicker
+                label='Start Date'
+                value={filters.startDate}
+                onChange={date => onFiltersChange({ startDate: date })}
+                slotProps={{ textField: { size: 'small' } }}
+              />
+
+              <DatePicker
+                label='End Date'
+                value={filters.endDate}
+                onChange={date => onFiltersChange({ endDate: date })}
+                slotProps={{ textField: { size: 'small' } }}
+              />
+
+              {/* Sort Options */}
+              <FormControl size='small' sx={{ minWidth: 120 }}>
+                <InputLabel>Sort By</InputLabel>
+                <Select
+                  value={filters.sortBy}
+                  onChange={e =>
+                    onFiltersChange({ sortBy: e.target.value as any })
+                  }
+                  label='Sort By'
+                >
+                  <MenuItem value='date'>Date</MenuItem>
+                  <MenuItem value='title'>Title</MenuItem>
+                  <MenuItem value='priority'>Priority</MenuItem>
+                  <MenuItem value='status'>Status</MenuItem>
+                </Select>
+              </FormControl>
+
+              <ButtonGroup size='small'>
+                <Button
+                  variant={
+                    filters.sortOrder === 'asc' ? 'contained' : 'outlined'
+                  }
+                  onClick={() => onFiltersChange({ sortOrder: 'asc' })}
+                >
+                  ASC
+                </Button>
+                <Button
+                  variant={
+                    filters.sortOrder === 'desc' ? 'contained' : 'outlined'
+                  }
+                  onClick={() => onFiltersChange({ sortOrder: 'desc' })}
+                >
+                  DESC
+                </Button>
+              </ButtonGroup>
+            </Stack>
+
+            {/* Agency Toggle */}
+            <Box>
+              <Button
+                variant={showAllAgencies ? 'contained' : 'outlined'}
+                onClick={() => onShowAllAgenciesChange(!showAllAgencies)}
+                size='small'
+              >
+                {showAllAgencies
+                  ? 'Show Current Agency Only'
+                  : 'Show All Agencies'}
+              </Button>
+              {showAllAgencies && (
+                <Typography
+                  variant='caption'
+                  color='text.secondary'
+                  sx={{ ml: 2 }}
+                >
+                  Viewing requests from all agencies
+                </Typography>
+              )}
+            </Box>
+          </Stack>
+        </Collapse>
+      </CardContent>
+    </Card>
+  );
+};
