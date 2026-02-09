@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 
-import { EnhancedMatchCandidate } from '../../../types/enhanced-search';
+import { EnhancedMatchCandidate } from '../types/enhanced-search';
 
 interface RecordSelectionState {
   selectedRecords: Map<string, EnhancedMatchCandidate>;
@@ -28,6 +28,8 @@ interface RecordSelectionContextValue extends RecordSelectionState {
   getSelectionCount: () => number;
   getSelectedRecords: () => EnhancedMatchCandidate[];
   hasSelection: () => boolean;
+  selectionCount: number; // Add missing property
+  toggleSelectionMode: () => void; // Add missing property
 
   // Selection mode management
   setSelectionMode: (mode: 'none' | 'single' | 'multiple') => void;
@@ -72,17 +74,73 @@ export const RecordSelectionProvider: React.FC<
     lastSelected: null,
   });
 
+  // Define persistence functions first
+  const saveSelection = useCallback(() => {
+    try {
+      const selectionData = {
+        selectedRecords: Array.from(state.selectedRecords.entries()).map(
+          ([id, record]) => ({ id, record })
+        ),
+        selectionMode: state.selectionMode,
+        lastSelected: state.lastSelected,
+        timestamp: Date.now(),
+      };
+      localStorage.setItem(persistKey, JSON.stringify(selectionData));
+    } catch (error) {
+      console.error('Failed to save record selection:', error);
+    }
+  }, [
+    state.selectedRecords,
+    state.selectionMode,
+    state.lastSelected,
+    persistKey,
+  ]);
+
+  const clearPersistedSelection = useCallback(() => {
+    try {
+      localStorage.removeItem(persistKey);
+    } catch (error) {
+      console.error('Failed to clear persisted selection:', error);
+    }
+  }, [persistKey]);
+
+  const loadSelection = useCallback(() => {
+    try {
+      const saved = localStorage.getItem(persistKey);
+      if (!saved) return;
+
+      const selectionData = JSON.parse(saved);
+      if (!selectionData.selectedRecords) return;
+
+      const recordMap = new Map<string, EnhancedMatchCandidate>();
+      selectionData.selectedRecords.forEach(
+        ({ id, record }: { id: string; record: EnhancedMatchCandidate }) => {
+          recordMap.set(id, record);
+        }
+      );
+
+      setState({
+        selectedRecords: recordMap,
+        selectionMode: selectionData.selectionMode || initialMode,
+        lastSelected: selectionData.lastSelected || null,
+      });
+    } catch (error) {
+      console.error('Failed to load record selection:', error);
+      clearPersistedSelection();
+    }
+  }, [persistKey, initialMode, clearPersistedSelection]);
+
   // Load persisted selection on mount
   useEffect(() => {
     loadSelection();
-  }, [persistKey, loadSelection]);
+  }, [loadSelection]);
 
   // Persist selection when state changes
   useEffect(() => {
     if (state.selectedRecords.size > 0) {
       saveSelection();
     }
-  }, [state.selectedRecords, persistKey, saveSelection]);
+  }, [saveSelection]);
 
   const selectRecord = useCallback(
     (record: EnhancedMatchCandidate) => {
@@ -274,54 +332,13 @@ export const RecordSelectionProvider: React.FC<
     []
   );
 
-  const saveSelection = useCallback(() => {
-    try {
-      const selectionData = {
-        selectedRecords: Array.from(state.selectedRecords.entries()),
-        selectionMode: state.selectionMode,
-        lastSelected: state.lastSelected,
-        timestamp: Date.now(),
-      };
-
-      localStorage.setItem(persistKey, JSON.stringify(selectionData));
-    } catch (error) {
-      console.error('Failed to save record selection:', error);
-    }
-  }, [state, persistKey]);
-
-  const clearPersistedSelection = useCallback(() => {
-    try {
-      localStorage.removeItem(persistKey);
-    } catch (error) {
-      console.error('Failed to clear persisted selection:', error);
-    }
-  }, [persistKey]);
-
-  const loadSelection = useCallback(() => {
-    try {
-      const saved = localStorage.getItem(persistKey);
-      if (!saved) return;
-
-      const selectionData = JSON.parse(saved);
-
-      // Check if selection is not too old (24 hours)
-      const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-      if (Date.now() - selectionData.timestamp > maxAge) {
-        clearPersistedSelection();
-        return;
-      }
-
-      setState(prevState => ({
-        ...prevState,
-        selectedRecords: new Map(selectionData.selectedRecords || []),
-        selectionMode: selectionData.selectionMode || initialMode,
-        lastSelected: selectionData.lastSelected || null,
-      }));
-    } catch (error) {
-      console.error('Failed to load record selection:', error);
-      clearPersistedSelection();
-    }
-  }, [persistKey, initialMode, clearPersistedSelection]);
+  const toggleSelectionMode = useCallback(() => {
+    setState(prevState => ({
+      ...prevState,
+      selectionMode:
+        prevState.selectionMode === 'multiple' ? 'single' : 'multiple',
+    }));
+  }, []);
 
   const contextValue: RecordSelectionContextValue = {
     ...state,
@@ -335,6 +352,8 @@ export const RecordSelectionProvider: React.FC<
     getSelectionCount,
     getSelectedRecords,
     hasSelection,
+    selectionCount: state.selectedRecords.size, // Add missing property
+    toggleSelectionMode, // Add missing property
     setSelectionMode,
     saveSelection,
     loadSelection,

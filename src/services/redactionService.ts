@@ -467,6 +467,16 @@ export class RedactionService {
   }
 
   /**
+   * Alias for backward compatibility
+   */
+  async getRedactionsForDocument(
+    recordId: string,
+    fileName: string
+  ): Promise<ManualRedaction[]> {
+    return this.getRedactionsForRecord(recordId, fileName);
+  }
+
+  /**
    * Get redactions for a specific page
    */
   async getRedactionsForPage(

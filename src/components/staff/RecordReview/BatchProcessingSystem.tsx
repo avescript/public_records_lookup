@@ -210,17 +210,18 @@ export const BatchProcessingSystem: React.FC<BatchProcessingSystemProps> = ({
   const [isRunning, setIsRunning] = useState(false);
 
   // Use provided records or context records
-  const targetRecords = useMemo(
-    () => selectedRecords || contextRecords,
-    [selectedRecords, contextRecords]
-  );
+  const targetRecords = useMemo(() => {
+    const records = selectedRecords || contextRecords;
+    // Convert Map to array if needed
+    return records instanceof Map ? Array.from(records.values()) : records;
+  }, [selectedRecords, contextRecords]);
 
   const estimatedTotalTime = useMemo(() => {
     if (!selectedOperation || !targetRecords.length) return 0;
     return (
       (selectedOperation.estimatedTimePerRecord || 1) * targetRecords.length
     );
-  }, [selectedOperation, targetRecords.length]);
+  }, [selectedOperation, targetRecords]);
 
   const handleOperationSelect = (operation: BatchOperation) => {
     setSelectedOperation(operation);

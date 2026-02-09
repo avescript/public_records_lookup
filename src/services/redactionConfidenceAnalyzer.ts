@@ -26,6 +26,14 @@ export interface RedactionQualityAssessment {
   riskAssessment: RedactionRiskLevel;
 }
 
+export interface RedactionQualityReport extends RedactionQualityAssessment {
+  generatedAt: Date;
+  processingTime: number;
+  totalFindings: number;
+  redactedFindings: number;
+  manualReviews: number;
+}
+
 export interface QualityRecommendation {
   id: string;
   type:

@@ -30,9 +30,9 @@ import {
   useTheme,
 } from '@mui/material';
 
+import { EnhancedSearchInterface } from '../../../components/staff/EnhancedSearch/AdvancedSearchInterface';
 import { useRecordSelection } from '../../../contexts/RecordSelectionContext';
 import { EnhancedMatchCandidate } from '../../../types/enhanced-search';
-import { EnhancedSearchInterface } from '../Search/EnhancedSearchInterface';
 
 import { BatchProcessingSystem } from './BatchProcessingSystem';
 import { RecordComparisonView } from './RecordComparisonView';
@@ -395,7 +395,7 @@ export const RecordReviewWorkspace: React.FC<ReviewWorkspaceProps> = ({
             }}
           >
             <RecordComparisonView
-              records={selectedRecords}
+              records={Array.from(selectedRecords.values())}
               searchQuery={workspaceState.searchQuery}
               onClose={() =>
                 setWorkspaceState(prev => ({
@@ -413,7 +413,7 @@ export const RecordReviewWorkspace: React.FC<ReviewWorkspaceProps> = ({
       {/* Batch Processing Dialog */}
       <BatchProcessingSystem
         open={workspaceState.showBatchProcessing}
-        selectedRecords={selectedRecords}
+        selectedRecords={Array.from(selectedRecords.values())}
         onClose={() =>
           setWorkspaceState(prev => ({
             ...prev,

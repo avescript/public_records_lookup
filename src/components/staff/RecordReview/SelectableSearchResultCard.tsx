@@ -38,10 +38,12 @@ interface SelectableSearchResultCardProps {
   onDownload?: (record: EnhancedMatchCandidate) => void;
   onShare?: (record: EnhancedMatchCandidate) => void;
   onToggleFavorite?: (record: EnhancedMatchCandidate) => void;
+  onAction?: (action: string, record: EnhancedMatchCandidate) => void; // Add missing property
   showSelection?: boolean;
   isFavorite?: boolean;
   elevation?: number;
   compact?: boolean;
+  position?: number; // Add missing property
 }
 
 const getFileTypeIcon = (fileType: string) => {

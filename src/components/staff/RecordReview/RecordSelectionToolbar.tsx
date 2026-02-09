@@ -36,11 +36,14 @@ import { useRecordSelection } from '../../contexts/RecordSelectionContext';
 interface RecordSelectionToolbarProps {
   availableRecords?: EnhancedMatchCandidate[];
   onCompare?: (records: EnhancedMatchCandidate[]) => void;
+  onBatchProcess?: () => void; // Add missing property
   onExport?: (
     records: EnhancedMatchCandidate[],
     format: 'csv' | 'json' | 'pdf'
   ) => void;
   onBulkAction?: (action: string, records: EnhancedMatchCandidate[]) => void;
+  onClearSelection?: () => void; // Add missing property
+  searchQuery?: string; // Add missing property
   maxSelectionForComparison?: number;
   showSelectionMode?: boolean;
   compact?: boolean;
