@@ -206,6 +206,7 @@ export const InteractiveRedactionCanvas: React.FC<
   );
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>('');
 
   // History management
   const [history, setHistory] = useState<EditorHistoryState[]>([]);
@@ -240,8 +241,14 @@ export const InteractiveRedactionCanvas: React.FC<
    * Load existing redactions and AI analysis
    */
   const loadCanvasData = useCallback(async () => {
+    if (!recordId || !fileName || pageNumber === undefined) {
+      console.warn('Missing required props for loading canvas data');
+      return;
+    }
+
     try {
       setIsLoading(true);
+      setError('');
 
       // Load existing redactions
       const existingRedactions =
@@ -267,41 +274,54 @@ export const InteractiveRedactionCanvas: React.FC<
 
       // Analyze document with Enhanced PII Engine
       if (showAISuggestions) {
-        const mockPIIFindings = await generateMockPIIFindings(); // In real app, this would analyze the document
-        const enhancedResults = await enhancedPIIEngine.enhanceFindings(
-          mockPIIFindings,
-          sensitivityMode
-        );
-        setEnhancedFindings(enhancedResults);
-
-        // Generate AI suggestions
-        const aiSuggestions =
-          await aiRedactionSuggestionService.generateSuggestions(
-            enhancedResults,
-            existingRedactions
+        try {
+          const mockPIIFindings = await generateMockPIIFindings(); // In real app, this would analyze the document
+          const enhancedResults = await enhancedPIIEngine.enhanceFindings(
+            mockPIIFindings,
+            sensitivityMode
           );
-        setSuggestions(aiSuggestions);
+          setEnhancedFindings(enhancedResults);
 
-        // Generate quality report
-        const quality = await aiRedactionSuggestionService.performAutoReview(
-          enhancedResults,
-          existingRedactions,
-          recordId,
-          fileName
-        );
-        setQualityReport(quality);
-        onQualityChange?.(quality);
+          // Generate AI suggestions
+          const aiSuggestions =
+            await aiRedactionSuggestionService.generateSuggestions(
+              enhancedResults,
+              existingRedactions
+            );
+          setSuggestions(aiSuggestions);
+
+          // Generate quality report
+          const quality = await aiRedactionSuggestionService.performAutoReview(
+            enhancedResults,
+            existingRedactions,
+            recordId,
+            fileName
+          );
+          setQualityReport(quality);
+          onQualityChange?.(quality);
+        } catch (aiError) {
+          console.error('AI service error:', aiError);
+          // Continue loading without AI features
+        }
       }
 
       // Initialize history
       saveToHistory('Initial load', interactiveRedactions);
     } catch (error) {
       console.error('Failed to load canvas data:', error);
+      setError('Failed to load redaction data');
       showNotification('Failed to load redaction data', 'error');
     } finally {
       setIsLoading(false);
     }
-  }, [recordId, fileName, pageNumber, sensitivityMode, showAISuggestions]);
+  }, [
+    recordId,
+    fileName,
+    pageNumber,
+    sensitivityMode,
+    showAISuggestions,
+    onQualityChange,
+  ]);
 
   /**
    * Initialize canvas and load data
@@ -316,6 +336,13 @@ export const InteractiveRedactionCanvas: React.FC<
     sensitivityMode,
     loadCanvasData,
   ]);
+
+  /**
+   * Update showSuggestions state when showAISuggestions prop changes
+   */
+  useEffect(() => {
+    setShowSuggestions(showAISuggestions);
+  }, [showAISuggestions]);
 
   /**
    * Generate mock PII findings for development
@@ -1047,6 +1074,24 @@ export const InteractiveRedactionCanvas: React.FC<
     );
   }
 
+  if (error) {
+    return (
+      <Box
+        display='flex'
+        flexDirection='column'
+        justifyContent='center'
+        alignItems='center'
+        height={400}
+        gap={2}
+      >
+        <Typography color='error'>{error}</Typography>
+        <Button variant='outlined' onClick={loadCanvasData}>
+          Retry
+        </Button>
+      </Box>
+    );
+  }
+
   return (
     <Box position='relative' width='100%' height='100%'>
       {/* Main toolbar */}
@@ -1068,12 +1113,12 @@ export const InteractiveRedactionCanvas: React.FC<
           onChange={(_, mode) => mode && setEditingMode(mode)}
           size='small'
         >
-          <ToggleButton value={EditingMode.SELECT}>
+          <ToggleButton value={EditingMode.SELECT} aria-label='Select Tool'>
             <Tooltip title='Select Tool'>
               <EditIcon fontSize='small' />
             </Tooltip>
           </ToggleButton>
-          <ToggleButton value={EditingMode.DRAW}>
+          <ToggleButton value={EditingMode.DRAW} aria-label='Draw Tool'>
             <Tooltip title='Draw Tool'>
               <BrushIcon fontSize='small' />
             </Tooltip>
@@ -1090,17 +1135,17 @@ export const InteractiveRedactionCanvas: React.FC<
           size='small'
           disabled={editingMode !== EditingMode.DRAW}
         >
-          <ToggleButton value={RedactionShape.RECTANGLE}>
+          <ToggleButton value={RedactionShape.RECTANGLE} aria-label='Rectangle'>
             <Tooltip title='Rectangle'>
               <RectangleIcon fontSize='small' />
             </Tooltip>
           </ToggleButton>
-          <ToggleButton value={RedactionShape.ELLIPSE}>
+          <ToggleButton value={RedactionShape.ELLIPSE} aria-label='Ellipse'>
             <Tooltip title='Ellipse'>
               <CircleIcon fontSize='small' />
             </Tooltip>
           </ToggleButton>
-          <ToggleButton value={RedactionShape.FREEFORM}>
+          <ToggleButton value={RedactionShape.FREEFORM} aria-label='Freeform'>
             <Tooltip title='Freeform'>
               <BlurOnIcon fontSize='small' />
             </Tooltip>
@@ -1136,17 +1181,20 @@ export const InteractiveRedactionCanvas: React.FC<
           onChange={(_, mode) => mode && setPreviewMode(mode)}
           size='small'
         >
-          <ToggleButton value={PreviewMode.NORMAL}>
+          <ToggleButton value={PreviewMode.NORMAL} aria-label='Normal View'>
             <Tooltip title='Normal View'>
               <PreviewIcon fontSize='small' />
             </Tooltip>
           </ToggleButton>
-          <ToggleButton value={PreviewMode.REDACTED}>
+          <ToggleButton value={PreviewMode.REDACTED} aria-label='Redacted View'>
             <Tooltip title='Redacted View'>
               <HidePreviewIcon fontSize='small' />
             </Tooltip>
           </ToggleButton>
-          <ToggleButton value={PreviewMode.COMPARISON}>
+          <ToggleButton
+            value={PreviewMode.COMPARISON}
+            aria-label='Before/After'
+          >
             <Tooltip title='Before/After'>
               <CompareIcon fontSize='small' />
             </Tooltip>
@@ -1163,16 +1211,25 @@ export const InteractiveRedactionCanvas: React.FC<
               size='small'
               onClick={() => setShowSuggestions(!showSuggestions)}
               color={showSuggestions ? 'primary' : 'default'}
+              aria-label='Toggle AI Suggestions'
             >
               <SuggestionIcon />
             </IconButton>
           </Badge>
 
-          <IconButton size='small' onClick={() => setShowLayers(true)}>
+          <IconButton
+            size='small'
+            onClick={() => setShowLayers(true)}
+            aria-label='Show Layers'
+          >
             <LayersIcon />
           </IconButton>
 
-          <IconButton size='small' onClick={() => setShowSettings(true)}>
+          <IconButton
+            size='small'
+            onClick={() => setShowSettings(true)}
+            aria-label='Show Settings'
+          >
             <SettingsIcon />
           </IconButton>
         </Stack>
@@ -1184,6 +1241,8 @@ export const InteractiveRedactionCanvas: React.FC<
           ref={canvasRef}
           width={width * zoomLevel}
           height={height * zoomLevel}
+          role='img'
+          aria-label='Interactive redaction canvas'
           style={{
             width: width,
             height: height,
@@ -1208,6 +1267,7 @@ export const InteractiveRedactionCanvas: React.FC<
             size='small'
             onClick={() => setZoomLevel(prev => Math.min(prev * 1.2, 3))}
             sx={{ bgcolor: 'background.paper' }}
+            aria-label='Zoom In'
           >
             <ZoomInIcon />
           </IconButton>
@@ -1227,6 +1287,7 @@ export const InteractiveRedactionCanvas: React.FC<
             size='small'
             onClick={() => setZoomLevel(prev => Math.max(prev / 1.2, 0.5))}
             sx={{ bgcolor: 'background.paper' }}
+            aria-label='Zoom Out'
           >
             <ZoomOutIcon />
           </IconButton>

@@ -64,6 +64,24 @@ describe('Interactive Redaction Editor Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    // Mock redactionService
+    const { redactionService } = require('../../src/services/redactionService');
+    redactionService.getRedactionsForDocument = jest.fn().mockResolvedValue([
+      {
+        id: 'existing-redaction',
+        recordId: 'test-record',
+        fileName: 'test-file.pdf',
+        pageNumber: 1,
+        x: 50,
+        y: 50,
+        width: 100,
+        height: 20,
+        createdAt: new Date().toISOString(),
+        createdBy: 'test-user',
+        type: 'manual',
+      },
+    ]);
+
     // Mock enhanced findings
     mockEnhancedPIIEngine.enhanceFindings.mockResolvedValue([
       {
