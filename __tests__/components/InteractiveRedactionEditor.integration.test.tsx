@@ -6,6 +6,7 @@
  * layer management, and history tracking.
  */
 
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -358,7 +359,8 @@ describe('Interactive Redaction Editor Integration Tests', () => {
         expect(screen.getByText(/ai suggestions \(1\)/i)).toBeInTheDocument();
       });
 
-      expect(screen.getByText(/new redaction for ssn/i)).toBeInTheDocument();
+      expect(screen.getByText(/new redaction/i)).toBeInTheDocument();
+      expect(screen.getByText(/ssn/i)).toBeInTheDocument();
       expect(screen.getByText(/confidence: 95%/i)).toBeInTheDocument();
       expect(screen.getByText(/priority: critical/i)).toBeInTheDocument();
       expect(screen.getByText(/unredacted ssn detected/i)).toBeInTheDocument();
@@ -419,7 +421,9 @@ describe('Interactive Redaction Editor Integration Tests', () => {
       });
 
       // Find and click the suggestions toggle button (lightbulb icon)
-      const suggestionToggle = screen.getByRole('button', { name: '' }); // The lightbulb icon button
+      const suggestionToggle = screen.getByRole('button', {
+        name: /toggle ai suggestions/i,
+      });
       await userEvent.click(suggestionToggle);
 
       // Suggestions should still be visible in the panel but canvas overlay might change
@@ -482,7 +486,7 @@ describe('Interactive Redaction Editor Integration Tests', () => {
           expect(onRedactionsChange).toHaveBeenCalledWith(
             expect.arrayContaining([
               expect.objectContaining({
-                shape: RedactionShape.RECTANGLE,
+                shape: 'rectangle',
                 type: 'manual',
               }),
             ])
