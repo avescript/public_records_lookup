@@ -41,6 +41,11 @@ jest.mock('../../src/services/enhancedPIIEngine', () => ({
   enhancedPIIEngine: {
     enhanceFindings: jest.fn(() => Promise.resolve([])),
   },
+  RedactionSensitivityMode: {
+    LIGHT: 'light',
+    STANDARD: 'standard',
+    STRICT: 'strict',
+  },
 }));
 
 jest.mock('../../src/services/redactionService', () => ({
