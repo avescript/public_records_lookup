@@ -1,12 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import { aiResponseService } from '@/services/aiResponseService';
-import { deliveryTrackingService } from '@/services/deliveryTrackingService';
-import {
-  V2WorkflowOrchestrator,
-  v2WorkflowOrchestrator,
-} from '@/services/v2WorkflowOrchestrator';
 import {
   PublicRecordRequest,
   RequestStatus,
@@ -19,9 +13,16 @@ import {
   WorkflowValidation,
 } from '@/types/review';
 
+import { aiResponseService } from '../aiResponseService';
+import { deliveryTrackingService } from '../deliveryTrackingService';
+import {
+  V2WorkflowOrchestrator,
+  v2WorkflowOrchestrator,
+} from '../v2WorkflowOrchestrator';
+
 // Mock dependencies
-jest.mock('@/services/deliveryTrackingService');
-jest.mock('@/services/aiResponseService');
+jest.mock('../deliveryTrackingService');
+jest.mock('../aiResponseService');
 
 const mockDeliveryTrackingService = deliveryTrackingService as jest.Mocked<
   typeof deliveryTrackingService
