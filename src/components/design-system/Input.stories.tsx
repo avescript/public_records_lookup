@@ -8,7 +8,6 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/nextjs';
 
 import { Input } from './Input';
@@ -84,7 +83,7 @@ const meta = {
     },
   },
   args: {
-    onChange: action('changed'),
+    onChange: () => {},
     label: 'Label',
     placeholder: 'Enter text...',
   },

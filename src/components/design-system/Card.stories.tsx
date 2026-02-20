@@ -12,7 +12,6 @@ import {
   TrendingUp,
   Warning,
 } from '@mui/icons-material';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/nextjs';
 
 import { Button } from './Button';
@@ -51,7 +50,7 @@ const meta = {
     },
   },
   args: {
-    onClick: action('clicked'),
+    onClick: () => {},
   },
 } satisfies Meta<typeof Card>;
 
@@ -103,7 +102,7 @@ export const Elevated: Story = {
 export const Interactive: Story = {
   args: {
     variant: 'interactive',
-    onClick: action('card-clicked'),
+    onClick: () => {},
     children: (
       <CardContent>
         <h3 style={{ margin: '0 0 0.5rem 0' }}>Interactive Card</h3>
@@ -338,7 +337,7 @@ export const InteractiveNotificationCard: Story = {
   render: () => (
     <Card
       variant='interactive'
-      onClick={action('notification-clicked')}
+      onClick={() => {}}
       style={{ maxWidth: '350px', cursor: 'pointer' }}
       role='button'
       tabIndex={0}
@@ -420,7 +419,7 @@ export const AllVariants: Story = {
         </CardContent>
       </Card>
 
-      <Card variant='interactive' onClick={action('interactive-clicked')}>
+      <Card variant='interactive' onClick={() => {}}>
         <CardContent>
           <h4 style={{ margin: '0 0 0.5rem 0' }}>Interactive</h4>
           <p style={{ margin: 0, fontSize: '0.875rem', color: '#666' }}>
@@ -474,7 +473,7 @@ export const AccessibilityDemo: Story = {
 
       <Card
         variant='interactive'
-        onClick={action('accessible-card-clicked')}
+        onClick={() => {}}
         role='button'
         tabIndex={0}
         aria-label='Clickable notification card'

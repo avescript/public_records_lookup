@@ -1,6 +1,5 @@
 // Icons for testing
 import { Add, ArrowForward, Delete, Download } from '@mui/icons-material';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/nextjs';
 
 import { Button } from './Button';
@@ -67,7 +66,7 @@ const meta = {
     },
   },
   args: {
-    onClick: action('clicked'),
+    onClick: () => {},
     children: 'Button',
   },
 } satisfies Meta<typeof Button>;
