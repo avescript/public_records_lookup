@@ -156,6 +156,126 @@ import { Input } from '@/components/design-system';
 - Use very small character limits without warning
 - Overwhelm with too many validation messages
 
+### Select Component
+
+Accessible select component for choosing options from a dropdown list. Supports single and multiple selection, search functionality, and custom rendering.
+
+#### Basic Usage
+
+```tsx
+import { Select } from '@/components/design-system';
+
+// Basic select
+<Select
+  label="Department"
+  options={[
+    { value: 'hr', label: 'Human Resources' },
+    { value: 'it', label: 'Information Technology' },
+  ]}
+  value={selectedDepartment}
+  onChange={setSelectedDepartment}
+/>
+
+// Multiple select
+<Select
+  label="Skills"
+  multiple
+  options={skillOptions}
+  value={selectedSkills}
+  onChange={setSelectedSkills}
+/>
+```
+
+#### Features
+
+- **Single & Multiple Selection** - Choose one or many options
+- **Search/Filter** - Enable searchable dropdown for large option lists
+- **Custom Rendering** - Customize how options and values are displayed
+- **Rich Options** - Support for descriptions, disabled states, and complex data
+- **Validation States** - Error handling with proper visual feedback
+- **Accessibility** - Full keyboard navigation and screen reader support
+
+#### Option Structure
+
+```tsx
+interface SelectOption {
+  value: string | number;
+  label: string;
+  disabled?: boolean;
+  description?: string;
+}
+```
+
+#### Variants
+
+- **Single Select** - Default mode for choosing one option
+- **Multiple Select** - Allow multiple selections with chips display
+- **Searchable** - Add search input to filter options
+- **Small/Medium Size** - Compact or standard height variants
+
+#### States
+
+- **default** - Standard select appearance
+- **error** - Red border and error message display
+- **disabled** - Grayed out, non-interactive state
+- **required** - Shows asterisk and enforces validation
+
+#### Advanced Features
+
+```tsx
+// Searchable with descriptions
+<Select
+  label="Department"
+  options={[
+    {
+      value: 'it',
+      label: 'Information Technology',
+      description: 'Technical support and development'
+    },
+  ]}
+  searchable
+  helperText="Type to filter departments"
+/>
+
+// Multiple with custom limit
+<Select
+  label="Skills"
+  multiple
+  maxMenuHeight={200}
+  options={manySkills}
+  renderValue={(selected) =>
+    \`\${selected.length} skills selected\`
+  }
+/>
+```
+
+#### Best Practices
+
+✅ **Do:**
+
+- Use clear, descriptive labels for options
+- Include helpful descriptions for complex options
+- Enable search for lists with 10+ options
+- Provide helper text for complex selections
+- Use multiple selection for non-exclusive choices
+- Show validation errors clearly
+
+❌ **Don't:**
+
+- Use selects for lists with 2-3 options (use radio buttons)
+- Make labels too long or unclear
+- Forget to handle empty states
+- Use disabled options without explanation
+- Overwhelm with too many options without search
+
+#### Accessibility Features
+
+- Proper ARIA labeling and relationships
+- Keyboard navigation (Arrow keys, Enter, Esc)
+- Screen reader announcements for selections
+- Focus management and visual indicators
+- Support for assistive technology
+
 ### Card Component
 
 Flexible container component with variants and sub-components for organizing content.

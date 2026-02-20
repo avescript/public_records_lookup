@@ -15,6 +15,8 @@ export type {
 export { Card, CardContent, CardFooter, CardHeader } from './Card';
 export type { InputProps } from './Input';
 export { Input } from './Input';
+export type { SelectOption, SelectProps } from './Select';
+export { Select } from './Select';
 
 // Design Tokens
 export type {
@@ -25,7 +27,7 @@ export type {
   FontSize,
   Shadow,
   Spacing,
-} from '../design-system/tokens';
+} from '../../theme/design-system/tokens';
 export {
   borderRadius,
   breakpoints,
@@ -36,4 +38,4 @@ export {
   transitions,
   typography,
   zIndex,
-} from '../design-system/tokens';
+} from '../../theme/design-system/tokens';
