@@ -35,6 +35,26 @@ module.exports = {
             message:
               'Use Select from "@/components/migration" instead for gradual design system adoption',
           },
+          {
+            name: '@mui/material/Checkbox',
+            message:
+              'Use Checkbox from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Radio',
+            message:
+              'Use Radio from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/RadioGroup',
+            message:
+              'Use RadioGroup from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/FormControl',
+            message:
+              'Use FormControl from "@/components/migration" instead for gradual design system adoption',
+          },
         ],
         patterns: [
           {
@@ -42,6 +62,9 @@ module.exports = {
               '@mui/material/*Button*',
               '@mui/material/*TextField*',
               '@mui/material/*Select*',
+              '@mui/material/*Checkbox*',
+              '@mui/material/*Radio*',
+              '@mui/material/*Form*',
             ],
             message:
               'Use migration layer components from "@/components/migration" for gradual design system adoption',

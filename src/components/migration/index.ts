@@ -15,12 +15,20 @@
 export {
   Button,
   Card,
+  Checkbox,
+  FormControl,
   getMigrationMapping,
   type LegacyButtonProps,
+  type LegacyCheckboxProps,
+  type LegacyFormControlProps,
   type LegacyPaperProps,
+  type LegacyRadioGroupProps,
+  type LegacyRadioProps,
   type LegacySelectProps,
   type LegacyTextFieldProps,
   Paper,
+  Radio,
+  RadioGroup,
   Select,
   TextField,
 } from './adapters';
@@ -42,7 +50,10 @@ export {
 export {
   Button as DesignButton,
   Card as DesignCard,
+  Checkbox as DesignCheckbox,
   Input as DesignInput,
+  Radio as DesignRadio,
+  RadioGroup as DesignRadioGroup,
   Select as DesignSelect,
 } from '@/components/design-system';
 

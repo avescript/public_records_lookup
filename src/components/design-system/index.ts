@@ -13,8 +13,12 @@ export type {
   CardProps,
 } from './Card';
 export { Card, CardContent, CardFooter, CardHeader } from './Card';
+export type { CheckboxProps } from './Checkbox';
+export { Checkbox } from './Checkbox';
 export type { InputProps } from './Input';
 export { Input } from './Input';
+export type { RadioGroupProps, RadioProps } from './Radio';
+export { Radio, RadioGroup } from './Radio';
 export type { SelectOption, SelectProps } from './Select';
 export { Select } from './Select';
 

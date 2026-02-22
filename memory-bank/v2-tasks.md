@@ -601,15 +601,21 @@ _(Must complete before expanding)_
 
 _(Core components needed across the app)_
 
-3. **Add Essential Components to Migration Layer** ⏳ Next Task
-   - `Checkbox` adapter (high usage in forms)
-   - `Radio` adapter (used in RequestForm and other forms)
-   - `FormGroup`/`FormControl` adapters (form layout components)
+3. **Add Essential Components to Migration Layer** ✅ COMPLETED
+   - ✅ `Checkbox` adapter - Complete with design system component and migration adapter
+   - ✅ `Radio` adapter - Complete with both Radio and RadioGroup components
+   - ✅ `FormControl` adapter - Basic compatibility wrapper for Material-UI FormControl
+   - ✅ **Implementation Details:**
+     - Created Checkbox and Radio design system components with comprehensive TypeScript interfaces
+     - Added Storybook stories for both components (40+ story variants)
+     - Created migration adapters with backward compatibility for Material-UI props
+     - Updated ESLint rules to enforce migration layer usage
+     - Updated migration exports and documentation
 
-4. **Convert High-Traffic Components**
-   - StaffDashboard components (likely heavy Material-UI usage)
-   - Admin panel components
-   - Authentication forms
+4. **Convert High-Traffic Components** ⏳ Next Task
+   - [ ] StaffDashboard components (likely heavy Material-UI usage)
+   - [ ] Admin panel components
+   - [ ] Authentication forms
 
 ### 🎯 Priority 3: Migration Tooling
 

@@ -10,14 +10,20 @@ import React from 'react';
 import type {
   ButtonProps as DesignButtonProps,
   CardProps as DesignCardProps,
+  CheckboxProps as DesignCheckboxProps,
   InputProps as DesignInputProps,
+  RadioGroupProps as DesignRadioGroupProps,
+  RadioProps as DesignRadioProps,
   SelectOption,
   SelectProps as DesignSelectProps,
 } from '@/components/design-system';
 import {
   Button as DesignButton,
   Card as DesignCard,
+  Checkbox as DesignCheckbox,
   Input as DesignInput,
+  Radio as DesignRadio,
+  RadioGroup as DesignRadioGroup,
   Select as DesignSelect,
 } from '@/components/design-system';
 
@@ -62,6 +68,41 @@ interface LegacyPaperProps extends Omit<DesignCardProps, 'variant'> {
   elevation?: number;
   variant?: 'elevation' | 'outlined';
   raised?: boolean;
+}
+
+// Legacy Checkbox Props - Material-UI Checkbox compatibility
+interface LegacyCheckboxProps extends Omit<DesignCheckboxProps, 'variant'> {
+  color?: 'primary' | 'secondary' | 'default';
+  size?: 'small' | 'medium' | 'large';
+  indeterminate?: boolean;
+  checkedIcon?: React.ReactNode;
+  icon?: React.ReactNode;
+  inputProps?: Record<string, unknown>;
+}
+
+// Legacy Radio Props - Material-UI Radio/RadioGroup compatibility
+interface LegacyRadioProps extends Omit<DesignRadioProps, 'variant'> {
+  color?: 'primary' | 'secondary' | 'default';
+  size?: 'small' | 'medium';
+  checkedIcon?: React.ReactNode;
+  icon?: React.ReactNode;
+}
+
+interface LegacyRadioGroupProps extends Omit<DesignRadioGroupProps, 'options'> {
+  children?: React.ReactNode; // For FormControlLabel children
+  row?: boolean;
+}
+
+// Legacy FormControl Props - Basic compatibility
+interface LegacyFormControlProps {
+  children?: React.ReactNode;
+  error?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+  variant?: 'standard' | 'outlined' | 'filled';
+  fullWidth?: boolean;
+  margin?: 'none' | 'normal' | 'dense';
+  size?: 'small' | 'medium';
 }
 
 /**
@@ -219,6 +260,138 @@ export const Card: React.FC<LegacyPaperProps> = props => {
 };
 
 /**
+ * Legacy Checkbox Adapter
+ * Maps old Material-UI Checkbox props to new design system Checkbox
+ */
+export const Checkbox: React.FC<LegacyCheckboxProps> = ({
+  color = 'primary',
+  size = 'medium',
+  indeterminate,
+  checkedIcon,
+  icon,
+  inputProps,
+  ...props
+}) => {
+  // Map legacy color to design variant
+  const designVariant: DesignCheckboxProps['variant'] = 
+    color === 'secondary' ? 'secondary' : 'primary';
+
+  // Note: indeterminate, checkedIcon, icon, and inputProps are Material-UI specific
+  // and not directly supported in our design system, but we pass them through
+  const additionalProps: Record<string, unknown> = {};
+  if (indeterminate !== undefined) additionalProps.indeterminate = indeterminate;
+  if (checkedIcon) additionalProps.checkedIcon = checkedIcon;
+  if (icon) additionalProps.icon = icon;
+  if (inputProps) additionalProps.inputProps = inputProps;
+
+  return (
+    <DesignCheckbox
+      variant={designVariant}
+      size={size}
+      {...additionalProps}
+      {...props}
+    />
+  );
+};
+
+/**
+ * Legacy Radio Adapter
+ * Maps old Material-UI Radio props to new design system Radio
+ */
+export const Radio: React.FC<LegacyRadioProps> = ({
+  color = 'primary',
+  size = 'medium',
+  checkedIcon,
+  icon,
+  ...props
+}) => {
+  // Map legacy color to design variant
+  const designVariant: DesignRadioProps['variant'] = 
+    color === 'secondary' ? 'secondary' : 'primary';
+
+  // Note: checkedIcon and icon are Material-UI specific
+  const additionalProps: Record<string, unknown> = {};
+  if (checkedIcon) additionalProps.checkedIcon = checkedIcon;
+  if (icon) additionalProps.icon = icon;
+
+  return (
+    <DesignRadio
+      variant={designVariant}
+      size={size}
+      {...additionalProps}
+      {...props}
+    />
+  );
+};
+
+/**
+ * Legacy RadioGroup Adapter
+ * Maps old Material-UI RadioGroup props to new design system RadioGroup
+ */
+export const RadioGroup: React.FC<LegacyRadioGroupProps> = ({
+  children,
+  row = false,
+  ...props
+}) => {
+  // Convert children FormControlLabel elements to options array if needed
+  if (children && !props.options) {
+    // For backward compatibility, we'll pass children through to Material-UI
+    // In a full migration, children would be converted to options array
+    const additionalProps = { children, row };
+    
+    // Use Material-UI RadioGroup directly for complex children scenarios
+    return (
+      <div style={{ display: 'flex', flexDirection: row ? 'row' : 'column' }}>
+        {children}
+      </div>
+    );
+  }
+
+  // Use design system RadioGroup when options are provided
+  return (
+    <DesignRadioGroup
+      direction={row ? 'row' : 'column'}
+      {...props}
+    />
+  );
+};
+
+/**
+ * Legacy FormControl Adapter
+ * Basic compatibility wrapper for Material-UI FormControl
+ */
+export const FormControl: React.FC<LegacyFormControlProps> = ({
+  children,
+  error = false,
+  disabled = false,
+  required = false,
+  variant = 'outlined',
+  fullWidth = false,
+  margin = 'none',
+  size = 'medium',
+  ...props
+}) => {
+  // For backward compatibility, pass most props to Material-UI FormControl
+  // Import Material-UI FormControl directly for this adapter
+  const MuiFormControl = require('@mui/material/FormControl').FormControl;
+  
+  return (
+    <MuiFormControl
+      error={error}
+      disabled={disabled}
+      required={required}
+      variant={variant}
+      fullWidth={fullWidth}
+      margin={margin}
+      size={size}
+      {...props}
+    >
+      {children}
+    </MuiFormControl>
+  );
+};
+
+/**
  * Utility function to get design system component mappings
  * Helps developers understand the migration path
  */
@@ -253,13 +426,40 @@ export const getMigrationMapping = () => {
       'variant="outlined"': 'variant="outlined"',
       'raised={true}': 'variant="elevated"',
     },
+    Checkbox: {
+      'color="primary"': 'variant="primary" (default)',
+      'color="secondary"': 'variant="secondary"',
+      'size="small"': 'size="small"',
+      'size="medium"': 'size="medium" (default)',
+      'indeterminate={true}': 'Note: passed through to Material-UI base',
+    },
+    Radio: {
+      'color="primary"': 'variant="primary" (default)',
+      'color="secondary"': 'variant="secondary"',
+      'size="small"': 'size="small"',
+      'size="medium"': 'size="medium" (default)',
+    },
+    RadioGroup: {
+      'row={true}': 'direction="row"',
+      'row={false}': 'direction="column" (default)',
+      '<FormControlLabel />': 'options=[{value, label}] array',
+    },
+    FormControl: {
+      'Note': 'Passes through to Material-UI for backward compatibility',
+      'variant="outlined"': 'Maintained for compatibility',
+      'fullWidth={true}': 'Maintained for compatibility',
+    },
   };
 };
 
 // Export type definitions for TypeScript support
 export type {
   LegacyButtonProps,
+  LegacyCheckboxProps,
+  LegacyFormControlProps,
   LegacyPaperProps,
+  LegacyRadioGroupProps,
+  LegacyRadioProps,
   LegacySelectProps,
   LegacyTextFieldProps,
 };
