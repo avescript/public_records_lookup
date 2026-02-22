@@ -25,7 +25,6 @@ import {
   Alert,
   Badge,
   Box,
-  Button,
   Chip,
   CircularProgress,
   Divider,
@@ -43,6 +42,8 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+
+import { Button } from '@/components/migration';
 
 import { aiResponseService } from '../../services/aiResponseService';
 import { PublicRecordRequest } from '../../types';

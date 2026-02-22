@@ -1,4 +1,4 @@
-import { type ButtonProps as MuiButtonProps } from '@mui/material/Button';
+import { type ButtonProps as MuiButtonProps } from '@mui/material';
 
 export interface ButtonProps extends Omit<MuiButtonProps, 'size' | 'variant'> {
   /**

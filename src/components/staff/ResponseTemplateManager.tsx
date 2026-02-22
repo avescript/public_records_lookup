@@ -17,7 +17,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  Button,
   Card,
   CardContent,
   Chip,
@@ -25,7 +24,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
   FormControlLabel,
   Grid,
   IconButton,
@@ -36,13 +34,13 @@ import {
   ListItemText,
   MenuItem,
   Rating,
-  Select,
   Switch,
-  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+
+import { Button, FormControl, Select, TextField } from '@/components/migration';
 
 import { aiResponseService } from '../../services/aiResponseService';
 import {

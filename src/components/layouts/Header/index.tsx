@@ -1,7 +1,6 @@
 import React from 'react';
 import SearchIcon from '@mui/icons-material/Search';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+import { IconButton, Typography } from '@mui/material';
 
 import { HeaderActions, HeaderRoot, HeaderToolbar } from './styles';
 import type { HeaderProps } from './types';

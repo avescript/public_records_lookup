@@ -19,7 +19,6 @@ import {
 import {
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
   Chip,
@@ -35,6 +34,7 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
+import { Button } from '@/components/migration';
 import { useAuth } from '@/contexts/AuthContext';
 import { v2WorkflowOrchestrator } from '@/services/v2WorkflowOrchestrator';
 import { PublicRecordRequest } from '@/types/request';

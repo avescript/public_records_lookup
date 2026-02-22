@@ -11,13 +11,13 @@ import {
   Alert,
   Box,
   Breadcrumbs,
-  Button,
   Container,
   Link,
   Typography,
 } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { Button } from '@/components/migration';
 import { V2WorkflowOrchestrator } from '@/components/staff/V2WorkflowOrchestrator';
 
 interface WorkflowPageProps {

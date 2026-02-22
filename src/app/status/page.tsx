@@ -5,7 +5,6 @@ import { Search as SearchIcon } from '@mui/icons-material';
 import {
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
   Chip,
@@ -13,10 +12,11 @@ import {
   Divider,
   Grid,
   Paper,
-  TextField,
   Typography,
 } from '@mui/material';
 import { format } from 'date-fns';
+
+import { Button, TextField } from '@/components/migration';
 
 import { PublicLayout } from '../../components/layouts/PublicLayout';
 import {

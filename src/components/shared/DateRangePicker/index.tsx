@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import type { SelectChangeEvent } from '@mui/material';
 import {
   Box,
   FormControl,
@@ -8,11 +9,11 @@ import {
   Grid,
   InputLabel,
   MenuItem,
-  Select,
   TextField,
   Typography,
 } from '@mui/material';
-import { SelectChangeEvent } from '@mui/material/Select';
+
+import { Select } from '@/components/migration';
 
 export interface DateRange {
   startDate: string;

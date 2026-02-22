@@ -25,7 +25,6 @@ import {
   AccordionSummary,
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
   Chip,
@@ -35,7 +34,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  FormControl,
   Grid,
   IconButton,
   InputLabel,
@@ -46,12 +44,12 @@ import {
   ListItemText,
   MenuItem,
   Paper,
-  Select,
-  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+
+import { Button, FormControl, Select, TextField } from '@/components/migration';
 
 import { aiResponseService } from '../../services/aiResponseService';
 import { PublicRecordRequest } from '../../types';

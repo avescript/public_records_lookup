@@ -5,14 +5,14 @@ import { Login as LoginIcon } from '@mui/icons-material';
 import {
   Alert,
   Box,
-  Button,
   CircularProgress,
   Container,
   Paper,
-  TextField,
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
+
+import { Button, TextField } from '@/components/migration';
 
 import { ClientProviders } from '../../../components/providers/ClientProviders';
 import { useAuth } from '../../../contexts/AuthContext';

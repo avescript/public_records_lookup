@@ -12,7 +12,6 @@ import {
 import {
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
   CircularProgress,
@@ -23,6 +22,8 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
+
+import { Button } from '@/components/migration';
 
 import EnhancedDataManagement from '../../../components/admin/EnhancedDataManagement';
 import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';

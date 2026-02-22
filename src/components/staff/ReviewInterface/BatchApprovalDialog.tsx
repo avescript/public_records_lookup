@@ -25,17 +25,14 @@ import {
   AccordionSummary,
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
-  Checkbox,
   Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
-  FormControl,
   Grid,
   IconButton,
   InputLabel,
@@ -46,11 +43,16 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   MenuItem,
-  Select,
-  TextField,
   Typography,
 } from '@mui/material';
 
+import {
+  Button,
+  Checkbox,
+  FormControl,
+  Select,
+  TextField,
+} from '@/components/migration';
 import { PublicRecordRequest } from '@/types/request';
 import {
   ApprovalLevel,
