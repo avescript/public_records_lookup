@@ -37,14 +37,29 @@ export {
 export {
   migrateProp,
   migrationConfig,
-  MigrationDashboard,
   migrationPatterns,
-  type MigrationWarning,
-  useMigrationStats,
-  useMigrationTracking,
   validateMigration,
   withMigration,
 } from './utils';
+
+// Migration tracking and development tools
+export {
+  addMigrationWarning,
+  type ComponentUsageStats,
+  type MigrationProgress,
+  type MigrationWarning,
+  trackComponentUsage,
+  useMigrationStats,
+  useMigrationSuccess,
+  useMigrationWarning,
+} from '../hooks/useMigrationStats';
+
+// Development-only components
+export { default as MigrationDashboard } from '../development/MigrationDashboard';
+export {
+  default as MigrationProvider,
+  useMigrationContext,
+} from '../development/MigrationProvider';
 
 // Re-export design system components for convenience
 export {

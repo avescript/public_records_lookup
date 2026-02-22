@@ -3,6 +3,8 @@
  *
  * These components provide backward compatibility while transitioning
  * existing V2 components to use the new design system patterns.
+ *
+ * Epic V2-7 Phase 5: Enhanced with migration tracking and development guidance.
  */
 
 import React from 'react';
@@ -26,6 +28,7 @@ import {
   RadioGroup as DesignRadioGroup,
   Select as DesignSelect,
 } from '@/components/design-system';
+import { useMigrationSuccess } from '@/hooks/useMigrationStats';
 
 // Legacy Material-UI prop mappings
 type LegacyButtonColor =
@@ -141,6 +144,9 @@ export const Button: React.FC<LegacyButtonProps> = ({
   rel,
   ...props
 }) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('Button');
+
   // Map legacy props to design system variants
   const getDesignVariant = (
     color: LegacyButtonColor,
@@ -228,6 +234,8 @@ export const TextField: React.FC<LegacyTextFieldProps> = ({
   error = false,
   ...props
 }) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('TextField');
   // Map legacy props to design system props
   const designVariant: DesignInputProps['variant'] =
     variant === 'standard'
@@ -258,6 +266,9 @@ export const Select: React.FC<LegacySelectProps> = ({
   SelectProps,
   ...props
 }) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('Select');
+
   // Extract options from children if not provided via options prop
   const extractedOptions: SelectOption[] = React.useMemo(() => {
     if (options && options.length > 0) {
@@ -379,6 +390,9 @@ export const Checkbox: React.FC<LegacyCheckboxProps> = ({
   inputProps,
   ...props
 }) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('Checkbox');
+
   // Map legacy color to design variant
   const designVariant: DesignCheckboxProps['variant'] =
     color === 'secondary' ? 'secondary' : 'primary';
@@ -413,6 +427,9 @@ export const Radio: React.FC<LegacyRadioProps> = ({
   icon,
   ...props
 }) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('Radio');
+
   // Map legacy color to design variant
   const designVariant: DesignRadioProps['variant'] =
     color === 'secondary' ? 'secondary' : 'primary';
@@ -479,6 +496,9 @@ export const FormControl: React.FC<LegacyFormControlProps> = ({
   'data-testid': testId,
   ...props
 }) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('FormControl');
+
   // Import Material-UI FormControl directly for maximum compatibility
   const MuiFormControl = require('@mui/material/FormControl').FormControl;
 
