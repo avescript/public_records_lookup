@@ -11,11 +11,14 @@ import type {
   ButtonProps as DesignButtonProps,
   CardProps as DesignCardProps,
   InputProps as DesignInputProps,
+  SelectOption,
+  SelectProps as DesignSelectProps,
 } from '@/components/design-system';
 import {
   Button as DesignButton,
   Card as DesignCard,
   Input as DesignInput,
+  Select as DesignSelect,
 } from '@/components/design-system';
 
 // Legacy Material-UI prop mappings
@@ -28,6 +31,18 @@ type LegacyButtonColor =
   | 'warning';
 type LegacyButtonVariant = 'text' | 'outlined' | 'contained';
 type LegacyTextFieldVariant = 'standard' | 'filled' | 'outlined';
+
+// Legacy Select Props - Material-UI Select compatibility
+interface LegacySelectProps extends Omit<DesignSelectProps, 'options'> {
+  children?: React.ReactNode; // For MenuItem children
+  variant?: 'standard' | 'filled' | 'outlined';
+  displayEmpty?: boolean;
+  renderValue?: (selected: unknown) => React.ReactNode;
+  MenuProps?: any;
+  SelectProps?: any;
+  // Support both new options format and legacy children
+  options?: SelectOption[];
+}
 
 // Legacy Button Props
 interface LegacyButtonProps extends Omit<DesignButtonProps, 'variant'> {
@@ -113,6 +128,63 @@ export const TextField: React.FC<LegacyTextFieldProps> = ({
 };
 
 /**
+ * Legacy Select Adapter
+ * Maps old Material-UI Select props to new design system Select
+ */
+export const Select: React.FC<LegacySelectProps> = ({
+  children,
+  variant = 'outlined',
+  displayEmpty = false,
+  options,
+  placeholder,
+  MenuProps,
+  SelectProps,
+  ...props
+}) => {
+  // Extract options from children if not provided via options prop
+  const extractedOptions: SelectOption[] = React.useMemo(() => {
+    if (options && options.length > 0) {
+      return options;
+    }
+
+    if (!children) return [];
+
+    const childrenArray = React.Children.toArray(children);
+    return childrenArray
+      .filter(
+        (child): child is React.ReactElement =>
+          (React.isValidElement(child) &&
+            (child.type as any)?.displayName === 'MenuItem') ||
+          (child.type as any)?.name === 'MenuItem' ||
+          typeof child.type === 'string' // Handle native options
+      )
+      .map((child, index) => {
+        const element = child as React.ReactElement<any>;
+        return {
+          value: element.props?.value ?? `option-${index}`,
+          label:
+            typeof element.props?.children === 'string'
+              ? element.props.children
+              : (element.props?.value ?? `Option ${index + 1}`),
+          disabled: element.props?.disabled || false,
+        };
+      });
+  }, [children, options]);
+
+  // Set placeholder if displayEmpty is true and no placeholder provided
+  const effectivePlaceholder =
+    displayEmpty && !placeholder ? 'Select an option...' : placeholder;
+
+  return (
+    <DesignSelect
+      options={extractedOptions}
+      placeholder={effectivePlaceholder}
+      {...props}
+    />
+  );
+};
+
+/**
  * Legacy Paper Adapter
  * Maps old Material-UI Paper props to new design system Card
  */
@@ -167,6 +239,14 @@ export const getMigrationMapping = () => {
       'error={true}': 'state="error"',
       'helperText="Error message"': 'helperText="Error message" state="error"',
     },
+    Select: {
+      'variant="outlined"': 'variant="outlined" (default)',
+      'displayEmpty={true}': 'placeholder="Select an option..."',
+      'MenuProps={{...}}': 'maxMenuHeight={number}',
+      'renderValue={func}': 'renderValue={func}',
+      '<MenuItem value="x">Label</MenuItem>':
+        'options={[{value: "x", label: "Label"}]}',
+    },
     Paper: {
       'elevation={1}': 'variant="default"',
       'elevation={3}': 'variant="elevated"',
@@ -177,4 +257,9 @@ export const getMigrationMapping = () => {
 };
 
 // Export type definitions for TypeScript support
-export type { LegacyButtonProps, LegacyPaperProps, LegacyTextFieldProps };
+export type {
+  LegacyButtonProps,
+  LegacyPaperProps,
+  LegacySelectProps,
+  LegacyTextFieldProps,
+};

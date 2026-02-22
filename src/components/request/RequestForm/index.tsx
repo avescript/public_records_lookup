@@ -6,19 +6,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Alert,
   Box,
-  Button,
   CircularProgress,
   Divider,
-  FormControl,
-  FormHelperText,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   Snackbar,
-  TextField,
   Typography,
 } from '@mui/material';
+
+import { Button, Select, TextField } from '@/components/migration';
 
 import { saveRequest } from '../../../services/requestService';
 import DateRangePicker, { DateRange } from '../../shared/DateRangePicker';
@@ -31,11 +26,11 @@ import {
 } from './types';
 
 const departments = [
-  { id: 'police', name: 'Police Department' },
-  { id: 'fire', name: 'Fire Department' },
-  { id: 'clerk', name: 'City Clerk' },
-  { id: 'finance', name: 'Finance Department' },
-  { id: 'other', name: 'Other' },
+  { value: 'police', label: 'Police Department' },
+  { value: 'fire', label: 'Fire Department' },
+  { value: 'clerk', label: 'City Clerk' },
+  { value: 'finance', label: 'Finance Department' },
+  { value: 'other', label: 'Other' },
 ];
 
 export const RequestForm = () => {
@@ -141,22 +136,21 @@ export const RequestForm = () => {
               name='department'
               control={control}
               render={({ field }) => (
-                <FormControl fullWidth error={!!errors.department}>
-                  <InputLabel>Department</InputLabel>
-                  <Select
-                    {...field}
-                    label='Department'
-                    disabled={isSubmitting}
-                    data-testid='department-select'
-                  >
-                    {departments.map(dept => (
-                      <MenuItem key={dept.id} value={dept.id}>
-                        {dept.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText>{errors.department?.message}</FormHelperText>
-                </FormControl>
+                <Select
+                  {...field}
+                  label='Department *'
+                  options={departments}
+                  fullWidth
+                  required
+                  disabled={isSubmitting}
+                  error={errors.department?.message}
+                  helperText={
+                    errors.department?.message ||
+                    'Select the department for your request'
+                  }
+                  placeholder='Choose a department...'
+                  data-testid='department-select'
+                />
               )}
             />
           </Box>

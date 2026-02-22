@@ -18,8 +18,10 @@ export {
   getMigrationMapping,
   type LegacyButtonProps,
   type LegacyPaperProps,
+  type LegacySelectProps,
   type LegacyTextFieldProps,
   Paper,
+  Select,
   TextField,
 } from './adapters';
 
@@ -41,6 +43,7 @@ export {
   Button as DesignButton,
   Card as DesignCard,
   Input as DesignInput,
+  Select as DesignSelect,
 } from '@/components/design-system';
 
 /**
@@ -50,25 +53,30 @@ export {
  * Replace Material-UI imports with migration adapters:
  *
  * Before:
- * import { Button, TextField, Paper } from '@mui/material';
+ * import { Button, TextField, Paper, Select, MenuItem } from '@mui/material';
  *
  * After:
- * import { Button, TextField, Paper } from '@/components/migration';
+ * import { Button, TextField, Paper, Select } from '@/components/migration';
  *
  * Phase 2: Gradual Migration
  * Update component usage to use design system props:
  *
  * Before:
  * <Button color="primary" variant="contained">Click me</Button>
+ * <Select displayEmpty>
+ *   <MenuItem value="dept1">Department 1</MenuItem>
+ * </Select>
  *
  * After:
  * <Button variant="primary">Click me</Button>
+ * <Select options={[{value: 'dept1', label: 'Department 1'}]}
+ *         placeholder="Select department..." />
  *
  * Phase 3: Full Migration
  * Import directly from design system:
  *
  * Final:
- * import { Button } from '@/components/design-system';
+ * import { Button, Select } from '@/components/design-system';
  * <Button variant="primary">Click me</Button>
  */
 
