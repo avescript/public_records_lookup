@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 
 import { Checkbox } from './Checkbox';
 
@@ -153,10 +153,15 @@ export const InteractiveGroup: Story = {
   render: () => {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <Checkbox label="Option 1" />
-        <Checkbox label="Option 2" helperText="Additional information" />
-        <Checkbox label="Option 3 (disabled)" disabled />
-        <Checkbox label="Required option" required error helperText="This field is required" />
+        <Checkbox label='Option 1' />
+        <Checkbox label='Option 2' helperText='Additional information' />
+        <Checkbox label='Option 3 (disabled)' disabled />
+        <Checkbox
+          label='Required option'
+          required
+          error
+          helperText='This field is required'
+        />
       </div>
     );
   },
@@ -166,9 +171,9 @@ export const AllSizes: Story = {
   render: () => {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <Checkbox label="Small checkbox" size="small" />
-        <Checkbox label="Medium checkbox" size="medium" />
-        <Checkbox label="Large checkbox" size="large" />
+        <Checkbox label='Small checkbox' size='small' />
+        <Checkbox label='Medium checkbox' size='medium' />
+        <Checkbox label='Large checkbox' size='large' />
       </div>
     );
   },
@@ -178,8 +183,8 @@ export const AllVariants: Story = {
   render: () => {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <Checkbox label="Primary variant" variant="primary" checked />
-        <Checkbox label="Secondary variant" variant="secondary" checked />
+        <Checkbox label='Primary variant' variant='primary' checked />
+        <Checkbox label='Secondary variant' variant='secondary' checked />
       </div>
     );
   },

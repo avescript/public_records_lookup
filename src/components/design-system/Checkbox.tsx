@@ -8,10 +8,10 @@
 import React from 'react';
 import {
   Checkbox as MuiCheckbox,
+  type CheckboxProps as MuiCheckboxProps,
   FormControl,
   FormControlLabel,
   FormHelperText,
-  type CheckboxProps as MuiCheckboxProps,
 } from '@mui/material';
 
 import {
@@ -21,7 +21,12 @@ import {
   typography,
 } from '../../theme/design-system/tokens';
 
-const { colors: colorTokens, typography: typographyTokens, spacing: spacingTokens, borderRadius: borderRadiusTokens } = {
+const {
+  colors: colorTokens,
+  typography: typographyTokens,
+  spacing: spacingTokens,
+  borderRadius: borderRadiusTokens,
+} = {
   colors,
   typography,
   spacing,
@@ -29,7 +34,8 @@ const { colors: colorTokens, typography: typographyTokens, spacing: spacingToken
 };
 
 // Design system checkbox props
-export interface CheckboxProps extends Omit<MuiCheckboxProps, 'color' | 'size'> {
+export interface CheckboxProps
+  extends Omit<MuiCheckboxProps, 'color' | 'size'> {
   /** Text label for the checkbox */
   label?: string;
   /** Helper text displayed below the checkbox */
@@ -97,16 +103,16 @@ export const Checkbox: React.FC<CheckboxProps> = ({
       disabled={disabled}
       data-testid={testId}
       sx={{
-        color: error 
-          ? colorTokens.error[500] 
-          : disabled 
-            ? colorTokens.neutral[400] 
+        color: error
+          ? colorTokens.error[500]
+          : disabled
+            ? colorTokens.neutral[400]
             : colorTokens.neutral[700],
         '&.Mui-checked': {
-          color: error 
-            ? colorTokens.error[500] 
-            : variant === 'primary' 
-              ? colorTokens.primary[600] 
+          color: error
+            ? colorTokens.error[500]
+            : variant === 'primary'
+              ? colorTokens.primary[600]
               : colorTokens.secondary[600],
         },
         '&.Mui-disabled': {
@@ -115,9 +121,9 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         padding: spacingTokens[1],
         borderRadius: borderRadiusTokens.sm,
         '&:hover': {
-          backgroundColor: disabled 
+          backgroundColor: disabled
             ? 'transparent'
-            : error 
+            : error
               ? `${colorTokens.error[500]}08`
               : `${colorTokens.primary[600]}08`,
         },
@@ -132,9 +138,9 @@ export const Checkbox: React.FC<CheckboxProps> = ({
       <>
         {checkboxElement}
         {helperText && (
-          <FormHelperText 
+          <FormHelperText
             error={error}
-            sx={{ 
+            sx={{
               marginLeft: spacingTokens[4],
               fontSize: typography.fontSize.sm.size,
               color: error ? colorTokens.error[500] : colorTokens.neutral[600],
@@ -157,17 +163,22 @@ export const Checkbox: React.FC<CheckboxProps> = ({
             style={{
               fontSize: typographyTokens.fontSize.base.size,
               fontFamily: typographyTokens.fontFamily.primary,
-              color: error 
-                ? colorTokens.error[500] 
-                : disabled 
-                  ? colorTokens.neutral[400] 
+              color: error
+                ? colorTokens.error[500]
+                : disabled
+                  ? colorTokens.neutral[400]
                   : colorTokens.neutral[900],
               fontWeight: typographyTokens.fontWeight.medium,
             }}
           >
             {label}
             {required && (
-              <span style={{ color: colorTokens.error[500], marginLeft: spacingTokens[0.5] }}>
+              <span
+                style={{
+                  color: colorTokens.error[500],
+                  marginLeft: spacingTokens[0.5],
+                }}
+              >
                 *
               </span>
             )}

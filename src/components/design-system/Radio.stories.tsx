@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 
 import { Radio, RadioGroup } from './Radio';
 
@@ -56,20 +56,20 @@ const basicOptions = [
 ];
 
 const detailedOptions = [
-  { 
-    value: 'basic', 
-    label: 'Basic Plan', 
-    helperText: '$10/month - Perfect for individuals' 
+  {
+    value: 'basic',
+    label: 'Basic Plan',
+    helperText: '$10/month - Perfect for individuals',
   },
-  { 
-    value: 'pro', 
-    label: 'Pro Plan', 
-    helperText: '$25/month - Great for small teams' 
+  {
+    value: 'pro',
+    label: 'Pro Plan',
+    helperText: '$25/month - Great for small teams',
   },
-  { 
-    value: 'enterprise', 
-    label: 'Enterprise Plan', 
-    helperText: '$100/month - Full features for large organizations' 
+  {
+    value: 'enterprise',
+    label: 'Enterprise Plan',
+    helperText: '$100/month - Full features for large organizations',
   },
 ];
 
@@ -197,9 +197,9 @@ export const SingleRadio: Story = {
   render: () => {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <Radio label="Individual radio button" value="single" />
-        <Radio label="Another radio" value="another" />
-        <Radio label="Disabled radio" value="disabled" disabled />
+        <Radio label='Individual radio button' value='single' />
+        <Radio label='Another radio' value='another' />
+        <Radio label='Disabled radio' value='disabled' disabled />
       </div>
     );
   },
@@ -211,24 +211,36 @@ export const InteractiveExample: Story = {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <RadioGroup
-          label="Notification Preferences"
+          label='Notification Preferences'
           options={[
-            { value: 'all', label: 'All notifications', helperText: 'Receive everything' },
-            { value: 'important', label: 'Important only', helperText: 'Only critical updates' },
-            { value: 'none', label: 'None', helperText: 'Turn off all notifications' },
+            {
+              value: 'all',
+              label: 'All notifications',
+              helperText: 'Receive everything',
+            },
+            {
+              value: 'important',
+              label: 'Important only',
+              helperText: 'Only critical updates',
+            },
+            {
+              value: 'none',
+              label: 'None',
+              helperText: 'Turn off all notifications',
+            },
           ]}
-          value="important"
+          value='important'
         />
-        
+
         <RadioGroup
-          label="Theme Preference"
+          label='Theme Preference'
           options={[
             { value: 'light', label: 'Light' },
             { value: 'dark', label: 'Dark' },
             { value: 'system', label: 'System default' },
           ]}
-          direction="row"
-          variant="secondary"
+          direction='row'
+          variant='secondary'
         />
       </div>
     );
@@ -240,22 +252,22 @@ export const AllSizes: Story = {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <RadioGroup
-          label="Small size"
+          label='Small size'
           options={basicOptions}
-          size="small"
-          direction="row"
+          size='small'
+          direction='row'
         />
         <RadioGroup
-          label="Medium size"
+          label='Medium size'
           options={basicOptions}
-          size="medium"
-          direction="row"
+          size='medium'
+          direction='row'
         />
         <RadioGroup
-          label="Large size"
+          label='Large size'
           options={basicOptions}
-          size="large"
-          direction="row"
+          size='large'
+          direction='row'
         />
       </div>
     );
