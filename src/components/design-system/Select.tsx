@@ -250,7 +250,10 @@ export const Select: React.FC<SelectProps> = ({
         onClose={handleClose}
         multiple={multiple}
         displayEmpty
-        renderValue={renderValue || defaultRenderValue}
+        renderValue={
+          renderValue ||
+          (defaultRenderValue as (selected: unknown) => React.ReactNode)
+        }
         disabled={disabled}
         open={isOpen}
         MenuProps={{
@@ -258,7 +261,7 @@ export const Select: React.FC<SelectProps> = ({
             style: {
               maxHeight: maxMenuHeight,
               borderRadius: borderRadius.md,
-              marginTop: spacing.xs,
+              marginTop: spacing[1],
               boxShadow: `0 4px 6px -1px ${colors.neutral[900]}1a, 0 2px 4px -1px ${colors.neutral[900]}0d`,
             },
           },
@@ -304,10 +307,10 @@ export const Select: React.FC<SelectProps> = ({
               onClick={e => e.stopPropagation()}
               style={{
                 width: '100%',
-                padding: spacing.xs,
+                padding: spacing[1],
                 border: `1px solid ${colors.neutral[300]}`,
                 borderRadius: borderRadius.sm,
-                fontSize: typography.fontSize.sm,
+                fontSize: typography.fontSize.sm.size,
                 fontFamily: typography.fontFamily.primary,
                 outline: 'none',
               }}
@@ -393,7 +396,7 @@ export const Select: React.FC<SelectProps> = ({
             fontFamily: typography.fontFamily.primary,
             fontSize: typography.fontSize.xs,
             color: error ? colors.error[600] : colors.neutral[600],
-            marginTop: spacing.xs,
+            marginTop: spacing[1],
           }}
         >
           {error || helperText}

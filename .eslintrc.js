@@ -14,6 +14,41 @@ module.exports = {
     // React specific rules
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
+
+    // Migration layer enforcement - guide developers to use migration components
+    'no-restricted-imports': [
+      'error',
+      {
+        paths: [
+          {
+            name: '@mui/material/Button',
+            message:
+              'Use Button from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/TextField',
+            message:
+              'Use TextField from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Select',
+            message:
+              'Use Select from "@/components/migration" instead for gradual design system adoption',
+          },
+        ],
+        patterns: [
+          {
+            group: [
+              '@mui/material/*Button*',
+              '@mui/material/*TextField*',
+              '@mui/material/*Select*',
+            ],
+            message:
+              'Use migration layer components from "@/components/migration" for gradual design system adoption',
+          },
+        ],
+      },
+    ],
   },
   overrides: [
     {

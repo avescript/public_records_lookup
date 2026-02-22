@@ -570,3 +570,85 @@
 - [ ] Performance testing and optimization at enterprise scale
 - [ ] Advanced analytics and business intelligence platform integration
 - [ ] Enhanced AI service agreements for next-generation capabilities
+
+---
+
+## Component System Migration & Consolidation
+
+**Priority-Based Task List for Design System Integration**
+
+### 🎯 Priority 1: Critical Foundation
+
+_(Must complete before expanding)_
+
+1. **Create ESLint Migration Rules** ✅ COMPLETED
+   - ✅ Added `no-restricted-imports` rule to prevent direct `@mui/material` usage for migrated components
+   - ✅ Configured to suggest `@/components/migration` instead
+   - ✅ Applied to Button, Select, TextField initially
+   - ✅ Validated rules work correctly - catching violations in Header, DateRangePicker, and core Button components
+
+2. **Validate Current Migration Implementation** ✅ COMPLETED
+   - ✅ Tested RequestForm thoroughly - both Next.js (localhost:3001) and Storybook (localhost:6007) running successfully
+   - ✅ Verified Storybook stories work with migration layer components - Storybook operational with design system stories
+   - ✅ Ensured no TypeScript errors in migration adapters - TypeScript compilation clean, fixed minor Select component issues
+   - ✅ **Migration Validation Results:**
+     - RequestForm using migration components (Button, Select, TextField) works correctly
+     - No compilation errors in migration layer (`npx tsc --noEmit` passed)
+     - ESLint rules properly enforcing migration layer usage
+     - Both development servers running without runtime errors
+
+### 🎯 Priority 2: Expand Migration Coverage
+
+_(Core components needed across the app)_
+
+3. **Add Essential Components to Migration Layer** ⏳ Next Task
+   - `Checkbox` adapter (high usage in forms)
+   - `Radio` adapter (used in RequestForm and other forms)
+   - `FormGroup`/`FormControl` adapters (form layout components)
+
+4. **Convert High-Traffic Components**
+   - StaffDashboard components (likely heavy Material-UI usage)
+   - Admin panel components
+   - Authentication forms
+
+### 🎯 Priority 3: Migration Tooling
+
+_(Developer experience and tracking)_
+
+5. **Implement Migration Dashboard**
+   - Component usage tracking (`useMigrationStats` hook)
+   - Visual progress indicator for migration adoption
+   - Development-only migration warnings/suggestions
+
+6. **Create Migration Documentation**
+   - Component conversion guidelines
+   - Code review checklist for new components
+   - Migration layer API reference
+
+### 🎯 Priority 4: Systematic Conversion
+
+_(Methodical replacement of remaining components)_
+
+7. **Audit All Material-UI Usage**
+   - Search codebase for `@mui/material` imports
+   - Create prioritized list based on usage frequency
+   - Identify components that need design system equivalents
+
+8. **Batch Convert Similar Components**
+   - All form components together
+   - All layout components together
+   - All navigation components together
+
+### 🎯 Priority 5: Performance & Optimization
+
+_(Once migration is largely complete)_
+
+9. **Bundle Size Optimization**
+   - Analyze bundle impact of migration layer
+   - Implement tree-shaking for unused Material-UI components
+   - Lazy load design system components where beneficial
+
+10. **Migration Completion**
+    - Remove migration layer adapters (components use design system directly)
+    - Update ESLint rules to prevent Material-UI usage entirely
+    - Final performance validation
