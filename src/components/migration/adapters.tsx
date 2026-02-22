@@ -39,21 +39,35 @@ type LegacyButtonVariant = 'text' | 'outlined' | 'contained';
 type LegacyTextFieldVariant = 'standard' | 'filled' | 'outlined';
 
 // Legacy Select Props - Material-UI Select compatibility
-interface LegacySelectProps extends Omit<DesignSelectProps, 'options'> {
+interface LegacySelectProps
+  extends Omit<DesignSelectProps, 'options' | 'onChange'> {
   children?: React.ReactNode; // For MenuItem children
   variant?: 'standard' | 'filled' | 'outlined';
   displayEmpty?: boolean;
   renderValue?: (selected: unknown) => React.ReactNode;
   MenuProps?: any;
   SelectProps?: any;
+  sx?: any; // Material-UI sx prop
+  size?: 'small' | 'medium';
   // Support both new options format and legacy children
   options?: SelectOption[];
+  // Material-UI style onChange with event.target.value
+  onChange?: (event: { target: { value: unknown } }) => void;
 }
 
-// Legacy Button Props
-interface LegacyButtonProps extends Omit<DesignButtonProps, 'variant'> {
+// Legacy Button Props - Material-UI Button compatibility
+interface LegacyButtonProps
+  extends Omit<DesignButtonProps, 'variant' | 'size'> {
   color?: LegacyButtonColor;
   variant?: LegacyButtonVariant;
+  size?: 'small' | 'medium' | 'large'; // Material-UI size format
+  sx?: any; // Material-UI sx prop
+  startIcon?: React.ReactNode; // Material-UI startIcon
+  endIcon?: React.ReactNode; // Material-UI endIcon
+  component?: any; // Material-UI component prop (for links, etc.)
+  href?: string; // For link buttons
+  target?: string; // For link buttons
+  rel?: string; // For link buttons
 }
 
 // Legacy Input Props
@@ -93,7 +107,7 @@ interface LegacyRadioGroupProps extends Omit<DesignRadioGroupProps, 'options'> {
   row?: boolean;
 }
 
-// Legacy FormControl Props - Basic compatibility
+// Legacy FormControl Props - Material-UI FormControl compatibility
 interface LegacyFormControlProps {
   children?: React.ReactNode;
   error?: boolean;
@@ -103,6 +117,11 @@ interface LegacyFormControlProps {
   fullWidth?: boolean;
   margin?: 'none' | 'normal' | 'dense';
   size?: 'small' | 'medium';
+  className?: string;
+  sx?: any; // Material-UI sx prop
+  style?: React.CSSProperties;
+  id?: string;
+  'data-testid'?: string;
 }
 
 /**
@@ -112,6 +131,14 @@ interface LegacyFormControlProps {
 export const Button: React.FC<LegacyButtonProps> = ({
   color = 'primary',
   variant = 'contained',
+  size = 'medium',
+  sx,
+  startIcon,
+  endIcon,
+  component,
+  href,
+  target,
+  rel,
   ...props
 }) => {
   // Map legacy props to design system variants
@@ -141,9 +168,55 @@ export const Button: React.FC<LegacyButtonProps> = ({
     }
   };
 
-  const designVariant = getDesignVariant(color, variant);
+  // Map Material-UI size format to design system format
+  const getDesignSize = (
+    size: 'small' | 'medium' | 'large'
+  ): 'sm' | 'md' | 'lg' => {
+    switch (size) {
+      case 'small':
+        return 'sm';
+      case 'medium':
+        return 'md';
+      case 'large':
+        return 'lg';
+      default:
+        return 'md';
+    }
+  };
 
-  return <DesignButton variant={designVariant} {...props} />;
+  const designVariant = getDesignVariant(color, variant);
+  const designSize = getDesignSize(size);
+
+  // For backward compatibility, fall back to Material-UI Button for complex props
+  if (sx || component || href || target || rel) {
+    const MuiButton = require('@mui/material/Button').Button;
+    return (
+      <MuiButton
+        color={color}
+        variant={variant}
+        size={size}
+        sx={sx}
+        startIcon={startIcon}
+        endIcon={endIcon}
+        component={component}
+        href={href}
+        target={target}
+        rel={rel}
+        {...props}
+      />
+    );
+  }
+
+  // Use design system button for simple cases
+  return (
+    <DesignButton
+      variant={designVariant}
+      size={designSize}
+      leftIcon={startIcon}
+      rightIcon={endIcon}
+      {...props}
+    />
+  );
 };
 
 /**
@@ -178,6 +251,9 @@ export const Select: React.FC<LegacySelectProps> = ({
   displayEmpty = false,
   options,
   placeholder,
+  onChange,
+  sx,
+  size,
   MenuProps,
   SelectProps,
   ...props
@@ -216,10 +292,41 @@ export const Select: React.FC<LegacySelectProps> = ({
   const effectivePlaceholder =
     displayEmpty && !placeholder ? 'Select an option...' : placeholder;
 
+  // Convert design system onChange to Material-UI style onChange
+  const handleChange = (value: string | number) => {
+    if (onChange) {
+      onChange({ target: { value } });
+    }
+  };
+
+  // For backward compatibility with complex Material-UI props, use Material-UI Select
+  if (sx || MenuProps || SelectProps || variant !== 'outlined') {
+    const MuiSelect = require('@mui/material/Select').Select;
+    const MuiFormControl = require('@mui/material/FormControl').FormControl;
+    const MuiInputLabel = require('@mui/material/InputLabel').InputLabel;
+
+    return (
+      <MuiFormControl variant={variant} size={size} sx={sx}>
+        {placeholder && <MuiInputLabel>{placeholder}</MuiInputLabel>}
+        <MuiSelect
+          displayEmpty={displayEmpty}
+          MenuProps={MenuProps}
+          {...SelectProps}
+          onChange={onChange}
+          {...props}
+        >
+          {children}
+        </MuiSelect>
+      </MuiFormControl>
+    );
+  }
+
+  // Use design system Select for simple cases
   return (
     <DesignSelect
       options={extractedOptions}
       placeholder={effectivePlaceholder}
+      onChange={handleChange}
       {...props}
     />
   );
@@ -273,13 +380,14 @@ export const Checkbox: React.FC<LegacyCheckboxProps> = ({
   ...props
 }) => {
   // Map legacy color to design variant
-  const designVariant: DesignCheckboxProps['variant'] = 
+  const designVariant: DesignCheckboxProps['variant'] =
     color === 'secondary' ? 'secondary' : 'primary';
 
   // Note: indeterminate, checkedIcon, icon, and inputProps are Material-UI specific
   // and not directly supported in our design system, but we pass them through
   const additionalProps: Record<string, unknown> = {};
-  if (indeterminate !== undefined) additionalProps.indeterminate = indeterminate;
+  if (indeterminate !== undefined)
+    additionalProps.indeterminate = indeterminate;
   if (checkedIcon) additionalProps.checkedIcon = checkedIcon;
   if (icon) additionalProps.icon = icon;
   if (inputProps) additionalProps.inputProps = inputProps;
@@ -306,7 +414,7 @@ export const Radio: React.FC<LegacyRadioProps> = ({
   ...props
 }) => {
   // Map legacy color to design variant
-  const designVariant: DesignRadioProps['variant'] = 
+  const designVariant: DesignRadioProps['variant'] =
     color === 'secondary' ? 'secondary' : 'primary';
 
   // Note: checkedIcon and icon are Material-UI specific
@@ -338,7 +446,7 @@ export const RadioGroup: React.FC<LegacyRadioGroupProps> = ({
     // For backward compatibility, we'll pass children through to Material-UI
     // In a full migration, children would be converted to options array
     const additionalProps = { children, row };
-    
+
     // Use Material-UI RadioGroup directly for complex children scenarios
     return (
       <div style={{ display: 'flex', flexDirection: row ? 'row' : 'column' }}>
@@ -348,17 +456,12 @@ export const RadioGroup: React.FC<LegacyRadioGroupProps> = ({
   }
 
   // Use design system RadioGroup when options are provided
-  return (
-    <DesignRadioGroup
-      direction={row ? 'row' : 'column'}
-      {...props}
-    />
-  );
+  return <DesignRadioGroup direction={row ? 'row' : 'column'} {...props} />;
 };
 
 /**
  * Legacy FormControl Adapter
- * Basic compatibility wrapper for Material-UI FormControl
+ * Material-UI FormControl compatibility wrapper
  */
 export const FormControl: React.FC<LegacyFormControlProps> = ({
   children,
@@ -369,12 +472,16 @@ export const FormControl: React.FC<LegacyFormControlProps> = ({
   fullWidth = false,
   margin = 'none',
   size = 'medium',
+  className,
+  sx,
+  style,
+  id,
+  'data-testid': testId,
   ...props
 }) => {
-  // For backward compatibility, pass most props to Material-UI FormControl
-  // Import Material-UI FormControl directly for this adapter
+  // Import Material-UI FormControl directly for maximum compatibility
   const MuiFormControl = require('@mui/material/FormControl').FormControl;
-  
+
   return (
     <MuiFormControl
       error={error}
@@ -384,6 +491,11 @@ export const FormControl: React.FC<LegacyFormControlProps> = ({
       fullWidth={fullWidth}
       margin={margin}
       size={size}
+      className={className}
+      sx={sx}
+      style={style}
+      id={id}
+      data-testid={testId}
       {...props}
     >
       {children}
@@ -445,7 +557,7 @@ export const getMigrationMapping = () => {
       '<FormControlLabel />': 'options=[{value, label}] array',
     },
     FormControl: {
-      'Note': 'Passes through to Material-UI for backward compatibility',
+      Note: 'Passes through to Material-UI for backward compatibility',
       'variant="outlined"': 'Maintained for compatibility',
       'fullWidth={true}': 'Maintained for compatibility',
     },
