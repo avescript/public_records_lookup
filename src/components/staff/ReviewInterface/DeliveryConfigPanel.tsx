@@ -99,7 +99,7 @@ const deliveryMethods: {
     value: 'email',
     label: 'Email',
     icon: <EmailIcon />,
-    description: "Send response directly to requester's email",
+    description: 'Send response directly to requester\'s email',
   },
   {
     value: 'portal',
@@ -734,7 +734,7 @@ export function DeliveryConfigPanel({
                           {config.scheduledDate
                             ? format(
                                 config.scheduledDate,
-                                "MMM dd, yyyy 'at' h:mm a"
+                                'MMM dd, yyyy \'at\' h:mm a'
                               )
                             : 'Immediate'}
                         </Typography>

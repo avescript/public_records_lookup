@@ -67,7 +67,7 @@ export default function StatusLookupPage() {
   const formatDate = (timestamp: any) => {
     if (!timestamp) return '';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return format(date, "MMMM d, yyyy 'at' h:mm a");
+    return format(date, 'MMMM d, yyyy \'at\' h:mm a');
   };
 
   const getDepartmentDisplayName = (department: string) => {

@@ -184,7 +184,7 @@ export const RedactionCollaborationPanel: React.FC<
           redactionId: selectedRedactionId,
           authorId: currentUserId,
           authorName: 'Current User',
-          content: "Good point. I'll adjust the boundaries.",
+          content: 'Good point. I\'ll adjust the boundaries.',
           timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
           type: 'comment',
           status: 'active',

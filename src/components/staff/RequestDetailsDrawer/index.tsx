@@ -569,7 +569,7 @@ export function RequestDetailsDrawer({
                           try {
                             return format(
                               convertToDate(record.acceptedAt),
-                              "MMM d, yyyy 'at' h:mm a"
+                              'MMM d, yyyy \'at\' h:mm a'
                             );
                           } catch (error) {
                             console.error(

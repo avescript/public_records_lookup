@@ -527,14 +527,14 @@ export function ApprovalChecklist({
                         Submitted:{' '}
                         {format(
                           new Date(approval.submittedAt),
-                          "MMM dd, yyyy 'at' h:mm a"
+                          'MMM dd, yyyy \'at\' h:mm a'
                         )}
                         {approval.reviewedAt && (
                           <span>
                             {' • Reviewed: '}
                             {format(
                               new Date(approval.reviewedAt),
-                              "MMM dd, yyyy 'at' h:mm a"
+                              'MMM dd, yyyy \'at\' h:mm a'
                             )}
                           </span>
                         )}

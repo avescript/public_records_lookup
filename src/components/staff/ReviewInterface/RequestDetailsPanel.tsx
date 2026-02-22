@@ -61,7 +61,7 @@ export function RequestDetailsPanel({
 }: RequestDetailsPanelProps) {
   const formatDate = (date: Date | string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return format(dateObj, "MMM dd, yyyy 'at' h:mm a");
+    return format(dateObj, 'MMM dd, yyyy \'at\' h:mm a');
   };
 
   const getPriorityColor = (priority: string) => {

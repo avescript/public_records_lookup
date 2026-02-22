@@ -421,7 +421,7 @@ export function ReviewHistory({
                               Submitted:{' '}
                               {format(
                                 new Date(approval.submittedAt),
-                                "MMM dd, yyyy 'at' h:mm a"
+                                'MMM dd, yyyy \'at\' h:mm a'
                               )}
                             </Typography>
                             {approval.reviewedAt && (
@@ -429,7 +429,7 @@ export function ReviewHistory({
                                 Reviewed:{' '}
                                 {format(
                                   new Date(approval.reviewedAt),
-                                  "MMM dd, yyyy 'at' h:mm a"
+                                  'MMM dd, yyyy \'at\' h:mm a'
                                 )}
                               </Typography>
                             )}
@@ -517,7 +517,7 @@ export function ReviewHistory({
                             >
                               {format(
                                 new Date(change.timestamp),
-                                "MMM dd, yyyy 'at' h:mm a"
+                                'MMM dd, yyyy \'at\' h:mm a'
                               )}
                             </Typography>
                           </Box>
@@ -553,7 +553,7 @@ export function ReviewHistory({
                     primary={event.description}
                     secondary={format(
                       new Date(event.timestamp),
-                      "MMM dd, yyyy 'at' h:mm a"
+                      'MMM dd, yyyy \'at\' h:mm a'
                     )}
                   />
                 </ListItem>

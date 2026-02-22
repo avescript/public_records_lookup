@@ -237,7 +237,7 @@ export const WithCharacterCount: Story = {
     showCharCount: true,
     maxLength: 100,
     label: 'Tweet',
-    placeholder: "What's happening?",
+    placeholder: 'What\'s happening?',
     helperText: 'Share your thoughts',
   },
 };

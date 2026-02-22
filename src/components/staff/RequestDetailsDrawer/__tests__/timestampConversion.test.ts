@@ -88,7 +88,7 @@ describe('Timestamp conversion', () => {
     };
 
     const result = convertToDate(mockTimestamp);
-    const formatted = format(result, "MMM d, yyyy 'at' h:mm a");
+    const formatted = format(result, 'MMM d, yyyy \'at\' h:mm a');
 
     // Should not throw and should produce a reasonable format
     expect(formatted).toMatch(/Jan 15, 2024 at \d{1,2}:\d{2} [AP]M/);
