@@ -30,8 +30,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import { useRecordSelection } from '../../../contexts/RecordSelectionContext';
 import { EnhancedMatchCandidate } from '../../../types/enhanced-search';
-import { useRecordSelection } from '../../contexts/RecordSelectionContext';
 
 interface RecordSelectionToolbarProps {
   availableRecords?: EnhancedMatchCandidate[];

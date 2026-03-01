@@ -30,7 +30,7 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { EnhancedSearchInterface } from '../../../components/staff/EnhancedSearch/AdvancedSearchInterface';
+import { AdvancedSearchInterface } from '../../../components/staff/EnhancedSearch/AdvancedSearchInterface';
 import { useRecordSelection } from '../../../contexts/RecordSelectionContext';
 import { EnhancedMatchCandidate } from '../../../types/enhanced-search';
 
@@ -317,11 +317,15 @@ export const RecordReviewWorkspace: React.FC<ReviewWorkspaceProps> = ({
           {/* Search Interface */}
           {showSearch && (
             <Paper elevation={1} sx={{ p: 2 }}>
-              <EnhancedSearchInterface
-                onResults={handleSearchResults}
-                initialQuery={workspaceState.searchQuery}
-                placeholder='Search public records...'
-                showAdvancedOptions={true}
+              <AdvancedSearchInterface
+                onSearch={options => {
+                  // Execute search with options and update results
+                  // For now, just update the query in the workspace state
+                  setWorkspaceState(prev => ({
+                    ...prev,
+                    searchQuery: options.query,
+                  }));
+                }}
               />
             </Paper>
           )}

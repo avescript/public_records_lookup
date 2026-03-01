@@ -645,12 +645,17 @@ export const routeRequestToAgency = async (
 
     await updateDoc(docRef, updateData);
 
-    auditService.logEvent({
-      service: 'RequestService',
-      action: 'routeRequestToAgency',
-      severity: 'info',
-      details: { requestId, targetAgency, reason, routedBy },
-    });
+    auditService.logEvent(
+      'RequestService',
+      'routeRequestToAgency',
+      routedBy,
+      'System',
+      'records_officer',
+      'request',
+      requestId,
+      { targetAgency, reason },
+      'info'
+    );
 
     console.log('✅ [Request Service] Successfully routed request to agency');
   } catch (error) {
@@ -658,16 +663,20 @@ export const routeRequestToAgency = async (
       '❌ [Request Service] Error routing request to agency:',
       error
     );
-    auditService.logEvent({
-      service: 'RequestService',
-      action: 'routeRequestToAgency',
-      severity: 'error',
-      details: {
+    auditService.logEvent(
+      'RequestService',
+      'routeRequestToAgency',
+      'system',
+      'System',
+      'records_officer',
+      'request',
+      requestId,
+      {
         error: error instanceof Error ? error.message : 'Unknown error',
-        requestId,
         targetAgency,
       },
-    });
+      'error'
+    );
     throw error;
   }
 };

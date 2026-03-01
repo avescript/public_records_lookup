@@ -28,8 +28,8 @@ import {
   useTheme,
 } from '@mui/material';
 
+import { useRecordSelection } from '../../../contexts/RecordSelectionContext';
 import { EnhancedMatchCandidate } from '../../../types/enhanced-search';
-import { useRecordSelection } from '../../contexts/RecordSelectionContext';
 
 interface SelectableSearchResultCardProps {
   record: EnhancedMatchCandidate;
@@ -95,7 +95,9 @@ export const SelectableSearchResultCard: React.FC<
     }
   };
 
-  const handleSelectionToggle = (event: React.MouseEvent) => {
+  const handleSelectionToggle = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     event.stopPropagation();
     if (canSelect) {
       toggleRecord(record);
@@ -212,7 +214,7 @@ export const SelectableSearchResultCard: React.FC<
                   height: compact ? 32 : 40,
                 }}
               >
-                {getFileTypeIcon(record.documentType)}
+                {getFileTypeIcon(record.documentType || 'unknown')}
               </Avatar>
 
               {/* Content */}
@@ -237,9 +239,15 @@ export const SelectableSearchResultCard: React.FC<
                   sx={{ mb: compact ? 0.5 : 1 }}
                 >
                   <Chip
-                    label={`${Math.round(record.confidence * 100)}% match`}
+                    label={`${record.confidenceScore || 0}% match`}
                     size='small'
-                    color={getConfidenceColor(record.confidence) as any}
+                    color={
+                      (record.confidenceScore || 0) >= 80
+                        ? 'success'
+                        : (record.confidenceScore || 0) >= 50
+                          ? 'warning'
+                          : 'error'
+                    }
                     variant='outlined'
                   />
 
@@ -273,7 +281,7 @@ export const SelectableSearchResultCard: React.FC<
                 )}
 
                 {/* Additional metadata */}
-                {(record.fileSize || record.tags) && (
+                {record.fileSize && (
                   <Box sx={{ mt: 1 }}>
                     {record.fileSize && (
                       <Typography
@@ -285,24 +293,30 @@ export const SelectableSearchResultCard: React.FC<
                       </Typography>
                     )}
 
-                    {record.tags && record.tags.length > 0 && (
-                      <Stack direction='row' spacing={0.5} sx={{ mt: 0.5 }}>
-                        {record.tags.slice(0, 3).map((tag, index) => (
-                          <Chip
-                            key={index}
-                            label={tag}
-                            size='small'
-                            variant='outlined'
-                            sx={{ fontSize: '0.7rem', height: 20 }}
-                          />
-                        ))}
-                        {record.tags.length > 3 && (
-                          <Typography variant='caption' color='text.secondary'>
-                            +{record.tags.length - 3} more
-                          </Typography>
-                        )}
-                      </Stack>
-                    )}
+                    {record.relatedRecords &&
+                      record.relatedRecords.length > 0 && (
+                        <Stack direction='row' spacing={0.5} sx={{ mt: 0.5 }}>
+                          {record.relatedRecords
+                            .slice(0, 3)
+                            .map((tag, index) => (
+                              <Chip
+                                key={index}
+                                label={tag}
+                                size='small'
+                                variant='outlined'
+                                sx={{ fontSize: '0.7rem', height: 20 }}
+                              />
+                            ))}
+                          {record.relatedRecords.length > 3 && (
+                            <Typography
+                              variant='caption'
+                              color='text.secondary'
+                            >
+                              +{record.relatedRecords.length - 3} more
+                            </Typography>
+                          )}
+                        </Stack>
+                      )}
                   </Box>
                 )}
               </Box>

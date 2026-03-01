@@ -48,7 +48,8 @@ import {
 import { enhancedAIRecordService } from '../../../services/enhancedAIRecordService';
 import { EnhancedMatchCandidate } from '../../../types/enhanced-search';
 
-interface RecordComparisonData extends EnhancedMatchCandidate {
+interface RecordComparisonData
+  extends Omit<EnhancedMatchCandidate, 'metadata'> {
   fullContent?: string;
   metadata?: Record<string, any>;
   tags?: string[];
@@ -207,8 +208,8 @@ export const RecordComparisonView: React.FC<RecordComparisonViewProps> = ({
                 ...record,
                 fullContent: preview.content,
                 metadata: preview.metadata,
-                tags: preview.tags,
-                relationships: preview.relationships,
+                tags: record.relatedRecords || [],
+                relationships: record.relatedRecords || [],
               });
             } catch (error) {
               console.error(
@@ -319,16 +320,20 @@ export const RecordComparisonView: React.FC<RecordComparisonViewProps> = ({
         subheader={
           <Stack direction='row' spacing={1} alignItems='center'>
             <Chip
-              label={`${Math.round(record.confidence * 100)}% match`}
+              label={`${record.confidenceScore || 0}% match`}
               size='small'
-              color={record.confidence >= 0.8 ? 'success' : 'warning'}
+              color={
+                (record.confidenceScore || 0) >= 80 ? 'success' : 'warning'
+              }
             />
             <Typography variant='caption'>{record.documentType}</Typography>
           </Stack>
         }
         action={
           <IconButton
-            onClick={() => onRecordAction?.('view', record)}
+            onClick={() =>
+              onRecordAction?.('view', record as EnhancedMatchCandidate)
+            }
             size='small'
           >
             <FullscreenIcon />
@@ -468,7 +473,7 @@ export const RecordComparisonView: React.FC<RecordComparisonViewProps> = ({
                     Confidence Score
                   </Typography>
                   <Typography variant='body2'>
-                    {Math.round(record.confidence * 100)}%
+                    {record.confidenceScore || 0}%
                   </Typography>
                 </Box>
               </Stack>

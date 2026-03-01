@@ -453,22 +453,22 @@ export const PackageApprovalComponent: React.FC<PackageApprovalProps> = ({
     role: 'legal_reviewer' as const,
   };
 
-  useEffect(() => {
-    const loadPackageApprovals = async () => {
-      try {
-        setLoading(true);
-        const approvals =
-          await legalReviewService.getPackageApprovalsByRequest(requestId);
-        setPackageApprovals(approvals);
-        setError(null);
-      } catch (err) {
-        console.error('Failed to load package approvals:', err);
-        setError('Failed to load package approvals');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadPackageApprovals = async () => {
+    try {
+      setLoading(true);
+      const approvals =
+        await legalReviewService.getPackageApprovalsByRequest(requestId);
+      setPackageApprovals(approvals);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load package approvals:', err);
+      setError('Failed to load package approvals');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadPackageApprovals();
   }, [requestId]);
 

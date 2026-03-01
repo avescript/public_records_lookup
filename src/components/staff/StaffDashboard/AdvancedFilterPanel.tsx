@@ -291,14 +291,30 @@ export const AdvancedFilterPanel: React.FC<AdvancedFilterPanelProps> = ({
               <DatePicker
                 label='Start Date'
                 value={filters.startDate}
-                onChange={date => onFiltersChange({ startDate: date })}
+                onChange={date =>
+                  onFiltersChange({
+                    startDate: date
+                      ? date instanceof Date
+                        ? date
+                        : date.toDate()
+                      : null,
+                  })
+                }
                 slotProps={{ textField: { size: 'small' } }}
               />
 
               <DatePicker
                 label='End Date'
                 value={filters.endDate}
-                onChange={date => onFiltersChange({ endDate: date })}
+                onChange={date =>
+                  onFiltersChange({
+                    endDate: date
+                      ? date instanceof Date
+                        ? date
+                        : date.toDate()
+                      : null,
+                  })
+                }
                 slotProps={{ textField: { size: 'small' } }}
               />
 

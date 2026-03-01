@@ -473,24 +473,24 @@ export const CommentThreadComponent: React.FC<CommentThreadProps> = ({
     role: 'legal_reviewer' as const,
   };
 
-  useEffect(() => {
-    const loadThreads = async () => {
-      try {
-        setLoading(true);
-        const threadList = await legalReviewService.getCommentThreadsForRecord(
-          recordId,
-          fileName
-        );
-        setThreads(threadList);
-        setError(null);
-      } catch (err) {
-        console.error('Failed to load comment threads:', err);
-        setError('Failed to load comment threads');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadThreads = async () => {
+    try {
+      setLoading(true);
+      const threadList = await legalReviewService.getCommentThreadsForRecord(
+        recordId,
+        fileName
+      );
+      setThreads(threadList);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load comment threads:', err);
+      setError('Failed to load comment threads');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadThreads();
   }, [recordId, fileName]);
 

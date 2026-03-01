@@ -15,19 +15,19 @@ import AgencyManagement from '../../components/admin/AgencyManagement';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function AdminDashboardPage() {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [currentView, setCurrentView] = useState('overview');
   const [selectedAgency, setSelectedAgency] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user has admin permissions
-    if (!loading && (!user || user.role !== 'admin')) {
+    if (!isLoading && (!user || user.role !== 'admin')) {
       // In a real app, redirect to unauthorized page
       console.warn('Unauthorized access attempt to admin dashboard');
     }
-  }, [user, loading]);
+  }, [user, isLoading]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
         <div className='text-center'>

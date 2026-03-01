@@ -466,7 +466,9 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
   };
 
   const generateCSVExport = (requestIds: string[], format: string) => {
-    const selectedRequests = requests.filter(r => requestIds.includes(r.id));
+    const selectedRequests = requests.filter(
+      r => r.id && requestIds.includes(r.id)
+    );
 
     if (format === 'csv') {
       const headers = [
@@ -590,7 +592,11 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
           }
           onChange={e => {
             if (e.target.checked) {
-              setSelectedRequestIds(filteredRequests.map(r => r.id));
+              setSelectedRequestIds(
+                filteredRequests
+                  .map(r => r.id)
+                  .filter((id): id is string => id !== undefined)
+              );
             } else {
               setSelectedRequestIds([]);
             }
@@ -971,7 +977,15 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
             <DatePicker
               label='Start Date'
               value={startDate}
-              onChange={newValue => setStartDate(newValue)}
+              onChange={newValue =>
+                setStartDate(
+                  newValue
+                    ? newValue instanceof Date
+                      ? newValue
+                      : newValue.toDate()
+                    : null
+                )
+              }
               slotProps={{
                 textField: {
                   size: 'small',
@@ -983,7 +997,15 @@ export function StaffDashboard({ onRequestSelect }: StaffDashboardProps) {
             <DatePicker
               label='End Date'
               value={endDate}
-              onChange={newValue => setEndDate(newValue)}
+              onChange={newValue =>
+                setEndDate(
+                  newValue
+                    ? newValue instanceof Date
+                      ? newValue
+                      : newValue.toDate()
+                    : null
+                )
+              }
               slotProps={{
                 textField: {
                   size: 'small',
