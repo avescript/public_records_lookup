@@ -52,7 +52,7 @@ export {
   useMigrationStats,
   useMigrationSuccess,
   useMigrationWarning,
-} from '../hooks/useMigrationStats';
+} from '../../hooks/useMigrationStats';
 
 // Development-only components
 export { default as MigrationDashboard } from '../development/MigrationDashboard';

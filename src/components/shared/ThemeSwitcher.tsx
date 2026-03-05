@@ -20,7 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { type ThemeMode, useThemeMode } from '../contexts/ThemeContext';
+import { type ThemeMode, useThemeMode } from '../../contexts/ThemeContext';
 
 // Theme option configuration
 interface ThemeOption {

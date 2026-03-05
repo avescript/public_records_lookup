@@ -195,7 +195,7 @@ export const Button: React.FC<LegacyButtonProps> = ({
 
   // For backward compatibility, fall back to Material-UI Button for complex props
   if (sx || component || href || target || rel) {
-    const MuiButton = require('@mui/material/Button').Button;
+    const MuiButton = require('@mui/material/Button').default;
     return (
       <MuiButton
         color={color}
@@ -312,9 +312,9 @@ export const Select: React.FC<LegacySelectProps> = ({
 
   // For backward compatibility with complex Material-UI props, use Material-UI Select
   if (sx || MenuProps || SelectProps || variant !== 'outlined') {
-    const MuiSelect = require('@mui/material/Select').Select;
-    const MuiFormControl = require('@mui/material/FormControl').FormControl;
-    const MuiInputLabel = require('@mui/material/InputLabel').InputLabel;
+    const MuiSelect = require('@mui/material/Select').default;
+    const MuiFormControl = require('@mui/material/FormControl').default;
+    const MuiInputLabel = require('@mui/material/InputLabel').default;
 
     return (
       <MuiFormControl variant={variant} size={size} sx={sx}>
@@ -500,7 +500,7 @@ export const FormControl: React.FC<LegacyFormControlProps> = ({
   useMigrationSuccess('FormControl');
 
   // Import Material-UI FormControl directly for maximum compatibility
-  const MuiFormControl = require('@mui/material/FormControl').FormControl;
+  const MuiFormControl = require('@mui/material/FormControl').default;
 
   return (
     <MuiFormControl

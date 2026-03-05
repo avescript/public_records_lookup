@@ -1,4 +1,5 @@
-import { Theme, useMediaQuery, useTheme } from '@mui/material/styles';
+import { useMediaQuery } from '@mui/material';
+import { Theme, useTheme } from '@mui/material/styles';
 import { Breakpoint } from '@mui/material/styles/createBreakpoints';
 
 // Responsive breakpoints (extending the default MUI breakpoints)

@@ -11,7 +11,7 @@ import { PaletteMode } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 
-import { createAppTheme, darkTheme, lightTheme } from './enhanced-theme';
+import { createAppTheme, darkTheme, lightTheme } from '../theme/enhanced-theme';
 
 // Theme mode type
 export type ThemeMode = PaletteMode | 'system';
@@ -127,10 +127,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
-      <MuiThemeProvider theme={lightTheme}>
-        <CssBaseline />
-        {children}
-      </MuiThemeProvider>
+      <ThemeContext.Provider value={contextValue}>
+        <MuiThemeProvider theme={lightTheme}>
+          <CssBaseline />
+          {children}
+        </MuiThemeProvider>
+      </ThemeContext.Provider>
     );
   }
 
