@@ -42,7 +42,7 @@ export function PermissionButton({
   requireAllRoles = false,
   requireAllPermissions = false,
   showAccessDenied = false,
-  accessDeniedMessage = 'You don\'t have permission for this action.',
+  accessDeniedMessage = "You don't have permission for this action.",
   children,
   ...buttonProps
 }: PermissionButtonProps) {
@@ -264,7 +264,7 @@ export function ApprovalButton(
   props: Omit<PermissionButtonProps, 'requiredPermissions'>
 ) {
   return (
-    <PermissionButton requiredPermissions={['approve_request']} {...props} />
+    <PermissionButton requiredPermissions={['request:approve']} {...props} />
   );
 }
 
@@ -272,6 +272,262 @@ export function RejectButton(
   props: Omit<PermissionButtonProps, 'requiredPermissions'>
 ) {
   return (
-    <PermissionButton requiredPermissions={['reject_request']} {...props} />
+    <PermissionButton requiredPermissions={['request:reject']} {...props} />
   );
+}
+
+// ==========================================
+// Generic Permission Wrapper Components
+// Added for US-091: Role-Based UI & Permissions
+// ==========================================
+
+/**
+ * Props for permission-protected components
+ */
+interface PermissionWrapperProps {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+  showAlert?: boolean;
+}
+
+/**
+ * Props for RequiresPermission component
+ */
+interface RequiresPermissionProps extends PermissionWrapperProps {
+  permission: Permission | Permission[];
+  requireAll?: boolean; // If true, requires all permissions. If false, requires any.
+}
+
+/**
+ * RequiresPermission Component
+ * Renders children only if user has the required permission(s)
+ *
+ * @example
+ * ```tsx
+ * <RequiresPermission permission="request:delete">
+ *   <DeleteButton />
+ * </RequiresPermission>
+ *
+ * // Multiple permissions with requireAll
+ * <RequiresPermission
+ *   permission={['request:edit', 'request:delete']}
+ *   requireAll={true}
+ *   fallback={<div>Insufficient permissions</div>}
+ * >
+ *   <AdminPanel />
+ * </RequiresPermission>
+ * ```
+ */
+export function RequiresPermission({
+  children,
+  permission,
+  requireAll = false,
+  fallback = null,
+  showAlert = false,
+}: RequiresPermissionProps) {
+  const { hasPermission, hasAnyPermission, hasAllPermissions } =
+    usePermissions();
+
+  // Handle single permission
+  if (typeof permission === 'string') {
+    if (!hasPermission(permission)) {
+      return showAlert ? (
+        <Alert severity='warning'>
+          You don&apos;t have permission to access this feature.
+        </Alert>
+      ) : (
+        <>{fallback}</>
+      );
+    }
+    return <>{children}</>;
+  }
+
+  // Handle multiple permissions
+  const hasAccess = requireAll
+    ? hasAllPermissions(permission)
+    : hasAnyPermission(permission);
+
+  if (!hasAccess) {
+    return showAlert ? (
+      <Alert severity='warning'>
+        You don&apos;t have permission to access this feature.
+      </Alert>
+    ) : (
+      <>{fallback}</>
+    );
+  }
+
+  return <>{children}</>;
+}
+
+/**
+ * Props for RequiresRole component
+ */
+interface RequiresRoleProps extends PermissionWrapperProps {
+  role: UserRole | UserRole[];
+}
+
+/**
+ * RequiresRole Component
+ * Renders children only if user has the required role(s)
+ *
+ * @example
+ * ```tsx
+ * <RequiresRole role="admin">
+ *   <AdminDashboard />
+ * </RequiresRole>
+ *
+ * //Multiple roles
+ * <RequiresRole
+ *   role={['admin', 'legal_reviewer']}
+ *   fallback={<AccessDenied />}
+ * >
+ *   <LegalReviewPanel />
+ * </RequiresRole>
+ * ```
+ */
+export function RequiresRole({
+  children,
+  role,
+  fallback = null,
+  showAlert = false,
+}: RequiresRoleProps) {
+  const { hasRole, hasAnyRole } = usePermissions();
+
+  // Handle single role
+  if (typeof role === 'string') {
+    if (!hasRole(role)) {
+      return showAlert ? (
+        <Alert severity='warning'>
+          This feature is only available to {role} users.
+        </Alert>
+      ) : (
+        <>{fallback}</>
+      );
+    }
+    return <>{children}</>;
+  }
+
+  // Handle multiple roles
+  if (!hasAnyRole(role)) {
+    return showAlert ? (
+      <Alert severity='warning'>
+        This feature is only available to {role.join(', ')} users.
+      </Alert>
+    ) : (
+      <>{fallback}</>
+    );
+  }
+
+  return <>{children}</>;
+}
+
+/**
+ * Props for RequiresFeature component
+ */
+interface RequiresFeatureProps extends PermissionWrapperProps {
+  feature: string;
+}
+
+/**
+ * RequiresFeature Component
+ * Renders children only if user has access to the feature based on their role
+ * Uses feature flags defined in usePermissions
+ *
+ * @example
+ * ```tsx
+ * <RequiresFeature feature="canManageUsers">
+ *   <UserManagementPanel />
+ * </RequiresFeature>
+ * ```
+ */
+export function RequiresFeature({
+  children,
+  feature,
+  fallback = null,
+  showAlert = false,
+}: RequiresFeatureProps) {
+  const { features } = usePermissions();
+
+  const hasFeature = features[feature as keyof typeof features];
+
+  if (!hasFeature) {
+    return showAlert ? (
+      <Alert severity='warning'>
+        You don&apos;t have access to this feature.
+      </Alert>
+    ) : (
+      <>{fallback}</>
+    );
+  }
+
+  return <>{children}</>;
+}
+
+/**
+ * RequiresAuthentication Component
+ * Renders children only if user is authenticated
+ *
+ * @example
+ * ```tsx
+ * <RequiresAuthentication fallback={<LoginPrompt />}>
+ *   <Dashboard />
+ * </RequiresAuthentication>
+ * ```
+ */
+export function RequiresAuthentication({
+  children,
+  fallback = null,
+  showAlert = false,
+}: PermissionWrapperProps) {
+  const { isAuthenticated } = usePermissions();
+
+  if (!isAuthenticated) {
+    return showAlert ? (
+      <Alert severity='info'>Please log in to access this feature.</Alert>
+    ) : (
+      <>{fallback}</>
+    );
+  }
+
+  return <>{children}</>;
+}
+
+/**
+ * Props for RequiresAgencyAccess component
+ */
+interface RequiresAgencyAccessProps extends PermissionWrapperProps {
+  agencyId: string;
+}
+
+/**
+ * RequiresAgencyAccess Component
+ * Renders children only if user can access the specified agency
+ *
+ * @example
+ * ```tsx
+ * <RequiresAgencyAccess agencyId="police">
+ *   <PoliceRecords />
+ * </RequiresAgencyAccess>
+ * ```
+ */
+export function RequiresAgencyAccess({
+  children,
+  agencyId,
+  fallback = null,
+  showAlert = false,
+}: RequiresAgencyAccessProps) {
+  const { canAccessAgency } = usePermissions();
+
+  if (!canAccessAgency(agencyId)) {
+    return showAlert ? (
+      <Alert severity='warning'>
+        You don&apos;t have access to this agency&apos;s data.
+      </Alert>
+    ) : (
+      <>{fallback}</>
+    );
+  }
+
+  return <>{children}</>;
 }
