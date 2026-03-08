@@ -13,20 +13,12 @@ import {
   Preview as PreviewIcon,
 } from '@mui/icons-material';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Card,
-  CardContent,
-  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControlLabel,
   Grid,
-  IconButton,
   InputLabel,
   List,
   ListItem,
@@ -35,12 +27,25 @@ import {
   MenuItem,
   Rating,
   Switch,
-  Tooltip,
-  Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-import { Button, FormControl, Select, TextField } from '@/components/migration';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  FormControl,
+  IconButton,
+  Select,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@/components/migration';
 
 import { aiResponseService } from '../../services/aiResponseService';
 import {

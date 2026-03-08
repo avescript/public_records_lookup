@@ -11,6 +11,7 @@ import React from 'react';
 
 import type {
   ButtonProps as DesignButtonProps,
+  CardContentProps,
   CardProps as DesignCardProps,
   CheckboxProps as DesignCheckboxProps,
   InputProps as DesignInputProps,
@@ -22,6 +23,7 @@ import type {
 import {
   Button as DesignButton,
   Card as DesignCard,
+  CardContent as DesignCardContent,
   Checkbox as DesignCheckbox,
   Input as DesignInput,
   Radio as DesignRadio,
@@ -378,6 +380,15 @@ export const Card: React.FC<LegacyPaperProps> = props => {
 };
 
 /**
+ * CardContent Adapter
+ * Pass through to design system CardContent
+ */
+export const CardContent: React.FC<CardContentProps> = props => {
+  useMigrationSuccess('CardContent');
+  return <DesignCardContent {...props} />;
+};
+
+/**
  * Legacy Checkbox Adapter
  * Maps old Material-UI Checkbox props to new design system Checkbox
  */
@@ -584,14 +595,202 @@ export const getMigrationMapping = () => {
   };
 };
 
+/**
+ * Additional Utility Component Adapters
+ * These components currently pass through to Material-UI
+ * but are tracked for migration and provide a consistent import path
+ */
+
+import type {
+  AccordionDetailsProps as MuiAccordionDetailsProps,
+  AccordionProps as MuiAccordionProps,
+  AccordionSummaryProps as MuiAccordionSummaryProps,
+  AlertProps as MuiAlertProps,
+  BoxProps as MuiBoxProps,
+  ChipProps as MuiChipProps,
+  CircularProgressProps as MuiCircularProgressProps,
+  DividerProps as MuiDividerProps,
+  IconButtonProps as MuiIconButtonProps,
+  LinearProgressProps as MuiLinearProgressProps,
+  StackProps as MuiStackProps,
+  TooltipProps as MuiTooltipProps,
+  TypographyProps as MuiTypographyProps,
+} from '@mui/material';
+import {
+  Accordion as MuiAccordion,
+  AccordionDetails as MuiAccordionDetails,
+  AccordionSummary as MuiAccordionSummary,
+  Alert as MuiAlert,
+  Box as MuiBox,
+  Chip as MuiChip,
+  CircularProgress as MuiCircularProgress,
+  Divider as MuiDivider,
+  IconButton as MuiIconButton,
+  LinearProgress as MuiLinearProgress,
+  Stack as MuiStack,
+  Tooltip as MuiTooltip,
+  Typography as MuiTypography,
+} from '@mui/material';
+
+// Legacy prop type definitions for TypeScript
+type LegacyAccordionProps = MuiAccordionProps;
+type LegacyAccordionSummaryProps = MuiAccordionSummaryProps;
+type LegacyAccordionDetailsProps = MuiAccordionDetailsProps;
+type LegacyBoxProps = MuiBoxProps;
+type LegacyTypographyProps = MuiTypographyProps;
+type LegacyAlertProps = MuiAlertProps;
+type LegacyChipProps = MuiChipProps;
+type LegacyStackProps = MuiStackProps;
+type LegacyDividerProps = MuiDividerProps;
+type LegacyIconButtonProps = MuiIconButtonProps;
+type LegacyTooltipProps = MuiTooltipProps;
+type LegacyLinearProgressProps = MuiLinearProgressProps;
+type LegacyCircularProgressProps = MuiCircularProgressProps;
+
+/**
+ * Accordion Adapter
+ * Collapsible content - currently passes through to Material-UI
+ */
+export const Accordion: React.FC<LegacyAccordionProps> = props => {
+  useMigrationSuccess('Accordion');
+  return <MuiAccordion {...props} />;
+};
+
+/**
+ * AccordionSummary Adapter
+ * Accordion header - currently passes through to Material-UI
+ */
+export const AccordionSummary: React.FC<
+  LegacyAccordionSummaryProps
+> = props => {
+  useMigrationSuccess('AccordionSummary');
+  return <MuiAccordionSummary {...props} />;
+};
+
+/**
+ * AccordionDetails Adapter
+ * Accordion content - currently passes through to Material-UI
+ */
+export const AccordionDetails: React.FC<
+  LegacyAccordionDetailsProps
+> = props => {
+  useMigrationSuccess('AccordionDetails');
+  return <MuiAccordionDetails {...props} />;
+};
+
+/**
+ * Box Adapter
+ * Layout container - currently passes through to Material-UI
+ */
+export const Box: React.FC<LegacyBoxProps> = props => {
+  useMigrationSuccess('Box');
+  return <MuiBox {...props} />;
+};
+
+/**
+ * Typography Adapter
+ * Text display - currently passes through to Material-UI
+ */
+export const Typography: React.FC<LegacyTypographyProps> = props => {
+  useMigrationSuccess('Typography');
+  return <MuiTypography {...props} />;
+};
+
+/**
+ * Alert Adapter
+ * Feedback messages - currently passes through to Material-UI
+ */
+export const Alert: React.FC<LegacyAlertProps> = props => {
+  useMigrationSuccess('Alert');
+  return <MuiAlert {...props} />;
+};
+
+/**
+ * Chip Adapter
+ * Compact elements - currently passes through to Material-UI
+ */
+export const Chip: React.FC<LegacyChipProps> = props => {
+  useMigrationSuccess('Chip');
+  return <MuiChip {...props} />;
+};
+
+/**
+ * Stack Adapter
+ * Flexbox layout - currently passes through to Material-UI
+ */
+export const Stack: React.FC<LegacyStackProps> = props => {
+  useMigrationSuccess('Stack');
+  return <MuiStack {...props} />;
+};
+
+/**
+ * Divider Adapter
+ * Visual separator - currently passes through to Material-UI
+ */
+export const Divider: React.FC<LegacyDividerProps> = props => {
+  useMigrationSuccess('Divider');
+  return <MuiDivider {...props} />;
+};
+
+/**
+ * IconButton Adapter
+ * Icon-only button - currently passes through to Material-UI
+ */
+export const IconButton: React.FC<LegacyIconButtonProps> = props => {
+  useMigrationSuccess('IconButton');
+  return <MuiIconButton {...props} />;
+};
+
+/**
+ * Tooltip Adapter
+ * Hover information - currently passes through to Material-UI
+ */
+export const Tooltip: React.FC<LegacyTooltipProps> = props => {
+  useMigrationSuccess('Tooltip');
+  return <MuiTooltip {...props} />;
+};
+
+/**
+ * LinearProgress Adapter
+ * Loading indicator - currently passes through to Material-UI
+ */
+export const LinearProgress: React.FC<LegacyLinearProgressProps> = props => {
+  useMigrationSuccess('LinearProgress');
+  return <MuiLinearProgress {...props} />;
+};
+
+/**
+ * CircularProgress Adapter
+ * Circular loading indicator - currently passes through to Material-UI
+ */
+export const CircularProgress: React.FC<
+  LegacyCircularProgressProps
+> = props => {
+  useMigrationSuccess('CircularProgress');
+  return <MuiCircularProgress {...props} />;
+};
+
 // Export type definitions for TypeScript support
 export type {
+  LegacyAccordionDetailsProps,
+  LegacyAccordionProps,
+  LegacyAccordionSummaryProps,
+  LegacyAlertProps,
+  LegacyBoxProps,
   LegacyButtonProps,
   LegacyCheckboxProps,
+  LegacyChipProps,
+  LegacyCircularProgressProps,
+  LegacyDividerProps,
   LegacyFormControlProps,
+  LegacyIconButtonProps,
+  LegacyLinearProgressProps,
   LegacyPaperProps,
   LegacyRadioGroupProps,
   LegacyRadioProps,
   LegacySelectProps,
+  LegacyStackProps,
   LegacyTextFieldProps,
+  LegacyTooltipProps,
+  LegacyTypographyProps,
 };

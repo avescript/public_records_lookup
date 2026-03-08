@@ -22,13 +22,7 @@ import {
   Undo as UndoIcon,
 } from '@mui/icons-material';
 import {
-  Alert,
   Badge,
-  Box,
-  Chip,
-  CircularProgress,
-  Divider,
-  IconButton,
   List,
   ListItem,
   ListItemIcon,
@@ -38,12 +32,20 @@ import {
   Paper,
   Popover,
   Snackbar,
-  Tooltip,
-  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import { Button } from '@/components/migration';
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Divider,
+  IconButton,
+  Tooltip,
+  Typography,
+} from '@/components/migration';
 
 import { aiResponseService } from '../../services/aiResponseService';
 import { PublicRecordRequest } from '../../types';

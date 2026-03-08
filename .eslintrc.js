@@ -55,6 +55,51 @@ module.exports = {
             message:
               'Use FormControl from "@/components/migration" instead for gradual design system adoption',
           },
+          {
+            name: '@mui/material/Box',
+            message:
+              'Use Box from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Typography',
+            message:
+              'Use Typography from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Alert',
+            message:
+              'Use Alert from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Chip',
+            message:
+              'Use Chip from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Stack',
+            message:
+              'Use Stack from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Divider',
+            message:
+              'Use Divider from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/IconButton',
+            message:
+              'Use IconButton from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Tooltip',
+            message:
+              'Use Tooltip from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/LinearProgress',
+            message:
+              'Use LinearProgress from "@/components/migration" instead for gradual design system adoption',
+          },
         ],
         patterns: [
           {
@@ -65,6 +110,14 @@ module.exports = {
               '@mui/material/*Checkbox*',
               '@mui/material/*Radio*',
               '@mui/material/*Form*',
+              '@mui/material/*Box*',
+              '@mui/material/*Typography*',
+              '@mui/material/*Alert*',
+              '@mui/material/*Chip*',
+              '@mui/material/*Stack*',
+              '@mui/material/*Divider*',
+              '@mui/material/*Tooltip*',
+              '@mui/material/*Progress*',
             ],
             message:
               'Use migration layer components from "@/components/migration" for gradual design system adoption',

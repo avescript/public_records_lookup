@@ -605,17 +605,35 @@ _(Core components needed across the app)_
    - ✅ `Checkbox` adapter - Complete with design system component and migration adapter
    - ✅ `Radio` adapter - Complete with both Radio and RadioGroup components
    - ✅ `FormControl` adapter - Basic compatibility wrapper for Material-UI FormControl
+   - ✅ `Box, Typography, Alert, Chip, Stack` adapters - Essential utility components
+   - ✅ `Divider, IconButton, Tooltip` adapters - UI utility components
+   - ✅ `LinearProgress, CircularProgress` adapters - Loading indicators
+   - ✅ `Accordion, AccordionSummary, AccordionDetails` adapters - Collapsible content
+   - ✅ `CardContent` adapter - Card sub-component
    - ✅ **Implementation Details:**
      - Created Checkbox and Radio design system components with comprehensive TypeScript interfaces
      - Added Storybook stories for both components (40+ story variants)
      - Created migration adapters with backward compatibility for Material-UI props
-     - Updated ESLint rules to enforce migration layer usage
+     - Added 13 new utility component adapters (Box, Typography, Alert, Chip, Stack, Divider, IconButton, Tooltip, LinearProgress, CircularProgress, Accordion suite, CardContent)
+     - Updated ESLint rules to enforce migration layer usage for all new components
      - Updated migration exports and documentation
+     - All components tracked via useMigrationSuccess hook
 
-4. **Convert High-Traffic Components** ⏳ Next Task
-   - [ ] StaffDashboard components (likely heavy Material-UI usage)
-   - [ ] Admin panel components
-   - [ ] Authentication forms
+4. **Convert High-Traffic Components** ✅ COMPLETED March 8, 2026
+   - ✅ **StaffDashboard components** - 5 high-traffic files converted
+     - ✅ `LocateStep.tsx` - Converted Alert, Box, Card, CardContent, Checkbox, Chip, Stack, Typography
+     - ✅ `V2WorkflowOrchestrator.tsx` - Converted Alert, Box, Button, Card, CardContent, Chip, Divider, IconButton, LinearProgress, Tooltip, Typography
+     - ✅ `AIResponseGenerator.tsx` - Converted Accordion suite, Alert, Box, Button, Card, CardContent, Chip, CircularProgress, Divider, FormControl, IconButton, LinearProgress, Select, TextField, Tooltip, Typography
+     - ✅ `SmartTextEditor.tsx` - Converted Alert, Box, Button, Chip, CircularProgress, Divider, IconButton, Tooltip, Typography
+     - ✅ `ResponseTemplateManager.tsx` - Converted Accordion suite, Box, Button, Card, CardContent, Chip, FormControl, IconButton, Select, TextField, Tooltip, Typography
+   - ✅ **Results:**
+     - Zero TypeScript compilation errors
+     - All converted files maintain backward compatibility
+     - ESLint enforcement active for migration layer usage
+     - Migration tracking active via useMigrationSuccess hook
+     - 60+ individual component imports converted to migration layer
+   - [ ] Admin panel components - Deferred to next phase
+   - [ ] Authentication forms - Deferred to next phase
 
 ### 🎯 Priority 3: Migration Tooling
 

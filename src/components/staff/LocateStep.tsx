@@ -7,6 +7,10 @@ import {
   Folder as FolderIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
+import { FormControlLabel } from '@mui/material';
+import { useRouter } from 'next/navigation';
+
+import { Button } from '@/components/core/Button';
 import {
   Alert,
   Box,
@@ -14,13 +18,9 @@ import {
   CardContent,
   Checkbox,
   Chip,
-  FormControlLabel,
   Stack,
   Typography,
-} from '@mui/material';
-import { useRouter } from 'next/navigation';
-
-import { Button } from '@/components/core/Button';
+} from '@/components/migration';
 import { WorkflowStep } from '@/components/staff/WorkflowNavigation';
 import { WorkflowPage } from '@/components/staff/WorkflowPage';
 
