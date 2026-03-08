@@ -87,7 +87,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
         {navigationItems.map(item => (
           <ListItem key={item.href} disablePadding>
             <ListItemButton
-              component={Link}
+              component='a'
               href={item.href}
               onClick={handleMobileMenuClose}
               selected={pathname === item.href}
@@ -186,7 +186,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
       >
         <Toolbar
           sx={{
-            ...getContainerProps('wide').sx,
+            ...getContainerProps('wide'),
             maxWidth: 'xl !important',
             mx: 'auto',
           }}

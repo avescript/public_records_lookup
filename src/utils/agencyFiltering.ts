@@ -343,3 +343,95 @@ export function calculateAgencyStats(
     };
   });
 }
+
+/**
+ * Standalone helper: Check if a user can access a specific request
+ * Useful for non-hook contexts and testing
+ *
+ * @param request - The request to check
+ * @param user - User object with id, role, and agencyId
+ * @returns true if user can access the request
+ */
+export function canAccessRequest(
+  request: { agencyId?: string; [key: string]: any },
+  user: {
+    id: string;
+    role: 'admin' | 'staff' | 'legal_reviewer';
+    agencyId?: string;
+  }
+): boolean {
+  // Admins can access all requests
+  if (user.role === 'admin') return true;
+
+  // Check if request belongs to user's agency
+  if (request.agencyId !== user.agencyId) return false;
+
+  // Staff and legal reviewers can see requests in their agency
+  return user.role === 'staff' || user.role === 'legal_reviewer';
+}
+
+/**
+ * Standalone helper: Check if a user can edit a specific request
+ * Useful for non-hook contexts and testing
+ *
+ * @param request - The request to check
+ * @param user - User object with id, role, and agencyId
+ * @returns true if user can edit the request
+ */
+export function canEditRequest(
+  request: { agencyId?: string; [key: string]: any },
+  user: {
+    id: string;
+    role: 'admin' | 'staff' | 'legal_reviewer';
+    agencyId?: string;
+  }
+): boolean {
+  // Admins can edit all requests
+  if (user.role === 'admin') return true;
+
+  // Must be in user's agency
+  if (request.agencyId !== user.agencyId) return false;
+
+  // Only staff can edit (legal reviewers only review)
+  return user.role === 'staff';
+}
+
+/**
+ * Standalone helper: Check if a user can delete a specific request
+ * Useful for non-hook contexts and testing
+ *
+ * @param request - The request to check
+ * @param user - User object with id, role, and agencyId
+ * @returns true if user can delete the request
+ */
+export function canDeleteRequest(
+  request: { agencyId?: string; [key: string]: any },
+  user: {
+    id: string;
+    role: 'admin' | 'staff' | 'legal_reviewer';
+    agencyId?: string;
+  }
+): boolean {
+  // Only admins can delete
+  return user.role === 'admin';
+}
+
+/**
+ * Standalone helper: Check if a user can transfer a request to another agency
+ * Useful for non-hook contexts and testing
+ *
+ * @param request - The request to check
+ * @param user - User object with id, role, and agencyId
+ * @returns true if user can transfer the request
+ */
+export function canTransferRequest(
+  request: { agencyId?: string; [key: string]: any },
+  user: {
+    id: string;
+    role: 'admin' | 'staff' | 'legal_reviewer';
+    agencyId?: string;
+  }
+): boolean {
+  // Only admins can transfer across agencies
+  return user.role === 'admin';
+}
