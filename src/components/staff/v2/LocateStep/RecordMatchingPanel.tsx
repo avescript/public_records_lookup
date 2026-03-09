@@ -13,12 +13,12 @@ interface RecordMatchingPanelProps {
   onPreview: (record: MatchCandidate) => void;
 }
 
-const RecordMatchingPanel: React.FC<RecordMatchingPanelProps> = ({
+export function RecordMatchingPanel({
   candidates,
   selectedRecords,
   onRecordToggle,
   onPreview,
-}) => {
+}: RecordMatchingPanelProps) {
   const getConfidenceColor = (
     score: number
   ): 'success' | 'warning' | 'error' => {
@@ -240,6 +240,4 @@ const RecordMatchingPanel: React.FC<RecordMatchingPanelProps> = ({
       })}
     </Box>
   );
-};
-
-export default RecordMatchingPanel;
+}

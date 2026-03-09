@@ -13,8 +13,9 @@ import {
 import enhancedAIMatchingService from '@/services/enhancedAIMatchingService';
 import { MatchCandidate, MatchResult } from '@/services/aiMatchingService';
 
-import RecordMatchingPanel from './RecordMatchingPanel';
-import RecordPreview from './RecordPreview';
+// Import sub-components
+import { RecordMatchingPanel } from './RecordMatchingPanel';
+import { RecordPreview } from './RecordPreview';
 
 interface LocateStepProps {
   requestId: string;
@@ -24,13 +25,13 @@ interface LocateStepProps {
   initialSelectedRecords?: string[];
 }
 
-const LocateStep: React.FC<LocateStepProps> = ({
+export function LocateStep({
   requestId,
   requestTitle,
   requestDescription,
   onRecordsSelected,
   initialSelectedRecords = [],
-}) => {
+}: LocateStepProps) {
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -302,6 +303,4 @@ const LocateStep: React.FC<LocateStepProps> = ({
       )}
     </Box>
   );
-};
-
-export default LocateStep;
+}

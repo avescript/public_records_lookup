@@ -18,7 +18,7 @@ import {
 import type { StoredRequest } from '@/services/requestService';
 
 // Import step components
-import LocateStep from '../LocateStep';
+import { LocateStep } from '../LocateStep';
 // import { RedactStep } from './steps/RedactStep';
 // import { RespondStep } from './steps/RespondStep';
 // import { ReviewStep } from './steps/ReviewStep';

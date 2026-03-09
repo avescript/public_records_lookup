@@ -25,13 +25,13 @@ interface RecordPreviewProps {
   onToggleSelection: () => void;
 }
 
-const RecordPreview: React.FC<RecordPreviewProps> = ({
+export function RecordPreview({
   record,
   open,
   onClose,
   isSelected,
   onToggleSelection,
-}) => {
+}: RecordPreviewProps) {
   const getConfidenceColor = (
     score: number
   ): 'success' | 'warning' | 'error' => {
@@ -260,6 +260,4 @@ const RecordPreview: React.FC<RecordPreviewProps> = ({
       </DialogActions>
     </Dialog>
   );
-};
-
-export default RecordPreview;
+}
