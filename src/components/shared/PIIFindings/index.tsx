@@ -70,6 +70,11 @@ const PIITypeColors: Record<PIIType, string> = {
   [PIIType.ACCOUNT_NUMBER]: '#607d8b',
   [PIIType.ROUTING_NUMBER]: '#3f51b5',
   [PIIType.MEDICAL_ID]: '#e91e63',
+  [PIIType.BADGE_NUMBER]: '#00bcd4',
+  [PIIType.CASE_NUMBER]: '#009688',
+  [PIIType.INCIDENT_NUMBER]: '#8bc34a',
+  [PIIType.VEHICLE_ID]: '#cddc39',
+  [PIIType.CONFIDENTIAL_SOURCE]: '#d32f2f',
 };
 
 const getConfidenceIcon = (confidence: number) => {

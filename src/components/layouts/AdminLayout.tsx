@@ -31,6 +31,7 @@ import {
 } from '@/components/migration';
 
 import { useAuth } from '../../contexts/AuthContext';
+import { UserRole } from '../../hooks/usePermissions';
 import {
   getContainerProps,
   responsivePatterns,
@@ -155,12 +156,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             return (
               <PermissionButton
                 key={item.href}
-                requiredRoles={item.roles}
+                requiredRoles={item.roles as UserRole[]}
                 component={ListItemButton}
                 href={item.href}
                 LinkComponent={Link}
                 onClick={handleMobileMenuClose}
-                selected={pathname === item.href}
+                {...({ selected: pathname === item.href } as any)}
                 sx={{
                   borderRadius: 1.5,
                   mx: 1,
@@ -192,8 +193,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           return (
             <ListItem key={item.href} disablePadding>
               <ListItemButton
-                component={Link}
-                href={item.href}
+                component={Link as any}
+                {...({ href: item.href } as any)}
                 onClick={handleMobileMenuClose}
                 selected={pathname === item.href}
                 sx={{
@@ -273,7 +274,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             return (
               <PermissionButton
                 key={item.href}
-                requiredRoles={item.roles}
+                requiredRoles={item.roles as UserRole[]}
                 color='inherit'
                 component={Link}
                 href={item.href}
@@ -297,7 +298,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           return (
             <Button
               key={item.href}
-              color='inherit'
+              color={'inherit' as any}
               component={Link}
               href={item.href}
               sx={{
@@ -324,7 +325,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Logout Button */}
         <Button
-          color='inherit'
+          color={'inherit' as any}
           onClick={handleLogout}
           startIcon={<ExitToApp />}
           variant='outlined'
@@ -368,7 +369,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       >
         <Toolbar
           sx={{
-            ...getContainerProps('wide').sx,
+            ...getContainerProps('wide'),
             maxWidth: 'xl !important',
             mx: 'auto',
           }}

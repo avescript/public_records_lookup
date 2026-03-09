@@ -89,8 +89,8 @@ export function BaseLayout({ children }: BaseLayoutProps) {
         {navigationItems.map(item => (
           <ListItem key={item.href} disablePadding>
             <ListItemButton
-              component={Link}
-              href={item.href}
+              component={Link as any}
+              {...({ href: item.href } as any)}
               onClick={handleMobileMenuClose}
               selected={pathname === item.href}
               sx={{
@@ -139,7 +139,7 @@ export function BaseLayout({ children }: BaseLayoutProps) {
       {navigationItems.map(item => (
         <Button
           key={item.href}
-          color='inherit'
+          color={'inherit' as any}
           component={Link}
           href={item.href}
           sx={{
@@ -186,7 +186,7 @@ export function BaseLayout({ children }: BaseLayoutProps) {
       >
         <Toolbar
           sx={{
-            ...getContainerProps('wide').sx,
+            ...getContainerProps('wide'),
             maxWidth: 'lg !important',
             mx: 'auto',
           }}

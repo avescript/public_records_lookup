@@ -7,6 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ImageIcon from '@mui/icons-material/Image';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { CardContent as MuiCardContent } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
 import {
@@ -14,7 +15,6 @@ import {
   Box,
   Button,
   Card,
-  CardContent,
   IconButton,
   LinearProgress,
   Typography,
@@ -178,18 +178,17 @@ const FileUpload: React.FC<FileUploadProps> = ({
             const previewUrl = getFilePreview(file);
             return (
               <Card key={`${file.name}-${index}`} sx={{ mb: 1 }}>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                <MuiCardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     {previewUrl ? (
-                      <Box
-                        component='img'
+                      <img
                         src={previewUrl}
                         alt={file.name}
-                        sx={{
-                          width: 40,
-                          height: 40,
+                        style={{
+                          width: '40px',
+                          height: '40px',
                           objectFit: 'cover',
-                          borderRadius: 1,
+                          borderRadius: '4px',
                         }}
                       />
                     ) : (
@@ -222,7 +221,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                       <DeleteIcon />
                     </IconButton>
                   </Box>
-                </CardContent>
+                </MuiCardContent>
               </Card>
             );
           })}

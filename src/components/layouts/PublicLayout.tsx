@@ -88,8 +88,8 @@ export function PublicLayout({ children }: PublicLayoutProps) {
         {navigationItems.map(item => (
           <ListItem key={item.href} disablePadding>
             <ListItemButton
-              component='a'
-              href={item.href}
+              component={Link}
+              {...({ href: item.href } as any)}
               onClick={handleMobileMenuClose}
               selected={pathname === item.href}
               sx={{
@@ -138,7 +138,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
       {navigationItems.map(item => (
         <Button
           key={item.href}
-          color='inherit'
+          color={'inherit' as any}
           component={Link}
           href={item.href}
           variant={item.variant}
