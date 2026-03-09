@@ -100,6 +100,26 @@ module.exports = {
             message:
               'Use LinearProgress from "@/components/migration" instead for gradual design system adoption',
           },
+          {
+            name: '@mui/material/Dialog',
+            message:
+              'Use Dialog from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/DialogActions',
+            message:
+              'Use DialogActions from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/DialogContent',
+            message:
+              'Use DialogContent from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/DialogTitle',
+            message:
+              'Use DialogTitle from "@/components/migration" instead for gradual design system adoption',
+          },
         ],
         patterns: [
           {
@@ -118,6 +138,7 @@ module.exports = {
               '@mui/material/*Divider*',
               '@mui/material/*Tooltip*',
               '@mui/material/*Progress*',
+              '@mui/material/*Dialog*',
             ],
             message:
               'Use migration layer components from "@/components/migration" for gradual design system adoption',
