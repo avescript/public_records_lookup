@@ -616,6 +616,12 @@ import type {
   DividerProps as MuiDividerProps,
   IconButtonProps as MuiIconButtonProps,
   LinearProgressProps as MuiLinearProgressProps,
+  ListItemButtonProps as MuiListItemButtonProps,
+  ListItemIconProps as MuiListItemIconProps,
+  ListItemProps as MuiListItemProps,
+  ListItemSecondaryActionProps as MuiListItemSecondaryActionProps,
+  ListItemTextProps as MuiListItemTextProps,
+  ListProps as MuiListProps,
   StackProps as MuiStackProps,
   TooltipProps as MuiTooltipProps,
   TypographyProps as MuiTypographyProps,
@@ -635,6 +641,12 @@ import {
   Divider as MuiDivider,
   IconButton as MuiIconButton,
   LinearProgress as MuiLinearProgress,
+  List as MuiList,
+  ListItem as MuiListItem,
+  ListItemButton as MuiListItemButton,
+  ListItemIcon as MuiListItemIcon,
+  ListItemSecondaryAction as MuiListItemSecondaryAction,
+  ListItemText as MuiListItemText,
   Stack as MuiStack,
   Tooltip as MuiTooltip,
   Typography as MuiTypography,
@@ -653,6 +665,12 @@ type LegacyDialogProps = MuiDialogProps;
 type LegacyDialogActionsProps = MuiDialogActionsProps;
 type LegacyDialogContentProps = MuiDialogContentProps;
 type LegacyDialogTitleProps = MuiDialogTitleProps;
+type LegacyListProps = MuiListProps;
+type LegacyListItemProps = MuiListItemProps;
+type LegacyListItemButtonProps = MuiListItemButtonProps;
+type LegacyListItemIconProps = MuiListItemIconProps;
+type LegacyListItemTextProps = MuiListItemTextProps;
+type LegacyListItemSecondaryActionProps = MuiListItemSecondaryActionProps;
 type LegacyDividerProps = MuiDividerProps;
 type LegacyIconButtonProps = MuiIconButtonProps;
 type LegacyTooltipProps = MuiTooltipProps;
@@ -818,6 +836,62 @@ export const DialogTitle: React.FC<LegacyDialogTitleProps> = props => {
   return <MuiDialogTitle {...props} />;
 };
 
+/**
+ * List Adapter
+ * List container - currently passes through to Material-UI
+ */
+export const List: React.FC<LegacyListProps> = props => {
+  useMigrationSuccess('List');
+  return <MuiList {...props} />;
+};
+
+/**
+ * ListItem Adapter
+ * List item container - currently passes through to Material-UI
+ */
+export const ListItem: React.FC<LegacyListItemProps> = props => {
+  useMigrationSuccess('ListItem');
+  return <MuiListItem {...props} />;
+};
+
+/**
+ * ListItemButton Adapter
+ * Clickable list item - currently passes through to Material-UI
+ */
+export const ListItemButton: React.FC<LegacyListItemButtonProps> = props => {
+  useMigrationSuccess('ListItemButton');
+  return <MuiListItemButton {...props} />;
+};
+
+/**
+ * ListItemIcon Adapter
+ * List item icon container - currently passes through to Material-UI
+ */
+export const ListItemIcon: React.FC<LegacyListItemIconProps> = props => {
+  useMigrationSuccess('ListItemIcon');
+  return <MuiListItemIcon {...props} />;
+};
+
+/**
+ * ListItemText Adapter
+ * List item text content - currently passes through to Material-UI
+ */
+export const ListItemText: React.FC<LegacyListItemTextProps> = props => {
+  useMigrationSuccess('ListItemText');
+  return <MuiListItemText {...props} />;
+};
+
+/**
+ * ListItemSecondaryAction Adapter
+ * List item secondary action area - currently passes through to Material-UI
+ */
+export const ListItemSecondaryAction: React.FC<
+  LegacyListItemSecondaryActionProps
+> = props => {
+  useMigrationSuccess('ListItemSecondaryAction');
+  return <MuiListItemSecondaryAction {...props} />;
+};
+
 // Export type definitions for TypeScript support
 export type {
   LegacyAccordionDetailsProps,
@@ -837,6 +911,12 @@ export type {
   LegacyFormControlProps,
   LegacyIconButtonProps,
   LegacyLinearProgressProps,
+  LegacyListItemButtonProps,
+  LegacyListItemIconProps,
+  LegacyListItemProps,
+  LegacyListItemSecondaryActionProps,
+  LegacyListItemTextProps,
+  LegacyListProps,
   LegacyPaperProps,
   LegacyRadioGroupProps,
   LegacyRadioProps,

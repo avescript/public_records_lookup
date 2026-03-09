@@ -120,6 +120,36 @@ module.exports = {
             message:
               'Use DialogTitle from "@/components/migration" instead for gradual design system adoption',
           },
+          {
+            name: '@mui/material/List',
+            message:
+              'Use List from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/ListItem',
+            message:
+              'Use ListItem from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/ListItemButton',
+            message:
+              'Use ListItemButton from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/ListItemIcon',
+            message:
+              'Use ListItemIcon from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/ListItemText',
+            message:
+              'Use ListItemText from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/ListItemSecondaryAction',
+            message:
+              'Use ListItemSecondaryAction from "@/components/migration" instead for gradual design system adoption',
+          },
         ],
         patterns: [
           {
@@ -139,6 +169,7 @@ module.exports = {
               '@mui/material/*Tooltip*',
               '@mui/material/*Progress*',
               '@mui/material/*Dialog*',
+              '@mui/material/*List*',
             ],
             message:
               'Use migration layer components from "@/components/migration" for gradual design system adoption',
