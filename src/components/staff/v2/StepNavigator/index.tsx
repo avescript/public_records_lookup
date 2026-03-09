@@ -19,7 +19,7 @@ import type { StoredRequest } from '@/services/requestService';
 
 // Import step components
 import { LocateStep } from '../LocateStep';
-// import { RedactStep } from './steps/RedactStep';
+import { RedactStep } from '../RedactStep';
 // import { RespondStep } from './steps/RespondStep';
 // import { ReviewStep } from './steps/ReviewStep';
 
@@ -68,6 +68,12 @@ export function StepNavigator({
     console.log('Selected records:', recordIds);
   };
 
+  const handleRedactionComplete = (redactedRecords: any[]) => {
+    console.log('Redaction completed:', redactedRecords);
+    // Mark step 2 as complete
+    setCompletedSteps(prev => new Set([...prev, 2]));
+  };
+
   const steps: WorkflowStep[] = [
     {
       id: 1,
@@ -88,7 +94,13 @@ export function StepNavigator({
       id: 2,
       label: 'Redact',
       description: 'Apply AI redaction with manual review and refinement',
-      // component: RedactStep,
+      component: (props: any) => (
+        <RedactStep
+          {...props}
+          selectedRecords={selectedRecords}
+          onRedactionComplete={handleRedactionComplete}
+        />
+      ),
       completed: completedSteps.has(2),
     },
     {
