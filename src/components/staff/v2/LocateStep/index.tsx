@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import ChatIcon from '@mui/icons-material/Chat';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Alert,
@@ -14,6 +15,7 @@ import enhancedAIMatchingService from '@/services/enhancedAIMatchingService';
 import { MatchCandidate, MatchResult } from '@/services/aiMatchingService';
 
 // Import sub-components
+import { ChatAssistant } from './ChatAssistant';
 import { RecordMatchingPanel } from './RecordMatchingPanel';
 import { RecordPreview } from './RecordPreview';
 
@@ -42,6 +44,7 @@ export function LocateStep({
   const [previewRecord, setPreviewRecord] = useState<MatchCandidate | null>(
     null
   );
+  const [chatOpen, setChatOpen] = useState(false);
 
   // Initialize the AI matching service
   useEffect(() => {
@@ -138,6 +141,11 @@ export function LocateStep({
     setPreviewRecord(null);
   };
 
+  const handleApplyQueryFromChat = (query: string) => {
+    setSearchQuery(query);
+    handleSearch(query);
+  };
+
   if (initializing) {
     return (
       <Box
@@ -161,14 +169,24 @@ export function LocateStep({
   return (
     <Box sx={{ py: 2 }}>
       {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant='h5' gutterBottom>
-          Locate Relevant Records
-        </Typography>
-        <Typography variant='body2' color='textSecondary'>
-          Use AI-powered search to find records matching this request. High
-          confidence matches are automatically selected.
-        </Typography>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Box>
+          <Typography variant='h5' gutterBottom>
+            Locate Relevant Records
+          </Typography>
+          <Typography variant='body2' color='textSecondary'>
+            Use AI-powered search to find records matching this request. High
+            confidence matches are automatically selected.
+          </Typography>
+        </Box>
+        <Button
+          variant='outlined'
+          startIcon={<ChatIcon />}
+          onClick={() => setChatOpen(true)}
+          sx={{ minWidth: 140 }}
+        >
+          AI Assistant
+        </Button>
       </Box>
 
       {/* Search Bar */}
@@ -301,6 +319,14 @@ export function LocateStep({
           </Button>
         </Box>
       )}
+
+      {/* AI Chat Assistant */}
+      <ChatAssistant
+        open={chatOpen}
+        onClose={() => setChatOpen(false)}
+        requestDescription={requestDescription}
+        onApplyQuery={handleApplyQueryFromChat}
+      />
     </Box>
   );
 }
