@@ -17,8 +17,8 @@ import {
 } from '@/components/migration';
 import type { StoredRequest } from '@/services/requestService';
 
-// Import step components (to be created)
-// import { LocateStep } from './steps/LocateStep';
+// Import step components
+import LocateStep from '../LocateStep';
 // import { RedactStep } from './steps/RedactStep';
 // import { RespondStep } from './steps/RespondStep';
 // import { ReviewStep } from './steps/ReviewStep';
@@ -59,13 +59,29 @@ export function StepNavigator({
 }: StepNavigatorProps) {
   // Track step completion
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  
+  // Track selected records from Locate step
+  const [selectedRecords, setSelectedRecords] = useState<string[]>([]);
+
+  const handleRecordsSelected = (recordIds: string[]) => {
+    setSelectedRecords(recordIds);
+    console.log('Selected records:', recordIds);
+  };
 
   const steps: WorkflowStep[] = [
     {
       id: 1,
       label: 'Locate',
       description: 'Find and select relevant records using AI-powered search',
-      // component: LocateStep,
+      component: (props: any) => (
+        <LocateStep
+          {...props}
+          requestTitle={request.title}
+          requestDescription={request.description}
+          onRecordsSelected={handleRecordsSelected}
+          initialSelectedRecords={selectedRecords}
+        />
+      ),
       completed: completedSteps.has(1),
     },
     {
