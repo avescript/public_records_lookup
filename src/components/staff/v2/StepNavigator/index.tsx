@@ -20,7 +20,7 @@ import type { StoredRequest } from '@/services/requestService';
 // Import step components
 import { LocateStep } from '../LocateStep';
 import { RedactStep } from '../RedactStep';
-// import { RespondStep } from './steps/RespondStep';
+import { RespondStep } from '../RespondStep';
 // import { ReviewStep } from './steps/ReviewStep';
 
 interface StepNavigatorProps {
@@ -74,6 +74,12 @@ export function StepNavigator({
     setCompletedSteps(prev => new Set([...prev, 2]));
   };
 
+  const handleResponseComplete = (responseSummary: any) => {
+    console.log('Response completed:', responseSummary);
+    // Mark step 3 as complete
+    setCompletedSteps(prev => new Set([...prev, 3]));
+  };
+
   const steps: WorkflowStep[] = [
     {
       id: 1,
@@ -107,7 +113,13 @@ export function StepNavigator({
       id: 3,
       label: 'Respond',
       description: 'Generate and customize response with AI assistance',
-      // component: RespondStep,
+      component: (props: any) => (
+        <RespondStep
+          {...props}
+          request={request}
+          onResponseComplete={handleResponseComplete}
+        />
+      ),
       completed: completedSteps.has(3),
     },
     {
