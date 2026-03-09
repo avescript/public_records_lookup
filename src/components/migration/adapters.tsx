@@ -615,8 +615,10 @@ import type {
   DialogProps as MuiDialogProps,
   DialogTitleProps as MuiDialogTitleProps,
   DividerProps as MuiDividerProps,
+  FormControlLabelProps as MuiFormControlLabelProps,
   GridProps as MuiGridProps,
   IconButtonProps as MuiIconButtonProps,
+  InputLabelProps as MuiInputLabelProps,
   LinearProgressProps as MuiLinearProgressProps,
   ListItemButtonProps as MuiListItemButtonProps,
   ListItemIconProps as MuiListItemIconProps,
@@ -624,6 +626,7 @@ import type {
   ListItemSecondaryActionProps as MuiListItemSecondaryActionProps,
   ListItemTextProps as MuiListItemTextProps,
   ListProps as MuiListProps,
+  MenuItemProps as MuiMenuItemProps,
   StackProps as MuiStackProps,
   TooltipProps as MuiTooltipProps,
   TypographyProps as MuiTypographyProps,
@@ -642,8 +645,10 @@ import {
   DialogContent as MuiDialogContent,
   DialogTitle as MuiDialogTitle,
   Divider as MuiDivider,
+  FormControlLabel as MuiFormControlLabel,
   Grid as MuiGrid,
   IconButton as MuiIconButton,
+  InputLabel as MuiInputLabel,
   LinearProgress as MuiLinearProgress,
   List as MuiList,
   ListItem as MuiListItem,
@@ -651,6 +656,7 @@ import {
   ListItemIcon as MuiListItemIcon,
   ListItemSecondaryAction as MuiListItemSecondaryAction,
   ListItemText as MuiListItemText,
+  MenuItem as MuiMenuItem,
   Stack as MuiStack,
   Tooltip as MuiTooltip,
   Typography as MuiTypography,
@@ -677,6 +683,9 @@ type LegacyListItemButtonProps = MuiListItemButtonProps;
 type LegacyListItemIconProps = MuiListItemIconProps;
 type LegacyListItemTextProps = MuiListItemTextProps;
 type LegacyListItemSecondaryActionProps = MuiListItemSecondaryActionProps;
+type LegacyMenuItemProps = MuiMenuItemProps;
+type LegacyInputLabelProps = MuiInputLabelProps;
+type LegacyFormControlLabelProps = MuiFormControlLabelProps;
 type LegacyDividerProps = MuiDividerProps;
 type LegacyIconButtonProps = MuiIconButtonProps;
 type LegacyTooltipProps = MuiTooltipProps;
@@ -916,6 +925,35 @@ export const Grid: React.FC<LegacyGridProps> = props => {
   return <MuiGrid {...props} />;
 };
 
+/**
+ * MenuItem Adapter
+ * Menu item for Select and Menu components - currently passes through to Material-UI
+ */
+export const MenuItem: React.FC<LegacyMenuItemProps> = props => {
+  useMigrationSuccess('MenuItem');
+  return <MuiMenuItem {...props} />;
+};
+
+/**
+ * InputLabel Adapter
+ * Label for form inputs - currently passes through to Material-UI
+ */
+export const InputLabel: React.FC<LegacyInputLabelProps> = props => {
+  useMigrationSuccess('InputLabel');
+  return <MuiInputLabel {...props} />;
+};
+
+/**
+ * FormControlLabel Adapter
+ * Label wrapper for Checkbox and Radio - currently passes through to Material-UI
+ */
+export const FormControlLabel: React.FC<
+  LegacyFormControlLabelProps
+> = props => {
+  useMigrationSuccess('FormControlLabel');
+  return <MuiFormControlLabel {...props} />;
+};
+
 // Export type definitions for TypeScript support
 export type {
   LegacyAccordionDetailsProps,
@@ -933,9 +971,11 @@ export type {
   LegacyDialogProps,
   LegacyDialogTitleProps,
   LegacyDividerProps,
+  LegacyFormControlLabelProps,
   LegacyFormControlProps,
   LegacyGridProps,
   LegacyIconButtonProps,
+  LegacyInputLabelProps,
   LegacyLinearProgressProps,
   LegacyListItemButtonProps,
   LegacyListItemIconProps,
@@ -943,6 +983,7 @@ export type {
   LegacyListItemSecondaryActionProps,
   LegacyListItemTextProps,
   LegacyListProps,
+  LegacyMenuItemProps,
   LegacyPaperProps,
   LegacyRadioGroupProps,
   LegacyRadioProps,

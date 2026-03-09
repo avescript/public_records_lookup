@@ -160,6 +160,21 @@ module.exports = {
             message:
               'Use Grid from "@/components/migration" instead for gradual design system adoption',
           },
+          {
+            name: '@mui/material/MenuItem',
+            message:
+              'Use MenuItem from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/InputLabel',
+            message:
+              'Use InputLabel from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/FormControlLabel',
+            message:
+              'Use FormControlLabel from "@/components/migration" instead for gradual design system adoption',
+          },
         ],
         patterns: [
           {
@@ -182,6 +197,8 @@ module.exports = {
               '@mui/material/*List*',
               '@mui/material/*Container*',
               '@mui/material/*Grid*',
+              '@mui/material/*MenuItem*',
+              '@mui/material/*InputLabel*',
             ],
             message:
               'Use migration layer components from "@/components/migration" for gradual design system adoption',
