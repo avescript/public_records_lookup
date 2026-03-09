@@ -175,6 +175,121 @@ module.exports = {
             message:
               'Use FormControlLabel from "@/components/migration" instead for gradual design system adoption',
           },
+          {
+            name: '@mui/material/AlertTitle',
+            message:
+              'Use AlertTitle from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/AppBar',
+            message:
+              'Use AppBar from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Avatar',
+            message:
+              'Use Avatar from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Backdrop',
+            message:
+              'Use Backdrop from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Badge',
+            message:
+              'Use Badge from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/CardActions',
+            message:
+              'Use CardActions from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/CardHeader',
+            message:
+              'Use CardHeader from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Collapse',
+            message:
+              'Use Collapse from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Drawer',
+            message:
+              'Use Drawer from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/FormGroup',
+            message:
+              'Use FormGroup from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/FormLabel',
+            message:
+              'Use FormLabel from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Popover',
+            message:
+              'Use Popover from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Rating',
+            message:
+              'Use Rating from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Slider',
+            message:
+              'Use Slider from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Snackbar',
+            message:
+              'Use Snackbar from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Step',
+            message:
+              'Use Step from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/StepContent',
+            message:
+              'Use StepContent from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/StepLabel',
+            message:
+              'Use StepLabel from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Stepper',
+            message:
+              'Use Stepper from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Switch',
+            message:
+              'Use Switch from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Tab',
+            message:
+              'Use Tab from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Tabs',
+            message:
+              'Use Tabs from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Toolbar',
+            message:
+              'Use Toolbar from "@/components/migration" instead for gradual design system adoption',
+          },
         ],
         patterns: [
           {
@@ -199,6 +314,22 @@ module.exports = {
               '@mui/material/*Grid*',
               '@mui/material/*MenuItem*',
               '@mui/material/*InputLabel*',
+              '@mui/material/*AppBar*',
+              '@mui/material/*Avatar*',
+              '@mui/material/*Backdrop*',
+              '@mui/material/*Badge*',
+              '@mui/material/*Card*',
+              '@mui/material/*Collapse*',
+              '@mui/material/*Drawer*',
+              '@mui/material/*Popover*',
+              '@mui/material/*Rating*',
+              '@mui/material/*Slider*',
+              '@mui/material/*Snackbar*',
+              '@mui/material/*Step*',
+              '@mui/material/*Stepper*',
+              '@mui/material/*Switch*',
+              '@mui/material/*Tab*',
+              '@mui/material/*Toolbar*',
             ],
             message:
               'Use migration layer components from "@/components/migration" for gradual design system adoption',

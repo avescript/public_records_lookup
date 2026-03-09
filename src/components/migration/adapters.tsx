@@ -606,16 +606,27 @@ import type {
   AccordionProps as MuiAccordionProps,
   AccordionSummaryProps as MuiAccordionSummaryProps,
   AlertProps as MuiAlertProps,
+  AlertTitleProps as MuiAlertTitleProps,
+  AppBarProps as MuiAppBarProps,
+  AvatarProps as MuiAvatarProps,
+  BackdropProps as MuiBackdropProps,
+  BadgeProps as MuiBadgeProps,
   BoxProps as MuiBoxProps,
+  CardActionsProps as MuiCardActionsProps,
+  CardHeaderProps as MuiCardHeaderProps,
   ChipProps as MuiChipProps,
   CircularProgressProps as MuiCircularProgressProps,
+  CollapseProps as MuiCollapseProps,
   ContainerProps as MuiContainerProps,
   DialogActionsProps as MuiDialogActionsProps,
   DialogContentProps as MuiDialogContentProps,
   DialogProps as MuiDialogProps,
   DialogTitleProps as MuiDialogTitleProps,
   DividerProps as MuiDividerProps,
+  DrawerProps as MuiDrawerProps,
   FormControlLabelProps as MuiFormControlLabelProps,
+  FormGroupProps as MuiFormGroupProps,
+  FormLabelProps as MuiFormLabelProps,
   GridProps as MuiGridProps,
   IconButtonProps as MuiIconButtonProps,
   InputLabelProps as MuiInputLabelProps,
@@ -627,7 +638,19 @@ import type {
   ListItemTextProps as MuiListItemTextProps,
   ListProps as MuiListProps,
   MenuItemProps as MuiMenuItemProps,
+  PopoverProps as MuiPopoverProps,
+  RatingProps as MuiRatingProps,
+  SliderProps as MuiSliderProps,
+  SnackbarProps as MuiSnackbarProps,
   StackProps as MuiStackProps,
+  StepContentProps as MuiStepContentProps,
+  StepLabelProps as MuiStepLabelProps,
+  StepperProps as MuiStepperProps,
+  StepProps as MuiStepProps,
+  SwitchProps as MuiSwitchProps,
+  TabProps as MuiTabProps,
+  TabsProps as MuiTabsProps,
+  ToolbarProps as MuiToolbarProps,
   TooltipProps as MuiTooltipProps,
   TypographyProps as MuiTypographyProps,
 } from '@mui/material';
@@ -636,16 +659,27 @@ import {
   AccordionDetails as MuiAccordionDetails,
   AccordionSummary as MuiAccordionSummary,
   Alert as MuiAlert,
+  AlertTitle as MuiAlertTitle,
+  AppBar as MuiAppBar,
+  Avatar as MuiAvatar,
+  Backdrop as MuiBackdrop,
+  Badge as MuiBadge,
   Box as MuiBox,
+  CardActions as MuiCardActions,
+  CardHeader as MuiCardHeader,
   Chip as MuiChip,
   CircularProgress as MuiCircularProgress,
+  Collapse as MuiCollapse,
   Container as MuiContainer,
   Dialog as MuiDialog,
   DialogActions as MuiDialogActions,
   DialogContent as MuiDialogContent,
   DialogTitle as MuiDialogTitle,
   Divider as MuiDivider,
+  Drawer as MuiDrawer,
   FormControlLabel as MuiFormControlLabel,
+  FormGroup as MuiFormGroup,
+  FormLabel as MuiFormLabel,
   Grid as MuiGrid,
   IconButton as MuiIconButton,
   InputLabel as MuiInputLabel,
@@ -657,7 +691,19 @@ import {
   ListItemSecondaryAction as MuiListItemSecondaryAction,
   ListItemText as MuiListItemText,
   MenuItem as MuiMenuItem,
+  Popover as MuiPopover,
+  Rating as MuiRating,
+  Slider as MuiSlider,
+  Snackbar as MuiSnackbar,
   Stack as MuiStack,
+  Step as MuiStep,
+  StepContent as MuiStepContent,
+  StepLabel as MuiStepLabel,
+  Stepper as MuiStepper,
+  Switch as MuiSwitch,
+  Tab as MuiTab,
+  Tabs as MuiTabs,
+  Toolbar as MuiToolbar,
   Tooltip as MuiTooltip,
   Typography as MuiTypography,
 } from '@mui/material';
@@ -691,6 +737,29 @@ type LegacyIconButtonProps = MuiIconButtonProps;
 type LegacyTooltipProps = MuiTooltipProps;
 type LegacyLinearProgressProps = MuiLinearProgressProps;
 type LegacyCircularProgressProps = MuiCircularProgressProps;
+type LegacyAlertTitleProps = MuiAlertTitleProps;
+type LegacyAppBarProps = MuiAppBarProps;
+type LegacyAvatarProps = MuiAvatarProps;
+type LegacyBackdropProps = MuiBackdropProps;
+type LegacyBadgeProps = MuiBadgeProps;
+type LegacyCardActionsProps = MuiCardActionsProps;
+type LegacyCardHeaderProps = MuiCardHeaderProps;
+type LegacyCollapseProps = MuiCollapseProps;
+type LegacyDrawerProps = MuiDrawerProps;
+type LegacyFormGroupProps = MuiFormGroupProps;
+type LegacyFormLabelProps = MuiFormLabelProps;
+type LegacyPopoverProps = MuiPopoverProps;
+type LegacyRatingProps = MuiRatingProps;
+type LegacySliderProps = MuiSliderProps;
+type LegacySnackbarProps = MuiSnackbarProps;
+type LegacyStepProps = MuiStepProps;
+type LegacyStepContentProps = MuiStepContentProps;
+type LegacyStepLabelProps = MuiStepLabelProps;
+type LegacyStepperProps = MuiStepperProps;
+type LegacySwitchProps = MuiSwitchProps;
+type LegacyTabProps = MuiTabProps;
+type LegacyTabsProps = MuiTabsProps;
+type LegacyToolbarProps = MuiToolbarProps;
 
 /**
  * Accordion Adapter
@@ -954,25 +1023,256 @@ export const FormControlLabel: React.FC<
   return <MuiFormControlLabel {...props} />;
 };
 
+/**
+ * AlertTitle Adapter
+ * Title for Alert component - currently passes through to Material-UI
+ */
+export const AlertTitle: React.FC<LegacyAlertTitleProps> = props => {
+  useMigrationSuccess('AlertTitle');
+  return <MuiAlertTitle {...props} />;
+};
+
+/**
+ * AppBar Adapter
+ * Top app bar - currently passes through to Material-UI
+ */
+export const AppBar: React.FC<LegacyAppBarProps> = props => {
+  useMigrationSuccess('AppBar');
+  return <MuiAppBar {...props} />;
+};
+
+/**
+ * Avatar Adapter
+ * User avatar - currently passes through to Material-UI
+ */
+export const Avatar: React.FC<LegacyAvatarProps> = props => {
+  useMigrationSuccess('Avatar');
+  return <MuiAvatar {...props} />;
+};
+
+/**
+ * Backdrop Adapter
+ * Overlay background - currently passes through to Material-UI
+ */
+export const Backdrop: React.FC<LegacyBackdropProps> = props => {
+  useMigrationSuccess('Backdrop');
+  return <MuiBackdrop {...props} />;
+};
+
+/**
+ * Badge Adapter
+ * Notification badge - currently passes through to Material-UI
+ */
+export const Badge: React.FC<LegacyBadgeProps> = props => {
+  useMigrationSuccess('Badge');
+  return <MuiBadge {...props} />;
+};
+
+/**
+ * CardActions Adapter
+ * Card action buttons - currently passes through to Material-UI
+ */
+export const CardActions: React.FC<LegacyCardActionsProps> = props => {
+  useMigrationSuccess('CardActions');
+  return <MuiCardActions {...props} />;
+};
+
+/**
+ * CardHeader Adapter
+ * Card header - currently passes through to Material-UI
+ */
+export const CardHeader: React.FC<LegacyCardHeaderProps> = props => {
+  useMigrationSuccess('CardHeader');
+  return <MuiCardHeader {...props} />;
+};
+
+/**
+ * Collapse Adapter
+ * Collapsible content - currently passes through to Material-UI
+ */
+export const Collapse: React.FC<LegacyCollapseProps> = props => {
+  useMigrationSuccess('Collapse');
+  return <MuiCollapse {...props} />;
+};
+
+/**
+ * Drawer Adapter
+ * Side drawer navigation - currently passes through to Material-UI
+ */
+export const Drawer: React.FC<LegacyDrawerProps> = props => {
+  useMigrationSuccess('Drawer');
+  return <MuiDrawer {...props} />;
+};
+
+/**
+ * FormGroup Adapter
+ * Form input group - currently passes through to Material-UI
+ */
+export const FormGroup: React.FC<LegacyFormGroupProps> = props => {
+  useMigrationSuccess('FormGroup');
+  return <MuiFormGroup {...props} />;
+};
+
+/**
+ * FormLabel Adapter
+ * Form label - currently passes through to Material-UI
+ */
+export const FormLabel: React.FC<LegacyFormLabelProps> = props => {
+  useMigrationSuccess('FormLabel');
+  return <MuiFormLabel {...props} />;
+};
+
+/**
+ * Popover Adapter
+ * Popover overlay - currently passes through to Material-UI
+ */
+export const Popover: React.FC<LegacyPopoverProps> = props => {
+  useMigrationSuccess('Popover');
+  return <MuiPopover {...props} />;
+};
+
+/**
+ * Rating Adapter
+ * Star rating - currently passes through to Material-UI
+ */
+export const Rating: React.FC<LegacyRatingProps> = props => {
+  useMigrationSuccess('Rating');
+  return <MuiRating {...props} />;
+};
+
+/**
+ * Slider Adapter
+ * Range slider - currently passes through to Material-UI
+ */
+export const Slider: React.FC<LegacySliderProps> = props => {
+  useMigrationSuccess('Slider');
+  return <MuiSlider {...props} />;
+};
+
+/**
+ * Snackbar Adapter
+ * Notification snackbar - currently passes through to Material-UI
+ */
+export const Snackbar: React.FC<LegacySnackbarProps> = props => {
+  useMigrationSuccess('Snackbar');
+  return <MuiSnackbar {...props} />;
+};
+
+/**
+ * Step Adapter
+ * Stepper step - currently passes through to Material-UI
+ */
+export const Step: React.FC<LegacyStepProps> = props => {
+  useMigrationSuccess('Step');
+  return <MuiStep {...props} />;
+};
+
+/**
+ * StepContent Adapter
+ * Stepper step content - currently passes through to Material-UI
+ */
+export const StepContent: React.FC<LegacyStepContentProps> = props => {
+  useMigrationSuccess('StepContent');
+  return <MuiStepContent {...props} />;
+};
+
+/**
+ * StepLabel Adapter
+ * Stepper step label - currently passes through to Material-UI
+ */
+export const StepLabel: React.FC<LegacyStepLabelProps> = props => {
+  useMigrationSuccess('StepLabel');
+  return <MuiStepLabel {...props} />;
+};
+
+/**
+ * Stepper Adapter
+ * Multi-step workflow - currently passes through to Material-UI
+ */
+export const Stepper: React.FC<LegacyStepperProps> = props => {
+  useMigrationSuccess('Stepper');
+  return <MuiStepper {...props} />;
+};
+
+/**
+ * Switch Adapter
+ * Toggle switch - currently passes through to Material-UI
+ */
+export const Switch: React.FC<LegacySwitchProps> = props => {
+  useMigrationSuccess('Switch');
+  return <MuiSwitch {...props} />;
+};
+
+/**
+ * Tab Adapter
+ * Single tab - currently passes through to Material-UI
+ */
+export const Tab: React.FC<LegacyTabProps> = props => {
+  useMigrationSuccess('Tab');
+  return <MuiTab {...props} />;
+};
+
+/**
+ * Tabs Adapter
+ * Tab navigation - currently passes through to Material-UI
+ */
+export const Tabs: React.FC<LegacyTabsProps> = props => {
+  useMigrationSuccess('Tabs');
+  return <MuiTabs {...props} />;
+};
+
+/**
+ * Toolbar Adapter
+ * Toolbar container - currently passes through to Material-UI
+ */
+export const Toolbar: React.FC<LegacyToolbarProps> = props => {
+  useMigrationSuccess('Toolbar');
+  return <MuiToolbar {...props} />;
+};
+
 // Export type definitions for TypeScript support
 export type {
   LegacyAccordionDetailsProps,
   LegacyAccordionProps,
   LegacyAccordionSummaryProps,
   LegacyAlertProps,
+  LegacyAlertProps,
+  LegacyAlertTitleProps,
+  LegacyAppBarProps,
+  LegacyAvatarProps,
+  LegacyBackdropProps,
+  LegacyBadgeProps,
+  LegacyBoxProps,
   LegacyBoxProps,
   LegacyButtonProps,
+  LegacyButtonProps,
+  LegacyCardActionsProps,
+  LegacyCardHeaderProps,
+  LegacyCardProps,
+  LegacyCheckboxProps,
   LegacyCheckboxProps,
   LegacyChipProps,
+  LegacyChipProps,
   LegacyCircularProgressProps,
+  LegacyCircularProgressProps,
+  LegacyCollapseProps,
+  LegacyContainerProps,
   LegacyContainerProps,
   LegacyDialogActionsProps,
+  LegacyDialogActionsProps,
+  LegacyDialogContentProps,
   LegacyDialogContentProps,
   LegacyDialogProps,
+  LegacyDialogProps,
+  LegacyDialogTitleProps,
   LegacyDialogTitleProps,
   LegacyDividerProps,
+  LegacyDividerProps,
+  LegacyDrawerProps,
   LegacyFormControlLabelProps,
   LegacyFormControlProps,
+  LegacyFormGroupProps,
+  LegacyFormLabelProps,
   LegacyGridProps,
   LegacyIconButtonProps,
   LegacyInputLabelProps,
@@ -985,11 +1285,23 @@ export type {
   LegacyListProps,
   LegacyMenuItemProps,
   LegacyPaperProps,
+  LegacyPopoverProps,
   LegacyRadioGroupProps,
   LegacyRadioProps,
+  LegacyRatingProps,
   LegacySelectProps,
+  LegacySliderProps,
+  LegacySnackbarProps,
   LegacyStackProps,
+  LegacyStepContentProps,
+  LegacyStepLabelProps,
+  LegacyStepperProps,
+  LegacyStepProps,
+  LegacySwitchProps,
+  LegacyTabProps,
+  LegacyTabsProps,
   LegacyTextFieldProps,
+  LegacyToolbarProps,
   LegacyTooltipProps,
   LegacyTypographyProps,
 };
