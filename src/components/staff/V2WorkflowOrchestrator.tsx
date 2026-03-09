@@ -16,9 +16,9 @@ import {
   Refresh as RefreshIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
-import { Paper, Step, StepLabel, Stepper } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
+import { Paper, Step, StepLabel, Stepper } from '@/components/migration';
 import {
   Alert,
   Box,

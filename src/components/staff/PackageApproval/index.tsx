@@ -20,6 +20,15 @@ import {
   Visibility as ViewIcon,
 } from '@mui/icons-material';
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
+
+import {
   Alert,
   Box,
   Button,
@@ -44,16 +53,10 @@ import {
   MenuItem,
   Paper,
   Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Tooltip,
   Typography,
-} from '@mui/material';
+} from '@/components/migration';
 
 import {
   legalReviewService,

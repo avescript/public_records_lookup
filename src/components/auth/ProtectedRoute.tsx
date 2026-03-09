@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
+
+import { Box, CircularProgress, Typography } from '@/components/migration';
 
 import { useAuth } from '../../contexts/AuthContext';
 

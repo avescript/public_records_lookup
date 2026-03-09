@@ -19,6 +19,7 @@ import {
   Visibility as ViewIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
+
 import {
   Accordion,
   AccordionDetails,
@@ -60,7 +61,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from '@mui/material';
+} from '@/components/migration';
 
 import { useRecordSelection } from '../../../contexts/RecordSelectionContext';
 import { EnhancedMatchCandidate } from '../../../types/enhanced-search';

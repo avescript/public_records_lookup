@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
+
+import { Box } from '@/components/migration';
 
 import { StaffDashboard } from '../../components/staff/StaffDashboard';
 import { StoredRequest } from '../../services/requestService';

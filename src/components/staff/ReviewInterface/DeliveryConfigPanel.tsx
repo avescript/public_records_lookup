@@ -26,6 +26,11 @@ import {
   Send as SendIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { addDays, format, isAfter, isWeekend } from 'date-fns';
+
 import {
   Accordion,
   AccordionDetails,
@@ -63,12 +68,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from '@mui/material';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { addDays, format, isAfter, isWeekend } from 'date-fns';
-
+} from '@/components/migration';
 import {
   DeliveryConfiguration,
   DeliveryMethod,
@@ -99,7 +99,7 @@ const deliveryMethods: {
     value: 'email',
     label: 'Email',
     icon: <EmailIcon />,
-    description: 'Send response directly to requester\'s email',
+    description: "Send response directly to requester's email",
   },
   {
     value: 'portal',
@@ -734,7 +734,7 @@ export function DeliveryConfigPanel({
                           {config.scheduledDate
                             ? format(
                                 config.scheduledDate,
-                                'MMM dd, yyyy \'at\' h:mm a'
+                                "MMM dd, yyyy 'at' h:mm a"
                               )
                             : 'Immediate'}
                         </Typography>

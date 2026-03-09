@@ -12,23 +12,26 @@ import {
   Settings as SettingsIcon,
 } from '@mui/icons-material';
 import {
+  Fab,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+
+import {
   Alert,
   Backdrop,
   Badge,
   Box,
   Container,
   Drawer,
-  Fab,
   Paper,
   Snackbar,
-  SpeedDial,
-  SpeedDialAction,
-  SpeedDialIcon,
   Stack,
   Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+} from '@/components/migration';
 
 import { AdvancedSearchInterface } from '../../../components/staff/EnhancedSearch/AdvancedSearchInterface';
 import { useRecordSelection } from '../../../contexts/RecordSelectionContext';

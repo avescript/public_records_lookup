@@ -17,6 +17,16 @@ import {
   TableChart as TableIcon,
 } from '@mui/icons-material';
 import {
+  SelectChangeEvent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
+
+import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
@@ -39,20 +49,12 @@ import {
   MenuItem,
   Paper,
   Select,
-  SelectChangeEvent,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Tabs,
   TextField,
   Tooltip,
   Typography,
-} from '@mui/material';
-
+} from '@/components/migration';
 // DatePicker will be replaced with TextField for date input
 import {
   bigQueryExportService,

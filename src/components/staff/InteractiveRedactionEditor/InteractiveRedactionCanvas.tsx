@@ -39,11 +39,19 @@ import {
   ZoomOut as ZoomOutIcon,
 } from '@mui/icons-material';
 import {
+  ButtonGroup,
+  Fab,
+  Popper,
+  ToggleButton,
+  ToggleButtonGroup,
+  useTheme,
+} from '@mui/material';
+
+import {
   Alert,
   Badge,
   Box,
   Button,
-  ButtonGroup,
   Card,
   CardContent,
   Chip,
@@ -53,7 +61,6 @@ import {
   DialogTitle,
   Divider,
   Drawer,
-  Fab,
   FormControl,
   FormControlLabel,
   IconButton,
@@ -64,19 +71,15 @@ import {
   ListItemText,
   MenuItem,
   Paper,
-  Popper,
   Select,
   Slider,
   Snackbar,
   Stack,
   Switch,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Tooltip,
   Typography,
-  useTheme,
-} from '@mui/material';
+} from '@/components/migration';
 
 import { useAgency } from '../../../contexts/AgencyContext';
 import { useAuth } from '../../../contexts/AuthContext';

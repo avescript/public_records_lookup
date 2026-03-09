@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography } from '@/components/migration';
 
 import { PublicLayout } from '../components/layouts/PublicLayout';
 import { RequestForm } from '../components/request/RequestForm';

@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Alert, Box, Typography } from '@mui/material';
 
+import { Alert, Box, Typography } from '@/components/migration';
 import { WorkflowStep } from '@/components/staff/WorkflowNavigation';
 import { WorkflowPage } from '@/components/staff/WorkflowPage';
 

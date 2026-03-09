@@ -1,8 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
+
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Typography,
+} from '@/components/migration';
 
 import { RequestConfirmation } from '../../components/request/RequestConfirmation';
 import {

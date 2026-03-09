@@ -1,7 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
-import { Box, CircularProgress } from '@mui/material';
+
+import { Box, CircularProgress } from '@/components/migration';
 
 import ConfirmationContent from './ConfirmationContent';
 

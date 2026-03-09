@@ -7,10 +7,10 @@ import {
   Folder as FolderIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
-import { FormControlLabel } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/core/Button';
+import { FormControlLabel } from '@/components/migration';
 import {
   Alert,
   Box,

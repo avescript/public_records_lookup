@@ -25,6 +25,9 @@ import {
   Send as SendIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
+import { ListItemAvatar, Menu, useTheme } from '@mui/material';
+import { format, formatDistanceToNow } from 'date-fns';
+
 import {
   Alert,
   Avatar,
@@ -46,10 +49,8 @@ import {
   InputLabel,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
-  Menu,
   MenuItem,
   Paper,
   Select,
@@ -57,9 +58,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useTheme,
-} from '@mui/material';
-import { format, formatDistanceToNow } from 'date-fns';
+} from '@/components/migration';
 
 import { InteractiveRedaction } from './InteractiveRedactionCanvas';
 
@@ -184,7 +183,7 @@ export const RedactionCollaborationPanel: React.FC<
           redactionId: selectedRedactionId,
           authorId: currentUserId,
           authorName: 'Current User',
-          content: 'Good point. I\'ll adjust the boundaries.',
+          content: "Good point. I'll adjust the boundaries.",
           timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
           type: 'comment',
           status: 'active',

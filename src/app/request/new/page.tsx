@@ -1,5 +1,4 @@
-import { Container, Paper, Typography } from '@mui/material';
-
+import { Container, Paper, Typography } from '@/components/migration';
 import { RequestForm } from '@/components/request/RequestForm';
 
 export default function NewRequest() {

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
+
+import { Box } from '@/components/migration';
 
 import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
 import { AdminLayout } from '../../../components/layouts/AdminLayout';

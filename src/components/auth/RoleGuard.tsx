@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Alert, Box, Typography } from '@mui/material';
+
+import { Alert, Box, Typography } from '@/components/migration';
 
 import {
   Permission,
@@ -62,7 +63,7 @@ export function RoleGuard({
   children,
   fallback,
   showAccessDenied = false,
-  accessDeniedMessage = 'You don\'t have permission to access this feature.',
+  accessDeniedMessage = "You don't have permission to access this feature.",
 }: RoleGuardProps) {
   const {
     hasAnyRole,

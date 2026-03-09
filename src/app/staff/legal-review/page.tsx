@@ -6,7 +6,8 @@
 'use client';
 
 import React from 'react';
-import { Box, Container } from '@mui/material';
+
+import { Box, Container } from '@/components/migration';
 
 import { LegalReviewDashboard } from '../../../components/staff/LegalReviewDashboard';
 

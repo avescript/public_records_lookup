@@ -22,6 +22,16 @@ import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import {
+  Timeline,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineItem,
+  TimelineSeparator,
+} from '@mui/material';
+import { format } from 'date-fns';
+
+import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
@@ -54,16 +64,8 @@ import {
   Paper,
   Select,
   TextField,
-  Timeline,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  TimelineItem,
-  TimelineSeparator,
   Typography,
-} from '@mui/material';
-import { format } from 'date-fns';
-
+} from '@/components/migration';
 import {
   ApprovalChecklist as ApprovalChecklistType,
   ApprovalChecklistItem,
@@ -527,14 +529,14 @@ export function ApprovalChecklist({
                         Submitted:{' '}
                         {format(
                           new Date(approval.submittedAt),
-                          'MMM dd, yyyy \'at\' h:mm a'
+                          "MMM dd, yyyy 'at' h:mm a"
                         )}
                         {approval.reviewedAt && (
                           <span>
                             {' • Reviewed: '}
                             {format(
                               new Date(approval.reviewedAt),
-                              'MMM dd, yyyy \'at\' h:mm a'
+                              "MMM dd, yyyy 'at' h:mm a"
                             )}
                           </span>
                         )}
