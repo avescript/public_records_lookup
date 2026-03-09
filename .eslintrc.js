@@ -150,6 +150,16 @@ module.exports = {
             message:
               'Use ListItemSecondaryAction from "@/components/migration" instead for gradual design system adoption',
           },
+          {
+            name: '@mui/material/Container',
+            message:
+              'Use Container from "@/components/migration" instead for gradual design system adoption',
+          },
+          {
+            name: '@mui/material/Grid',
+            message:
+              'Use Grid from "@/components/migration" instead for gradual design system adoption',
+          },
         ],
         patterns: [
           {
@@ -170,6 +180,8 @@ module.exports = {
               '@mui/material/*Progress*',
               '@mui/material/*Dialog*',
               '@mui/material/*List*',
+              '@mui/material/*Container*',
+              '@mui/material/*Grid*',
             ],
             message:
               'Use migration layer components from "@/components/migration" for gradual design system adoption',

@@ -609,11 +609,13 @@ import type {
   BoxProps as MuiBoxProps,
   ChipProps as MuiChipProps,
   CircularProgressProps as MuiCircularProgressProps,
+  ContainerProps as MuiContainerProps,
   DialogActionsProps as MuiDialogActionsProps,
   DialogContentProps as MuiDialogContentProps,
   DialogProps as MuiDialogProps,
   DialogTitleProps as MuiDialogTitleProps,
   DividerProps as MuiDividerProps,
+  GridProps as MuiGridProps,
   IconButtonProps as MuiIconButtonProps,
   LinearProgressProps as MuiLinearProgressProps,
   ListItemButtonProps as MuiListItemButtonProps,
@@ -634,11 +636,13 @@ import {
   Box as MuiBox,
   Chip as MuiChip,
   CircularProgress as MuiCircularProgress,
+  Container as MuiContainer,
   Dialog as MuiDialog,
   DialogActions as MuiDialogActions,
   DialogContent as MuiDialogContent,
   DialogTitle as MuiDialogTitle,
   Divider as MuiDivider,
+  Grid as MuiGrid,
   IconButton as MuiIconButton,
   LinearProgress as MuiLinearProgress,
   List as MuiList,
@@ -661,6 +665,8 @@ type LegacyTypographyProps = MuiTypographyProps;
 type LegacyAlertProps = MuiAlertProps;
 type LegacyChipProps = MuiChipProps;
 type LegacyStackProps = MuiStackProps;
+type LegacyContainerProps = MuiContainerProps;
+type LegacyGridProps = MuiGridProps;
 type LegacyDialogProps = MuiDialogProps;
 type LegacyDialogActionsProps = MuiDialogActionsProps;
 type LegacyDialogContentProps = MuiDialogContentProps;
@@ -892,6 +898,24 @@ export const ListItemSecondaryAction: React.FC<
   return <MuiListItemSecondaryAction {...props} />;
 };
 
+/**
+ * Container Adapter
+ * Layout container with max width - currently passes through to Material-UI
+ */
+export const Container: React.FC<LegacyContainerProps> = props => {
+  useMigrationSuccess('Container');
+  return <MuiContainer {...props} />;
+};
+
+/**
+ * Grid Adapter
+ * Responsive grid layout - currently passes through to Material-UI
+ */
+export const Grid: React.FC<LegacyGridProps> = props => {
+  useMigrationSuccess('Grid');
+  return <MuiGrid {...props} />;
+};
+
 // Export type definitions for TypeScript support
 export type {
   LegacyAccordionDetailsProps,
@@ -903,12 +927,14 @@ export type {
   LegacyCheckboxProps,
   LegacyChipProps,
   LegacyCircularProgressProps,
+  LegacyContainerProps,
   LegacyDialogActionsProps,
   LegacyDialogContentProps,
   LegacyDialogProps,
   LegacyDialogTitleProps,
   LegacyDividerProps,
   LegacyFormControlProps,
+  LegacyGridProps,
   LegacyIconButtonProps,
   LegacyLinearProgressProps,
   LegacyListItemButtonProps,
