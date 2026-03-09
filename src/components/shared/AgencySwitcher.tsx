@@ -13,6 +13,8 @@ import {
   Park,
   SwapHoriz,
 } from '@mui/icons-material';
+import { Menu, Skeleton } from '@mui/material';
+
 import {
   Box,
   Button,
@@ -20,12 +22,10 @@ import {
   Divider,
   ListItemIcon,
   ListItemText,
-  Menu,
   MenuItem,
-  Skeleton,
   Tooltip,
   Typography,
-} from '@mui/material';
+} from '@/components/migration';
 
 import { useAgency } from '../../contexts/AgencyContext';
 import { SyntheticAgency } from '../../data/syntheticDataTemplates';

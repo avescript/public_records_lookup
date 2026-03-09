@@ -15,6 +15,8 @@ import {
   Reply as ReplyIcon,
   Schedule as TimeIcon,
 } from '@mui/icons-material';
+import { ListItemAvatar } from '@mui/material';
+
 import {
   Alert,
   Avatar,
@@ -34,7 +36,6 @@ import {
   InputLabel,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemText,
   MenuItem,
   Paper,
@@ -42,7 +43,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from '@mui/material';
+} from '@/components/migration';
 
 import {
   Comment,
@@ -408,7 +409,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({
                   onChange={e => setNewComment(e.target.value)}
                   placeholder='Add your comment...'
                   variant='outlined'
-                  size='small'
+                  size='sm'
                 />
                 <Box
                   sx={{

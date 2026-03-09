@@ -11,6 +11,7 @@ import {
   VisibilityOff as VisibilityOffIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
+
 import {
   Accordion,
   AccordionDetails,
@@ -36,7 +37,7 @@ import {
   Stack,
   Switch,
   Typography,
-} from '@mui/material';
+} from '@/components/migration';
 
 import {
   piiDetectionService,

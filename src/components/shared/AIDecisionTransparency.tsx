@@ -17,6 +17,8 @@ import {
   TrendingUp as TrendingUpIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
+import { ButtonGroup } from '@mui/material';
+
 import {
   Accordion,
   AccordionDetails,
@@ -24,7 +26,6 @@ import {
   Alert,
   Box,
   Button,
-  ButtonGroup,
   Card,
   CardContent,
   Chip,
@@ -44,8 +45,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from '@mui/material';
-
+} from '@/components/migration';
 import {
   AIDecision,
   AIInsight,

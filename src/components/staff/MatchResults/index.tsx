@@ -11,6 +11,8 @@ import {
   Search as SearchIcon,
   Visibility as VisibilityIcon,
 } from '@mui/icons-material';
+import { format } from 'date-fns';
+
 import {
   Alert,
   Box,
@@ -34,8 +36,7 @@ import {
   Paper,
   Stack,
   Typography,
-} from '@mui/material';
-import { format } from 'date-fns';
+} from '@/components/migration';
 
 import {
   MatchCandidate,
@@ -332,7 +333,7 @@ export function MatchResults({
                 on{' '}
                 {format(
                   new Date(decision.decidedAt),
-                  'MMM d, yyyy \'at\' h:mm a'
+                  "MMM d, yyyy 'at' h:mm a"
                 )}
                 {decision.notes && (
                   <>

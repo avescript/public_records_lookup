@@ -373,7 +373,7 @@ export const BigQueryExportDashboard: React.FC = () => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
-                      size='small'
+                      size='sm'
                       label='Start Date'
                       type='date'
                       value={startDate?.toISOString().split('T')[0] || ''}
@@ -388,7 +388,7 @@ export const BigQueryExportDashboard: React.FC = () => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
-                      size='small'
+                      size='sm'
                       label='End Date'
                       type='date'
                       value={endDate?.toISOString().split('T')[0] || ''}
@@ -407,7 +407,7 @@ export const BigQueryExportDashboard: React.FC = () => {
                       <Select
                         value={exportFormat}
                         label='Export Format'
-                        onChange={(e: SelectChangeEvent) =>
+                        onChange={e =>
                           setExportFormat(e.target.value as typeof exportFormat)
                         }
                       >

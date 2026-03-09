@@ -8,6 +8,10 @@ import {
   Menu as MenuIcon,
   Settings,
 } from '@mui/icons-material';
+import { useTheme } from '@mui/material';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
 import {
   AppBar,
   Avatar,
@@ -24,10 +28,7 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  useTheme,
-} from '@mui/material';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+} from '@/components/migration';
 
 import { useAuth } from '../../contexts/AuthContext';
 import {

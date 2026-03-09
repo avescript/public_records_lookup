@@ -1,3 +1,5 @@
+import { type Theme } from '@mui/material/styles';
+
 import {
   Box,
   Chip,
@@ -6,8 +8,7 @@ import {
   ListItemText,
   Paper,
   Typography,
-} from '@mui/material';
-import { type Theme } from '@mui/material/styles';
+} from '@/components/migration';
 
 interface RequestStatus {
   id: string;

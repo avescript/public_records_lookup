@@ -10,24 +10,26 @@ import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import {
+  stepConnectorClasses,
+  type StepIconProps,
+  styled,
+} from '@mui/material';
+import { useRouter } from 'next/navigation';
+
+import {
   Badge,
   Box,
   Breadcrumbs,
+  Button,
   Chip,
   LinearProgress,
   Step,
   StepConnector,
-  stepConnectorClasses,
-  StepIconProps,
   StepLabel,
   Stepper,
-  styled,
   Tooltip,
   Typography,
-} from '@mui/material';
-import { useRouter } from 'next/navigation';
-
-import { Button } from '@/components/core/Button';
+} from '@/components/migration';
 
 import { StepSummaryCards } from './StepSummaryCards';
 import {

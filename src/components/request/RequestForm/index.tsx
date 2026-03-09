@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+
 import {
   Alert,
   Box,
@@ -11,8 +12,7 @@ import {
   Grid,
   Snackbar,
   Typography,
-} from '@mui/material';
-
+} from '@/components/migration';
 import { Button, Select, TextField } from '@/components/migration';
 
 import { saveRequest } from '../../../services/requestService';
@@ -105,7 +105,7 @@ export const RequestForm = () => {
   };
 
   return (
-    <Box component='form' onSubmit={handleSubmit(onSubmit)} noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         <Box>
           <Controller
@@ -270,6 +270,6 @@ export const RequestForm = () => {
               : 'Request submitted successfully!')}
         </Alert>
       </Snackbar>
-    </Box>
+    </form>
   );
 };

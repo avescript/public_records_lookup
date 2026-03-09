@@ -7,6 +7,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ImageIcon from '@mui/icons-material/Image';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { styled, Theme } from '@mui/material/styles';
+
 import {
   Alert,
   Box,
@@ -16,8 +18,7 @@ import {
   IconButton,
   LinearProgress,
   Typography,
-} from '@mui/material';
-import { styled, Theme } from '@mui/material/styles';
+} from '@/components/migration';
 
 export interface FileUploadProps {
   onFilesSelected: (files: File[]) => void;

@@ -21,6 +21,7 @@ import {
   Security as PIIIcon,
   Visibility as ViewIcon,
 } from '@mui/icons-material';
+
 import {
   Alert,
   Box,
@@ -51,7 +52,7 @@ import {
   Switch,
   Tooltip,
   Typography,
-} from '@mui/material';
+} from '@/components/migration';
 
 import { useAgency } from '../../../contexts/AgencyContext';
 import {

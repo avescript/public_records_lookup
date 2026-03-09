@@ -6,6 +6,8 @@ import {
   ContentCopy as CopyIcon,
   Download as DownloadIcon,
 } from '@mui/icons-material';
+import { format } from 'date-fns';
+
 import {
   Box,
   Button,
@@ -16,8 +18,7 @@ import {
   Grid,
   Paper,
   Typography,
-} from '@mui/material';
-import { format } from 'date-fns';
+} from '@/components/migration';
 
 import { StoredRequest } from '../../../services/requestService';
 
@@ -61,7 +62,7 @@ export function RequestConfirmation({
         return 'Invalid Date';
       }
 
-      return format(date, 'MMMM d, yyyy \'at\' h:mm a');
+      return format(date, "MMMM d, yyyy 'at' h:mm a");
     } catch (error) {
       console.error('Error formatting date:', error, timestamp);
       return 'Invalid Date';

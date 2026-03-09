@@ -18,6 +18,17 @@ import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import {
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+} from '@mui/material';
+
+import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
@@ -25,7 +36,6 @@ import {
   Box,
   Button,
   Card,
-  CardContent,
   Chip,
   CircularProgress,
   Dialog,
@@ -39,19 +49,10 @@ import {
   MenuItem,
   Paper,
   Select,
-  SelectChangeEvent,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
   TextField,
   Tooltip,
   Typography,
-} from '@mui/material';
-
+} from '@/components/migration';
 import {
   AuditEvent,
   AuditFilter,
@@ -519,7 +520,7 @@ export const AuditPanel: React.FC<AuditPanelProps> = ({
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 fullWidth
-                size='small'
+                size='sm'
                 label='Search'
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
@@ -532,9 +533,7 @@ export const AuditPanel: React.FC<AuditPanelProps> = ({
                 <Select
                   value={serviceFilter}
                   label='Service'
-                  onChange={(e: SelectChangeEvent) =>
-                    setServiceFilter(e.target.value)
-                  }
+                  onChange={e => setServiceFilter(e.target.value as string)}
                 >
                   <MenuItem value=''>All Services</MenuItem>
                   {availableServices.map(service => (
@@ -551,9 +550,7 @@ export const AuditPanel: React.FC<AuditPanelProps> = ({
                 <Select
                   value={categoryFilter}
                   label='Category'
-                  onChange={(e: SelectChangeEvent) =>
-                    setCategoryFilter(e.target.value)
-                  }
+                  onChange={e => setCategoryFilter(e.target.value as string)}
                 >
                   <MenuItem value=''>All Categories</MenuItem>
                   {availableCategories.map(category => (
@@ -570,9 +567,7 @@ export const AuditPanel: React.FC<AuditPanelProps> = ({
                 <Select
                   value={severityFilter}
                   label='Severity'
-                  onChange={(e: SelectChangeEvent) =>
-                    setSeverityFilter(e.target.value)
-                  }
+                  onChange={e => setSeverityFilter(e.target.value as string)}
                 >
                   <MenuItem value=''>All Severities</MenuItem>
                   {availableSeverities.map(severity => (
