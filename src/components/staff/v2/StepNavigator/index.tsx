@@ -21,6 +21,7 @@ import type { StoredRequest } from '@/services/requestService';
 import { LocateStep } from '../LocateStep';
 import { RedactStep } from '../RedactStep';
 import { RespondStep } from '../RespondStep';
+import { ReviewStep } from '../ReviewStep';
 // import { ReviewStep } from './steps/ReviewStep';
 
 interface StepNavigatorProps {
@@ -60,24 +61,35 @@ export function StepNavigator({
   // Track step completion
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   
-  // Track selected records from Locate step
+  // Track workflow data across steps
   const [selectedRecords, setSelectedRecords] = useState<string[]>([]);
+  const [redactedRecords, setRedactedRecords] = useState<any[]>([]);
+  const [responseSummary, setResponseSummary] = useState<any | null>(null);
 
   const handleRecordsSelected = (recordIds: string[]) => {
     setSelectedRecords(recordIds);
     console.log('Selected records:', recordIds);
   };
 
-  const handleRedactionComplete = (redactedRecords: any[]) => {
-    console.log('Redaction completed:', redactedRecords);
+  const handleRedactionComplete = (redactedRecordsList: any[]) => {
+    console.log('Redaction completed:', redactedRecordsList);
+    setRedactedRecords(redactedRecordsList);
     // Mark step 2 as complete
     setCompletedSteps(prev => new Set([...prev, 2]));
   };
 
-  const handleResponseComplete = (responseSummary: any) => {
-    console.log('Response completed:', responseSummary);
+  const handleResponseComplete = (summary: any) => {
+    console.log('Response completed:', summary);
+    setResponseSummary(summary);
     // Mark step 3 as complete
     setCompletedSteps(prev => new Set([...prev, 3]));
+  };
+
+  const handleWorkflowComplete = () => {
+    console.log('Workflow completed!');
+    // Mark step 4 as complete
+    setCompletedSteps(prev => new Set([...prev, 4]));
+    // In real app, navigate to dashboard or show success message
   };
 
   const steps: WorkflowStep[] = [
@@ -117,6 +129,7 @@ export function StepNavigator({
         <RespondStep
           {...props}
           request={request}
+          redactedRecords={redactedRecords}
           onResponseComplete={handleResponseComplete}
         />
       ),
@@ -126,7 +139,16 @@ export function StepNavigator({
       id: 4,
       label: 'Review',
       description: 'Final approval and automated delivery',
-      // component: ReviewStep,
+      component: (props: any) => (
+        <ReviewStep
+          {...props}
+          request={request}
+          selectedRecords={selectedRecords}
+          redactedRecords={redactedRecords}
+          responseSummary={responseSummary}
+          onWorkflowComplete={handleWorkflowComplete}
+        />
+      ),
       completed: completedSteps.has(4),
     },
   ];
