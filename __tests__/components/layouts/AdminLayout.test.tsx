@@ -92,7 +92,7 @@ describe('AdminLayout', () => {
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
-          <div data-testid="admin-content">Admin Test Content</div>
+          <div data-testid='admin-content'>Admin Test Content</div>
         </AuthenticatedAdminLayout>
       </TestWrapper>
     );
@@ -134,7 +134,9 @@ describe('AdminLayout', () => {
     });
     // Accept both 'bold' and '700' as valid bold font-weight values
     const requestQueueButtonStyle = window.getComputedStyle(requestQueueButton);
-    expect(['bold', '700'].includes(requestQueueButtonStyle.fontWeight)).toBe(true);
+    expect(['bold', '700'].includes(requestQueueButtonStyle.fontWeight)).toBe(
+      true
+    );
 
     const adminToolsButton = screen.getByRole('link', { name: 'Admin Tools' });
     expect(adminToolsButton).toHaveStyle('font-weight: normal');
@@ -159,7 +161,9 @@ describe('AdminLayout', () => {
     const adminToolsButton = screen.getByRole('link', { name: 'Admin Tools' });
     // Accept both 'bold' and '700' as valid bold font-weight values
     const adminToolsButtonStyle = window.getComputedStyle(adminToolsButton);
-    expect(['bold', '700'].includes(adminToolsButtonStyle.fontWeight)).toBe(true);
+    expect(['bold', '700'].includes(adminToolsButtonStyle.fontWeight)).toBe(
+      true
+    );
   });
 
   test('contains correct navigation links', async () => {
@@ -242,7 +246,7 @@ describe('AdminLayout', () => {
     render(
       <TestWrapper>
         <AuthenticatedAdminLayout>
-          <div data-testid="admin-content">Test Content</div>
+          <div data-testid='admin-content'>Test Content</div>
         </AuthenticatedAdminLayout>
       </TestWrapper>
     );

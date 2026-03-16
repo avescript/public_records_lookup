@@ -3,7 +3,11 @@
  * Comprehensive test suite for redaction storage, versioning, and management
  */
 
-import { RedactionService, ManualRedaction, RedactionVersion } from '../../src/services/redactionService';
+import {
+  RedactionService,
+  ManualRedaction,
+  RedactionVersion,
+} from '../../src/services/redactionService';
 
 describe('RedactionService', () => {
   let redactionService: RedactionService;
@@ -54,10 +58,23 @@ describe('RedactionService', () => {
       const coordinates1 = { x: 100, y: 200, width: 150, height: 50 };
       const coordinates2 = { x: 300, y: 400, width: 100, height: 30 };
 
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, coordinates1);
-      await redactionService.addRedaction(mockRecordId, mockFileName, 2, coordinates2);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        coordinates1
+      );
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        2,
+        coordinates2
+      );
 
-      const redactions = await redactionService.getRedactionsForRecord(mockRecordId, mockFileName);
+      const redactions = await redactionService.getRedactionsForRecord(
+        mockRecordId,
+        mockFileName
+      );
 
       expect(redactions).toHaveLength(2);
       expect(redactions[0].pageNumber).toBe(1);
@@ -105,7 +122,10 @@ describe('RedactionService', () => {
 
       expect(result).toBe(true);
 
-      const redactions = await redactionService.getRedactionsForRecord(mockRecordId, mockFileName);
+      const redactions = await redactionService.getRedactionsForRecord(
+        mockRecordId,
+        mockFileName
+      );
       expect(redactions).toHaveLength(0);
     });
 
@@ -136,9 +156,24 @@ describe('RedactionService', () => {
       const page1Coords = { x: 100, y: 200, width: 150, height: 50 };
       const page2Coords = { x: 300, y: 400, width: 100, height: 30 };
 
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, page1Coords);
-      await redactionService.addRedaction(mockRecordId, mockFileName, 2, page2Coords);
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, page1Coords);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        page1Coords
+      );
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        2,
+        page2Coords
+      );
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        page1Coords
+      );
 
       const page1Redactions = await redactionService.getRedactionsForPage(
         mockRecordId,
@@ -161,9 +196,17 @@ describe('RedactionService', () => {
   describe('Version Management', () => {
     test('should create a version when adding redaction', async () => {
       const coordinates = { x: 100, y: 200, width: 150, height: 50 };
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, coordinates);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        coordinates
+      );
 
-      const versions = await redactionService.getVersionHistory(mockRecordId, mockFileName);
+      const versions = await redactionService.getVersionHistory(
+        mockRecordId,
+        mockFileName
+      );
 
       expect(versions).toHaveLength(1);
       expect(versions[0]).toMatchObject({
@@ -177,35 +220,67 @@ describe('RedactionService', () => {
 
     test('should save a version explicitly', async () => {
       const coordinates = { x: 100, y: 200, width: 150, height: 50 };
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, coordinates);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        coordinates
+      );
 
       const notes = 'Initial redaction set';
-      const savedVersion = await redactionService.saveVersion(mockRecordId, mockFileName, notes);
+      const savedVersion = await redactionService.saveVersion(
+        mockRecordId,
+        mockFileName,
+        notes
+      );
 
       expect(savedVersion).toMatchObject({
         status: 'saved',
         notes: notes,
       });
 
-      const versions = await redactionService.getVersionHistory(mockRecordId, mockFileName);
+      const versions = await redactionService.getVersionHistory(
+        mockRecordId,
+        mockFileName
+      );
       // Should have both the draft version and the saved version
       expect(versions.length).toBeGreaterThanOrEqual(1);
-      expect(versions.some((v: RedactionVersion) => v.status === 'saved')).toBe(true);
+      expect(versions.some((v: RedactionVersion) => v.status === 'saved')).toBe(
+        true
+      );
     });
 
     test('should load a specific version', async () => {
       // Add initial redactions
       const coords1 = { x: 100, y: 200, width: 150, height: 50 };
       const coords2 = { x: 300, y: 400, width: 100, height: 30 };
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, coords1);
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, coords2);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        coords1
+      );
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        coords2
+      );
 
       // Save version
-      const version = await redactionService.saveVersion(mockRecordId, mockFileName);
+      const version = await redactionService.saveVersion(
+        mockRecordId,
+        mockFileName
+      );
 
       // Add more redactions
       const coords3 = { x: 500, y: 600, width: 75, height: 25 };
-      await redactionService.addRedaction(mockRecordId, mockFileName, 2, coords3);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        2,
+        coords3
+      );
 
       // Load the saved version
       const loadedRedactions = await redactionService.loadVersion(
@@ -215,7 +290,9 @@ describe('RedactionService', () => {
       );
 
       expect(loadedRedactions).toHaveLength(2);
-      expect(loadedRedactions.every((r: ManualRedaction) => r.pageNumber === 1)).toBe(true);
+      expect(
+        loadedRedactions.every((r: ManualRedaction) => r.pageNumber === 1)
+      ).toBe(true);
 
       // Verify current redactions match the loaded version
       const currentRedactions = await redactionService.getRedactionsForRecord(
@@ -227,8 +304,16 @@ describe('RedactionService', () => {
 
     test('should mark version as exported', async () => {
       const coordinates = { x: 100, y: 200, width: 150, height: 50 };
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, coordinates);
-      const version = await redactionService.saveVersion(mockRecordId, mockFileName);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        coordinates
+      );
+      const version = await redactionService.saveVersion(
+        mockRecordId,
+        mockFileName
+      );
 
       const result = await redactionService.markVersionExported(
         mockRecordId,
@@ -238,8 +323,13 @@ describe('RedactionService', () => {
 
       expect(result).toBe(true);
 
-      const versions = await redactionService.getVersionHistory(mockRecordId, mockFileName);
-      const exportedVersion = versions.find((v: RedactionVersion) => v.versionId === version.versionId);
+      const versions = await redactionService.getVersionHistory(
+        mockRecordId,
+        mockFileName
+      );
+      const exportedVersion = versions.find(
+        (v: RedactionVersion) => v.versionId === version.versionId
+      );
       expect(exportedVersion?.status).toBe('exported');
     });
   });
@@ -249,7 +339,12 @@ describe('RedactionService', () => {
       const existing = { x: 100, y: 100, width: 100, height: 50 };
       const overlapping = { x: 150, y: 120, width: 100, height: 50 };
 
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, existing);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        existing
+      );
 
       const overlaps = await redactionService.checkOverlap(
         mockRecordId,
@@ -265,7 +360,12 @@ describe('RedactionService', () => {
       const existing = { x: 100, y: 100, width: 100, height: 50 };
       const separate = { x: 300, y: 300, width: 100, height: 50 };
 
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, existing);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        existing
+      );
 
       const overlaps = await redactionService.checkOverlap(
         mockRecordId,
@@ -281,7 +381,12 @@ describe('RedactionService', () => {
       const existing = { x: 100, y: 100, width: 100, height: 50 };
       const slightOverlap = { x: 195, y: 145, width: 100, height: 50 }; // ~5% overlap
 
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, existing);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        existing
+      );
 
       // With 10% threshold, should not detect
       const overlaps10 = await redactionService.checkOverlap(
@@ -309,11 +414,29 @@ describe('RedactionService', () => {
   describe('Summary Statistics', () => {
     test('should generate correct redaction summary', async () => {
       // Add redactions on different pages
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, { x: 100, y: 100, width: 50, height: 50 });
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, { x: 200, y: 200, width: 50, height: 50 });
-      await redactionService.addRedaction(mockRecordId, mockFileName, 2, { x: 150, y: 150, width: 50, height: 50 });
+      await redactionService.addRedaction(mockRecordId, mockFileName, 1, {
+        x: 100,
+        y: 100,
+        width: 50,
+        height: 50,
+      });
+      await redactionService.addRedaction(mockRecordId, mockFileName, 1, {
+        x: 200,
+        y: 200,
+        width: 50,
+        height: 50,
+      });
+      await redactionService.addRedaction(mockRecordId, mockFileName, 2, {
+        x: 150,
+        y: 150,
+        width: 50,
+        height: 50,
+      });
 
-      const summary = await redactionService.getRedactionSummary(mockRecordId, mockFileName);
+      const summary = await redactionService.getRedactionSummary(
+        mockRecordId,
+        mockFileName
+      );
 
       expect(summary).toMatchObject({
         recordId: mockRecordId,
@@ -323,7 +446,7 @@ describe('RedactionService', () => {
           '2': 1,
         },
         byType: {
-          'manual': 3,
+          manual: 3,
         },
       });
       expect(summary.lastModified).toBeDefined();
@@ -331,7 +454,10 @@ describe('RedactionService', () => {
     });
 
     test('should handle empty redactions in summary', async () => {
-      const summary = await redactionService.getRedactionSummary(mockRecordId, mockFileName);
+      const summary = await redactionService.getRedactionSummary(
+        mockRecordId,
+        mockFileName
+      );
 
       expect(summary).toMatchObject({
         recordId: mockRecordId,
@@ -347,7 +473,12 @@ describe('RedactionService', () => {
   describe('Data Persistence', () => {
     test('should persist redactions in localStorage', async () => {
       const coordinates = { x: 100, y: 200, width: 150, height: 50 };
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, coordinates);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        coordinates
+      );
 
       const storageKey = `redactions_${mockRecordId}_${mockFileName}`;
       const stored = localStorage.getItem(storageKey);
@@ -365,8 +496,17 @@ describe('RedactionService', () => {
 
     test('should persist versions in localStorage', async () => {
       const coordinates = { x: 100, y: 200, width: 150, height: 50 };
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, coordinates);
-      await redactionService.saveVersion(mockRecordId, mockFileName, 'Test version');
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        coordinates
+      );
+      await redactionService.saveVersion(
+        mockRecordId,
+        mockFileName,
+        'Test version'
+      );
 
       const versionKey = `redaction_versions_${mockRecordId}_${mockFileName}`;
       const stored = localStorage.getItem(versionKey);
@@ -382,7 +522,10 @@ describe('RedactionService', () => {
       const storageKey = `redactions_${mockRecordId}_${mockFileName}`;
       localStorage.setItem(storageKey, 'invalid json');
 
-      const redactions = await redactionService.getRedactionsForRecord(mockRecordId, mockFileName);
+      const redactions = await redactionService.getRedactionsForRecord(
+        mockRecordId,
+        mockFileName
+      );
       expect(redactions).toEqual([]);
     });
   });
@@ -391,13 +534,29 @@ describe('RedactionService', () => {
     test('should clear all redactions', async () => {
       const coords1 = { x: 100, y: 200, width: 150, height: 50 };
       const coords2 = { x: 300, y: 400, width: 100, height: 30 };
-      await redactionService.addRedaction(mockRecordId, mockFileName, 1, coords1);
-      await redactionService.addRedaction(mockRecordId, mockFileName, 2, coords2);
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        1,
+        coords1
+      );
+      await redactionService.addRedaction(
+        mockRecordId,
+        mockFileName,
+        2,
+        coords2
+      );
 
-      const result = await redactionService.clearAllRedactions(mockRecordId, mockFileName);
+      const result = await redactionService.clearAllRedactions(
+        mockRecordId,
+        mockFileName
+      );
       expect(result).toBe(true);
 
-      const redactions = await redactionService.getRedactionsForRecord(mockRecordId, mockFileName);
+      const redactions = await redactionService.getRedactionsForRecord(
+        mockRecordId,
+        mockFileName
+      );
       expect(redactions).toHaveLength(0);
     });
   });
@@ -405,7 +564,11 @@ describe('RedactionService', () => {
   describe('Error Handling', () => {
     test('should handle invalid version ID gracefully', async () => {
       await expect(
-        redactionService.loadVersion(mockRecordId, mockFileName, 'invalid_version_id')
+        redactionService.loadVersion(
+          mockRecordId,
+          mockFileName,
+          'invalid_version_id'
+        )
       ).rejects.toThrow('Version invalid_version_id not found');
     });
 
@@ -419,7 +582,12 @@ describe('RedactionService', () => {
       const coordinates = { x: 100, y: 200, width: 150, height: 50 };
 
       await expect(
-        redactionService.addRedaction(mockRecordId, mockFileName, 1, coordinates)
+        redactionService.addRedaction(
+          mockRecordId,
+          mockFileName,
+          1,
+          coordinates
+        )
       ).rejects.toThrow();
 
       // Restore original method

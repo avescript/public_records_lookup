@@ -2,7 +2,10 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PDFPreview from '../../../src/components/shared/PDFPreview';
-import { piiDetectionService, PIIType } from '../../../src/services/piiDetectionService';
+import {
+  piiDetectionService,
+  PIIType,
+} from '../../../src/services/piiDetectionService';
 
 // Mock react-pdf
 jest.mock('react-pdf', () => ({
@@ -13,8 +16,8 @@ jest.mock('react-pdf', () => ({
         onLoadSuccess({ numPages: 2 });
       }
     }, [onLoadSuccess]);
-    
-    return <div data-testid="mock-document">{children}</div>;
+
+    return <div data-testid='mock-document'>{children}</div>;
   },
   Page: ({ pageNumber, scale }: any) => (
     <div data-testid={`mock-page-${pageNumber}`} data-scale={scale}>
@@ -111,7 +114,9 @@ describe('PDFPreview', () => {
     render(<PDFPreview {...defaultProps} />);
 
     await waitFor(() => {
-      expect(piiDetectionService.getFindingsForRecord).toHaveBeenCalledWith('1');
+      expect(piiDetectionService.getFindingsForRecord).toHaveBeenCalledWith(
+        '1'
+      );
     });
   });
 
@@ -188,7 +193,7 @@ describe('PDFPreview', () => {
     await waitFor(() => {
       const prevButton = screen.getByText('Previous').closest('button');
       const nextButton = screen.getByText('Next').closest('button');
-      
+
       expect(prevButton).toBeDisabled(); // Should be disabled on page 1
       expect(nextButton).not.toBeDisabled();
     });
@@ -198,7 +203,7 @@ describe('PDFPreview', () => {
     await waitFor(() => {
       const prevButton = screen.getByText('Previous').closest('button');
       const nextButton = screen.getByText('Next').closest('button');
-      
+
       expect(prevButton).not.toBeDisabled();
       expect(nextButton).toBeDisabled(); // Should be disabled on last page
     });
@@ -208,12 +213,16 @@ describe('PDFPreview', () => {
     render(<PDFPreview {...defaultProps} />);
 
     await waitFor(() => {
-      const overlayToggle = screen.getByRole('checkbox', { name: /Show PII Overlays/ });
+      const overlayToggle = screen.getByRole('checkbox', {
+        name: /Show PII Overlays/,
+      });
       expect(overlayToggle).toBeChecked(); // Should be enabled by default
     });
 
     // Toggle off
-    const overlayToggle = screen.getByRole('checkbox', { name: /Show PII Overlays/ });
+    const overlayToggle = screen.getByRole('checkbox', {
+      name: /Show PII Overlays/,
+    });
     fireEvent.click(overlayToggle);
     expect(overlayToggle).not.toBeChecked();
 
@@ -228,7 +237,7 @@ describe('PDFPreview', () => {
     await waitFor(() => {
       const ssnChip = screen.getByText('SSN');
       const phoneChip = screen.getByText('PHONE');
-      
+
       expect(ssnChip).toBeInTheDocument();
       expect(phoneChip).toBeInTheDocument();
     });
@@ -245,11 +254,14 @@ describe('PDFPreview', () => {
     );
 
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+
     render(<PDFPreview {...defaultProps} />);
 
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith('Error loading PII findings:', expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error loading PII findings:',
+        expect.any(Error)
+      );
     });
 
     consoleSpy.mockRestore();
@@ -263,7 +275,7 @@ describe('PDFPreview', () => {
           onLoadError(new Error('PDF load failed'));
         }
       }, [onLoadError]);
-      
+
       return null;
     };
 
@@ -276,15 +288,21 @@ describe('PDFPreview', () => {
     render(<PDFPreview {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText('PDF Preview Not Available (Phase 0)')).toBeInTheDocument();
-      expect(screen.getByText(/This is a Phase 0 implementation/)).toBeInTheDocument();
+      expect(
+        screen.getByText('PDF Preview Not Available (Phase 0)')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/This is a Phase 0 implementation/)
+      ).toBeInTheDocument();
     });
   });
 
   it('should show loading state initially', () => {
     // Mock Document to not call onLoadSuccess immediately
-    const MockDocumentLoading = () => <div data-testid="mock-document">Loading...</div>;
-    
+    const MockDocumentLoading = () => (
+      <div data-testid='mock-document'>Loading...</div>
+    );
+
     jest.doMock('react-pdf', () => ({
       Document: MockDocumentLoading,
       Page: () => <div>Mock Page</div>,
@@ -318,7 +336,7 @@ describe('PDFPreview', () => {
     const zoomOutButton = screen.getByText('Zoom Out').closest('button');
     fireEvent.click(zoomOutButton!); // 80%
     fireEvent.click(zoomOutButton!); // 60%
-    
+
     // Should be disabled at 50%
     await waitFor(() => {
       expect(zoomOutButton).toBeDisabled();
@@ -326,14 +344,14 @@ describe('PDFPreview', () => {
 
     // Test zoom in limits
     const zoomInButton = screen.getByText('Zoom In').closest('button');
-    
+
     // Zoom to maximum (multiple clicks to reach 300%)
     for (let i = 0; i < 10; i++) {
       if (!zoomInButton?.hasAttribute('disabled')) {
         fireEvent.click(zoomInButton!);
       }
     }
-    
+
     await waitFor(() => {
       expect(zoomInButton).toBeDisabled();
     });

@@ -4,6 +4,7 @@
  */
 
 import { Timestamp } from 'firebase/firestore';
+
 import * as mockService from '../mockFirebaseService';
 import { addRecordToRequest, saveRequest } from '../requestService';
 
@@ -20,10 +21,10 @@ afterAll(() => {
 
 describe('addRecordToRequest', () => {
   let requestId: string;
-  
+
   beforeEach(async () => {
     mockService.clearAllData();
-    
+
     // Create a test request
     const result = await saveRequest({
       title: 'Test Request',
@@ -32,12 +33,12 @@ describe('addRecordToRequest', () => {
       dateRange: {
         startDate: '2024-01-01',
         endDate: '2024-01-31',
-        preset: 'custom'
+        preset: 'custom',
       },
       contactEmail: 'test@example.com',
-      files: []
+      files: [],
     });
-    
+
     requestId = result.id;
   });
 
@@ -56,12 +57,17 @@ describe('addRecordToRequest', () => {
       metadata: {
         fileSize: '2.1 MB',
         pageCount: 3,
-        classification: 'public'
-      }
+        classification: 'public',
+      },
     };
 
     // Add record to request
-    await addRecordToRequest(requestId, candidateId, candidateData, 'Test Staff');
+    await addRecordToRequest(
+      requestId,
+      candidateId,
+      candidateData,
+      'Test Staff'
+    );
 
     // Verify record was added
     const request = await mockService.getRequestById(requestId);
@@ -89,7 +95,7 @@ describe('addRecordToRequest', () => {
       relevanceScore: 0.5,
       confidence: 'medium' as const,
       keyPhrases: ['test'],
-      metadata: {}
+      metadata: {},
     };
 
     // Add record twice
@@ -113,7 +119,7 @@ describe('addRecordToRequest', () => {
       relevanceScore: 0.8,
       confidence: 'high' as const,
       keyPhrases: ['test'],
-      metadata: {}
+      metadata: {},
     };
 
     // Initial status should be 'submitted'
@@ -141,7 +147,7 @@ describe('addRecordToRequest', () => {
       relevanceScore: 0.5,
       confidence: 'medium' as const,
       keyPhrases: ['test'],
-      metadata: {}
+      metadata: {},
     };
 
     await expect(

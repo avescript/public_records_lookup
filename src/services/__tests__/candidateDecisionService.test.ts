@@ -1,4 +1,7 @@
-import { candidateDecisionService, CandidateDecision } from '../candidateDecisionService';
+import {
+  CandidateDecision,
+  candidateDecisionService,
+} from '../candidateDecisionService';
 
 describe('candidateDecisionService', () => {
   const mockRequestId = 'request-123';
@@ -109,7 +112,8 @@ describe('candidateDecisionService', () => {
       expect(decision?.notes).toBe('Changed mind after review');
 
       // Verify only one decision exists for this candidate
-      const history = await candidateDecisionService.getDecisionHistory(mockRequestId);
+      const history =
+        await candidateDecisionService.getDecisionHistory(mockRequestId);
       expect(history?.decisions).toHaveLength(1);
     });
   });
@@ -172,7 +176,8 @@ describe('candidateDecisionService', () => {
         decidedBy: mockUser,
       });
 
-      const history = await candidateDecisionService.getDecisionHistory(mockRequestId);
+      const history =
+        await candidateDecisionService.getDecisionHistory(mockRequestId);
 
       expect(history).not.toBeNull();
       expect(history?.decisions).toHaveLength(2);
@@ -191,7 +196,9 @@ describe('candidateDecisionService', () => {
     });
 
     it('should return null for request with no decisions', async () => {
-      const history = await candidateDecisionService.getDecisionHistory('no-decisions-request');
+      const history = await candidateDecisionService.getDecisionHistory(
+        'no-decisions-request'
+      );
       expect(history).toBeNull();
     });
 
@@ -203,7 +210,8 @@ describe('candidateDecisionService', () => {
         decidedBy: mockUser,
       });
 
-      const history = await candidateDecisionService.getDecisionHistory(mockRequestId);
+      const history =
+        await candidateDecisionService.getDecisionHistory(mockRequestId);
 
       expect(history?.lastUpdated).toBeDefined();
       expect(() => new Date(history!.lastUpdated)).not.toThrow();
@@ -269,13 +277,34 @@ describe('candidateDecisionService', () => {
   describe('getDecisionSummary', () => {
     it('should return correct summary for request with mixed decisions', async () => {
       // Record various decisions
-      await candidateDecisionService.acceptCandidate(mockRequestId, 'candidate-1', mockUser);
-      await candidateDecisionService.acceptCandidate(mockRequestId, 'candidate-2', mockUser);
-      await candidateDecisionService.rejectCandidate(mockRequestId, 'candidate-3', mockUser);
-      await candidateDecisionService.rejectCandidate(mockRequestId, 'candidate-4', mockUser);
-      await candidateDecisionService.rejectCandidate(mockRequestId, 'candidate-5', mockUser);
+      await candidateDecisionService.acceptCandidate(
+        mockRequestId,
+        'candidate-1',
+        mockUser
+      );
+      await candidateDecisionService.acceptCandidate(
+        mockRequestId,
+        'candidate-2',
+        mockUser
+      );
+      await candidateDecisionService.rejectCandidate(
+        mockRequestId,
+        'candidate-3',
+        mockUser
+      );
+      await candidateDecisionService.rejectCandidate(
+        mockRequestId,
+        'candidate-4',
+        mockUser
+      );
+      await candidateDecisionService.rejectCandidate(
+        mockRequestId,
+        'candidate-5',
+        mockUser
+      );
 
-      const summary = await candidateDecisionService.getDecisionSummary(mockRequestId);
+      const summary =
+        await candidateDecisionService.getDecisionSummary(mockRequestId);
 
       expect(summary).toEqual({
         total: 5,
@@ -286,10 +315,19 @@ describe('candidateDecisionService', () => {
     });
 
     it('should return correct summary for request with only acceptances', async () => {
-      await candidateDecisionService.acceptCandidate(mockRequestId, 'candidate-1', mockUser);
-      await candidateDecisionService.acceptCandidate(mockRequestId, 'candidate-2', mockUser);
+      await candidateDecisionService.acceptCandidate(
+        mockRequestId,
+        'candidate-1',
+        mockUser
+      );
+      await candidateDecisionService.acceptCandidate(
+        mockRequestId,
+        'candidate-2',
+        mockUser
+      );
 
-      const summary = await candidateDecisionService.getDecisionSummary(mockRequestId);
+      const summary =
+        await candidateDecisionService.getDecisionSummary(mockRequestId);
 
       expect(summary).toEqual({
         total: 2,
@@ -300,10 +338,19 @@ describe('candidateDecisionService', () => {
     });
 
     it('should return correct summary for request with only rejections', async () => {
-      await candidateDecisionService.rejectCandidate(mockRequestId, 'candidate-1', mockUser);
-      await candidateDecisionService.rejectCandidate(mockRequestId, 'candidate-2', mockUser);
+      await candidateDecisionService.rejectCandidate(
+        mockRequestId,
+        'candidate-1',
+        mockUser
+      );
+      await candidateDecisionService.rejectCandidate(
+        mockRequestId,
+        'candidate-2',
+        mockUser
+      );
 
-      const summary = await candidateDecisionService.getDecisionSummary(mockRequestId);
+      const summary =
+        await candidateDecisionService.getDecisionSummary(mockRequestId);
 
       expect(summary).toEqual({
         total: 2,
@@ -314,7 +361,9 @@ describe('candidateDecisionService', () => {
     });
 
     it('should return zero summary for request with no decisions', async () => {
-      const summary = await candidateDecisionService.getDecisionSummary('no-decisions-request');
+      const summary = await candidateDecisionService.getDecisionSummary(
+        'no-decisions-request'
+      );
 
       expect(summary).toEqual({
         total: 0,
@@ -328,16 +377,26 @@ describe('candidateDecisionService', () => {
   describe('clearAllDecisions', () => {
     it('should clear all decisions', async () => {
       // Record decisions for multiple requests
-      await candidateDecisionService.acceptCandidate(mockRequestId, 'candidate-1', mockUser);
-      await candidateDecisionService.acceptCandidate('other-request', 'candidate-2', mockUser);
+      await candidateDecisionService.acceptCandidate(
+        mockRequestId,
+        'candidate-1',
+        mockUser
+      );
+      await candidateDecisionService.acceptCandidate(
+        'other-request',
+        'candidate-2',
+        mockUser
+      );
 
       // Clear all decisions
       await candidateDecisionService.clearAllDecisions();
 
       // Verify all decisions are cleared
-      const history1 = await candidateDecisionService.getDecisionHistory(mockRequestId);
-      const history2 = await candidateDecisionService.getDecisionHistory('other-request');
-      
+      const history1 =
+        await candidateDecisionService.getDecisionHistory(mockRequestId);
+      const history2 =
+        await candidateDecisionService.getDecisionHistory('other-request');
+
       expect(history1).toBeNull();
       expect(history2).toBeNull();
     });
@@ -357,11 +416,16 @@ describe('candidateDecisionService', () => {
       );
 
       expect(() => new Date(decision!.decidedAt)).not.toThrow();
-      expect(new Date(decision!.decidedAt).toISOString()).toBe(decision!.decidedAt);
+      expect(new Date(decision!.decidedAt).toISOString()).toBe(
+        decision!.decidedAt
+      );
     });
 
     it('should handle empty request and candidate IDs gracefully', async () => {
-      const decision = await candidateDecisionService.getCandidateDecision('', '');
+      const decision = await candidateDecisionService.getCandidateDecision(
+        '',
+        ''
+      );
       expect(decision).toBeNull();
     });
   });

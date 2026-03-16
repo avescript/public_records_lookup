@@ -27,6 +27,11 @@ export enum PIIType {
   ACCOUNT_NUMBER = 'ACCOUNT_NUMBER',
   ROUTING_NUMBER = 'ROUTING_NUMBER',
   MEDICAL_ID = 'MEDICAL_ID',
+  BADGE_NUMBER = 'BADGE_NUMBER',
+  CASE_NUMBER = 'CASE_NUMBER',
+  INCIDENT_NUMBER = 'INCIDENT_NUMBER',
+  VEHICLE_ID = 'VEHICLE_ID',
+  CONFIDENTIAL_SOURCE = 'CONFIDENTIAL_SOURCE',
 }
 
 export interface PIIFindingsResult {
@@ -54,7 +59,9 @@ export class PIIDetectionService {
     try {
       const response = await fetch('/mock-data/redactions.csv');
       if (!response.ok) {
-        throw new Error(`Failed to load redactions.csv: ${response.statusText}`);
+        throw new Error(
+          `Failed to load redactions.csv: ${response.statusText}`
+        );
       }
 
       const csvText = await response.text();
@@ -136,30 +143,30 @@ export class PIIDetectionService {
 
     // Check if this is actually a request ID that needs mapping
     const mappedRecordIds = this.getRecordIdsForRequest(recordId);
-    
+
     let allFindings: PIIFinding[] = [];
-    
+
     if (mappedRecordIds.length > 0) {
       // This is a request ID, get findings for all associated records
       for (const mappedRecordId of mappedRecordIds) {
         const recordFindings = this.findings.filter(
-          (finding) => finding.recordId === mappedRecordId
+          finding => finding.recordId === mappedRecordId
         );
         allFindings.push(...recordFindings);
       }
     } else {
       // This is a direct record ID
       allFindings = this.findings.filter(
-        (finding) => finding.recordId === recordId
+        finding => finding.recordId === recordId
       );
     }
 
     const highConfidenceFindings = allFindings.filter(
-      (finding) => finding.confidence >= 0.8
+      finding => finding.confidence >= 0.8
     );
 
     const piiTypesDetected = Array.from(
-      new Set(allFindings.map((finding) => finding.piiType))
+      new Set(allFindings.map(finding => finding.piiType))
     );
 
     return {
@@ -178,17 +185,17 @@ export class PIIDetectionService {
   private getRecordIdsForRequest(requestIdOrRecordId: string): string[] {
     // For demo purposes, map long UUIDs (request IDs) to simple numeric record IDs
     // This is a simplified mapping for the prototype
-    
+
     // If it's already a simple numeric ID, it's probably a record ID
     if (/^\d+$/.test(requestIdOrRecordId)) {
       return []; // Return empty array to indicate it's a direct record ID
     }
-    
+
     // For UUID-style request IDs, map them to demo record IDs
     // This is a simple hash-based mapping for consistency
     const hash = this.simpleHash(requestIdOrRecordId);
     const recordId = (hash % 5) + 1; // Map to record IDs 1-5
-    
+
     return [recordId.toString()];
   }
 
@@ -199,7 +206,7 @@ export class PIIDetectionService {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32bit integer
     }
     return Math.abs(hash);
@@ -208,21 +215,23 @@ export class PIIDetectionService {
   /**
    * Get PII findings for a specific record (original method preserved)
    */
-  async getFindingsForRecordDirect(recordId: string): Promise<PIIFindingsResult> {
+  async getFindingsForRecordDirect(
+    recordId: string
+  ): Promise<PIIFindingsResult> {
     if (!this.initialized) {
       await this.initialize();
     }
 
     const recordFindings = this.findings.filter(
-      (finding) => finding.recordId === recordId
+      finding => finding.recordId === recordId
     );
 
     const highConfidenceFindings = recordFindings.filter(
-      (finding) => finding.confidence >= 0.8
+      finding => finding.confidence >= 0.8
     );
 
     const piiTypesDetected = Array.from(
-      new Set(recordFindings.map((finding) => finding.piiType))
+      new Set(recordFindings.map(finding => finding.piiType))
     );
 
     return {
@@ -248,14 +257,14 @@ export class PIIDetectionService {
 
     // Check if this is actually a request ID that needs mapping
     const mappedRecordIds = this.getRecordIdsForRequest(recordId);
-    
+
     let allFindings: PIIFinding[] = [];
-    
+
     if (mappedRecordIds.length > 0) {
       // This is a request ID, get findings for all associated records
       for (const mappedRecordId of mappedRecordIds) {
         const pageFindings = this.findings.filter(
-          (finding) =>
+          finding =>
             finding.recordId === mappedRecordId &&
             finding.fileName === fileName &&
             finding.pageNumber === pageNumber
@@ -265,7 +274,7 @@ export class PIIDetectionService {
     } else {
       // This is a direct record ID
       allFindings = this.findings.filter(
-        (finding) =>
+        finding =>
           finding.recordId === recordId &&
           finding.fileName === fileName &&
           finding.pageNumber === pageNumber
@@ -283,7 +292,7 @@ export class PIIDetectionService {
       await this.initialize();
     }
 
-    return Array.from(new Set(this.findings.map((finding) => finding.piiType)));
+    return Array.from(new Set(this.findings.map(finding => finding.piiType)));
   }
 
   /**
@@ -301,7 +310,7 @@ export class PIIDetectionService {
     }
 
     const relevantFindings = recordId
-      ? this.findings.filter((finding) => finding.recordId === recordId)
+      ? this.findings.filter(finding => finding.recordId === recordId)
       : this.findings;
 
     if (relevantFindings.length === 0) {
@@ -314,13 +323,17 @@ export class PIIDetectionService {
       };
     }
 
-    const confidenceScores = relevantFindings.map((finding) => finding.confidence);
+    const confidenceScores = relevantFindings.map(
+      finding => finding.confidence
+    );
     const highConfidenceCount = relevantFindings.filter(
-      (finding) => finding.confidence >= 0.8
+      finding => finding.confidence >= 0.8
     ).length;
 
     return {
-      average: confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length,
+      average:
+        confidenceScores.reduce((sum, score) => sum + score, 0) /
+        confidenceScores.length,
       minimum: Math.min(...confidenceScores),
       maximum: Math.max(...confidenceScores),
       highConfidenceCount,

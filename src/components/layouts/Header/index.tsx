@@ -1,7 +1,7 @@
 import React from 'react';
 import SearchIcon from '@mui/icons-material/Search';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+
+import { IconButton, Typography } from '@/components/migration';
 
 import { HeaderActions, HeaderRoot, HeaderToolbar } from './styles';
 import type { HeaderProps } from './types';
@@ -11,14 +11,14 @@ export const Header: React.FC<HeaderProps> = ({
   showSearch = true,
 }) => {
   return (
-    <HeaderRoot position="sticky">
+    <HeaderRoot position='sticky'>
       <HeaderToolbar>
-        <Typography variant="h6" component="h1">
+        <Typography variant='h6' component='h1'>
           {title}
         </Typography>
         <HeaderActions>
           {showSearch && (
-            <IconButton color="inherit" aria-label="search">
+            <IconButton color='inherit' aria-label='search'>
               <SearchIcon />
             </IconButton>
           )}

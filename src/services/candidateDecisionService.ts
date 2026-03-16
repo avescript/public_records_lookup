@@ -24,7 +24,9 @@ class CandidateDecisionService {
   /**
    * Records a decision for a specific candidate
    */
-  async recordDecision(decision: Omit<CandidateDecision, 'decidedAt'>): Promise<void> {
+  async recordDecision(
+    decision: Omit<CandidateDecision, 'decidedAt'>
+  ): Promise<void> {
     try {
       const fullDecision: CandidateDecision = {
         ...decision,
@@ -50,7 +52,9 @@ class CandidateDecisionService {
 
       this.decisions.set(requestId, history);
 
-      console.log(`Decision recorded: ${decision.status} for candidate ${decision.candidateId}`);
+      console.log(
+        `Decision recorded: ${decision.status} for candidate ${decision.candidateId}`
+      );
     } catch (error) {
       console.error('Failed to record decision:', error);
       throw new Error('Failed to save decision. Please try again.');
@@ -72,7 +76,10 @@ class CandidateDecisionService {
   /**
    * Gets the decision status for a specific candidate
    */
-  async getCandidateDecision(requestId: string, candidateId: string): Promise<CandidateDecision | null> {
+  async getCandidateDecision(
+    requestId: string,
+    candidateId: string
+  ): Promise<CandidateDecision | null> {
     try {
       const history = await this.getDecisionHistory(requestId);
       if (!history) return null;
@@ -88,9 +95,9 @@ class CandidateDecisionService {
    * Accepts a match candidate
    */
   async acceptCandidate(
-    requestId: string, 
-    candidateId: string, 
-    decidedBy: string, 
+    requestId: string,
+    candidateId: string,
+    decidedBy: string,
     notes?: string
   ): Promise<void> {
     await this.recordDecision({
@@ -106,9 +113,9 @@ class CandidateDecisionService {
    * Rejects a match candidate
    */
   async rejectCandidate(
-    requestId: string, 
-    candidateId: string, 
-    decidedBy: string, 
+    requestId: string,
+    candidateId: string,
+    decidedBy: string,
     notes?: string
   ): Promise<void> {
     await this.recordDecision({
@@ -135,8 +142,12 @@ class CandidateDecisionService {
         return { total: 0, accepted: 0, rejected: 0, pending: 0 };
       }
 
-      const accepted = history.decisions.filter(d => d.status === 'accepted').length;
-      const rejected = history.decisions.filter(d => d.status === 'rejected').length;
+      const accepted = history.decisions.filter(
+        d => d.status === 'accepted'
+      ).length;
+      const rejected = history.decisions.filter(
+        d => d.status === 'rejected'
+      ).length;
       const total = history.decisions.length;
 
       return {

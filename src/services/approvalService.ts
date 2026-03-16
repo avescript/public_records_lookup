@@ -21,7 +21,12 @@ export interface ApprovalDecision {
 export interface ApprovalWorkflow {
   recordId: string;
   fileName: string;
-  status: 'pending_review' | 'under_review' | 'approved' | 'rejected' | 'revision_needed';
+  status:
+    | 'pending_review'
+    | 'under_review'
+    | 'approved'
+    | 'rejected'
+    | 'revision_needed';
   assignedReviewer?: string;
   currentDecision?: ApprovalDecision;
   reviewHistory: ApprovalDecision[];
@@ -101,7 +106,7 @@ class ApprovalService {
 
       workflow.assignedReviewer = reviewerId;
       workflow.status = 'under_review';
-      
+
       workflows[key] = workflow;
       this.saveWorkflows(workflows);
 
@@ -169,7 +174,7 @@ class ApprovalService {
 
       workflow.currentDecision = approvalDecision;
       workflow.reviewHistory.push(approvalDecision);
-      
+
       workflows[key] = workflow;
       this.saveWorkflows(workflows);
 
@@ -188,7 +193,10 @@ class ApprovalService {
   /**
    * Get workflow for a document
    */
-  async getWorkflow(recordId: string, fileName: string): Promise<ApprovalWorkflow | null> {
+  async getWorkflow(
+    recordId: string,
+    fileName: string
+  ): Promise<ApprovalWorkflow | null> {
     try {
       const workflows = await this.getWorkflows();
       return workflows[`${recordId}_${fileName}`] || null;
@@ -220,10 +228,13 @@ class ApprovalService {
       // Sort by priority and submission date
       return results.sort((a, b) => {
         const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
-        const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+        const priorityDiff =
+          priorityOrder[b.priority] - priorityOrder[a.priority];
         if (priorityDiff !== 0) return priorityDiff;
-        
-        return new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime();
+
+        return (
+          new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+        );
       });
     } catch (error) {
       console.error('Failed to get workflows:', error);
@@ -241,8 +252,10 @@ class ApprovalService {
       const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
       const summary: ApprovalSummary = {
-        totalPending: workflows.filter(w => w.status === 'pending_review').length,
-        totalUnderReview: workflows.filter(w => w.status === 'under_review').length,
+        totalPending: workflows.filter(w => w.status === 'pending_review')
+          .length,
+        totalUnderReview: workflows.filter(w => w.status === 'under_review')
+          .length,
         totalApproved: workflows.filter(w => w.status === 'approved').length,
         totalRejected: workflows.filter(w => w.status === 'rejected').length,
         averageReviewTime: 0,
@@ -250,27 +263,29 @@ class ApprovalService {
       };
 
       // Calculate average review time from completed workflows
-      const completedWorkflows = workflows.filter(w => 
-        w.status === 'approved' || w.status === 'rejected'
+      const completedWorkflows = workflows.filter(
+        w => w.status === 'approved' || w.status === 'rejected'
       );
 
       if (completedWorkflows.length > 0) {
         const totalReviewTime = completedWorkflows.reduce((sum, workflow) => {
           if (workflow.completedAt) {
-            const reviewTime = new Date(workflow.completedAt).getTime() - 
-                             new Date(workflow.submittedAt).getTime();
-            return sum + (reviewTime / (1000 * 60)); // Convert to minutes
+            const reviewTime =
+              new Date(workflow.completedAt).getTime() -
+              new Date(workflow.submittedAt).getTime();
+            return sum + reviewTime / (1000 * 60); // Convert to minutes
           }
           return sum;
         }, 0);
 
-        summary.averageReviewTime = Math.round(totalReviewTime / completedWorkflows.length);
+        summary.averageReviewTime = Math.round(
+          totalReviewTime / completedWorkflows.length
+        );
       }
 
       // Count overdue reviews (under review for more than 24 hours)
-      summary.overdueReviews = workflows.filter(w => 
-        w.status === 'under_review' && 
-        new Date(w.submittedAt) < oneDayAgo
+      summary.overdueReviews = workflows.filter(
+        w => w.status === 'under_review' && new Date(w.submittedAt) < oneDayAgo
       ).length;
 
       return summary;
@@ -290,12 +305,17 @@ class ApprovalService {
   /**
    * Get decisions by reviewer
    */
-  async getDecisionsByReviewer(reviewerId: string): Promise<ApprovalDecision[]> {
+  async getDecisionsByReviewer(
+    reviewerId: string
+  ): Promise<ApprovalDecision[]> {
     try {
       const decisions = await this.getDecisions();
       return Object.values(decisions)
         .filter(d => d.reviewerId === reviewerId)
-        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        .sort(
+          (a, b) =>
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
     } catch (error) {
       console.error('Failed to get decisions by reviewer:', error);
       return [];

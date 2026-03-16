@@ -4,6 +4,7 @@
  */
 
 import { RequestFormDataWithFiles } from '../components/request/RequestForm/types';
+
 import { auditService } from './auditService';
 
 export type RequestStatus =
@@ -47,6 +48,7 @@ export interface StoredRequest {
   title: string;
   department: string;
   description: string;
+  agency?: string; // Agency identifier for multi-agency support
   dateRange: {
     startDate: string;
     endDate: string;
@@ -69,17 +71,18 @@ const COUNTER_KEY = 'mockFirebaseCounter';
 // Get database from localStorage or initialize empty
 const getMockDatabase = (): { [key: string]: StoredRequest } => {
   if (typeof window === 'undefined') return {}; // Server-side
-  
+
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return {};
-    
+
     const data = JSON.parse(stored);
-    
+
     // Reconstruct timestamp functions for data loaded from localStorage
     Object.values(data).forEach((request: any) => {
       if (request.submittedAt && request.submittedAt._isoString) {
-        request.submittedAt.toDate = () => new Date(request.submittedAt._isoString);
+        request.submittedAt.toDate = () =>
+          new Date(request.submittedAt._isoString);
       }
       if (request.updatedAt && request.updatedAt._isoString) {
         request.updatedAt.toDate = () => new Date(request.updatedAt._isoString);
@@ -93,7 +96,7 @@ const getMockDatabase = (): { [key: string]: StoredRequest } => {
         });
       }
     });
-    
+
     return data;
   } catch {
     return {};
@@ -103,7 +106,7 @@ const getMockDatabase = (): { [key: string]: StoredRequest } => {
 // Save database to localStorage
 const saveMockDatabase = (data: { [key: string]: StoredRequest }) => {
   if (typeof window === 'undefined') return; // Server-side
-  
+
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (error) {
@@ -114,7 +117,7 @@ const saveMockDatabase = (data: { [key: string]: StoredRequest }) => {
 // Get and increment counter
 const getNextRequestCounter = (): number => {
   if (typeof window === 'undefined') return Math.floor(Math.random() * 1000); // Server-side fallback
-  
+
   try {
     const stored = localStorage.getItem(COUNTER_KEY);
     const current = stored ? parseInt(stored, 10) : 1;
@@ -147,22 +150,76 @@ export const generateTrackingId = (): string => {
 // Initialize with some log output
 console.log('🔧 [Mock Firebase] Mock Firebase service initialized');
 
+// Map department to agency for multi-agency support
+const mapDepartmentToAgency = (department: string): string => {
+  const departmentAgencyMap: { [key: string]: string } = {
+    // Police Department
+    police: 'police',
+    patrol: 'police',
+    investigations: 'police',
+    traffic: 'police',
+    community_relations: 'police',
+    internal_affairs: 'police',
+
+    // Fire Department
+    fire: 'fire',
+    emergency_response: 'fire',
+    fire_prevention: 'fire',
+    hazmat: 'fire',
+
+    // Finance Department
+    finance: 'finance',
+    accounting: 'finance',
+    budget: 'finance',
+    payroll: 'finance',
+    procurement: 'finance',
+    audit: 'finance',
+
+    // Public Works
+    public_works: 'public_works',
+    transportation: 'public_works',
+    utilities: 'public_works',
+    engineering: 'public_works',
+
+    // Legal Department
+    legal: 'legal',
+    city_attorney: 'legal',
+    contracts: 'legal',
+    litigation: 'legal',
+
+    // Parks Department
+    parks: 'parks',
+    recreation: 'parks',
+    facilities: 'parks',
+
+    // Clerk/Other
+    clerk: 'clerk',
+    other: 'clerk', // Default fallback
+  };
+
+  return departmentAgencyMap[department] || 'clerk'; // Default to clerk if not found
+};
+
 // Save a new request
 export const saveRequest = async (
   requestData: RequestFormDataWithFiles
 ): Promise<{ id: string; trackingId: string }> => {
   console.log('📝 [Mock Firebase] Saving request:', requestData.title);
-  
+
   const trackingId = generateTrackingId();
   const requestCounter = getNextRequestCounter();
   const id = `req_${requestCounter}_${Date.now()}`;
-  
+
+  // Determine agency based on department
+  const agency = mapDepartmentToAgency(requestData.department);
+
   const newRequest: StoredRequest = {
     id,
     trackingId,
     title: requestData.title,
     department: requestData.department,
     description: requestData.description,
+    agency, // Add agency field based on department
     dateRange: requestData.dateRange,
     contactEmail: requestData.contactEmail,
     status: 'submitted',
@@ -176,7 +233,13 @@ export const saveRequest = async (
   const mockDatabase = getMockDatabase();
   mockDatabase[id] = newRequest;
   saveMockDatabase(mockDatabase);
-  
+
+  console.log('✅ [Mock Firebase] Request saved with agency assignment:', {
+    id,
+    trackingId,
+    agency,
+  });
+
   // Log audit event
   try {
     await auditService.logEvent(
@@ -190,6 +253,7 @@ export const saveRequest = async (
       {
         title: requestData.title,
         department: requestData.department,
+        agency,
         trackingId,
         attachmentCount: requestData.files?.length || 0,
       },
@@ -202,9 +266,12 @@ export const saveRequest = async (
   } catch (error) {
     console.warn('Failed to log audit event for request submission:', error);
   }
-  
+
   console.log('✅ [Mock Firebase] Request saved with ID:', trackingId);
-  console.log('📊 [Mock Firebase] Total requests in database:', Object.keys(mockDatabase).length);
+  console.log(
+    '📊 [Mock Firebase] Total requests in database:',
+    Object.keys(mockDatabase).length
+  );
   return { id, trackingId };
 };
 
@@ -213,25 +280,30 @@ export const getRequestByTrackingId = async (
   trackingId: string
 ): Promise<StoredRequest | null> => {
   console.log('🔍 [Mock Firebase] Looking for request:', trackingId);
-  
+
   const mockDatabase = getMockDatabase();
-  console.log('📊 [Mock Firebase] Current database size:', Object.keys(mockDatabase).length);
-  
+  console.log(
+    '📊 [Mock Firebase] Current database size:',
+    Object.keys(mockDatabase).length
+  );
+
   const request = Object.values(mockDatabase).find(
     (req: StoredRequest) => req.trackingId === trackingId
   );
-  
+
   if (request) {
     console.log('✅ [Mock Firebase] Found request:', request.title);
     return request;
   }
-  
+
   console.log('❌ [Mock Firebase] Request not found');
   return null;
 };
 
 // Get request by ID
-export const getRequestById = async (id: string): Promise<StoredRequest | null> => {
+export const getRequestById = async (
+  id: string
+): Promise<StoredRequest | null> => {
   const mockDatabase = getMockDatabase();
   return mockDatabase[id] || null;
 };
@@ -239,13 +311,18 @@ export const getRequestById = async (id: string): Promise<StoredRequest | null> 
 // Get all requests
 export const getAllRequests = async (): Promise<StoredRequest[]> => {
   const mockDatabase = getMockDatabase();
-  console.log('📋 [Mock Firebase] Getting all requests, count:', Object.keys(mockDatabase).length);
-  
-  return Object.values(mockDatabase).sort((a: StoredRequest, b: StoredRequest) => {
-    const aTime = a.submittedAt.toDate ? a.submittedAt.toDate().getTime() : 0;
-    const bTime = b.submittedAt.toDate ? b.submittedAt.toDate().getTime() : 0;
-    return bTime - aTime; // Most recent first
-  });
+  console.log(
+    '📋 [Mock Firebase] Getting all requests, count:',
+    Object.keys(mockDatabase).length
+  );
+
+  return Object.values(mockDatabase).sort(
+    (a: StoredRequest, b: StoredRequest) => {
+      const aTime = a.submittedAt.toDate ? a.submittedAt.toDate().getTime() : 0;
+      const bTime = b.submittedAt.toDate ? b.submittedAt.toDate().getTime() : 0;
+      return bTime - aTime; // Most recent first
+    }
+  );
 };
 
 // Update request status
@@ -254,13 +331,13 @@ export const updateRequestStatus = async (
   status: RequestStatus
 ): Promise<void> => {
   const mockDatabase = getMockDatabase();
-  
+
   if (mockDatabase[id]) {
     const previousStatus = mockDatabase[id].status;
     mockDatabase[id].status = status;
     mockDatabase[id].updatedAt = createMockTimestamp();
     saveMockDatabase(mockDatabase);
-    
+
     // Log audit event
     try {
       await auditService.logEvent(
@@ -285,7 +362,7 @@ export const updateRequestStatus = async (
     } catch (error) {
       console.warn('Failed to log audit event for status update:', error);
     }
-    
+
     console.log(`✅ [Mock Firebase] Updated request ${id} status to:`, status);
   }
 };
@@ -297,7 +374,7 @@ export const addInternalNote = async (
   addedBy: string
 ): Promise<void> => {
   const mockDatabase = getMockDatabase();
-  
+
   if (mockDatabase[requestId]) {
     const note: InternalNote = {
       id: `note_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
@@ -313,15 +390,17 @@ export const addInternalNote = async (
     mockDatabase[requestId].internalNotes!.push(note);
     mockDatabase[requestId].updatedAt = createMockTimestamp();
     saveMockDatabase(mockDatabase);
-    
+
     console.log(`✅ [Mock Firebase] Added note to request ${requestId}`);
   }
 };
 
 // Get requests by status
-export const getRequestsByStatus = async (status: RequestStatus): Promise<StoredRequest[]> => {
+export const getRequestsByStatus = async (
+  status: RequestStatus
+): Promise<StoredRequest[]> => {
   const mockDatabase = getMockDatabase();
-  
+
   return Object.values(mockDatabase)
     .filter((req: StoredRequest) => req.status === status)
     .sort((a: StoredRequest, b: StoredRequest) => {
@@ -355,7 +434,7 @@ export const addRecordToRequest = async (
   acceptedBy: string = 'Staff User'
 ): Promise<void> => {
   const mockDatabase = getMockDatabase();
-  
+
   if (!mockDatabase[requestId]) {
     throw new Error(`Request ${requestId} not found`);
   }
@@ -375,24 +454,28 @@ export const addRecordToRequest = async (
   const existingRecord = mockDatabase[requestId].associatedRecords!.find(
     record => record.candidateId === candidateId
   );
-  
+
   if (existingRecord) {
-    console.log('⚠️ [Mock Firebase] Record already associated with request:', candidateId);
+    console.log(
+      '⚠️ [Mock Firebase] Record already associated with request:',
+      candidateId
+    );
     return;
   }
 
   mockDatabase[requestId].associatedRecords!.push(newRecord);
   mockDatabase[requestId].updatedAt = createMockTimestamp();
-  
-  const wasFirstRecord = mockDatabase[requestId].associatedRecords!.length === 1;
-  
+
+  const wasFirstRecord =
+    mockDatabase[requestId].associatedRecords!.length === 1;
+
   // Update status to under_review if this is the first record
   if (wasFirstRecord) {
     mockDatabase[requestId].status = 'under_review';
   }
-  
+
   saveMockDatabase(mockDatabase);
-  
+
   // Log audit event
   try {
     await auditService.logEvent(
@@ -422,8 +505,10 @@ export const addRecordToRequest = async (
   } catch (error) {
     console.warn('Failed to log audit event for record addition:', error);
   }
-  
-  console.log(`✅ [Mock Firebase] Added record ${candidateId} to request ${requestId}`);
+
+  console.log(
+    `✅ [Mock Firebase] Added record ${candidateId} to request ${requestId}`
+  );
 };
 
 // Clear all data (for testing)
@@ -439,13 +524,16 @@ export const clearAllData = () => {
 export const getDatabaseStats = () => {
   const mockDatabase = getMockDatabase();
   const requests = Object.values(mockDatabase);
-  
+
   return {
     totalRequests: requests.length,
-    statusCounts: requests.reduce((acc: Record<RequestStatus, number>, req: StoredRequest) => {
-      acc[req.status] = (acc[req.status] || 0) + 1;
-      return acc;
-    }, {} as Record<RequestStatus, number>),
+    statusCounts: requests.reduce(
+      (acc: Record<RequestStatus, number>, req: StoredRequest) => {
+        acc[req.status] = (acc[req.status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<RequestStatus, number>
+    ),
   };
 };
 
@@ -509,7 +597,7 @@ const PACKAGES_STORAGE_KEY = 'mockFirebasePackages';
 // Get packages database from localStorage
 const getPackagesDatabase = (): { [key: string]: PackageManifest } => {
   if (typeof window === 'undefined') return {};
-  
+
   try {
     const stored = localStorage.getItem(PACKAGES_STORAGE_KEY);
     return stored ? JSON.parse(stored) : {};
@@ -522,7 +610,7 @@ const getPackagesDatabase = (): { [key: string]: PackageManifest } => {
 // Save packages database to localStorage
 const savePackagesDatabase = (packages: { [key: string]: PackageManifest }) => {
   if (typeof window === 'undefined') return;
-  
+
   try {
     localStorage.setItem(PACKAGES_STORAGE_KEY, JSON.stringify(packages));
   } catch (error) {
@@ -531,9 +619,11 @@ const savePackagesDatabase = (packages: { [key: string]: PackageManifest }) => {
 };
 
 // Build package (mock implementation)
-export const buildPackage = async (manifest: PackageManifest): Promise<PackageBuildResult> => {
+export const buildPackage = async (
+  manifest: PackageManifest
+): Promise<PackageBuildResult> => {
   const packagesDatabase = getPackagesDatabase();
-  
+
   const updatedManifest = {
     ...manifest,
     metadata: {
@@ -541,13 +631,15 @@ export const buildPackage = async (manifest: PackageManifest): Promise<PackageBu
       status: 'ready' as const,
     },
   };
-  
+
   // Save to packages database
   packagesDatabase[manifest.id] = updatedManifest;
   savePackagesDatabase(packagesDatabase);
-  
-  console.log(`✅ [Mock Firebase] Built package ${manifest.id} with ${manifest.records.length} records`);
-  
+
+  console.log(
+    `✅ [Mock Firebase] Built package ${manifest.id} with ${manifest.records.length} records`
+  );
+
   return {
     manifest: updatedManifest,
     previewUrl: `/mock/packages/${manifest.id}/preview.pdf`,
@@ -556,13 +648,69 @@ export const buildPackage = async (manifest: PackageManifest): Promise<PackageBu
 };
 
 // Get package by ID (mock implementation)
-export const getPackageById = async (packageId: string): Promise<PackageManifest | null> => {
+export const getPackageById = async (
+  packageId: string
+): Promise<PackageManifest | null> => {
   const packagesDatabase = getPackagesDatabase();
   return packagesDatabase[packageId] || null;
 };
 
 // Get packages for request (mock implementation)
-export const getPackagesForRequest = async (requestId: string): Promise<PackageManifest[]> => {
+export const getPackagesForRequest = async (
+  requestId: string
+): Promise<PackageManifest[]> => {
   const packagesDatabase = getPackagesDatabase();
-  return Object.values(packagesDatabase).filter(pkg => pkg.requestId === requestId);
+  return Object.values(packagesDatabase).filter(
+    pkg => pkg.requestId === requestId
+  );
+};
+
+// Cross-agency request routing (mock implementation)
+export const routeRequestToAgency = async (
+  requestId: string,
+  targetAgency: string,
+  reason: string,
+  routedBy: string
+): Promise<void> => {
+  console.log('🔄 [Mock Firebase] Routing request to agency:', {
+    requestId,
+    targetAgency,
+    reason,
+  });
+
+  const database = getMockDatabase();
+
+  if (!database[requestId]) {
+    throw new Error('Request not found');
+  }
+
+  const request = database[requestId];
+
+  // Create routing internal note
+  const routingNote = {
+    id: generateId(),
+    content: `Request routed to ${targetAgency}. Reason: ${reason}`,
+    addedBy: routedBy,
+    addedAt: createMockTimestamp(new Date()),
+  };
+
+  // Update request with new agency and routing note
+  database[requestId] = {
+    ...request,
+    agency: targetAgency,
+    updatedAt: createMockTimestamp(new Date()),
+    internalNotes: [...(request.internalNotes || []), routingNote],
+  };
+
+  saveMockDatabase(database);
+
+  // Log audit event
+  auditService.logEvent({
+    service: 'MockFirebaseService',
+    action: 'routeRequestToAgency',
+    severity: 'info',
+    details: { requestId, targetAgency, reason, routedBy },
+  });
+
+  console.log('✅ [Mock Firebase] Request routed to agency:', targetAgency);
 };

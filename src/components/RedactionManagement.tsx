@@ -2,49 +2,49 @@
 // Provides interface for viewing, editing, and managing redaction versions
 // Includes save/export capabilities and version history
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Stack,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Alert,
-  Tabs,
-  Tab,
-  Divider,
-  Badge,
-  Tooltip,
-  LinearProgress,
-} from '@mui/material';
-import {
-  Save as SaveIcon,
-  Download as ExportIcon,
-  History as HistoryIcon,
   Delete as DeleteIcon,
-  Visibility as ViewIcon,
+  Download as ExportIcon,
   Edit as EditIcon,
+  History as HistoryIcon,
   Info as InfoIcon,
+  Save as SaveIcon,
+  Visibility as ViewIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
+import {
+  Alert,
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  Stack,
+  Tab,
+  Tabs,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 
 import {
   ManualRedaction,
-  RedactionVersion,
-  RedactionSummary,
   redactionService,
+  RedactionSummary,
+  RedactionVersion,
 } from '../services/redactionService';
 
 interface RedactionManagementProps {
@@ -61,9 +61,14 @@ interface TabPanelProps {
   value: number;
 }
 
-const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other }) => (
+const TabPanel: React.FC<TabPanelProps> = ({
+  children,
+  value,
+  index,
+  ...other
+}) => (
   <div
-    role="tabpanel"
+    role='tabpanel'
     hidden={value !== index}
     id={`redaction-tabpanel-${index}`}
     aria-labelledby={`redaction-tab-${index}`}
@@ -88,8 +93,10 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [saveDialogOpen, setSaveDialogOpen] = useState<boolean>(false);
   const [versionNotes, setVersionNotes] = useState<string>('');
-  const [selectedRedaction, setSelectedRedaction] = useState<ManualRedaction | null>(null);
-  const [redactionDetailsOpen, setRedactionDetailsOpen] = useState<boolean>(false);
+  const [selectedRedaction, setSelectedRedaction] =
+    useState<ManualRedaction | null>(null);
+  const [redactionDetailsOpen, setRedactionDetailsOpen] =
+    useState<boolean>(false);
 
   // Load data when component mounts or props change
   useEffect(() => {
@@ -101,13 +108,13 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
   const loadData = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const [versionsResult, summaryResult] = await Promise.all([
         redactionService.getVersionHistory(recordId, fileName),
         redactionService.getRedactionSummary(recordId, fileName),
       ]);
-      
+
       setVersions(Array.isArray(versionsResult) ? versionsResult : []);
       setSummary(summaryResult);
     } catch (err) {
@@ -124,8 +131,12 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
   const handleSaveVersion = async () => {
     try {
       setLoading(true);
-      const newVersion = await redactionService.saveVersion(recordId, fileName, versionNotes);
-      setVersions((prev) => [newVersion, ...(Array.isArray(prev) ? prev : [])]);
+      const newVersion = await redactionService.saveVersion(
+        recordId,
+        fileName,
+        versionNotes
+      );
+      setVersions(prev => [newVersion, ...(Array.isArray(prev) ? prev : [])]);
       setSaveDialogOpen(false);
       setVersionNotes('');
       await loadData(); // Refresh summary
@@ -140,7 +151,11 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
   const handleLoadVersion = async (versionId: string) => {
     try {
       setLoading(true);
-      const redactions = await redactionService.loadVersion(recordId, fileName, versionId);
+      const redactions = await redactionService.loadVersion(
+        recordId,
+        fileName,
+        versionId
+      );
       onVersionLoad?.(redactions);
       setOpen(false);
     } catch (err) {
@@ -154,8 +169,12 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
   const handleExportVersion = async (version: RedactionVersion) => {
     try {
       // Mark as exported
-      await redactionService.markVersionExported(recordId, fileName, version.versionId);
-      
+      await redactionService.markVersionExported(
+        recordId,
+        fileName,
+        version.versionId
+      );
+
       // Create export data
       const exportData = {
         recordId,
@@ -177,10 +196,13 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
         })),
         summary: {
           totalRedactions: version.redactions.length,
-          byPage: version.redactions.reduce((acc, r) => {
-            acc[r.pageNumber] = (acc[r.pageNumber] || 0) + 1;
-            return acc;
-          }, {} as Record<number, number>),
+          byPage: version.redactions.reduce(
+            (acc, r) => {
+              acc[r.pageNumber] = (acc[r.pageNumber] || 0) + 1;
+              return acc;
+            },
+            {} as Record<number, number>
+          ),
         },
       };
 
@@ -232,13 +254,13 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
     <>
       {/* Trigger Button */}
       <Button
-        variant="outlined"
+        variant='outlined'
         startIcon={<HistoryIcon />}
         onClick={handleOpen}
         sx={{ ml: 1 }}
-        aria-label="Manage redactions and versions"
+        aria-label='Manage redactions and versions'
       >
-        <Badge badgeContent={versions?.length || 0} color="primary">
+        <Badge badgeContent={versions?.length || 0} color='primary'>
           Manage Redactions
         </Badge>
       </Button>
@@ -247,20 +269,24 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
       <Dialog
         open={open}
         onClose={handleClose}
-        maxWidth="lg"
+        maxWidth='lg'
         fullWidth
         PaperProps={{
           sx: { minHeight: '80vh' },
         }}
       >
         <DialogTitle>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6">
+          <Stack
+            direction='row'
+            justifyContent='space-between'
+            alignItems='center'
+          >
+            <Typography variant='h6'>
               Redaction Management: {fileName}
             </Typography>
-            <Stack direction="row" spacing={1}>
+            <Stack direction='row' spacing={1}>
               <Button
-                variant="contained"
+                variant='contained'
                 startIcon={<SaveIcon />}
                 onClick={() => setSaveDialogOpen(true)}
                 disabled={currentRedactions.length === 0}
@@ -273,33 +299,41 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
 
         <DialogContent dividers>
           {loading && <LinearProgress sx={{ mb: 2 }} />}
-          
+
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            <Alert
+              severity='error'
+              sx={{ mb: 2 }}
+              onClose={() => setError(null)}
+            >
               {error}
             </Alert>
           )}
 
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
-              <Tab label="Current Session" />
-              <Tab label="Version History" />
-              <Tab label="Summary" />
+            <Tabs
+              value={activeTab}
+              onChange={(_, newValue) => setActiveTab(newValue)}
+            >
+              <Tab label='Current Session' />
+              <Tab label='Version History' />
+              <Tab label='Summary' />
             </Tabs>
           </Box>
 
           {/* Current Session Tab */}
           <TabPanel value={activeTab} index={0}>
             <Stack spacing={2}>
-              <Typography variant="h6">Current Redactions</Typography>
-              
+              <Typography variant='h6'>Current Redactions</Typography>
+
               {currentRedactions.length === 0 ? (
-                <Alert severity="info">
-                  No redactions in the current session. Switch to redaction mode and draw boxes to create redactions.
+                <Alert severity='info'>
+                  No redactions in the current session. Switch to redaction mode
+                  and draw boxes to create redactions.
                 </Alert>
               ) : (
                 <List>
-                  {currentRedactions.map((redaction) => (
+                  {currentRedactions.map(redaction => (
                     <ListItem
                       key={redaction.id}
                       divider
@@ -313,25 +347,34 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
                         primary={`Page ${redaction.pageNumber} - Redaction ${redaction.id.slice(-8)}`}
                         secondary={
                           <Stack spacing={0.5}>
-                            <Typography variant="body2">
-                              Position: ({Math.round(redaction.x)}, {Math.round(redaction.y)}) 
-                              Size: {Math.round(redaction.width)} × {Math.round(redaction.height)}
+                            <Typography variant='body2'>
+                              Position: ({Math.round(redaction.x)},{' '}
+                              {Math.round(redaction.y)}) Size:{' '}
+                              {Math.round(redaction.width)} ×{' '}
+                              {Math.round(redaction.height)}
                             </Typography>
                             {redaction.reason && (
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography
+                                variant='body2'
+                                color='text.secondary'
+                              >
                                 Reason: {redaction.reason}
                               </Typography>
                             )}
-                            <Typography variant="caption" color="text.secondary">
-                              Created: {formatDate(redaction.createdAt)} by {redaction.createdBy}
+                            <Typography
+                              variant='caption'
+                              color='text.secondary'
+                            >
+                              Created: {formatDate(redaction.createdAt)} by{' '}
+                              {redaction.createdBy}
                             </Typography>
                           </Stack>
                         }
                       />
                       <ListItemSecondaryAction>
                         <IconButton
-                          edge="end"
-                          onClick={(e) => {
+                          edge='end'
+                          onClick={e => {
                             e.stopPropagation();
                             handleRedactionClick(redaction);
                           }}
@@ -349,41 +392,50 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
           {/* Version History Tab */}
           <TabPanel value={activeTab} index={1}>
             <Stack spacing={2}>
-              <Typography variant="h6">Version History</Typography>
-              
+              <Typography variant='h6'>Version History</Typography>
+
               {!versions || versions.length === 0 ? (
-                <Alert severity="info">
-                  No saved versions yet. Save your current redactions to create the first version.
+                <Alert severity='info'>
+                  No saved versions yet. Save your current redactions to create
+                  the first version.
                 </Alert>
               ) : (
                 <List>
-                  {versions.map((version) => (
+                  {versions.map(version => (
                     <ListItem key={version.versionId} divider>
                       <ListItemText
                         primary={
-                          <Stack direction="row" spacing={1} alignItems="center">
-                            <Typography variant="subtitle1">
+                          <Stack
+                            direction='row'
+                            spacing={1}
+                            alignItems='center'
+                          >
+                            <Typography variant='subtitle1'>
                               Version {version.versionId.slice(-8)}
                             </Typography>
                             <Chip
-                              size="small"
+                              size='small'
                               label={version.status}
                               color={getStatusColor(version.status) as any}
                             />
                             <Chip
-                              size="small"
+                              size='small'
                               label={`${version.redactions.length} redactions`}
-                              variant="outlined"
+                              variant='outlined'
                             />
                           </Stack>
                         }
                         secondary={
                           <Stack spacing={0.5}>
-                            <Typography variant="body2">
-                              Created: {formatDate(version.timestamp)} by {version.createdBy}
+                            <Typography variant='body2'>
+                              Created: {formatDate(version.timestamp)} by{' '}
+                              {version.createdBy}
                             </Typography>
                             {version.notes && (
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography
+                                variant='body2'
+                                color='text.secondary'
+                              >
                                 Notes: {version.notes}
                               </Typography>
                             )}
@@ -391,20 +443,22 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
                         }
                       />
                       <ListItemSecondaryAction>
-                        <Stack direction="row" spacing={1}>
-                          <Tooltip title="Load this version">
+                        <Stack direction='row' spacing={1}>
+                          <Tooltip title='Load this version'>
                             <IconButton
-                              onClick={() => handleLoadVersion(version.versionId)}
-                              color="primary"
+                              onClick={() =>
+                                handleLoadVersion(version.versionId)
+                              }
+                              color='primary'
                             >
                               <ViewIcon />
                             </IconButton>
                           </Tooltip>
                           {version.status !== 'exported' && (
-                            <Tooltip title="Export version">
+                            <Tooltip title='Export version'>
                               <IconButton
                                 onClick={() => handleExportVersion(version)}
-                                color="secondary"
+                                color='secondary'
                               >
                                 <ExportIcon />
                               </IconButton>
@@ -422,56 +476,66 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
           {/* Summary Tab */}
           <TabPanel value={activeTab} index={2}>
             <Stack spacing={3}>
-              <Typography variant="h6">Redaction Summary</Typography>
-              
+              <Typography variant='h6'>Redaction Summary</Typography>
+
               {summary ? (
                 <>
-                  <Card variant="outlined">
+                  <Card variant='outlined'>
                     <CardContent>
-                      <Typography variant="h4" color="primary" gutterBottom>
+                      <Typography variant='h4' color='primary' gutterBottom>
                         {summary.totalRedactions}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant='body2' color='text.secondary'>
                         Total Redactions
                       </Typography>
                     </CardContent>
                   </Card>
 
-                  <Card variant="outlined">
+                  <Card variant='outlined'>
                     <CardContent>
-                      <Typography variant="h6" gutterBottom>
+                      <Typography variant='h6' gutterBottom>
                         Redactions by Page
                       </Typography>
                       <Stack spacing={1}>
                         {Object.entries(summary.byPage).map(([page, count]) => (
-                          <Stack key={page} direction="row" justifyContent="space-between">
-                            <Typography variant="body2">Page {page}</Typography>
-                            <Chip size="small" label={count} />
+                          <Stack
+                            key={page}
+                            direction='row'
+                            justifyContent='space-between'
+                          >
+                            <Typography variant='body2'>Page {page}</Typography>
+                            <Chip size='small' label={count} />
                           </Stack>
                         ))}
                       </Stack>
                     </CardContent>
                   </Card>
 
-                  <Card variant="outlined">
+                  <Card variant='outlined'>
                     <CardContent>
-                      <Typography variant="h6" gutterBottom>
+                      <Typography variant='h6' gutterBottom>
                         Version Information
                       </Typography>
                       <Stack spacing={1}>
-                        <Stack direction="row" justifyContent="space-between">
-                          <Typography variant="body2">Current Version</Typography>
-                          <Typography variant="body2" fontFamily="monospace">
+                        <Stack direction='row' justifyContent='space-between'>
+                          <Typography variant='body2'>
+                            Current Version
+                          </Typography>
+                          <Typography variant='body2' fontFamily='monospace'>
                             {summary.currentVersion.slice(-8) || 'None'}
                           </Typography>
                         </Stack>
-                        <Stack direction="row" justifyContent="space-between">
-                          <Typography variant="body2">Total Versions</Typography>
-                          <Typography variant="body2">{summary.versions.length}</Typography>
+                        <Stack direction='row' justifyContent='space-between'>
+                          <Typography variant='body2'>
+                            Total Versions
+                          </Typography>
+                          <Typography variant='body2'>
+                            {summary.versions.length}
+                          </Typography>
                         </Stack>
-                        <Stack direction="row" justifyContent="space-between">
-                          <Typography variant="body2">Last Modified</Typography>
-                          <Typography variant="body2">
+                        <Stack direction='row' justifyContent='space-between'>
+                          <Typography variant='body2'>Last Modified</Typography>
+                          <Typography variant='body2'>
                             {formatDate(summary.lastModified)}
                           </Typography>
                         </Stack>
@@ -480,9 +544,7 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
                   </Card>
                 </>
               ) : (
-                <Alert severity="info">
-                  Loading summary data...
-                </Alert>
+                <Alert severity='info'>Loading summary data...</Alert>
               )}
             </Stack>
           </TabPanel>
@@ -494,21 +556,27 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
       </Dialog>
 
       {/* Save Version Dialog */}
-      <Dialog open={saveDialogOpen} onClose={() => setSaveDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={saveDialogOpen}
+        onClose={() => setSaveDialogOpen(false)}
+        maxWidth='sm'
+        fullWidth
+      >
         <DialogTitle>Save Current Version</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
-            <Alert severity="info">
-              This will save {currentRedactions.length} redactions as a new version.
+            <Alert severity='info'>
+              This will save {currentRedactions.length} redactions as a new
+              version.
             </Alert>
             <TextField
               fullWidth
               multiline
               rows={3}
-              label="Version Notes (optional)"
+              label='Version Notes (optional)'
               value={versionNotes}
-              onChange={(e) => setVersionNotes(e.target.value)}
-              placeholder="Describe the changes or purpose of this version..."
+              onChange={e => setVersionNotes(e.target.value)}
+              placeholder='Describe the changes or purpose of this version...'
             />
           </Stack>
         </DialogContent>
@@ -516,7 +584,7 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
           <Button onClick={() => setSaveDialogOpen(false)}>Cancel</Button>
           <Button
             onClick={handleSaveVersion}
-            variant="contained"
+            variant='contained'
             disabled={loading}
             startIcon={<SaveIcon />}
           >
@@ -529,58 +597,84 @@ export const RedactionManagement: React.FC<RedactionManagementProps> = ({
       <Dialog
         open={redactionDetailsOpen}
         onClose={() => setRedactionDetailsOpen(false)}
-        maxWidth="sm"
+        maxWidth='sm'
         fullWidth
       >
         <DialogTitle>Redaction Details</DialogTitle>
         <DialogContent>
           {selectedRedaction && (
             <Stack spacing={2} sx={{ mt: 1 }}>
-              <Card variant="outlined">
+              <Card variant='outlined'>
                 <CardContent>
                   <Stack spacing={1}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="body2" color="text.secondary">ID</Typography>
-                      <Typography variant="body2" fontFamily="monospace">
+                    <Stack direction='row' justifyContent='space-between'>
+                      <Typography variant='body2' color='text.secondary'>
+                        ID
+                      </Typography>
+                      <Typography variant='body2' fontFamily='monospace'>
                         {selectedRedaction.id}
                       </Typography>
                     </Stack>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="body2" color="text.secondary">Page</Typography>
-                      <Typography variant="body2">{selectedRedaction.pageNumber}</Typography>
-                    </Stack>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="body2" color="text.secondary">Position</Typography>
-                      <Typography variant="body2">
-                        ({Math.round(selectedRedaction.x)}, {Math.round(selectedRedaction.y)})
+                    <Stack direction='row' justifyContent='space-between'>
+                      <Typography variant='body2' color='text.secondary'>
+                        Page
+                      </Typography>
+                      <Typography variant='body2'>
+                        {selectedRedaction.pageNumber}
                       </Typography>
                     </Stack>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="body2" color="text.secondary">Size</Typography>
-                      <Typography variant="body2">
-                        {Math.round(selectedRedaction.width)} × {Math.round(selectedRedaction.height)}
+                    <Stack direction='row' justifyContent='space-between'>
+                      <Typography variant='body2' color='text.secondary'>
+                        Position
+                      </Typography>
+                      <Typography variant='body2'>
+                        ({Math.round(selectedRedaction.x)},{' '}
+                        {Math.round(selectedRedaction.y)})
                       </Typography>
                     </Stack>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="body2" color="text.secondary">Type</Typography>
-                      <Chip size="small" label={selectedRedaction.type} />
+                    <Stack direction='row' justifyContent='space-between'>
+                      <Typography variant='body2' color='text.secondary'>
+                        Size
+                      </Typography>
+                      <Typography variant='body2'>
+                        {Math.round(selectedRedaction.width)} ×{' '}
+                        {Math.round(selectedRedaction.height)}
+                      </Typography>
                     </Stack>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="body2" color="text.secondary">Created</Typography>
-                      <Typography variant="body2">
+                    <Stack direction='row' justifyContent='space-between'>
+                      <Typography variant='body2' color='text.secondary'>
+                        Type
+                      </Typography>
+                      <Chip size='small' label={selectedRedaction.type} />
+                    </Stack>
+                    <Stack direction='row' justifyContent='space-between'>
+                      <Typography variant='body2' color='text.secondary'>
+                        Created
+                      </Typography>
+                      <Typography variant='body2'>
                         {formatDate(selectedRedaction.createdAt)}
                       </Typography>
                     </Stack>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="body2" color="text.secondary">Created By</Typography>
-                      <Typography variant="body2">{selectedRedaction.createdBy}</Typography>
+                    <Stack direction='row' justifyContent='space-between'>
+                      <Typography variant='body2' color='text.secondary'>
+                        Created By
+                      </Typography>
+                      <Typography variant='body2'>
+                        {selectedRedaction.createdBy}
+                      </Typography>
                     </Stack>
                     {selectedRedaction.reason && (
                       <Box>
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                        <Typography
+                          variant='body2'
+                          color='text.secondary'
+                          gutterBottom
+                        >
                           Reason
                         </Typography>
-                        <Typography variant="body2">{selectedRedaction.reason}</Typography>
+                        <Typography variant='body2'>
+                          {selectedRedaction.reason}
+                        </Typography>
                       </Box>
                     )}
                   </Stack>

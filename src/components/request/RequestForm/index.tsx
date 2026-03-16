@@ -3,22 +3,17 @@
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+
 import {
   Alert,
   Box,
-  Button,
   CircularProgress,
   Divider,
-  FormControl,
-  FormHelperText,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   Snackbar,
-  TextField,
   Typography,
-} from '@mui/material';
+} from '@/components/migration';
+import { Button, Select, TextField } from '@/components/migration';
 
 import { saveRequest } from '../../../services/requestService';
 import DateRangePicker, { DateRange } from '../../shared/DateRangePicker';
@@ -31,11 +26,11 @@ import {
 } from './types';
 
 const departments = [
-  { id: 'police', name: 'Police Department' },
-  { id: 'fire', name: 'Fire Department' },
-  { id: 'clerk', name: 'City Clerk' },
-  { id: 'finance', name: 'Finance Department' },
-  { id: 'other', name: 'Other' },
+  { value: 'police', label: 'Police Department' },
+  { value: 'fire', label: 'Fire Department' },
+  { value: 'clerk', label: 'City Clerk' },
+  { value: 'finance', label: 'Finance Department' },
+  { value: 'other', label: 'Other' },
 ];
 
 export const RequestForm = () => {
@@ -110,16 +105,16 @@ export const RequestForm = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         <Box>
           <Controller
-            name="title"
+            name='title'
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Request Title"
+                label='Request Title'
                 fullWidth
                 error={!!errors.title}
                 helperText={errors.title?.message}
@@ -138,25 +133,24 @@ export const RequestForm = () => {
         >
           <Box sx={{ flex: 1 }}>
             <Controller
-              name="department"
+              name='department'
               control={control}
               render={({ field }) => (
-                <FormControl fullWidth error={!!errors.department}>
-                  <InputLabel>Department</InputLabel>
-                  <Select
-                    {...field}
-                    label="Department"
-                    disabled={isSubmitting}
-                    data-testid="department-select"
-                  >
-                    {departments.map(dept => (
-                      <MenuItem key={dept.id} value={dept.id}>
-                        {dept.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText>{errors.department?.message}</FormHelperText>
-                </FormControl>
+                <Select
+                  {...field}
+                  label='Department *'
+                  options={departments}
+                  fullWidth
+                  required
+                  disabled={isSubmitting}
+                  error={errors.department?.message}
+                  helperText={
+                    errors.department?.message ||
+                    'Select the department for your request'
+                  }
+                  placeholder='Choose a department...'
+                  data-testid='department-select'
+                />
               )}
             />
           </Box>
@@ -170,18 +164,18 @@ export const RequestForm = () => {
               errors.dateRange?.message || errors.dateRange?.startDate?.message
             }
             disabled={isSubmitting}
-            label="Records Date Range"
+            label='Records Date Range'
           />
         </Box>
 
         <Box>
           <Controller
-            name="description"
+            name='description'
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Request Description"
+                label='Request Description'
                 multiline
                 rows={4}
                 fullWidth
@@ -195,13 +189,13 @@ export const RequestForm = () => {
 
         <Box>
           <Controller
-            name="contactEmail"
+            name='contactEmail'
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Contact Email"
-                type="email"
+                label='Contact Email'
+                type='email'
                 fullWidth
                 error={!!errors.contactEmail}
                 helperText={errors.contactEmail?.message}
@@ -213,10 +207,10 @@ export const RequestForm = () => {
 
         <Box>
           <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             Supporting Documents (Optional)
           </Typography>
-          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+          <Typography variant='body2' color='textSecondary' sx={{ mb: 2 }}>
             Upload any documents that help clarify or support your records
             request.
           </Typography>
@@ -239,10 +233,10 @@ export const RequestForm = () => {
 
         <Box>
           <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            size="large"
+            type='submit'
+            variant='contained'
+            color='primary'
+            size='large'
             fullWidth
             disabled={isSubmitting}
             startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
@@ -263,7 +257,7 @@ export const RequestForm = () => {
       >
         <Alert
           severity={submitError ? 'error' : 'success'}
-          variant="filled"
+          variant='filled'
           onClose={() => {
             setSubmitError(null);
             setSubmitSuccess(false);
@@ -276,6 +270,6 @@ export const RequestForm = () => {
               : 'Request submitted successfully!')}
         </Alert>
       </Snackbar>
-    </Box>
+    </form>
   );
 };

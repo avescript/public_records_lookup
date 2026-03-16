@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
+
+import { Box, CircularProgress, Typography } from '@/components/migration';
 
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -36,7 +37,7 @@ export function ProtectedRoute({
         }}
       >
         <CircularProgress size={48} />
-        <Typography variant="body1" sx={{ mt: 2 }}>
+        <Typography variant='body1' sx={{ mt: 2 }}>
           Checking authentication...
         </Typography>
       </Box>
@@ -58,11 +59,11 @@ export function ProtectedRoute({
           minHeight: '100vh',
         }}
       >
-        <Typography variant="h6" color="error">
+        <Typography variant='h6' color='error'>
           Access Denied
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          You don't have permission to access this page.
+        <Typography variant='body2' color='text.secondary'>
+          You don&rsquo;t have permission to access this page.
         </Typography>
       </Box>
     );

@@ -5,7 +5,11 @@
  */
 
 import { legalReviewService } from '../../src/services/legalReviewService';
-import type { CommentThread, ChangeRequest, PackageApproval } from '../../src/services/legalReviewService';
+import type {
+  CommentThread,
+  ChangeRequest,
+  PackageApproval,
+} from '../../src/services/legalReviewService';
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -14,6 +18,10 @@ const localStorageMock = (() => {
   return {
     getItem: (key: string) => store[key] || null,
     setItem: (key: string, value: string) => {
+      // Only simulate quota exceeded for extremely large test payloads
+      if (value.length > 500000) {
+        throw new Error('Storage quota exceeded');
+      }
       store[key] = value.toString();
     },
     removeItem: (key: string) => {
@@ -81,7 +89,7 @@ describe('Epic 5 Integration Tests', () => {
         'high',
         {
           page: 2,
-          coordinates: { x: 150, y: 300, width: 120, height: 18 }
+          coordinates: { x: 150, y: 300, width: 120, height: 18 },
         }
       );
 
@@ -91,23 +99,25 @@ describe('Epic 5 Integration Tests', () => {
       expect(changeRequest.specificLocation?.page).toBe(2);
 
       // Step 4: Assign and process the change request
-      const updatedChangeRequest = await legalReviewService.updateChangeRequestStatus(
-        changeRequest.id,
-        'in_progress',
-        'user-records-002',
-        'Processing redaction request'
-      );
+      const updatedChangeRequest =
+        await legalReviewService.updateChangeRequestStatus(
+          changeRequest.id,
+          'in_progress',
+          'user-records-002',
+          'Processing redaction request'
+        );
 
       expect(updatedChangeRequest.status).toBe('in_progress');
       expect(updatedChangeRequest.assignedTo).toBe('user-records-002');
 
       // Step 5: Complete the change request
-      const completedChangeRequest = await legalReviewService.updateChangeRequestStatus(
-        changeRequest.id,
-        'completed',
-        'user-records-002',
-        'SSN redacted successfully'
-      );
+      const completedChangeRequest =
+        await legalReviewService.updateChangeRequestStatus(
+          changeRequest.id,
+          'completed',
+          'user-records-002',
+          'SSN redacted successfully'
+        );
 
       expect(completedChangeRequest.status).toBe('completed');
       expect(completedChangeRequest.resolvedAt).toBeDefined();
@@ -125,7 +135,8 @@ describe('Epic 5 Integration Tests', () => {
       expect(resolutionComment.isResolution).toBe(true);
 
       // Step 7: Verify thread is automatically resolved
-      const resolvedThreads = await legalReviewService.getCommentThreadsForRecord(recordId, fileName);
+      const resolvedThreads =
+        await legalReviewService.getCommentThreadsForRecord(recordId, fileName);
       expect(resolvedThreads[0].status).toBe('resolved');
 
       // Step 8: Create package approval (US-051)
@@ -137,7 +148,11 @@ describe('Epic 5 Integration Tests', () => {
 
       expect(packageApproval).toBeDefined();
       expect(packageApproval.requestId).toBe(requestId);
-      expect(packageApproval.recordIds).toEqual([recordId, 'record-124', 'record-125']);
+      expect(packageApproval.recordIds).toEqual([
+        recordId,
+        'record-124',
+        'record-125',
+      ]);
       expect(packageApproval.packageId).toBe('package-sensitive-docs-v1');
       expect(packageApproval.status).toBe('pending');
       expect(packageApproval.isLocked).toBe(false);
@@ -215,7 +230,9 @@ describe('Epic 5 Integration Tests', () => {
       expect(rejectedPackage.status).toBe('rejected');
       expect(rejectedPackage.isLocked).toBe(false);
       expect(rejectedPackage.deliveryApproved).toBe(false);
-      expect(rejectedPackage.reason).toBe('Document contains over-redaction and requires revision');
+      expect(rejectedPackage.reason).toBe(
+        'Document contains over-redaction and requires revision'
+      );
       expect(rejectedPackage.rejectedAt).toBeDefined();
 
       // Verify summary reflects rejection
@@ -250,8 +267,12 @@ describe('Epic 5 Integration Tests', () => {
       expect(changesPackage.status).toBe('changes_requested');
       expect(changesPackage.isLocked).toBe(false);
       expect(changesPackage.deliveryApproved).toBe(false);
-      expect(changesPackage.reason).toBe('Minor formatting issues need to be addressed');
-      expect(changesPackage.comments).toBe('Page headers need to be consistent across all documents');
+      expect(changesPackage.reason).toBe(
+        'Minor formatting issues need to be addressed'
+      );
+      expect(changesPackage.comments).toBe(
+        'Page headers need to be consistent across all documents'
+      );
 
       // Create comment thread for the requested changes
       const commentThread = await legalReviewService.createCommentThread(
@@ -367,7 +388,10 @@ describe('Epic 5 Integration Tests', () => {
 
       // Resolve some threads and change requests
       await legalReviewService.updateThreadStatus(threads[0].id, 'resolved');
-      await legalReviewService.updateChangeRequestStatus(changeRequests[0].id, 'completed');
+      await legalReviewService.updateChangeRequestStatus(
+        changeRequests[0].id,
+        'completed'
+      );
 
       // Verify updated summary
       const updatedSummary = await legalReviewService.getLegalReviewSummary();
@@ -411,19 +435,23 @@ describe('Epic 5 Integration Tests', () => {
           'user-3',
           'User 3'
         ),
-        legalReviewService.createPackageApproval(
-          requestId,
-          [recordId]
-        ),
+        legalReviewService.createPackageApproval(requestId, [recordId]),
       ]);
 
       // All operations should succeed
       expect(operations.every(op => op.status === 'fulfilled')).toBe(true);
 
       // Verify data integrity
-      const threads = await legalReviewService.getCommentThreadsForRecord(recordId, fileName);
-      const changes = await legalReviewService.getChangeRequestsForRecord(recordId, fileName);
-      const packages = await legalReviewService.getPackageApprovalsByRequest(requestId);
+      const threads = await legalReviewService.getCommentThreadsForRecord(
+        recordId,
+        fileName
+      );
+      const changes = await legalReviewService.getChangeRequestsForRecord(
+        recordId,
+        fileName
+      );
+      const packages =
+        await legalReviewService.getPackageApprovalsByRequest(requestId);
 
       expect(threads).toHaveLength(2);
       expect(changes).toHaveLength(1);
@@ -444,11 +472,26 @@ describe('Epic 5 Integration Tests', () => {
     it('should handle invalid data gracefully', async () => {
       // Test with empty/invalid inputs
       await expect(
-        legalReviewService.createCommentThread('', '', 'general_comment', '', '', '', 'legal_reviewer')
+        legalReviewService.createCommentThread(
+          '',
+          '',
+          'general_comment',
+          '',
+          '',
+          '',
+          'legal_reviewer'
+        )
       ).rejects.toThrow();
 
       await expect(
-        legalReviewService.createChangeRequest('', '', 'clarification', '', '', '')
+        legalReviewService.createChangeRequest(
+          '',
+          '',
+          'clarification',
+          '',
+          '',
+          ''
+        )
       ).rejects.toThrow();
 
       await expect(
@@ -547,9 +590,12 @@ describe('Epic 5 Integration Tests', () => {
       expect(packageApproval.recordIds).toContain(recordId);
 
       // Verify they can all be retrieved by record ID
-      const threadsByRecord = await legalReviewService.getCommentThreadsForRecord(recordId);
-      const changesByRecord = await legalReviewService.getChangeRequestsForRecord(recordId);
-      const packagesByRequest = await legalReviewService.getPackageApprovalsByRequest(requestId);
+      const threadsByRecord =
+        await legalReviewService.getCommentThreadsForRecord(recordId);
+      const changesByRecord =
+        await legalReviewService.getChangeRequestsForRecord(recordId);
+      const packagesByRequest =
+        await legalReviewService.getPackageApprovalsByRequest(requestId);
 
       expect(threadsByRecord).toHaveLength(1);
       expect(changesByRecord).toHaveLength(1);
@@ -558,7 +604,6 @@ describe('Epic 5 Integration Tests', () => {
       expect(changesByRecord[0].id).toBe(changeRequest.id);
       expect(packagesByRequest[0].id).toBe(packageApproval.id);
     });
-
   });
 
   describe('Performance and Scalability', () => {
@@ -614,13 +659,17 @@ describe('Epic 5 Integration Tests', () => {
       const executionTime = endTime - startTime;
 
       // Verify performance metrics
-      expect(successCount).toBe(recordCount * (threadsPerRecord + changesPerRecord));
+      expect(successCount).toBe(
+        recordCount * (threadsPerRecord + changesPerRecord)
+      );
       expect(executionTime).toBeLessThan(10000); // Should complete within 10 seconds
 
       // Verify data integrity after bulk operations
       const summary = await legalReviewService.getLegalReviewSummary();
       expect(summary.totalThreads).toBe(recordCount * threadsPerRecord);
-      expect(summary.pendingChangeRequests).toBe(recordCount * changesPerRecord);
+      expect(summary.pendingChangeRequests).toBe(
+        recordCount * changesPerRecord
+      );
 
       console.log(`Created ${successCount} entities in ${executionTime}ms`);
     });

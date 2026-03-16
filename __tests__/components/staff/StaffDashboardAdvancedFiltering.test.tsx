@@ -20,9 +20,9 @@ jest.mock('../../../src/services/requestService', () => ({
 // Mock MUI Data Grid
 jest.mock('@mui/x-data-grid', () => ({
   DataGrid: ({ rows, columns, onRowClick }: any) => (
-    <div data-testid="data-grid">
-      <div data-testid="grid-rows-count">{rows.length} rows</div>
-      <div data-testid="filtered-results">Showing {rows.length} results</div>
+    <div data-testid='data-grid'>
+      <div data-testid='grid-rows-count'>{rows.length} rows</div>
+      <div data-testid='filtered-results'>Showing {rows.length} results</div>
       {rows.map((row: any, index: number) => (
         <div
           key={row.id || row.trackingId || index}
@@ -53,7 +53,7 @@ jest.mock('@mui/x-date-pickers', () => ({
           ? value.toISOString().split('T')[0]
           : ''
       }
-      type="date"
+      type='date'
     />
   ),
   LocalizationProvider: ({ children }: any) => children,

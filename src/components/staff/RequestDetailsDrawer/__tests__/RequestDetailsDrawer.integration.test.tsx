@@ -1,10 +1,13 @@
 import React from 'react';
-import { createTheme,ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Timestamp } from 'firebase/firestore';
 
-import { RequestStatus,StoredRequest } from '../../../../services/requestService';
+import {
+  RequestStatus,
+  StoredRequest,
+} from '../../../../services/requestService';
 import { RequestDetailsDrawer } from '../index';
 
 // Mock the request service
@@ -13,7 +16,10 @@ jest.mock('../../../../services/requestService', () => ({
   addInternalNote: jest.fn(),
 }));
 
-import { addInternalNote,updateRequestStatus } from '../../../../services/requestService';
+import {
+  addInternalNote,
+  updateRequestStatus,
+} from '../../../../services/requestService';
 
 const theme = createTheme();
 
@@ -68,7 +74,7 @@ describe('RequestDetailsDrawer - Integration Tests', () => {
       expect(screen.getByText('Request Details')).toBeInTheDocument();
       expect(screen.getByText('Request Information')).toBeInTheDocument();
       expect(screen.getByText('Status')).toBeInTheDocument();
-      
+
       // Verify request details
       expect(screen.getByText('TR-2024-001')).toBeInTheDocument();
       expect(screen.getByText('Police Report Request')).toBeInTheDocument();
@@ -124,7 +130,7 @@ describe('RequestDetailsDrawer - Integration Tests', () => {
 
       const user = userEvent.setup();
       const closeButton = screen.getByLabelText('close');
-      
+
       await user.click(closeButton);
       expect(mockOnClose).toHaveBeenCalled();
     });
@@ -163,13 +169,15 @@ describe('RequestDetailsDrawer - Integration Tests', () => {
       );
 
       const user = userEvent.setup();
-      
+
       // Click Add Note button to show input
       const addButton = screen.getByText('Add Note');
       await user.click(addButton);
 
       // Find and fill the note input
-      const noteInput = screen.getByPlaceholderText('Add an internal note about this request...');
+      const noteInput = screen.getByPlaceholderText(
+        'Add an internal note about this request...'
+      );
       await user.type(noteInput, 'Follow up with requester');
 
       // Find and click the actual Add Note button in the form
@@ -177,8 +185,14 @@ describe('RequestDetailsDrawer - Integration Tests', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(addInternalNote).toHaveBeenCalledWith('req123', 'Follow up with requester');
-        expect(mockOnNotesAdd).toHaveBeenCalledWith('req123', 'Follow up with requester');
+        expect(addInternalNote).toHaveBeenCalledWith(
+          'req123',
+          'Follow up with requester'
+        );
+        expect(mockOnNotesAdd).toHaveBeenCalledWith(
+          'req123',
+          'Follow up with requester'
+        );
       });
     });
 
@@ -196,7 +210,7 @@ describe('RequestDetailsDrawer - Integration Tests', () => {
       );
 
       const user = userEvent.setup();
-      
+
       // Click Add Note button to show input
       const addButton = screen.getByText('Add Note');
       await user.click(addButton);
@@ -223,13 +237,15 @@ describe('RequestDetailsDrawer - Integration Tests', () => {
       );
 
       const user = userEvent.setup();
-      
+
       // Click Add Note button to show input
       const addButton = screen.getByText('Add Note');
       await user.click(addButton);
 
       // Enter some text
-      const noteInput = screen.getByPlaceholderText('Add an internal note about this request...');
+      const noteInput = screen.getByPlaceholderText(
+        'Add an internal note about this request...'
+      );
       await user.type(noteInput, 'Test note');
 
       // Click cancel
@@ -237,15 +253,21 @@ describe('RequestDetailsDrawer - Integration Tests', () => {
       await user.click(cancelButton);
 
       // Should go back to showing just the Add Note button
-      expect(screen.queryByPlaceholderText('Add an internal note about this request...')).not.toBeInTheDocument();
+      expect(
+        screen.queryByPlaceholderText(
+          'Add an internal note about this request...'
+        )
+      ).not.toBeInTheDocument();
       expect(addInternalNote).not.toHaveBeenCalled();
     });
   });
 
   describe('Service Integration', () => {
     it('handles service errors gracefully', async () => {
-      (addInternalNote as jest.Mock).mockRejectedValue(new Error('Service error'));
-      
+      (addInternalNote as jest.Mock).mockRejectedValue(
+        new Error('Service error')
+      );
+
       render(
         <TestWrapper>
           <RequestDetailsDrawer
@@ -259,11 +281,13 @@ describe('RequestDetailsDrawer - Integration Tests', () => {
       );
 
       const user = userEvent.setup();
-      
+
       const addButton = screen.getByText('Add Note');
       await user.click(addButton);
 
-      const noteInput = screen.getByPlaceholderText('Add an internal note about this request...');
+      const noteInput = screen.getByPlaceholderText(
+        'Add an internal note about this request...'
+      );
       await user.type(noteInput, 'Test note');
 
       const submitButton = screen.getAllByText('Add Note')[1];

@@ -70,7 +70,7 @@ describe('ProtectedRoute', () => {
     render(
       <TestWrapper>
         <ProtectedRoute>
-          <div data-testid="protected-content">Protected Content</div>
+          <div data-testid='protected-content'>Protected Content</div>
         </ProtectedRoute>
       </TestWrapper>
     );
@@ -83,7 +83,7 @@ describe('ProtectedRoute', () => {
     render(
       <TestWrapper>
         <ProtectedRoute>
-          <div data-testid="protected-content">Protected Content</div>
+          <div data-testid='protected-content'>Protected Content</div>
         </ProtectedRoute>
       </TestWrapper>
     );
@@ -100,7 +100,7 @@ describe('ProtectedRoute', () => {
       <TestWrapper>
         <AuthenticatedWrapper>
           <ProtectedRoute>
-            <div data-testid="protected-content">Protected Content</div>
+            <div data-testid='protected-content'>Protected Content</div>
           </ProtectedRoute>
         </AuthenticatedWrapper>
       </TestWrapper>
@@ -116,9 +116,9 @@ describe('ProtectedRoute', () => {
   test('allows access when user has required role', async () => {
     render(
       <TestWrapper>
-        <AuthenticatedWrapper userRole="admin">
-          <ProtectedRoute requiredRole="admin">
-            <div data-testid="admin-content">Admin Content</div>
+        <AuthenticatedWrapper userRole='admin'>
+          <ProtectedRoute requiredRole='admin'>
+            <div data-testid='admin-content'>Admin Content</div>
           </ProtectedRoute>
         </AuthenticatedWrapper>
       </TestWrapper>
@@ -134,9 +134,9 @@ describe('ProtectedRoute', () => {
   test('denies access when user lacks required role', async () => {
     render(
       <TestWrapper>
-        <AuthenticatedWrapper userRole="staff">
-          <ProtectedRoute requiredRole="admin">
-            <div data-testid="admin-content">Admin Content</div>
+        <AuthenticatedWrapper userRole='staff'>
+          <ProtectedRoute requiredRole='admin'>
+            <div data-testid='admin-content'>Admin Content</div>
           </ProtectedRoute>
         </AuthenticatedWrapper>
       </TestWrapper>
@@ -155,9 +155,9 @@ describe('ProtectedRoute', () => {
   test('allows admin access to any role-protected route', async () => {
     render(
       <TestWrapper>
-        <AuthenticatedWrapper userRole="admin">
-          <ProtectedRoute requiredRole="staff">
-            <div data-testid="staff-content">Staff Content</div>
+        <AuthenticatedWrapper userRole='admin'>
+          <ProtectedRoute requiredRole='staff'>
+            <div data-testid='staff-content'>Staff Content</div>
           </ProtectedRoute>
         </AuthenticatedWrapper>
       </TestWrapper>
@@ -173,9 +173,9 @@ describe('ProtectedRoute', () => {
   test('allows legal reviewer access to legal reviewer routes', async () => {
     render(
       <TestWrapper>
-        <AuthenticatedWrapper userRole="legal_reviewer">
-          <ProtectedRoute requiredRole="legal_reviewer">
-            <div data-testid="legal-content">Legal Content</div>
+        <AuthenticatedWrapper userRole='legal_reviewer'>
+          <ProtectedRoute requiredRole='legal_reviewer'>
+            <div data-testid='legal-content'>Legal Content</div>
           </ProtectedRoute>
         </AuthenticatedWrapper>
       </TestWrapper>
@@ -191,9 +191,9 @@ describe('ProtectedRoute', () => {
   test('denies legal reviewer access to admin routes', async () => {
     render(
       <TestWrapper>
-        <AuthenticatedWrapper userRole="legal_reviewer">
-          <ProtectedRoute requiredRole="admin">
-            <div data-testid="admin-content">Admin Content</div>
+        <AuthenticatedWrapper userRole='legal_reviewer'>
+          <ProtectedRoute requiredRole='admin'>
+            <div data-testid='admin-content'>Admin Content</div>
           </ProtectedRoute>
         </AuthenticatedWrapper>
       </TestWrapper>
@@ -209,9 +209,9 @@ describe('ProtectedRoute', () => {
   test('works without required role (general authentication)', async () => {
     render(
       <TestWrapper>
-        <AuthenticatedWrapper userRole="staff">
+        <AuthenticatedWrapper userRole='staff'>
           <ProtectedRoute>
-            <div data-testid="general-content">General Protected Content</div>
+            <div data-testid='general-content'>General Protected Content</div>
           </ProtectedRoute>
         </AuthenticatedWrapper>
       </TestWrapper>
@@ -237,7 +237,7 @@ describe('ProtectedRoute', () => {
     render(
       <TestWrapper>
         <ProtectedRoute>
-          <div data-testid="restored-content">Restored Content</div>
+          <div data-testid='restored-content'>Restored Content</div>
         </ProtectedRoute>
       </TestWrapper>
     );
@@ -258,7 +258,7 @@ describe('ProtectedRoute', () => {
     render(
       <TestWrapper>
         <ProtectedRoute>
-          <div data-testid="protected-content">Protected Content</div>
+          <div data-testid='protected-content'>Protected Content</div>
         </ProtectedRoute>
       </TestWrapper>
     );

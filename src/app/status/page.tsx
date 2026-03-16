@@ -5,7 +5,6 @@ import { Search as SearchIcon } from '@mui/icons-material';
 import {
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
   Chip,
@@ -13,10 +12,11 @@ import {
   Divider,
   Grid,
   Paper,
-  TextField,
   Typography,
 } from '@mui/material';
 import { format } from 'date-fns';
+
+import { Button, TextField } from '@/components/migration';
 
 import { PublicLayout } from '../../components/layouts/PublicLayout';
 import {
@@ -118,14 +118,14 @@ export default function StatusLookupPage() {
   return (
     <PublicLayout>
       <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+        <Typography variant='h4' component='h1' gutterBottom align='center'>
           Track Your Request
         </Typography>
         <Typography
-          variant="body1"
+          variant='body1'
           paragraph
-          align="center"
-          color="text.secondary"
+          align='center'
+          color='text.secondary'
         >
           Enter your tracking ID to check the status of your public records
           request.
@@ -136,8 +136,8 @@ export default function StatusLookupPage() {
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
             <TextField
               fullWidth
-              label="Tracking ID"
-              placeholder="Enter your tracking ID (e.g., PR-123456-ABCD)"
+              label='Tracking ID'
+              placeholder='Enter your tracking ID (e.g., PR-123456-ABCD)'
               value={trackingId}
               onChange={e => setTrackingId(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -150,10 +150,10 @@ export default function StatusLookupPage() {
               disabled={loading}
             />
             <Button
-              variant="contained"
+              variant='contained'
               startIcon={
                 loading ? (
-                  <CircularProgress size={16} color="inherit" />
+                  <CircularProgress size={16} color='inherit' />
                 ) : (
                   <SearchIcon />
                 )
@@ -169,7 +169,7 @@ export default function StatusLookupPage() {
 
         {/* Error Alert */}
         {error && !request && (
-          <Alert severity="error" sx={{ mb: 3 }}>
+          <Alert severity='error' sx={{ mb: 3 }}>
             {error}
           </Alert>
         )}
@@ -179,7 +179,7 @@ export default function StatusLookupPage() {
           <Card elevation={2}>
             <CardContent>
               <Box sx={{ mb: 3 }}>
-                <Typography variant="h5" gutterBottom>
+                <Typography variant='h5' gutterBottom>
                   Request Status
                 </Typography>
                 <Box
@@ -188,83 +188,83 @@ export default function StatusLookupPage() {
                   <Chip
                     label={request.status.replace('_', ' ').toUpperCase()}
                     color={getStatusColor(request.status)}
-                    size="medium"
+                    size='medium'
                   />
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Last updated: {formatDate(request.updatedAt)}
                   </Typography>
                 </Box>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant='body1' color='text.secondary'>
                   {getStatusDescription(request.status)}
                 </Typography>
               </Box>
 
               <Divider sx={{ my: 3 }} />
 
-              <Typography variant="h6" gutterBottom>
+              <Typography variant='h6' gutterBottom>
                 Request Details
               </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Tracking ID
                   </Typography>
-                  <Typography variant="body1" fontWeight="medium">
+                  <Typography variant='body1' fontWeight='medium'>
                     {request.trackingId}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Submitted
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant='body1'>
                     {formatDate(request.submittedAt)}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Department
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant='body1'>
                     {getDepartmentDisplayName(request.department)}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Contact Email
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant='body1'>
                     {request.contactEmail}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Request Title
                   </Typography>
-                  <Typography variant="body1">{request.title}</Typography>
+                  <Typography variant='body1'>{request.title}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Date Range
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant='body1'>
                     {request.dateRange.startDate} to {request.dateRange.endDate}
                     {request.dateRange.preset &&
                       ` (${request.dateRange.preset})`}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Description
                   </Typography>
-                  <Typography variant="body1">{request.description}</Typography>
+                  <Typography variant='body1'>{request.description}</Typography>
                 </Grid>
                 {request.attachmentCount > 0 && (
                   <Grid item xs={12}>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant='body2' color='text.secondary'>
                       Attachments
                     </Typography>
-                    <Typography variant="body1">
+                    <Typography variant='body1'>
                       {request.attachmentCount} file(s) uploaded
                     </Typography>
                   </Grid>
@@ -276,13 +276,13 @@ export default function StatusLookupPage() {
 
         {/* Help Section */}
         <Box sx={{ mt: 4, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             Need Help?
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            If you can't find your request or have questions about the status,
-            please contact the relevant department directly or call our main
-            office for assistance.
+          <Typography variant='body2' color='text.secondary'>
+            If you can&rsquo;t find your request or have questions about the
+            status, please contact the relevant department directly or call our
+            main office for assistance.
           </Typography>
         </Box>
       </Box>

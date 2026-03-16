@@ -1,10 +1,14 @@
 import React from 'react';
-import { createTheme,ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Timestamp } from 'firebase/firestore';
 
-import { InternalNote,RequestStatus, StoredRequest } from '../../../../services/requestService';
+import {
+  InternalNote,
+  RequestStatus,
+  StoredRequest,
+} from '../../../../services/requestService';
 import { RequestDetailsDrawer } from '../index';
 
 // Mock the request service
@@ -13,7 +17,10 @@ jest.mock('../../../../services/requestService', () => ({
   addInternalNote: jest.fn(),
 }));
 
-import { addInternalNote,updateRequestStatus } from '../../../../services/requestService';
+import {
+  addInternalNote,
+  updateRequestStatus,
+} from '../../../../services/requestService';
 
 const theme = createTheme();
 
@@ -131,7 +138,9 @@ describe('RequestDetailsDrawer - Core Functionality', () => {
       expect(screen.getByText('Police')).toBeInTheDocument();
       expect(screen.getByText('Police Report Request')).toBeInTheDocument();
       expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
-      expect(screen.getByText('Request for incident report from January 1st')).toBeInTheDocument();
+      expect(
+        screen.getByText('Request for incident report from January 1st')
+      ).toBeInTheDocument();
     });
   });
 
@@ -165,8 +174,14 @@ describe('RequestDetailsDrawer - Core Functionality', () => {
       await user.click(addButton);
 
       await waitFor(() => {
-        expect(addInternalNote).toHaveBeenCalledWith('req123', 'Follow up with requester');
-        expect(mockOnNotesAdd).toHaveBeenCalledWith('req123', 'Follow up with requester');
+        expect(addInternalNote).toHaveBeenCalledWith(
+          'req123',
+          'Follow up with requester'
+        );
+        expect(mockOnNotesAdd).toHaveBeenCalledWith(
+          'req123',
+          'Follow up with requester'
+        );
       });
     });
 
@@ -199,7 +214,7 @@ describe('RequestDetailsDrawer - Core Functionality', () => {
     it('calls onClose when close button is clicked', async () => {
       const user = userEvent.setup();
       const closeButton = screen.getByLabelText('close');
-      
+
       await user.click(closeButton);
       expect(mockOnClose).toHaveBeenCalled();
     });
@@ -207,8 +222,10 @@ describe('RequestDetailsDrawer - Core Functionality', () => {
 
   describe('Error Handling', () => {
     it('handles service errors gracefully', async () => {
-      (addInternalNote as jest.Mock).mockRejectedValue(new Error('Service error'));
-      
+      (addInternalNote as jest.Mock).mockRejectedValue(
+        new Error('Service error')
+      );
+
       render(
         <TestWrapper>
           <RequestDetailsDrawer

@@ -1,0 +1,1307 @@
+/**
+ * Migration Adapters for V2 Component Integration
+ *
+ * These components provide backward compatibility while transitioning
+ * existing V2 components to use the new design system patterns.
+ *
+ * Epic V2-7 Phase 5: Enhanced with migration tracking and development guidance.
+ */
+
+import React from 'react';
+
+import type {
+  ButtonProps as DesignButtonProps,
+  CardContentProps,
+  CardProps as DesignCardProps,
+  CheckboxProps as DesignCheckboxProps,
+  InputProps as DesignInputProps,
+  RadioGroupProps as DesignRadioGroupProps,
+  RadioProps as DesignRadioProps,
+  SelectOption,
+  SelectProps as DesignSelectProps,
+} from '@/components/design-system';
+import {
+  Button as DesignButton,
+  Card as DesignCard,
+  CardContent as DesignCardContent,
+  Checkbox as DesignCheckbox,
+  Input as DesignInput,
+  Radio as DesignRadio,
+  RadioGroup as DesignRadioGroup,
+  Select as DesignSelect,
+} from '@/components/design-system';
+import { useMigrationSuccess } from '@/hooks/useMigrationStats';
+
+// Legacy Material-UI prop mappings
+type LegacyButtonColor =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'error'
+  | 'info'
+  | 'warning';
+type LegacyButtonVariant = 'text' | 'outlined' | 'contained';
+type LegacyTextFieldVariant = 'standard' | 'filled' | 'outlined';
+
+// Legacy Select Props - Material-UI Select compatibility
+interface LegacySelectProps
+  extends Omit<DesignSelectProps, 'options' | 'onChange'> {
+  children?: React.ReactNode; // For MenuItem children
+  variant?: 'standard' | 'filled' | 'outlined';
+  displayEmpty?: boolean;
+  renderValue?: (selected: unknown) => React.ReactNode;
+  MenuProps?: any;
+  SelectProps?: any;
+  sx?: any; // Material-UI sx prop
+  size?: 'small' | 'medium';
+  // Support both new options format and legacy children
+  options?: SelectOption[];
+  // Material-UI style onChange with event.target.value
+  onChange?: (event: { target: { value: unknown } }) => void;
+}
+
+// Legacy Button Props - Material-UI Button compatibility
+interface LegacyButtonProps
+  extends Omit<DesignButtonProps, 'variant' | 'size'> {
+  color?: LegacyButtonColor;
+  variant?: LegacyButtonVariant;
+  size?: 'small' | 'medium' | 'large'; // Material-UI size format
+  sx?: any; // Material-UI sx prop
+  startIcon?: React.ReactNode; // Material-UI startIcon
+  endIcon?: React.ReactNode; // Material-UI endIcon
+  component?: any; // Material-UI component prop (for links, etc.)
+  href?: string; // For link buttons
+  target?: string; // For link buttons
+  rel?: string; // For link buttons
+}
+
+// Legacy Input Props
+interface LegacyTextFieldProps
+  extends Omit<DesignInputProps, 'variant' | 'state'> {
+  variant?: LegacyTextFieldVariant;
+  error?: boolean;
+}
+
+// Legacy Card Props
+interface LegacyPaperProps extends Omit<DesignCardProps, 'variant'> {
+  elevation?: number;
+  variant?: 'elevation' | 'outlined';
+  raised?: boolean;
+}
+
+// Legacy Checkbox Props - Material-UI Checkbox compatibility
+interface LegacyCheckboxProps extends Omit<DesignCheckboxProps, 'variant'> {
+  color?: 'primary' | 'secondary' | 'default';
+  size?: 'small' | 'medium' | 'large';
+  indeterminate?: boolean;
+  checkedIcon?: React.ReactNode;
+  icon?: React.ReactNode;
+  inputProps?: Record<string, unknown>;
+}
+
+// Legacy Radio Props - Material-UI Radio/RadioGroup compatibility
+interface LegacyRadioProps extends Omit<DesignRadioProps, 'variant'> {
+  color?: 'primary' | 'secondary' | 'default';
+  size?: 'small' | 'medium';
+  checkedIcon?: React.ReactNode;
+  icon?: React.ReactNode;
+}
+
+interface LegacyRadioGroupProps extends Omit<DesignRadioGroupProps, 'options'> {
+  children?: React.ReactNode; // For FormControlLabel children
+  row?: boolean;
+}
+
+// Legacy FormControl Props - Material-UI FormControl compatibility
+interface LegacyFormControlProps {
+  children?: React.ReactNode;
+  error?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+  variant?: 'standard' | 'outlined' | 'filled';
+  fullWidth?: boolean;
+  margin?: 'none' | 'normal' | 'dense';
+  size?: 'small' | 'medium';
+  className?: string;
+  sx?: any; // Material-UI sx prop
+  style?: React.CSSProperties;
+  id?: string;
+  'data-testid'?: string;
+}
+
+/**
+ * Legacy Button Adapter
+ * Maps old Material-UI Button props to new design system Button
+ */
+export const Button: React.FC<LegacyButtonProps> = ({
+  color = 'primary',
+  variant = 'contained',
+  size = 'medium',
+  sx,
+  startIcon,
+  endIcon,
+  component,
+  href,
+  target,
+  rel,
+  ...props
+}) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('Button');
+
+  // Map legacy props to design system variants
+  const getDesignVariant = (
+    color: LegacyButtonColor,
+    variant: LegacyButtonVariant
+  ): DesignButtonProps['variant'] => {
+    if (variant === 'text') return 'ghost';
+    if (variant === 'outlined') return 'outline';
+
+    // Contained variants
+    switch (color) {
+      case 'primary':
+        return 'primary';
+      case 'secondary':
+        return 'secondary';
+      case 'success':
+        return 'success';
+      case 'error':
+        return 'danger';
+      case 'info':
+        return 'primary'; // Map info to primary
+      case 'warning':
+        return 'warning';
+      default:
+        return 'primary';
+    }
+  };
+
+  // Map Material-UI size format to design system format
+  const getDesignSize = (
+    size: 'small' | 'medium' | 'large'
+  ): 'sm' | 'md' | 'lg' => {
+    switch (size) {
+      case 'small':
+        return 'sm';
+      case 'medium':
+        return 'md';
+      case 'large':
+        return 'lg';
+      default:
+        return 'md';
+    }
+  };
+
+  const designVariant = getDesignVariant(color, variant);
+  const designSize = getDesignSize(size);
+
+  // For backward compatibility, fall back to Material-UI Button for complex props
+  if (sx || component || href || target || rel) {
+    const MuiButton = require('@mui/material/Button').default;
+    return (
+      <MuiButton
+        color={color}
+        variant={variant}
+        size={size}
+        sx={sx}
+        startIcon={startIcon}
+        endIcon={endIcon}
+        component={component}
+        href={href}
+        target={target}
+        rel={rel}
+        {...props}
+      />
+    );
+  }
+
+  // Use design system button for simple cases
+  return (
+    <DesignButton
+      variant={designVariant}
+      size={designSize}
+      leftIcon={startIcon}
+      rightIcon={endIcon}
+      {...props}
+    />
+  );
+};
+
+/**
+ * Legacy TextField Adapter
+ * Maps old Material-UI TextField props to new design system Input
+ */
+export const TextField: React.FC<LegacyTextFieldProps> = ({
+  variant = 'outlined',
+  error = false,
+  ...props
+}) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('TextField');
+  // Map legacy props to design system props
+  const designVariant: DesignInputProps['variant'] =
+    variant === 'standard'
+      ? 'standard'
+      : variant === 'filled'
+        ? 'filled'
+        : 'outlined';
+
+  const designState: DesignInputProps['state'] = error ? 'error' : 'default';
+
+  return <DesignInput variant={designVariant} state={designState} {...props} />;
+};
+
+/**
+ * Legacy Select Adapter
+ * Maps old Material-UI Select props to new design system Select
+ */
+export const Select: React.FC<LegacySelectProps> = ({
+  children,
+  variant = 'outlined',
+  displayEmpty = false,
+  options,
+  placeholder,
+  onChange,
+  sx,
+  size,
+  MenuProps,
+  SelectProps,
+  ...props
+}) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('Select');
+
+  // Extract options from children if not provided via options prop
+  const extractedOptions: SelectOption[] = React.useMemo(() => {
+    if (options && options.length > 0) {
+      return options;
+    }
+
+    if (!children) return [];
+
+    const childrenArray = React.Children.toArray(children);
+    return childrenArray
+      .filter(
+        (child): child is React.ReactElement =>
+          (React.isValidElement(child) &&
+            (child.type as any)?.displayName === 'MenuItem') ||
+          (child.type as any)?.name === 'MenuItem' ||
+          typeof child.type === 'string' // Handle native options
+      )
+      .map((child, index) => {
+        const element = child as React.ReactElement<any>;
+        return {
+          value: element.props?.value ?? `option-${index}`,
+          label:
+            typeof element.props?.children === 'string'
+              ? element.props.children
+              : (element.props?.value ?? `Option ${index + 1}`),
+          disabled: element.props?.disabled || false,
+        };
+      });
+  }, [children, options]);
+
+  // Set placeholder if displayEmpty is true and no placeholder provided
+  const effectivePlaceholder =
+    displayEmpty && !placeholder ? 'Select an option...' : placeholder;
+
+  // Convert design system onChange to Material-UI style onChange
+  const handleChange = (value: string | number) => {
+    if (onChange) {
+      onChange({ target: { value } });
+    }
+  };
+
+  // For backward compatibility with complex Material-UI props, use Material-UI Select
+  if (sx || MenuProps || SelectProps || variant !== 'outlined') {
+    const MuiSelect = require('@mui/material/Select').default;
+    const MuiFormControl = require('@mui/material/FormControl').default;
+    const MuiInputLabel = require('@mui/material/InputLabel').default;
+
+    return (
+      <MuiFormControl variant={variant} size={size} sx={sx}>
+        {placeholder && <MuiInputLabel>{placeholder}</MuiInputLabel>}
+        <MuiSelect
+          displayEmpty={displayEmpty}
+          MenuProps={MenuProps}
+          {...SelectProps}
+          onChange={onChange}
+          {...props}
+        >
+          {children}
+        </MuiSelect>
+      </MuiFormControl>
+    );
+  }
+
+  // Use design system Select for simple cases
+  return (
+    <DesignSelect
+      options={extractedOptions}
+      placeholder={effectivePlaceholder}
+      onChange={handleChange}
+      {...props}
+    />
+  );
+};
+
+/**
+ * Legacy Paper Adapter
+ * Maps old Material-UI Paper props to new design system Card
+ */
+export const Paper: React.FC<LegacyPaperProps> = ({
+  elevation = 1,
+  variant = 'elevation',
+  raised = false,
+  ...props
+}) => {
+  // Map legacy props to design system variants
+  const getDesignVariant = (
+    elevation: number,
+    variant: string,
+    raised: boolean
+  ): DesignCardProps['variant'] => {
+    if (variant === 'outlined') return 'outlined';
+    if (raised || elevation > 2) return 'elevated';
+    return 'default';
+  };
+
+  const designVariant = getDesignVariant(elevation, variant, raised);
+
+  return <DesignCard variant={designVariant} {...props} />;
+};
+
+/**
+ * Legacy Card Adapter
+ * Maps old Material-UI Card props to new design system Card
+ */
+export const Card: React.FC<LegacyPaperProps> = props => {
+  return <Paper {...props} />;
+};
+
+/**
+ * CardContent Adapter
+ * Pass through to design system CardContent
+ */
+export const CardContent: React.FC<CardContentProps> = props => {
+  useMigrationSuccess('CardContent');
+  return <DesignCardContent {...props} />;
+};
+
+/**
+ * Legacy Checkbox Adapter
+ * Maps old Material-UI Checkbox props to new design system Checkbox
+ */
+export const Checkbox: React.FC<LegacyCheckboxProps> = ({
+  color = 'primary',
+  size = 'medium',
+  indeterminate,
+  checkedIcon,
+  icon,
+  inputProps,
+  ...props
+}) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('Checkbox');
+
+  // Map legacy color to design variant
+  const designVariant: DesignCheckboxProps['variant'] =
+    color === 'secondary' ? 'secondary' : 'primary';
+
+  // Note: indeterminate, checkedIcon, icon, and inputProps are Material-UI specific
+  // and not directly supported in our design system, but we pass them through
+  const additionalProps: Record<string, unknown> = {};
+  if (indeterminate !== undefined)
+    additionalProps.indeterminate = indeterminate;
+  if (checkedIcon) additionalProps.checkedIcon = checkedIcon;
+  if (icon) additionalProps.icon = icon;
+  if (inputProps) additionalProps.inputProps = inputProps;
+
+  return (
+    <DesignCheckbox
+      variant={designVariant}
+      size={size}
+      {...additionalProps}
+      {...props}
+    />
+  );
+};
+
+/**
+ * Legacy Radio Adapter
+ * Maps old Material-UI Radio props to new design system Radio
+ */
+export const Radio: React.FC<LegacyRadioProps> = ({
+  color = 'primary',
+  size = 'medium',
+  checkedIcon,
+  icon,
+  ...props
+}) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('Radio');
+
+  // Map legacy color to design variant
+  const designVariant: DesignRadioProps['variant'] =
+    color === 'secondary' ? 'secondary' : 'primary';
+
+  // Note: checkedIcon and icon are Material-UI specific
+  const additionalProps: Record<string, unknown> = {};
+  if (checkedIcon) additionalProps.checkedIcon = checkedIcon;
+  if (icon) additionalProps.icon = icon;
+
+  return (
+    <DesignRadio
+      variant={designVariant}
+      size={size}
+      {...additionalProps}
+      {...props}
+    />
+  );
+};
+
+/**
+ * Legacy RadioGroup Adapter
+ * Maps old Material-UI RadioGroup props to new design system RadioGroup
+ */
+export const RadioGroup: React.FC<LegacyRadioGroupProps> = ({
+  children,
+  row = false,
+  ...props
+}) => {
+  // Convert children FormControlLabel elements to options array if needed
+  if (children && !props.options) {
+    // For backward compatibility, we'll pass children through to Material-UI
+    // In a full migration, children would be converted to options array
+    const additionalProps = { children, row };
+
+    // Use Material-UI RadioGroup directly for complex children scenarios
+    return (
+      <div style={{ display: 'flex', flexDirection: row ? 'row' : 'column' }}>
+        {children}
+      </div>
+    );
+  }
+
+  // Use design system RadioGroup when options are provided
+  return <DesignRadioGroup direction={row ? 'row' : 'column'} {...props} />;
+};
+
+/**
+ * Legacy FormControl Adapter
+ * Material-UI FormControl compatibility wrapper
+ */
+export const FormControl: React.FC<LegacyFormControlProps> = ({
+  children,
+  error = false,
+  disabled = false,
+  required = false,
+  variant = 'outlined',
+  fullWidth = false,
+  margin = 'none',
+  size = 'medium',
+  className,
+  sx,
+  style,
+  id,
+  'data-testid': testId,
+  ...props
+}) => {
+  // Track migration usage for development dashboard
+  useMigrationSuccess('FormControl');
+
+  // Import Material-UI FormControl directly for maximum compatibility
+  const MuiFormControl = require('@mui/material/FormControl').default;
+
+  return (
+    <MuiFormControl
+      error={error}
+      disabled={disabled}
+      required={required}
+      variant={variant}
+      fullWidth={fullWidth}
+      margin={margin}
+      size={size}
+      className={className}
+      sx={sx}
+      style={style}
+      id={id}
+      data-testid={testId}
+      {...props}
+    >
+      {children}
+    </MuiFormControl>
+  );
+};
+
+/**
+ * Utility function to get design system component mappings
+ * Helps developers understand the migration path
+ */
+export const getMigrationMapping = () => {
+  return {
+    Button: {
+      'color="primary" variant="contained"': 'variant="primary"',
+      'color="secondary" variant="contained"': 'variant="secondary"',
+      'color="error" variant="contained"': 'variant="danger"',
+      'color="success" variant="contained"': 'variant="success"',
+      'variant="outlined"': 'variant="outline"',
+      'variant="text"': 'variant="ghost"',
+    },
+    TextField: {
+      'variant="outlined"': 'variant="outlined"',
+      'variant="filled"': 'variant="filled"',
+      'variant="standard"': 'variant="standard"',
+      'error={true}': 'state="error"',
+      'helperText="Error message"': 'helperText="Error message" state="error"',
+    },
+    Select: {
+      'variant="outlined"': 'variant="outlined" (default)',
+      'displayEmpty={true}': 'placeholder="Select an option..."',
+      'MenuProps={{...}}': 'maxMenuHeight={number}',
+      'renderValue={func}': 'renderValue={func}',
+      '<MenuItem value="x">Label</MenuItem>':
+        'options={[{value: "x", label: "Label"}]}',
+    },
+    Paper: {
+      'elevation={1}': 'variant="default"',
+      'elevation={3}': 'variant="elevated"',
+      'variant="outlined"': 'variant="outlined"',
+      'raised={true}': 'variant="elevated"',
+    },
+    Checkbox: {
+      'color="primary"': 'variant="primary" (default)',
+      'color="secondary"': 'variant="secondary"',
+      'size="small"': 'size="small"',
+      'size="medium"': 'size="medium" (default)',
+      'indeterminate={true}': 'Note: passed through to Material-UI base',
+    },
+    Radio: {
+      'color="primary"': 'variant="primary" (default)',
+      'color="secondary"': 'variant="secondary"',
+      'size="small"': 'size="small"',
+      'size="medium"': 'size="medium" (default)',
+    },
+    RadioGroup: {
+      'row={true}': 'direction="row"',
+      'row={false}': 'direction="column" (default)',
+      '<FormControlLabel />': 'options=[{value, label}] array',
+    },
+    FormControl: {
+      Note: 'Passes through to Material-UI for backward compatibility',
+      'variant="outlined"': 'Maintained for compatibility',
+      'fullWidth={true}': 'Maintained for compatibility',
+    },
+  };
+};
+
+/**
+ * Additional Utility Component Adapters
+ * These components currently pass through to Material-UI
+ * but are tracked for migration and provide a consistent import path
+ */
+
+import type {
+  AccordionDetailsProps as MuiAccordionDetailsProps,
+  AccordionProps as MuiAccordionProps,
+  AccordionSummaryProps as MuiAccordionSummaryProps,
+  AlertProps as MuiAlertProps,
+  AlertTitleProps as MuiAlertTitleProps,
+  AppBarProps as MuiAppBarProps,
+  AvatarProps as MuiAvatarProps,
+  BackdropProps as MuiBackdropProps,
+  BadgeProps as MuiBadgeProps,
+  BoxProps as MuiBoxProps,
+  CardActionsProps as MuiCardActionsProps,
+  CardHeaderProps as MuiCardHeaderProps,
+  ChipProps as MuiChipProps,
+  CircularProgressProps as MuiCircularProgressProps,
+  CollapseProps as MuiCollapseProps,
+  ContainerProps as MuiContainerProps,
+  DialogActionsProps as MuiDialogActionsProps,
+  DialogContentProps as MuiDialogContentProps,
+  DialogProps as MuiDialogProps,
+  DialogTitleProps as MuiDialogTitleProps,
+  DividerProps as MuiDividerProps,
+  DrawerProps as MuiDrawerProps,
+  FormControlLabelProps as MuiFormControlLabelProps,
+  FormGroupProps as MuiFormGroupProps,
+  FormLabelProps as MuiFormLabelProps,
+  GridProps as MuiGridProps,
+  IconButtonProps as MuiIconButtonProps,
+  InputLabelProps as MuiInputLabelProps,
+  LinearProgressProps as MuiLinearProgressProps,
+  ListItemButtonProps as MuiListItemButtonProps,
+  ListItemIconProps as MuiListItemIconProps,
+  ListItemProps as MuiListItemProps,
+  ListItemSecondaryActionProps as MuiListItemSecondaryActionProps,
+  ListItemTextProps as MuiListItemTextProps,
+  ListProps as MuiListProps,
+  MenuItemProps as MuiMenuItemProps,
+  PopoverProps as MuiPopoverProps,
+  RatingProps as MuiRatingProps,
+  SliderProps as MuiSliderProps,
+  SnackbarProps as MuiSnackbarProps,
+  StackProps as MuiStackProps,
+  StepContentProps as MuiStepContentProps,
+  StepLabelProps as MuiStepLabelProps,
+  StepperProps as MuiStepperProps,
+  StepProps as MuiStepProps,
+  SwitchProps as MuiSwitchProps,
+  TabProps as MuiTabProps,
+  TabsProps as MuiTabsProps,
+  ToolbarProps as MuiToolbarProps,
+  TooltipProps as MuiTooltipProps,
+  TypographyProps as MuiTypographyProps,
+} from '@mui/material';
+import {
+  Accordion as MuiAccordion,
+  AccordionDetails as MuiAccordionDetails,
+  AccordionSummary as MuiAccordionSummary,
+  Alert as MuiAlert,
+  AlertTitle as MuiAlertTitle,
+  AppBar as MuiAppBar,
+  Avatar as MuiAvatar,
+  Backdrop as MuiBackdrop,
+  Badge as MuiBadge,
+  Box as MuiBox,
+  CardActions as MuiCardActions,
+  CardHeader as MuiCardHeader,
+  Chip as MuiChip,
+  CircularProgress as MuiCircularProgress,
+  Collapse as MuiCollapse,
+  Container as MuiContainer,
+  Dialog as MuiDialog,
+  DialogActions as MuiDialogActions,
+  DialogContent as MuiDialogContent,
+  DialogTitle as MuiDialogTitle,
+  Divider as MuiDivider,
+  Drawer as MuiDrawer,
+  FormControlLabel as MuiFormControlLabel,
+  FormGroup as MuiFormGroup,
+  FormLabel as MuiFormLabel,
+  Grid as MuiGrid,
+  IconButton as MuiIconButton,
+  InputLabel as MuiInputLabel,
+  LinearProgress as MuiLinearProgress,
+  List as MuiList,
+  ListItem as MuiListItem,
+  ListItemButton as MuiListItemButton,
+  ListItemIcon as MuiListItemIcon,
+  ListItemSecondaryAction as MuiListItemSecondaryAction,
+  ListItemText as MuiListItemText,
+  MenuItem as MuiMenuItem,
+  Popover as MuiPopover,
+  Rating as MuiRating,
+  Slider as MuiSlider,
+  Snackbar as MuiSnackbar,
+  Stack as MuiStack,
+  Step as MuiStep,
+  StepContent as MuiStepContent,
+  StepLabel as MuiStepLabel,
+  Stepper as MuiStepper,
+  Switch as MuiSwitch,
+  Tab as MuiTab,
+  Tabs as MuiTabs,
+  Toolbar as MuiToolbar,
+  Tooltip as MuiTooltip,
+  Typography as MuiTypography,
+} from '@mui/material';
+
+// Legacy prop type definitions for TypeScript
+type LegacyAccordionProps = MuiAccordionProps;
+type LegacyAccordionSummaryProps = MuiAccordionSummaryProps;
+type LegacyAccordionDetailsProps = MuiAccordionDetailsProps;
+type LegacyBoxProps = MuiBoxProps;
+type LegacyTypographyProps = MuiTypographyProps;
+type LegacyAlertProps = MuiAlertProps;
+type LegacyChipProps = MuiChipProps;
+type LegacyStackProps = MuiStackProps;
+type LegacyContainerProps = MuiContainerProps;
+type LegacyGridProps = MuiGridProps;
+type LegacyDialogProps = MuiDialogProps;
+type LegacyDialogActionsProps = MuiDialogActionsProps;
+type LegacyDialogContentProps = MuiDialogContentProps;
+type LegacyDialogTitleProps = MuiDialogTitleProps;
+type LegacyListProps = MuiListProps;
+type LegacyListItemProps = MuiListItemProps;
+type LegacyListItemButtonProps = MuiListItemButtonProps;
+type LegacyListItemIconProps = MuiListItemIconProps;
+type LegacyListItemTextProps = MuiListItemTextProps;
+type LegacyListItemSecondaryActionProps = MuiListItemSecondaryActionProps;
+type LegacyMenuItemProps = MuiMenuItemProps;
+type LegacyInputLabelProps = MuiInputLabelProps;
+type LegacyFormControlLabelProps = MuiFormControlLabelProps;
+type LegacyDividerProps = MuiDividerProps;
+type LegacyIconButtonProps = MuiIconButtonProps;
+type LegacyTooltipProps = MuiTooltipProps;
+type LegacyLinearProgressProps = MuiLinearProgressProps;
+type LegacyCircularProgressProps = MuiCircularProgressProps;
+type LegacyAlertTitleProps = MuiAlertTitleProps;
+type LegacyAppBarProps = MuiAppBarProps;
+type LegacyAvatarProps = MuiAvatarProps;
+type LegacyBackdropProps = MuiBackdropProps;
+type LegacyBadgeProps = MuiBadgeProps;
+type LegacyCardActionsProps = MuiCardActionsProps;
+type LegacyCardHeaderProps = MuiCardHeaderProps;
+type LegacyCollapseProps = MuiCollapseProps;
+type LegacyDrawerProps = MuiDrawerProps;
+type LegacyFormGroupProps = MuiFormGroupProps;
+type LegacyFormLabelProps = MuiFormLabelProps;
+type LegacyPopoverProps = MuiPopoverProps;
+type LegacyRatingProps = MuiRatingProps;
+type LegacySliderProps = MuiSliderProps;
+type LegacySnackbarProps = MuiSnackbarProps;
+type LegacyStepProps = MuiStepProps;
+type LegacyStepContentProps = MuiStepContentProps;
+type LegacyStepLabelProps = MuiStepLabelProps;
+type LegacyStepperProps = MuiStepperProps;
+type LegacySwitchProps = MuiSwitchProps;
+type LegacyTabProps = MuiTabProps;
+type LegacyTabsProps = MuiTabsProps;
+type LegacyToolbarProps = MuiToolbarProps;
+
+/**
+ * Accordion Adapter
+ * Collapsible content - currently passes through to Material-UI
+ */
+export const Accordion: React.FC<LegacyAccordionProps> = props => {
+  useMigrationSuccess('Accordion');
+  return <MuiAccordion {...props} />;
+};
+
+/**
+ * AccordionSummary Adapter
+ * Accordion header - currently passes through to Material-UI
+ */
+export const AccordionSummary: React.FC<
+  LegacyAccordionSummaryProps
+> = props => {
+  useMigrationSuccess('AccordionSummary');
+  return <MuiAccordionSummary {...props} />;
+};
+
+/**
+ * AccordionDetails Adapter
+ * Accordion content - currently passes through to Material-UI
+ */
+export const AccordionDetails: React.FC<
+  LegacyAccordionDetailsProps
+> = props => {
+  useMigrationSuccess('AccordionDetails');
+  return <MuiAccordionDetails {...props} />;
+};
+
+/**
+ * Box Adapter
+ * Layout container - currently passes through to Material-UI
+ */
+export const Box: React.FC<LegacyBoxProps> = props => {
+  useMigrationSuccess('Box');
+  return <MuiBox {...props} />;
+};
+
+/**
+ * Typography Adapter
+ * Text display - currently passes through to Material-UI
+ */
+export const Typography: React.FC<LegacyTypographyProps> = props => {
+  useMigrationSuccess('Typography');
+  return <MuiTypography {...props} />;
+};
+
+/**
+ * Alert Adapter
+ * Feedback messages - currently passes through to Material-UI
+ */
+export const Alert: React.FC<LegacyAlertProps> = props => {
+  useMigrationSuccess('Alert');
+  return <MuiAlert {...props} />;
+};
+
+/**
+ * Chip Adapter
+ * Compact elements - currently passes through to Material-UI
+ */
+export const Chip: React.FC<LegacyChipProps> = props => {
+  useMigrationSuccess('Chip');
+  return <MuiChip {...props} />;
+};
+
+/**
+ * Stack Adapter
+ * Flexbox layout - currently passes through to Material-UI
+ */
+export const Stack: React.FC<LegacyStackProps> = props => {
+  useMigrationSuccess('Stack');
+  return <MuiStack {...props} />;
+};
+
+/**
+ * Divider Adapter
+ * Visual separator - currently passes through to Material-UI
+ */
+export const Divider: React.FC<LegacyDividerProps> = props => {
+  useMigrationSuccess('Divider');
+  return <MuiDivider {...props} />;
+};
+
+/**
+ * IconButton Adapter
+ * Icon-only button - currently passes through to Material-UI
+ */
+export const IconButton: React.FC<LegacyIconButtonProps> = props => {
+  useMigrationSuccess('IconButton');
+  return <MuiIconButton {...props} />;
+};
+
+/**
+ * Tooltip Adapter
+ * Hover information - currently passes through to Material-UI
+ */
+export const Tooltip: React.FC<LegacyTooltipProps> = props => {
+  useMigrationSuccess('Tooltip');
+  return <MuiTooltip {...props} />;
+};
+
+/**
+ * LinearProgress Adapter
+ * Loading indicator - currently passes through to Material-UI
+ */
+export const LinearProgress: React.FC<LegacyLinearProgressProps> = props => {
+  useMigrationSuccess('LinearProgress');
+  return <MuiLinearProgress {...props} />;
+};
+
+/**
+ * CircularProgress Adapter
+ * Circular loading indicator - currently passes through to Material-UI
+ */
+export const CircularProgress: React.FC<
+  LegacyCircularProgressProps
+> = props => {
+  useMigrationSuccess('CircularProgress');
+  return <MuiCircularProgress {...props} />;
+};
+
+/**
+ * Dialog Adapter
+ * Modal dialog container - currently passes through to Material-UI
+ */
+export const Dialog: React.FC<LegacyDialogProps> = props => {
+  useMigrationSuccess('Dialog');
+  return <MuiDialog {...props} />;
+};
+
+/**
+ * DialogActions Adapter
+ * Dialog action buttons container - currently passes through to Material-UI
+ */
+export const DialogActions: React.FC<LegacyDialogActionsProps> = props => {
+  useMigrationSuccess('DialogActions');
+  return <MuiDialogActions {...props} />;
+};
+
+/**
+ * DialogContent Adapter
+ * Dialog content area - currently passes through to Material-UI
+ */
+export const DialogContent: React.FC<LegacyDialogContentProps> = props => {
+  useMigrationSuccess('DialogContent');
+  return <MuiDialogContent {...props} />;
+};
+
+/**
+ * DialogTitle Adapter
+ * Dialog title header - currently passes through to Material-UI
+ */
+export const DialogTitle: React.FC<LegacyDialogTitleProps> = props => {
+  useMigrationSuccess('DialogTitle');
+  return <MuiDialogTitle {...props} />;
+};
+
+/**
+ * List Adapter
+ * List container - currently passes through to Material-UI
+ */
+export const List: React.FC<LegacyListProps> = props => {
+  useMigrationSuccess('List');
+  return <MuiList {...props} />;
+};
+
+/**
+ * ListItem Adapter
+ * List item container - currently passes through to Material-UI
+ */
+export const ListItem: React.FC<LegacyListItemProps> = props => {
+  useMigrationSuccess('ListItem');
+  return <MuiListItem {...props} />;
+};
+
+/**
+ * ListItemButton Adapter
+ * Clickable list item - currently passes through to Material-UI
+ */
+export const ListItemButton: React.FC<LegacyListItemButtonProps> = props => {
+  useMigrationSuccess('ListItemButton');
+  return <MuiListItemButton {...props} />;
+};
+
+/**
+ * ListItemIcon Adapter
+ * List item icon container - currently passes through to Material-UI
+ */
+export const ListItemIcon: React.FC<LegacyListItemIconProps> = props => {
+  useMigrationSuccess('ListItemIcon');
+  return <MuiListItemIcon {...props} />;
+};
+
+/**
+ * ListItemText Adapter
+ * List item text content - currently passes through to Material-UI
+ */
+export const ListItemText: React.FC<LegacyListItemTextProps> = props => {
+  useMigrationSuccess('ListItemText');
+  return <MuiListItemText {...props} />;
+};
+
+/**
+ * ListItemSecondaryAction Adapter
+ * List item secondary action area - currently passes through to Material-UI
+ */
+export const ListItemSecondaryAction: React.FC<
+  LegacyListItemSecondaryActionProps
+> = props => {
+  useMigrationSuccess('ListItemSecondaryAction');
+  return <MuiListItemSecondaryAction {...props} />;
+};
+
+/**
+ * Container Adapter
+ * Layout container with max width - currently passes through to Material-UI
+ */
+export const Container: React.FC<LegacyContainerProps> = props => {
+  useMigrationSuccess('Container');
+  return <MuiContainer {...props} />;
+};
+
+/**
+ * Grid Adapter
+ * Responsive grid layout - currently passes through to Material-UI
+ */
+export const Grid: React.FC<LegacyGridProps> = props => {
+  useMigrationSuccess('Grid');
+  return <MuiGrid {...props} />;
+};
+
+/**
+ * MenuItem Adapter
+ * Menu item for Select and Menu components - currently passes through to Material-UI
+ */
+export const MenuItem: React.FC<LegacyMenuItemProps> = props => {
+  useMigrationSuccess('MenuItem');
+  return <MuiMenuItem {...props} />;
+};
+
+/**
+ * InputLabel Adapter
+ * Label for form inputs - currently passes through to Material-UI
+ */
+export const InputLabel: React.FC<LegacyInputLabelProps> = props => {
+  useMigrationSuccess('InputLabel');
+  return <MuiInputLabel {...props} />;
+};
+
+/**
+ * FormControlLabel Adapter
+ * Label wrapper for Checkbox and Radio - currently passes through to Material-UI
+ */
+export const FormControlLabel: React.FC<
+  LegacyFormControlLabelProps
+> = props => {
+  useMigrationSuccess('FormControlLabel');
+  return <MuiFormControlLabel {...props} />;
+};
+
+/**
+ * AlertTitle Adapter
+ * Title for Alert component - currently passes through to Material-UI
+ */
+export const AlertTitle: React.FC<LegacyAlertTitleProps> = props => {
+  useMigrationSuccess('AlertTitle');
+  return <MuiAlertTitle {...props} />;
+};
+
+/**
+ * AppBar Adapter
+ * Top app bar - currently passes through to Material-UI
+ */
+export const AppBar: React.FC<LegacyAppBarProps> = props => {
+  useMigrationSuccess('AppBar');
+  return <MuiAppBar {...props} />;
+};
+
+/**
+ * Avatar Adapter
+ * User avatar - currently passes through to Material-UI
+ */
+export const Avatar: React.FC<LegacyAvatarProps> = props => {
+  useMigrationSuccess('Avatar');
+  return <MuiAvatar {...props} />;
+};
+
+/**
+ * Backdrop Adapter
+ * Overlay background - currently passes through to Material-UI
+ */
+export const Backdrop: React.FC<LegacyBackdropProps> = props => {
+  useMigrationSuccess('Backdrop');
+  return <MuiBackdrop {...props} />;
+};
+
+/**
+ * Badge Adapter
+ * Notification badge - currently passes through to Material-UI
+ */
+export const Badge: React.FC<LegacyBadgeProps> = props => {
+  useMigrationSuccess('Badge');
+  return <MuiBadge {...props} />;
+};
+
+/**
+ * CardActions Adapter
+ * Card action buttons - currently passes through to Material-UI
+ */
+export const CardActions: React.FC<LegacyCardActionsProps> = props => {
+  useMigrationSuccess('CardActions');
+  return <MuiCardActions {...props} />;
+};
+
+/**
+ * CardHeader Adapter
+ * Card header - currently passes through to Material-UI
+ */
+export const CardHeader: React.FC<LegacyCardHeaderProps> = props => {
+  useMigrationSuccess('CardHeader');
+  return <MuiCardHeader {...props} />;
+};
+
+/**
+ * Collapse Adapter
+ * Collapsible content - currently passes through to Material-UI
+ */
+export const Collapse: React.FC<LegacyCollapseProps> = props => {
+  useMigrationSuccess('Collapse');
+  return <MuiCollapse {...props} />;
+};
+
+/**
+ * Drawer Adapter
+ * Side drawer navigation - currently passes through to Material-UI
+ */
+export const Drawer: React.FC<LegacyDrawerProps> = props => {
+  useMigrationSuccess('Drawer');
+  return <MuiDrawer {...props} />;
+};
+
+/**
+ * FormGroup Adapter
+ * Form input group - currently passes through to Material-UI
+ */
+export const FormGroup: React.FC<LegacyFormGroupProps> = props => {
+  useMigrationSuccess('FormGroup');
+  return <MuiFormGroup {...props} />;
+};
+
+/**
+ * FormLabel Adapter
+ * Form label - currently passes through to Material-UI
+ */
+export const FormLabel: React.FC<LegacyFormLabelProps> = props => {
+  useMigrationSuccess('FormLabel');
+  return <MuiFormLabel {...props} />;
+};
+
+/**
+ * Popover Adapter
+ * Popover overlay - currently passes through to Material-UI
+ */
+export const Popover: React.FC<LegacyPopoverProps> = props => {
+  useMigrationSuccess('Popover');
+  return <MuiPopover {...props} />;
+};
+
+/**
+ * Rating Adapter
+ * Star rating - currently passes through to Material-UI
+ */
+export const Rating: React.FC<LegacyRatingProps> = props => {
+  useMigrationSuccess('Rating');
+  return <MuiRating {...props} />;
+};
+
+/**
+ * Slider Adapter
+ * Range slider - currently passes through to Material-UI
+ */
+export const Slider: React.FC<LegacySliderProps> = props => {
+  useMigrationSuccess('Slider');
+  return <MuiSlider {...props} />;
+};
+
+/**
+ * Snackbar Adapter
+ * Notification snackbar - currently passes through to Material-UI
+ */
+export const Snackbar: React.FC<LegacySnackbarProps> = props => {
+  useMigrationSuccess('Snackbar');
+  return <MuiSnackbar {...props} />;
+};
+
+/**
+ * Step Adapter
+ * Stepper step - currently passes through to Material-UI
+ */
+export const Step: React.FC<LegacyStepProps> = props => {
+  useMigrationSuccess('Step');
+  return <MuiStep {...props} />;
+};
+
+/**
+ * StepContent Adapter
+ * Stepper step content - currently passes through to Material-UI
+ */
+export const StepContent: React.FC<LegacyStepContentProps> = props => {
+  useMigrationSuccess('StepContent');
+  return <MuiStepContent {...props} />;
+};
+
+/**
+ * StepLabel Adapter
+ * Stepper step label - currently passes through to Material-UI
+ */
+export const StepLabel: React.FC<LegacyStepLabelProps> = props => {
+  useMigrationSuccess('StepLabel');
+  return <MuiStepLabel {...props} />;
+};
+
+/**
+ * Stepper Adapter
+ * Multi-step workflow - currently passes through to Material-UI
+ */
+export const Stepper: React.FC<LegacyStepperProps> = props => {
+  useMigrationSuccess('Stepper');
+  return <MuiStepper {...props} />;
+};
+
+/**
+ * Switch Adapter
+ * Toggle switch - currently passes through to Material-UI
+ */
+export const Switch: React.FC<LegacySwitchProps> = props => {
+  useMigrationSuccess('Switch');
+  return <MuiSwitch {...props} />;
+};
+
+/**
+ * Tab Adapter
+ * Single tab - currently passes through to Material-UI
+ */
+export const Tab: React.FC<LegacyTabProps> = props => {
+  useMigrationSuccess('Tab');
+  return <MuiTab {...props} />;
+};
+
+/**
+ * Tabs Adapter
+ * Tab navigation - currently passes through to Material-UI
+ */
+export const Tabs: React.FC<LegacyTabsProps> = props => {
+  useMigrationSuccess('Tabs');
+  return <MuiTabs {...props} />;
+};
+
+/**
+ * Toolbar Adapter
+ * Toolbar container - currently passes through to Material-UI
+ */
+export const Toolbar: React.FC<LegacyToolbarProps> = props => {
+  useMigrationSuccess('Toolbar');
+  return <MuiToolbar {...props} />;
+};
+
+// Export type definitions for TypeScript support
+export type {
+  LegacyAccordionDetailsProps,
+  LegacyAccordionProps,
+  LegacyAccordionSummaryProps,
+  LegacyAlertProps,
+  LegacyAlertProps,
+  LegacyAlertTitleProps,
+  LegacyAppBarProps,
+  LegacyAvatarProps,
+  LegacyBackdropProps,
+  LegacyBadgeProps,
+  LegacyBoxProps,
+  LegacyBoxProps,
+  LegacyButtonProps,
+  LegacyButtonProps,
+  LegacyCardActionsProps,
+  LegacyCardHeaderProps,
+  LegacyCardProps,
+  LegacyCheckboxProps,
+  LegacyCheckboxProps,
+  LegacyChipProps,
+  LegacyChipProps,
+  LegacyCircularProgressProps,
+  LegacyCircularProgressProps,
+  LegacyCollapseProps,
+  LegacyContainerProps,
+  LegacyContainerProps,
+  LegacyDialogActionsProps,
+  LegacyDialogActionsProps,
+  LegacyDialogContentProps,
+  LegacyDialogContentProps,
+  LegacyDialogProps,
+  LegacyDialogProps,
+  LegacyDialogTitleProps,
+  LegacyDialogTitleProps,
+  LegacyDividerProps,
+  LegacyDividerProps,
+  LegacyDrawerProps,
+  LegacyFormControlLabelProps,
+  LegacyFormControlProps,
+  LegacyFormGroupProps,
+  LegacyFormLabelProps,
+  LegacyGridProps,
+  LegacyIconButtonProps,
+  LegacyInputLabelProps,
+  LegacyLinearProgressProps,
+  LegacyListItemButtonProps,
+  LegacyListItemIconProps,
+  LegacyListItemProps,
+  LegacyListItemSecondaryActionProps,
+  LegacyListItemTextProps,
+  LegacyListProps,
+  LegacyMenuItemProps,
+  LegacyPaperProps,
+  LegacyPopoverProps,
+  LegacyRadioGroupProps,
+  LegacyRadioProps,
+  LegacyRatingProps,
+  LegacySelectProps,
+  LegacySliderProps,
+  LegacySnackbarProps,
+  LegacyStackProps,
+  LegacyStepContentProps,
+  LegacyStepLabelProps,
+  LegacyStepperProps,
+  LegacyStepProps,
+  LegacySwitchProps,
+  LegacyTabProps,
+  LegacyTabsProps,
+  LegacyTextFieldProps,
+  LegacyToolbarProps,
+  LegacyTooltipProps,
+  LegacyTypographyProps,
+};

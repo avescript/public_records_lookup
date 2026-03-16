@@ -1,10 +1,14 @@
 import React from 'react';
-import { createTheme,ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Timestamp } from 'firebase/firestore';
 
-import { InternalNote,RequestStatus, StoredRequest } from '../../../../services/requestService';
+import {
+  InternalNote,
+  RequestStatus,
+  StoredRequest,
+} from '../../../../services/requestService';
 import { RequestDetailsDrawer } from '../index';
 
 // Mock the request service
@@ -13,7 +17,10 @@ jest.mock('../../../../services/requestService', () => ({
   addInternalNote: jest.fn(),
 }));
 
-import { addInternalNote,updateRequestStatus } from '../../../../services/requestService';
+import {
+  addInternalNote,
+  updateRequestStatus,
+} from '../../../../services/requestService';
 
 const theme = createTheme();
 
@@ -145,7 +152,9 @@ describe('RequestDetailsDrawer', () => {
     });
 
     it('displays request description', () => {
-      expect(screen.getByText('Request for incident report from January 1st')).toBeInTheDocument();
+      expect(
+        screen.getByText('Request for incident report from January 1st')
+      ).toBeInTheDocument();
     });
 
     it('displays submission and update dates', () => {
@@ -180,7 +189,7 @@ describe('RequestDetailsDrawer', () => {
     it('allows editing status when edit button is clicked', async () => {
       const user = userEvent.setup();
       const editButton = screen.getByLabelText(/edit status/i);
-      
+
       await user.click(editButton);
 
       // Should show dropdown with current status
@@ -192,12 +201,12 @@ describe('RequestDetailsDrawer', () => {
     it('saves status change when save button is clicked', async () => {
       const user = userEvent.setup();
       const editButton = screen.getByLabelText(/edit status/i);
-      
+
       await user.click(editButton);
 
       const statusSelect = screen.getByDisplayValue('Under Review');
       await user.click(statusSelect);
-      
+
       const completedOption = screen.getByText('Completed');
       await user.click(completedOption);
 
@@ -213,7 +222,7 @@ describe('RequestDetailsDrawer', () => {
     it('cancels status editing without saving', async () => {
       const user = userEvent.setup();
       const editButton = screen.getByLabelText(/edit status/i);
-      
+
       await user.click(editButton);
 
       const cancelButton = screen.getByText('Cancel');
@@ -227,7 +236,7 @@ describe('RequestDetailsDrawer', () => {
     it('displays all available status options when editing', async () => {
       const user = userEvent.setup();
       const editButton = screen.getByLabelText(/edit status/i);
-      
+
       await user.click(editButton);
 
       const statusSelect = screen.getByDisplayValue('Under Review');
@@ -260,7 +269,9 @@ describe('RequestDetailsDrawer', () => {
     it('displays existing internal notes', () => {
       expect(screen.getByText('Internal Notes')).toBeInTheDocument();
       expect(screen.getByText('Initial review completed')).toBeInTheDocument();
-      expect(screen.getByText('Waiting for additional documentation')).toBeInTheDocument();
+      expect(
+        screen.getByText('Waiting for additional documentation')
+      ).toBeInTheDocument();
       expect(screen.getByText('John Smith')).toBeInTheDocument();
       expect(screen.getByText('Jane Doe')).toBeInTheDocument();
     });
@@ -279,8 +290,14 @@ describe('RequestDetailsDrawer', () => {
       await user.click(addButton);
 
       await waitFor(() => {
-        expect(addInternalNote).toHaveBeenCalledWith('req123', 'Follow up with requester');
-        expect(mockOnNotesAdd).toHaveBeenCalledWith('req123', 'Follow up with requester');
+        expect(addInternalNote).toHaveBeenCalledWith(
+          'req123',
+          'Follow up with requester'
+        );
+        expect(mockOnNotesAdd).toHaveBeenCalledWith(
+          'req123',
+          'Follow up with requester'
+        );
       });
 
       // Input should be cleared after successful submission
@@ -299,9 +316,11 @@ describe('RequestDetailsDrawer', () => {
     });
 
     it('handles note addition errors gracefully', async () => {
-      (addInternalNote as jest.Mock).mockRejectedValue(new Error('Add note failed'));
+      (addInternalNote as jest.Mock).mockRejectedValue(
+        new Error('Add note failed')
+      );
       const user = userEvent.setup();
-      
+
       const noteInput = screen.getByPlaceholderText('Add internal note...');
       const addButton = screen.getByText('Add Note');
 
@@ -317,7 +336,7 @@ describe('RequestDetailsDrawer', () => {
 
     it('displays message when no internal notes exist', () => {
       const requestWithoutNotes = { ...mockRequest, internalNotes: [] };
-      
+
       render(
         <TestWrapper>
           <RequestDetailsDrawer
@@ -423,7 +442,7 @@ describe('RequestDetailsDrawer', () => {
 
     it('supports keyboard navigation', async () => {
       const user = userEvent.setup();
-      
+
       // Tab through interactive elements
       await user.tab();
       expect(document.activeElement).toHaveAttribute('aria-label', 'close');

@@ -4,42 +4,48 @@
  * Material-UI dialog system with comprehensive approval controls
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
-  Box,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Chip,
+  Cancel,
+  CheckCircle,
+  Close,
+  Description,
+  Edit,
+  Info,
+  Person,
+  Schedule,
+  Warning,
+} from '@mui/icons-material';
+
+import {
   Alert,
-  CircularProgress,
+  Box,
+  Button,
   Card,
   CardContent,
-  Grid,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
+  FormControl,
+  Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
   Tooltip,
-} from '@mui/material';
+  Typography,
+} from '@/components/migration';
+
 import {
-  CheckCircle,
-  Cancel,
-  Edit,
-  Schedule,
-  Person,
-  Description,
-  Close,
-  Warning,
-  Info,
-} from '@mui/icons-material';
-import { approvalService, ApprovalWorkflow, ApprovalDecision } from '../../../services/approvalService';
+  ApprovalDecision,
+  approvalService,
+  ApprovalWorkflow,
+} from '../../../services/approvalService';
 
 interface ApprovalInterfaceProps {
   open: boolean;
@@ -59,7 +65,9 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
   const [workflow, setWorkflow] = useState<ApprovalWorkflow | null>(null);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [decision, setDecision] = useState<'approved' | 'rejected' | 'needs_revision'>('approved');
+  const [decision, setDecision] = useState<
+    'approved' | 'rejected' | 'needs_revision'
+  >('approved');
   const [reason, setReason] = useState('');
   const [comments, setComments] = useState('');
   const [reviewerName, setReviewerName] = useState('');
@@ -68,28 +76,33 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
 
   // Load workflow data when dialog opens
   useEffect(() => {
+    const loadWorkflow = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const workflowData = await approvalService.getWorkflow(
+          recordId,
+          fileName
+        );
+        setWorkflow(workflowData);
+
+        if (!workflowData) {
+          setError(
+            'Workflow not found. The document may not be submitted for approval.'
+          );
+        }
+      } catch (err) {
+        setError('Failed to load approval workflow.');
+        console.error('Error loading workflow:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (open && recordId && fileName) {
       loadWorkflow();
     }
   }, [open, recordId, fileName]);
-
-  const loadWorkflow = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const workflowData = await approvalService.getWorkflow(recordId, fileName);
-      setWorkflow(workflowData);
-      
-      if (!workflowData) {
-        setError('Workflow not found. The document may not be submitted for approval.');
-      }
-    } catch (err) {
-      setError('Failed to load approval workflow.');
-      console.error('Error loading workflow:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmitDecision = async () => {
     if (!workflow || !reviewerName.trim()) {
@@ -111,7 +124,9 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
     setError(null);
 
     try {
-      const reviewDuration = Math.round((Date.now() - reviewStartTime) / (1000 * 60)); // minutes
+      const reviewDuration = Math.round(
+        (Date.now() - reviewStartTime) / (1000 * 60)
+      ); // minutes
       const reviewerId = `reviewer_${Date.now()}`; // In real app, would come from auth
 
       const approvalDecision = await approvalService.submitDecision(
@@ -127,7 +142,7 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
 
       onDecisionSubmitted?.(approvalDecision);
       onClose();
-      
+
       // Reset form
       setDecision('approved');
       setReason('');
@@ -143,22 +158,33 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
 
   const getStatusColor = (status: ApprovalWorkflow['status']) => {
     switch (status) {
-      case 'pending_review': return 'warning';
-      case 'under_review': return 'info';
-      case 'approved': return 'success';
-      case 'rejected': return 'error';
-      case 'revision_needed': return 'secondary';
-      default: return 'default';
+      case 'pending_review':
+        return 'warning';
+      case 'under_review':
+        return 'info';
+      case 'approved':
+        return 'success';
+      case 'rejected':
+        return 'error';
+      case 'revision_needed':
+        return 'secondary';
+      default:
+        return 'default';
     }
   };
 
   const getPriorityColor = (priority: ApprovalWorkflow['priority']) => {
     switch (priority) {
-      case 'urgent': return 'error';
-      case 'high': return 'warning';
-      case 'medium': return 'info';
-      case 'low': return 'success';
-      default: return 'default';
+      case 'urgent':
+        return 'error';
+      case 'high':
+        return 'warning';
+      case 'medium':
+        return 'info';
+      case 'low':
+        return 'success';
+      default:
+        return 'default';
     }
   };
 
@@ -170,16 +196,16 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth='md'
       fullWidth
       PaperProps={{
-        sx: { minHeight: '500px' }
+        sx: { minHeight: '500px' },
       }}
     >
       <DialogTitle>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h6">Document Approval Review</Typography>
-          <IconButton onClick={onClose} size="small">
+        <Box display='flex' alignItems='center' justifyContent='space-between'>
+          <Typography variant='h6'>Document Approval Review</Typography>
+          <IconButton onClick={onClose} size='small'>
             <Close />
           </IconButton>
         </Box>
@@ -187,11 +213,16 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
 
       <DialogContent dividers>
         {loading ? (
-          <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+          <Box
+            display='flex'
+            justifyContent='center'
+            alignItems='center'
+            minHeight='200px'
+          >
             <CircularProgress />
           </Box>
         ) : error ? (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity='error' sx={{ mb: 2 }}>
             {error}
           </Alert>
         ) : workflow ? (
@@ -199,42 +230,51 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
             {/* Document Information */}
             <Card sx={{ mb: 3 }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Document Information
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
-                    <Box display="flex" alignItems="center" mb={1}>
+                    <Box display='flex' alignItems='center' mb={1}>
                       <Description sx={{ mr: 1, color: 'text.secondary' }} />
-                      <Typography><strong>File:</strong> {workflow.fileName}</Typography>
+                      <Typography>
+                        <strong>File:</strong> {workflow.fileName}
+                      </Typography>
                     </Box>
-                    <Box display="flex" alignItems="center" mb={1}>
+                    <Box display='flex' alignItems='center' mb={1}>
                       <Person sx={{ mr: 1, color: 'text.secondary' }} />
-                      <Typography><strong>Record ID:</strong> {workflow.recordId}</Typography>
+                      <Typography>
+                        <strong>Record ID:</strong> {workflow.recordId}
+                      </Typography>
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <Box display="flex" alignItems="center" mb={1}>
+                    <Box display='flex' alignItems='center' mb={1}>
                       <Schedule sx={{ mr: 1, color: 'text.secondary' }} />
-                      <Typography><strong>Submitted:</strong> {formatDate(workflow.submittedAt)}</Typography>
+                      <Typography>
+                        <strong>Submitted:</strong>{' '}
+                        {formatDate(workflow.submittedAt)}
+                      </Typography>
                     </Box>
-                    <Box display="flex" alignItems="center" mb={1}>
+                    <Box display='flex' alignItems='center' mb={1}>
                       <Edit sx={{ mr: 1, color: 'text.secondary' }} />
-                      <Typography><strong>Redactions:</strong> {workflow.totalRedactions}</Typography>
+                      <Typography>
+                        <strong>Redactions:</strong> {workflow.totalRedactions}
+                      </Typography>
                     </Box>
                   </Grid>
                 </Grid>
-                
+
                 <Box mt={2}>
-                  <Chip 
+                  <Chip
                     label={workflow.status.replace('_', ' ').toUpperCase()}
                     color={getStatusColor(workflow.status) as any}
                     sx={{ mr: 1 }}
                   />
-                  <Chip 
+                  <Chip
                     label={`${workflow.priority.toUpperCase()} PRIORITY`}
                     color={getPriorityColor(workflow.priority) as any}
-                    variant="outlined"
+                    variant='outlined'
                   />
                 </Box>
               </CardContent>
@@ -244,54 +284,74 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
             {workflow.reviewHistory.length > 0 && (
               <Card sx={{ mb: 3 }}>
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography variant='h6' gutterBottom>
                     Review History
                   </Typography>
-                  {workflow.reviewHistory.map((review: ApprovalDecision, index: number) => (
-                    <Box key={review.id} mb={2}>
-                      <Box display="flex" alignItems="center" mb={1}>
-                        {review.decision === 'approved' && <CheckCircle color="success" sx={{ mr: 1 }} />}
-                        {review.decision === 'rejected' && <Cancel color="error" sx={{ mr: 1 }} />}
-                        {review.decision === 'needs_revision' && <Warning color="warning" sx={{ mr: 1 }} />}
-                        <Typography variant="subtitle2">
-                          {review.reviewerName} - {review.decision.replace('_', ' ').toUpperCase()}
-                        </Typography>
-                        <Typography variant="caption" sx={{ ml: 'auto' }}>
-                          {formatDate(review.timestamp)}
-                        </Typography>
+                  {workflow.reviewHistory.map(
+                    (review: ApprovalDecision, index: number) => (
+                      <Box key={review.id} mb={2}>
+                        <Box display='flex' alignItems='center' mb={1}>
+                          {review.decision === 'approved' && (
+                            <CheckCircle color='success' sx={{ mr: 1 }} />
+                          )}
+                          {review.decision === 'rejected' && (
+                            <Cancel color='error' sx={{ mr: 1 }} />
+                          )}
+                          {review.decision === 'needs_revision' && (
+                            <Warning color='warning' sx={{ mr: 1 }} />
+                          )}
+                          <Typography variant='subtitle2'>
+                            {review.reviewerName} -{' '}
+                            {review.decision.replace('_', ' ').toUpperCase()}
+                          </Typography>
+                          <Typography variant='caption' sx={{ ml: 'auto' }}>
+                            {formatDate(review.timestamp)}
+                          </Typography>
+                        </Box>
+                        {review.reason && (
+                          <Typography
+                            variant='body2'
+                            color='text.secondary'
+                            sx={{ ml: 4 }}
+                          >
+                            <strong>Reason:</strong> {review.reason}
+                          </Typography>
+                        )}
+                        {review.comments && (
+                          <Typography
+                            variant='body2'
+                            color='text.secondary'
+                            sx={{ ml: 4 }}
+                          >
+                            <strong>Comments:</strong> {review.comments}
+                          </Typography>
+                        )}
+                        {index < workflow.reviewHistory.length - 1 && (
+                          <Divider sx={{ mt: 2 }} />
+                        )}
                       </Box>
-                      {review.reason && (
-                        <Typography variant="body2" color="text.secondary" sx={{ ml: 4 }}>
-                          <strong>Reason:</strong> {review.reason}
-                        </Typography>
-                      )}
-                      {review.comments && (
-                        <Typography variant="body2" color="text.secondary" sx={{ ml: 4 }}>
-                          <strong>Comments:</strong> {review.comments}
-                        </Typography>
-                      )}
-                      {index < workflow.reviewHistory.length - 1 && <Divider sx={{ mt: 2 }} />}
-                    </Box>
-                  ))}
+                    )
+                  )}
                 </CardContent>
               </Card>
             )}
 
             {/* Decision Form */}
-            {workflow.status === 'under_review' || workflow.status === 'pending_review' ? (
+            {workflow.status === 'under_review' ||
+            workflow.status === 'pending_review' ? (
               <Card>
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography variant='h6' gutterBottom>
                     Submit Review Decision
                   </Typography>
-                  
+
                   <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
-                        label="Reviewer Name"
+                        label='Reviewer Name'
                         value={reviewerName}
-                        onChange={(e) => setReviewerName(e.target.value)}
+                        onChange={e => setReviewerName(e.target.value)}
                         required
                         sx={{ mb: 2 }}
                       />
@@ -301,12 +361,14 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
                         <InputLabel>Decision</InputLabel>
                         <Select
                           value={decision}
-                          onChange={(e) => setDecision(e.target.value as any)}
-                          label="Decision"
+                          onChange={e => setDecision(e.target.value as any)}
+                          label='Decision'
                         >
-                          <MenuItem value="approved">Approve</MenuItem>
-                          <MenuItem value="rejected">Reject</MenuItem>
-                          <MenuItem value="needs_revision">Needs Revision</MenuItem>
+                          <MenuItem value='approved'>Approve</MenuItem>
+                          <MenuItem value='rejected'>Reject</MenuItem>
+                          <MenuItem value='needs_revision'>
+                            Needs Revision
+                          </MenuItem>
                         </Select>
                       </FormControl>
                     </Grid>
@@ -315,63 +377,62 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
                   {decision === 'rejected' && (
                     <TextField
                       fullWidth
-                      label="Reason for Rejection"
+                      label='Reason for Rejection'
                       value={reason}
-                      onChange={(e) => setReason(e.target.value)}
+                      onChange={e => setReason(e.target.value)}
                       required
                       multiline
                       rows={2}
                       sx={{ mb: 2 }}
-                      helperText="Please explain why this document is being rejected"
+                      helperText='Please explain why this document is being rejected'
                     />
                   )}
 
                   {decision === 'needs_revision' && (
                     <TextField
                       fullWidth
-                      label="Revision Comments"
+                      label='Revision Comments'
                       value={comments}
-                      onChange={(e) => setComments(e.target.value)}
+                      onChange={e => setComments(e.target.value)}
                       required
                       multiline
                       rows={3}
                       sx={{ mb: 2 }}
-                      helperText="Please specify what changes are needed"
+                      helperText='Please specify what changes are needed'
                     />
                   )}
 
                   {decision === 'approved' && (
                     <TextField
                       fullWidth
-                      label="Additional Comments (Optional)"
+                      label='Additional Comments (Optional)'
                       value={comments}
-                      onChange={(e) => setComments(e.target.value)}
+                      onChange={e => setComments(e.target.value)}
                       multiline
                       rows={2}
                       sx={{ mb: 2 }}
-                      helperText="Any additional notes about the approval"
+                      helperText='Any additional notes about the approval'
                     />
                   )}
 
-                  <Alert severity="info" sx={{ mt: 2 }}>
-                    <Typography variant="body2">
+                  <Alert severity='info' sx={{ mt: 2 }}>
+                    <Typography variant='body2'>
                       <Info sx={{ mr: 1, verticalAlign: 'middle' }} />
-                      Please carefully review all redactions before making your decision. 
-                      This action cannot be undone.
+                      Please carefully review all redactions before making your
+                      decision. This action cannot be undone.
                     </Typography>
                   </Alert>
                 </CardContent>
               </Card>
             ) : (
-              <Alert severity="success">
-                This document has already been reviewed and {workflow.status.replace('_', ' ')}.
+              <Alert severity='success'>
+                This document has already been reviewed and{' '}
+                {workflow.status.replace('_', ' ')}.
               </Alert>
             )}
           </Box>
         ) : (
-          <Alert severity="warning">
-            No workflow found for this document.
-          </Alert>
+          <Alert severity='warning'>No workflow found for this document.</Alert>
         )}
       </DialogContent>
 
@@ -379,16 +440,20 @@ const ApprovalInterface: React.FC<ApprovalInterfaceProps> = ({
         <Button onClick={onClose} disabled={submitting}>
           Cancel
         </Button>
-        {workflow && (workflow.status === 'under_review' || workflow.status === 'pending_review') && (
-          <Button
-            onClick={handleSubmitDecision}
-            variant="contained"
-            disabled={submitting || !reviewerName.trim()}
-            startIcon={submitting ? <CircularProgress size={20} /> : undefined}
-          >
-            {submitting ? 'Submitting...' : 'Submit Decision'}
-          </Button>
-        )}
+        {workflow &&
+          (workflow.status === 'under_review' ||
+            workflow.status === 'pending_review') && (
+            <Button
+              onClick={handleSubmitDecision}
+              variant='contained'
+              disabled={submitting || !reviewerName.trim()}
+              startIcon={
+                submitting ? <CircularProgress size={20} /> : undefined
+              }
+            >
+              {submitting ? 'Submitting...' : 'Submit Decision'}
+            </Button>
+          )}
       </DialogActions>
     </Dialog>
   );

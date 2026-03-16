@@ -48,7 +48,7 @@ export const Button = ({
       {loading ? (
         <CircularProgress
           size={size === 'sm' ? 16 : size === 'lg' ? 24 : 20}
-          color="inherit"
+          color='inherit'
         />
       ) : (
         children

@@ -56,7 +56,7 @@ describe('PublicLayout', () => {
 
     render(
       <PublicLayout>
-        <div data-testid="test-content">Test Content</div>
+        <div data-testid='test-content'>Test Content</div>
       </PublicLayout>
     );
 
@@ -171,7 +171,7 @@ describe('PublicLayout', () => {
 
     render(
       <PublicLayout>
-        <div data-testid="content">Test Content</div>
+        <div data-testid='content'>Test Content</div>
       </PublicLayout>
     );
 

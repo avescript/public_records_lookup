@@ -23,7 +23,7 @@ describe('DateRangePicker', () => {
     });
 
     it('renders with custom label', () => {
-      render(<DateRangePicker {...defaultProps} label="Request Timeframe" />);
+      render(<DateRangePicker {...defaultProps} label='Request Timeframe' />);
 
       expect(screen.getByText('Request Timeframe')).toBeInTheDocument();
     });

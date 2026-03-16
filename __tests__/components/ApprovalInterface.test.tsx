@@ -9,7 +9,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ApprovalInterface from '../../src/components/staff/ApprovalInterface';
-import { approvalService, ApprovalWorkflow, ApprovalDecision } from '../../src/services/approvalService';
+import {
+  approvalService,
+  ApprovalWorkflow,
+  ApprovalDecision,
+} from '../../src/services/approvalService';
 
 // Mock the approval service
 jest.mock('../../src/services/approvalService', () => ({
@@ -21,16 +25,14 @@ jest.mock('../../src/services/approvalService', () => ({
   ApprovalDecision: {},
 }));
 
-const mockedApprovalService = approvalService as jest.Mocked<typeof approvalService>;
+const mockedApprovalService = approvalService as jest.Mocked<
+  typeof approvalService
+>;
 
 const theme = createTheme();
 
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(
-    <ThemeProvider theme={theme}>
-      {component}
-    </ThemeProvider>
-  );
+  return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
 };
 
 const mockWorkflow: ApprovalWorkflow = {
@@ -74,7 +76,7 @@ describe('ApprovalInterface', () => {
   describe('Component Rendering', () => {
     it('should render dialog when open', () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       expect(screen.getByText('Document Approval Review')).toBeInTheDocument();
       expect(screen.getByText('test-document.pdf')).toBeInTheDocument();
       expect(screen.getByText('test-record-123')).toBeInTheDocument();
@@ -82,17 +84,20 @@ describe('ApprovalInterface', () => {
 
     it('should not render when closed', () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} open={false} />);
-      
-      expect(screen.queryByText('Document Approval Review')).not.toBeInTheDocument();
+
+      expect(
+        screen.queryByText('Document Approval Review')
+      ).not.toBeInTheDocument();
     });
 
     it('should show loading state initially', () => {
       mockedApprovalService.getWorkflow.mockImplementation(
-        () => new Promise(resolve => setTimeout(() => resolve(mockWorkflow), 100))
+        () =>
+          new Promise(resolve => setTimeout(() => resolve(mockWorkflow), 100))
       );
 
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
   });
@@ -100,7 +105,7 @@ describe('ApprovalInterface', () => {
   describe('Workflow Information Display', () => {
     it('should display workflow details correctly', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('test-document.pdf')).toBeInTheDocument();
         expect(screen.getByText('test-record-123')).toBeInTheDocument();
@@ -112,7 +117,7 @@ describe('ApprovalInterface', () => {
 
     it('should format dates correctly', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
         // Check that date is formatted (exact format may vary by locale)
         expect(screen.getByText(/1\/15\/2024/)).toBeInTheDocument();
@@ -120,15 +125,15 @@ describe('ApprovalInterface', () => {
     });
 
     it('should display priority and status chips with correct colors', async () => {
-      const urgentWorkflow = { 
-        ...mockWorkflow, 
+      const urgentWorkflow = {
+        ...mockWorkflow,
         priority: 'urgent' as const,
-        status: 'approved' as const
+        status: 'approved' as const,
       };
       mockedApprovalService.getWorkflow.mockResolvedValue(urgentWorkflow);
 
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('APPROVED')).toBeInTheDocument();
         expect(screen.getByText('URGENT PRIORITY')).toBeInTheDocument();
@@ -158,10 +163,12 @@ describe('ApprovalInterface', () => {
       mockedApprovalService.getWorkflow.mockResolvedValue(workflowWithHistory);
 
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Review History')).toBeInTheDocument();
-        expect(screen.getByText('Jane Smith - NEEDS REVISION')).toBeInTheDocument();
+        expect(
+          screen.getByText('Jane Smith - NEEDS REVISION')
+        ).toBeInTheDocument();
         expect(screen.getByText('Missing redactions')).toBeInTheDocument();
         expect(screen.getByText('Need to redact SSNs')).toBeInTheDocument();
       });
@@ -169,7 +176,7 @@ describe('ApprovalInterface', () => {
 
     it('should not show review history section when empty', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
         expect(screen.queryByText('Review History')).not.toBeInTheDocument();
       });
@@ -179,7 +186,7 @@ describe('ApprovalInterface', () => {
   describe('Decision Form', () => {
     it('should show decision form for documents under review', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Submit Review Decision')).toBeInTheDocument();
         expect(screen.getByLabelText('Reviewer Name')).toBeInTheDocument();
@@ -189,46 +196,55 @@ describe('ApprovalInterface', () => {
     });
 
     it('should not show decision form for completed workflows', async () => {
-      const completedWorkflow = { ...mockWorkflow, status: 'approved' as const };
+      const completedWorkflow = {
+        ...mockWorkflow,
+        status: 'approved' as const,
+      };
       mockedApprovalService.getWorkflow.mockResolvedValue(completedWorkflow);
 
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
-        expect(screen.queryByText('Submit Review Decision')).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('Submit Review Decision')
+        ).not.toBeInTheDocument();
         expect(screen.getByText(/already been reviewed/)).toBeInTheDocument();
       });
     });
 
     it('should show reason field when rejection is selected', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         const decisionSelect = screen.getByLabelText('Decision');
         await userEvent.click(decisionSelect);
         await userEvent.click(screen.getByText('Reject'));
-        
-        expect(screen.getByLabelText('Reason for Rejection')).toBeInTheDocument();
+
+        expect(
+          screen.getByLabelText('Reason for Rejection')
+        ).toBeInTheDocument();
       });
     });
 
     it('should show revision comments field when needs revision is selected', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         const decisionSelect = screen.getByLabelText('Decision');
         await userEvent.click(decisionSelect);
         await userEvent.click(screen.getByText('Needs Revision'));
-        
+
         expect(screen.getByLabelText('Revision Comments')).toBeInTheDocument();
       });
     });
 
     it('should show optional comments field for approval', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
-        expect(screen.getByLabelText('Additional Comments (Optional)')).toBeInTheDocument();
+        expect(
+          screen.getByLabelText('Additional Comments (Optional)')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -236,16 +252,18 @@ describe('ApprovalInterface', () => {
   describe('Form Submission', () => {
     it('should submit approval decision successfully', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         // Fill in reviewer name
         const reviewerInput = screen.getByLabelText('Reviewer Name');
         await userEvent.type(reviewerInput, 'John Doe');
-        
+
         // Add optional comments
-        const commentsInput = screen.getByLabelText('Additional Comments (Optional)');
+        const commentsInput = screen.getByLabelText(
+          'Additional Comments (Optional)'
+        );
         await userEvent.type(commentsInput, 'Looks good to me');
-        
+
         // Submit
         const submitButton = screen.getByText('Submit Decision');
         await userEvent.click(submitButton);
@@ -262,27 +280,29 @@ describe('ApprovalInterface', () => {
           'Looks good to me',
           expect.any(Number) // reviewDuration
         );
-        expect(defaultProps.onDecisionSubmitted).toHaveBeenCalledWith(mockDecision);
+        expect(defaultProps.onDecisionSubmitted).toHaveBeenCalledWith(
+          mockDecision
+        );
         expect(defaultProps.onClose).toHaveBeenCalled();
       });
     });
 
     it('should submit rejection with reason', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         // Change to rejection
         const decisionSelect = screen.getByLabelText('Decision');
         await userEvent.click(decisionSelect);
         await userEvent.click(screen.getByText('Reject'));
-        
+
         // Fill in required fields
         const reviewerInput = screen.getByLabelText('Reviewer Name');
         await userEvent.type(reviewerInput, 'Jane Smith');
-        
+
         const reasonInput = screen.getByLabelText('Reason for Rejection');
         await userEvent.type(reasonInput, 'Contains sensitive data');
-        
+
         // Submit
         const submitButton = screen.getByText('Submit Decision');
         await userEvent.click(submitButton);
@@ -304,70 +324,78 @@ describe('ApprovalInterface', () => {
 
     it('should require reviewer name', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         const submitButton = screen.getByText('Submit Decision');
         expect(submitButton).toBeDisabled();
-        
+
         // Add reviewer name
         const reviewerInput = screen.getByLabelText('Reviewer Name');
         await userEvent.type(reviewerInput, 'John Doe');
-        
+
         expect(submitButton).not.toBeDisabled();
       });
     });
 
     it('should show error when rejection submitted without reason', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         // Change to rejection
         const decisionSelect = screen.getByLabelText('Decision');
         await userEvent.click(decisionSelect);
         await userEvent.click(screen.getByText('Reject'));
-        
+
         // Fill in reviewer name but not reason
         const reviewerInput = screen.getByLabelText('Reviewer Name');
         await userEvent.type(reviewerInput, 'Jane Smith');
-        
+
         // Try to submit
         const submitButton = screen.getByText('Submit Decision');
         await userEvent.click(submitButton);
-        
-        expect(screen.getByText('Please provide a reason for rejection.')).toBeInTheDocument();
+
+        expect(
+          screen.getByText('Please provide a reason for rejection.')
+        ).toBeInTheDocument();
       });
     });
 
     it('should show error when revision submitted without comments', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         // Change to needs revision
         const decisionSelect = screen.getByLabelText('Decision');
         await userEvent.click(decisionSelect);
         await userEvent.click(screen.getByText('Needs Revision'));
-        
+
         // Fill in reviewer name but not comments
         const reviewerInput = screen.getByLabelText('Reviewer Name');
         await userEvent.type(reviewerInput, 'Jane Smith');
-        
+
         // Try to submit
         const submitButton = screen.getByText('Submit Decision');
         await userEvent.click(submitButton);
-        
-        expect(screen.getByText('Please provide comments for revision requirements.')).toBeInTheDocument();
+
+        expect(
+          screen.getByText('Please provide comments for revision requirements.')
+        ).toBeInTheDocument();
       });
     });
   });
 
   describe('Error Handling', () => {
     it('should handle workflow loading errors', async () => {
-      mockedApprovalService.getWorkflow.mockRejectedValue(new Error('Network error'));
+      mockedApprovalService.getWorkflow.mockRejectedValue(
+        new Error('Network error')
+      );
 
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
-        expect(screen.getByText('Failed to load approval workflow.')).toBeInTheDocument();
+        expect(
+          screen.getByText('Failed to load approval workflow.')
+        ).toBeInTheDocument();
       });
     });
 
@@ -375,44 +403,53 @@ describe('ApprovalInterface', () => {
       mockedApprovalService.getWorkflow.mockResolvedValue(null);
 
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
-        expect(screen.getByText('Workflow not found. The document may not be submitted for approval.')).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'Workflow not found. The document may not be submitted for approval.'
+          )
+        ).toBeInTheDocument();
       });
     });
 
     it('should handle decision submission errors', async () => {
-      mockedApprovalService.submitDecision.mockRejectedValue(new Error('Submission failed'));
+      mockedApprovalService.submitDecision.mockRejectedValue(
+        new Error('Submission failed')
+      );
 
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         const reviewerInput = screen.getByLabelText('Reviewer Name');
         await userEvent.type(reviewerInput, 'John Doe');
-        
+
         const submitButton = screen.getByText('Submit Decision');
         await userEvent.click(submitButton);
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Failed to submit decision. Please try again.')).toBeInTheDocument();
+        expect(
+          screen.getByText('Failed to submit decision. Please try again.')
+        ).toBeInTheDocument();
       });
     });
 
     it('should show loading state during submission', async () => {
       mockedApprovalService.submitDecision.mockImplementation(
-        () => new Promise(resolve => setTimeout(() => resolve(mockDecision), 100))
+        () =>
+          new Promise(resolve => setTimeout(() => resolve(mockDecision), 100))
       );
 
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         const reviewerInput = screen.getByLabelText('Reviewer Name');
         await userEvent.type(reviewerInput, 'John Doe');
-        
+
         const submitButton = screen.getByText('Submit Decision');
         await userEvent.click(submitButton);
-        
+
         expect(screen.getByText('Submitting...')).toBeInTheDocument();
         expect(submitButton).toBeDisabled();
       });
@@ -422,27 +459,29 @@ describe('ApprovalInterface', () => {
   describe('Dialog Controls', () => {
     it('should close dialog when close button is clicked', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       const closeButton = screen.getAllByRole('button', { name: /close/i })[0];
       await userEvent.click(closeButton);
-      
+
       expect(defaultProps.onClose).toHaveBeenCalled();
     });
 
     it('should close dialog when cancel is clicked', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         const cancelButton = screen.getByText('Cancel');
         await userEvent.click(cancelButton);
-        
+
         expect(defaultProps.onClose).toHaveBeenCalled();
       });
     });
 
     it('should reset form when dialog is reopened', async () => {
-      const { rerender } = renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+      const { rerender } = renderWithTheme(
+        <ApprovalInterface {...defaultProps} />
+      );
+
       await waitFor(async () => {
         const reviewerInput = screen.getByLabelText('Reviewer Name');
         await userEvent.type(reviewerInput, 'John Doe');
@@ -451,9 +490,11 @@ describe('ApprovalInterface', () => {
       // Close and reopen
       rerender(<ApprovalInterface {...defaultProps} open={false} />);
       rerender(<ApprovalInterface {...defaultProps} open={true} />);
-      
+
       await waitFor(() => {
-        const reviewerInput = screen.getByLabelText('Reviewer Name') as HTMLInputElement;
+        const reviewerInput = screen.getByLabelText(
+          'Reviewer Name'
+        ) as HTMLInputElement;
         expect(reviewerInput.value).toBe('');
       });
     });
@@ -462,7 +503,7 @@ describe('ApprovalInterface', () => {
   describe('Accessibility', () => {
     it('should have proper ARIA labels', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
         expect(screen.getByLabelText('Reviewer Name')).toBeInTheDocument();
@@ -472,7 +513,7 @@ describe('ApprovalInterface', () => {
 
     it('should support keyboard navigation', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
         const reviewerInput = screen.getByLabelText('Reviewer Name');
         reviewerInput.focus();
@@ -484,7 +525,7 @@ describe('ApprovalInterface', () => {
   describe('Integration with Service', () => {
     it('should load workflow on mount', async () => {
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(() => {
         expect(mockedApprovalService.getWorkflow).toHaveBeenCalledWith(
           'test-record-123',
@@ -496,11 +537,11 @@ describe('ApprovalInterface', () => {
     it('should calculate review duration correctly', async () => {
       const startTime = Date.now();
       renderWithTheme(<ApprovalInterface {...defaultProps} />);
-      
+
       await waitFor(async () => {
         const reviewerInput = screen.getByLabelText('Reviewer Name');
         await userEvent.type(reviewerInput, 'John Doe');
-        
+
         const submitButton = screen.getByText('Submit Decision');
         await userEvent.click(submitButton);
       });

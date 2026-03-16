@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography } from '@/components/migration';
 
 import { PublicLayout } from '../components/layouts/PublicLayout';
 import { RequestForm } from '../components/request/RequestForm';
@@ -7,17 +7,17 @@ export default function HomePage() {
   return (
     <PublicLayout>
       <Box sx={{ py: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom align="center">
+        <Typography variant='h3' component='h1' gutterBottom align='center'>
           Public Records Request
         </Typography>
         <Typography
-          variant="body1"
+          variant='body1'
           paragraph
-          align="center"
-          color="text.secondary"
+          align='center'
+          color='text.secondary'
         >
-          Submit a request for public records. Fill out the form below and we'll
-          process your request.
+          Submit a request for public records. Fill out the form below and
+          we&rsquo;ll process your request.
         </Typography>
         <RequestForm />
       </Box>

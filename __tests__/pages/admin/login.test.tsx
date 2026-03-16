@@ -6,7 +6,8 @@ import LoginPage from '../../../src/app/admin/login/page';
 
 // Helper functions for Material-UI form fields
 const getEmailInput = () => screen.getByRole('textbox', { name: /email/i });
-const getPasswordInput = () => document.querySelector('input[type="password"]') as HTMLInputElement;
+const getPasswordInput = () =>
+  document.querySelector('input[type="password"]') as HTMLInputElement;
 
 // Mock window.location
 Object.defineProperty(window, 'location', {
@@ -43,11 +44,11 @@ describe('LoginPage', () => {
     expect(
       screen.getByText('Access the Public Records Management System')
     ).toBeInTheDocument();
-    
+
     // Use helper functions for Material-UI form fields
     expect(getEmailInput()).toBeInTheDocument();
     expect(getPasswordInput()).toBeInTheDocument();
-    
+
     expect(
       screen.getByRole('button', { name: /sign in/i })
     ).toBeInTheDocument();

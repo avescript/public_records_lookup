@@ -5,10 +5,20 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { RedactionManagement } from '../../src/components/RedactionManagement';
-import { RedactionService, ManualRedaction, RedactionVersion } from '../../src/services/redactionService';
+import {
+  RedactionService,
+  ManualRedaction,
+  RedactionVersion,
+} from '../../src/services/redactionService';
 
 // Mock the redactionService
 jest.mock('../../src/services/redactionService', () => ({
@@ -77,20 +87,23 @@ describe('RedactionManagement', () => {
       versionId: 'v2',
       recordId: 'test-record-1',
       fileName: 'test.pdf',
-      redactions: [...mockRedactions, {
-        id: '3',
-        recordId: 'test-record-1',
-        fileName: 'test.pdf',
-        pageNumber: 2,
-        x: 50,
-        y: 100,
-        width: 120,
-        height: 30,
-        createdAt: '2024-01-02T10:00:00Z',
-        createdBy: 'test-user',
-        reason: 'DOB',
-        type: 'manual',
-      }],
+      redactions: [
+        ...mockRedactions,
+        {
+          id: '3',
+          recordId: 'test-record-1',
+          fileName: 'test.pdf',
+          pageNumber: 2,
+          x: 50,
+          y: 100,
+          width: 120,
+          height: 30,
+          createdAt: '2024-01-02T10:00:00Z',
+          createdBy: 'test-user',
+          reason: 'DOB',
+          type: 'manual',
+        },
+      ],
       timestamp: '2024-01-02T10:00:00Z',
       status: 'saved',
       createdBy: 'test-user',
@@ -140,7 +153,9 @@ describe('RedactionManagement', () => {
     });
 
     test('should show loading state when data is being fetched', async () => {
-      mockRedactionService.getRedactionSummary.mockImplementation(() => new Promise(() => {}));
+      mockRedactionService.getRedactionSummary.mockImplementation(
+        () => new Promise(() => {})
+      );
 
       render(<RedactionManagement {...defaultProps} />);
 
@@ -164,7 +179,7 @@ describe('RedactionManagement', () => {
         currentVersion: 'v1',
         versions: mockVersions,
       });
-      
+
       const mockSavedVersion: RedactionVersion = {
         versionId: 'v3',
         recordId: 'test-record-1',
@@ -175,7 +190,7 @@ describe('RedactionManagement', () => {
         createdBy: 'test-user',
         notes: 'Test notes',
       };
-      
+
       mockRedactionService.saveVersion.mockResolvedValue(mockSavedVersion);
 
       render(<RedactionManagement {...defaultProps} />);
@@ -192,7 +207,9 @@ describe('RedactionManagement', () => {
 
       // Wait for save dialog to open and find the actual Save Version button
       await waitFor(() => {
-        expect(screen.getByRole('dialog', { name: /Save Current Version/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('dialog', { name: /Save Current Version/i })
+        ).toBeInTheDocument();
       });
 
       const saveVersionButton = screen.getByText('Save Version');
@@ -222,7 +239,12 @@ describe('RedactionManagement', () => {
       mockRedactionService.loadVersion.mockResolvedValue(mockRedactions);
       const mockOnVersionLoad = jest.fn();
 
-      render(<RedactionManagement {...defaultProps} onVersionLoad={mockOnVersionLoad} />);
+      render(
+        <RedactionManagement
+          {...defaultProps}
+          onVersionLoad={mockOnVersionLoad}
+        />
+      );
 
       const manageButton = screen.getByText('Manage Redactions');
       fireEvent.click(manageButton);
@@ -256,8 +278,12 @@ describe('RedactionManagement', () => {
 
   describe('Error Handling', () => {
     test('should handle data loading errors', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      mockRedactionService.getRedactionSummary.mockRejectedValue(new Error('Failed to load data'));
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      mockRedactionService.getRedactionSummary.mockRejectedValue(
+        new Error('Failed to load data')
+      );
 
       render(<RedactionManagement {...defaultProps} />);
 
@@ -265,14 +291,18 @@ describe('RedactionManagement', () => {
       fireEvent.click(manageButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Failed to load redaction data')).toBeInTheDocument();
+        expect(
+          screen.getByText('Failed to load redaction data')
+        ).toBeInTheDocument();
       });
 
       consoleSpy.mockRestore();
     });
 
     test('should handle save version errors', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
       mockRedactionService.getRedactionSummary.mockResolvedValue({
         recordId: 'test-record-1',
         totalRedactions: 2,
@@ -282,7 +312,9 @@ describe('RedactionManagement', () => {
         currentVersion: 'v1',
         versions: mockVersions,
       });
-      mockRedactionService.saveVersion.mockRejectedValue(new Error('Failed to save version'));
+      mockRedactionService.saveVersion.mockRejectedValue(
+        new Error('Failed to save version')
+      );
 
       render(<RedactionManagement {...defaultProps} />);
 
@@ -298,7 +330,9 @@ describe('RedactionManagement', () => {
 
       // Wait for save dialog to open and find the actual Save Version button
       await waitFor(() => {
-        expect(screen.getByRole('dialog', { name: /Save Current Version/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('dialog', { name: /Save Current Version/i })
+        ).toBeInTheDocument();
       });
 
       const saveVersionButton = screen.getByText('Save Version');
@@ -316,7 +350,9 @@ describe('RedactionManagement', () => {
     test('should have accessible manage button', () => {
       render(<RedactionManagement {...defaultProps} />);
 
-      const manageButton = screen.getByRole('button', { name: /manage redactions/i });
+      const manageButton = screen.getByRole('button', {
+        name: /manage redactions/i,
+      });
       expect(manageButton).toBeInTheDocument();
       expect(manageButton).toHaveAttribute('aria-label');
     });
@@ -334,8 +370,10 @@ describe('RedactionManagement', () => {
 
       render(<RedactionManagement {...defaultProps} />);
 
-      const manageButton = screen.getByRole('button', { name: /manage redactions/i });
-      
+      const manageButton = screen.getByRole('button', {
+        name: /manage redactions/i,
+      });
+
       // Focus should be manageable
       act(() => {
         manageButton.focus();

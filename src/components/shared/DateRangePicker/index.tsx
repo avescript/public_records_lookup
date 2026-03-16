@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import type { SelectChangeEvent } from '@mui/material';
 import {
   Box,
   FormControl,
@@ -8,11 +9,11 @@ import {
   Grid,
   InputLabel,
   MenuItem,
-  Select,
   TextField,
   Typography,
 } from '@mui/material';
-import { SelectChangeEvent } from '@mui/material/Select';
+
+import { Select } from '@/components/migration';
 
 export interface DateRange {
   startDate: string;
@@ -137,7 +138,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
 
   return (
     <Box>
-      <Typography variant="subtitle2" gutterBottom>
+      <Typography variant='subtitle2' gutterBottom>
         {label}
       </Typography>
 
@@ -145,10 +146,10 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         <InputLabel>Time Period</InputLabel>
         <Select
           value={preset}
-          label="Time Period"
+          label='Time Period'
           onChange={handlePresetChange}
           disabled={disabled}
-          data-testid="date-range-preset"
+          data-testid='date-range-preset'
         >
           {DATE_PRESETS.map(presetOption => (
             <MenuItem key={presetOption.value} value={presetOption.value}>
@@ -163,8 +164,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Start Date"
-              type="date"
+              label='Start Date'
+              type='date'
               value={customStartDate}
               onChange={handleStartDateChange}
               fullWidth
@@ -175,13 +176,13 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
               inputProps={{
                 max: customEndDate || undefined,
               }}
-              data-testid="start-date-input"
+              data-testid='start-date-input'
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="End Date"
-              type="date"
+              label='End Date'
+              type='date'
               value={customEndDate}
               onChange={handleEndDateChange}
               fullWidth
@@ -193,7 +194,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                 min: customStartDate || undefined,
                 max: new Date().toISOString().split('T')[0], // Can't select future dates
               }}
-              data-testid="end-date-input"
+              data-testid='end-date-input'
             />
           </Grid>
         </Grid>
@@ -201,7 +202,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
 
       {!showCustomFields && (customStartDate || customEndDate) && (
         <Box sx={{ mt: 1, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant='body2' color='textSecondary'>
             Selected range: {customStartDate} to {customEndDate}
           </Typography>
         </Box>

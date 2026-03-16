@@ -40,7 +40,6 @@ export interface ViewportTransform {
  * Coordinate transformation utilities class
  */
 export class CoordinateTransformer {
-  
   /**
    * Convert PDF coordinates to canvas coordinates
    * PDF coordinates are typically in points (72 DPI), with origin at bottom-left
@@ -51,7 +50,12 @@ export class CoordinateTransformer {
     pdfDimensions: PDFPageDimensions,
     canvasDimensions: CanvasDimensions
   ): CoordinateRect {
-    const { width: pdfWidth, height: pdfHeight, scale, rotation } = pdfDimensions;
+    const {
+      width: pdfWidth,
+      height: pdfHeight,
+      scale,
+      rotation,
+    } = pdfDimensions;
     const { width: canvasWidth, height: canvasHeight } = canvasDimensions;
 
     // Calculate scale factors
@@ -59,7 +63,12 @@ export class CoordinateTransformer {
     const scaleY = (canvasHeight * scale) / pdfHeight;
 
     // Convert coordinates based on rotation
-    let transformedCoords = this.applyRotationTransform(pdfCoords, rotation, pdfWidth, pdfHeight);
+    let transformedCoords = this.applyRotationTransform(
+      pdfCoords,
+      rotation,
+      pdfWidth,
+      pdfHeight
+    );
 
     // Convert from PDF coordinate system (bottom-left origin) to canvas (top-left origin)
     const canvasCoords: CoordinateRect = {
@@ -82,7 +91,12 @@ export class CoordinateTransformer {
     pdfDimensions: PDFPageDimensions,
     canvasDimensions: CanvasDimensions
   ): CoordinateRect {
-    const { width: pdfWidth, height: pdfHeight, scale, rotation } = pdfDimensions;
+    const {
+      width: pdfWidth,
+      height: pdfHeight,
+      scale,
+      rotation,
+    } = pdfDimensions;
     const { width: canvasWidth, height: canvasHeight } = canvasDimensions;
 
     // Calculate scale factors
@@ -92,13 +106,18 @@ export class CoordinateTransformer {
     // Convert from canvas coordinate system (top-left origin) to PDF (bottom-left origin)
     let pdfCoords: CoordinateRect = {
       x: canvasCoords.x * scaleX,
-      y: pdfHeight - (canvasCoords.y * scaleY) - (canvasCoords.height * scaleY),
+      y: pdfHeight - canvasCoords.y * scaleY - canvasCoords.height * scaleY,
       width: canvasCoords.width * scaleX,
       height: canvasCoords.height * scaleY,
     };
 
     // Apply inverse rotation transform
-    pdfCoords = this.applyInverseRotationTransform(pdfCoords, rotation, pdfWidth, pdfHeight);
+    pdfCoords = this.applyInverseRotationTransform(
+      pdfCoords,
+      rotation,
+      pdfWidth,
+      pdfHeight
+    );
 
     return pdfCoords;
   }
@@ -159,7 +178,12 @@ export class CoordinateTransformer {
   ): CoordinateRect {
     // Inverse rotation is the opposite direction
     const inverseRotation = (360 - rotation) % 360;
-    return this.applyRotationTransform(coords, inverseRotation, pageWidth, pageHeight);
+    return this.applyRotationTransform(
+      coords,
+      inverseRotation,
+      pageWidth,
+      pageHeight
+    );
   }
 
   /**
@@ -191,8 +215,8 @@ export class CoordinateTransformer {
     const scaleY = rect.height / canvasElement.height;
 
     return {
-      x: (canvasCoords.x * scaleX) + rect.left,
-      y: (canvasCoords.y * scaleY) + rect.top,
+      x: canvasCoords.x * scaleX + rect.left,
+      y: canvasCoords.y * scaleY + rect.top,
     };
   }
 
@@ -205,11 +229,18 @@ export class CoordinateTransformer {
     viewportHeight: number,
     fitMode: 'width' | 'height' | 'page' = 'width'
   ): ViewportTransform {
-    const { width: pdfWidth, height: pdfHeight, scale, rotation } = pdfDimensions;
+    const {
+      width: pdfWidth,
+      height: pdfHeight,
+      scale,
+      rotation,
+    } = pdfDimensions;
 
     // Adjust dimensions for rotation
-    const rotatedWidth = (rotation === 90 || rotation === 270) ? pdfHeight : pdfWidth;
-    const rotatedHeight = (rotation === 90 || rotation === 270) ? pdfWidth : pdfHeight;
+    const rotatedWidth =
+      rotation === 90 || rotation === 270 ? pdfHeight : pdfWidth;
+    const rotatedHeight =
+      rotation === 90 || rotation === 270 ? pdfWidth : pdfHeight;
 
     let scaleX: number;
     let scaleY: number;
@@ -267,7 +298,10 @@ export class CoordinateTransformer {
 
     // Ensure width and height fit within bounds
     normalized.width = Math.min(normalized.width, bounds.width - normalized.x);
-    normalized.height = Math.min(normalized.height, bounds.height - normalized.y);
+    normalized.height = Math.min(
+      normalized.height,
+      bounds.height - normalized.y
+    );
 
     // Ensure minimum size
     normalized.width = Math.max(1, normalized.width);
@@ -321,7 +355,10 @@ export class CoordinateTransformer {
   /**
    * Calculate the intersection of two rectangles
    */
-  static getIntersection(rect1: CoordinateRect, rect2: CoordinateRect): CoordinateRect | null {
+  static getIntersection(
+    rect1: CoordinateRect,
+    rect2: CoordinateRect
+  ): CoordinateRect | null {
     const left = Math.max(rect1.x, rect2.x);
     const top = Math.max(rect1.y, rect2.y);
     const right = Math.min(rect1.x + rect1.width, rect2.x + rect2.width);
@@ -342,7 +379,10 @@ export class CoordinateTransformer {
   /**
    * Calculate the area of intersection as a percentage of the first rectangle
    */
-  static getOverlapPercentage(rect1: CoordinateRect, rect2: CoordinateRect): number {
+  static getOverlapPercentage(
+    rect1: CoordinateRect,
+    rect2: CoordinateRect
+  ): number {
     const intersection = this.getIntersection(rect1, rect2);
     if (!intersection) {
       return 0;
@@ -350,7 +390,7 @@ export class CoordinateTransformer {
 
     const rect1Area = rect1.width * rect1.height;
     const intersectionArea = intersection.width * intersection.height;
-    
+
     return (intersectionArea / rect1Area) * 100;
   }
 
@@ -395,7 +435,7 @@ export class CoordinateTransformer {
     const center = this.getRectCenter(rect);
     const newWidth = rect.width * scaleFactor;
     const newHeight = rect.height * scaleFactor;
-    
+
     return {
       x: center.x - newWidth / 2,
       y: center.y - newHeight / 2,

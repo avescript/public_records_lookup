@@ -55,10 +55,10 @@ describe('AuditService - Basic Tests', () => {
         actor: { id: 'user123', name: 'Test U.', role: 'records_officer' },
         subject: { type: 'request', id: 'req_123' },
         severity: 'info',
-        category: 'user_action'
-      }
+        category: 'user_action',
+      },
     ];
-    
+
     mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockEvents));
 
     const events = await auditService.getEvents();

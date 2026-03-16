@@ -1,3 +1,5 @@
+import { type Theme } from '@mui/material/styles';
+
 import {
   Box,
   Chip,
@@ -6,8 +8,7 @@ import {
   ListItemText,
   Paper,
   Typography,
-} from '@mui/material';
-import { type Theme } from '@mui/material/styles';
+} from '@/components/migration';
 
 interface RequestStatus {
   id: string;
@@ -40,7 +41,7 @@ const getStatusColor = (
 export const RequestStatusCard = () => {
   return (
     <Paper sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant='h6' gutterBottom>
         Current Request Status
       </Typography>
       <List>
@@ -53,10 +54,10 @@ export const RequestStatusCard = () => {
                   <Chip
                     label={request.status}
                     color={getStatusColor(request.status)}
-                    size="small"
+                    size='small'
                     sx={{ mb: 1 }}
                   />
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant='body2' color='text.secondary'>
                     Requested: {request.requestDate}
                     <br />
                     Last Updated: {request.lastUpdated}

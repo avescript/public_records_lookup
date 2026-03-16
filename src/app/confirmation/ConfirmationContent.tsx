@@ -1,8 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
+
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Typography,
+} from '@/components/migration';
 
 import { RequestConfirmation } from '../../components/request/RequestConfirmation';
 import {
@@ -62,10 +68,10 @@ export default function ConfirmationContent() {
   if (loading) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="400px"
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        minHeight='400px'
       >
         <CircularProgress />
       </Box>
@@ -75,10 +81,10 @@ export default function ConfirmationContent() {
   if (error || !request) {
     return (
       <Box sx={{ maxWidth: 600, mx: 'auto', p: 3 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity='error' sx={{ mb: 2 }}>
           {error || 'Request not found'}
         </Alert>
-        <Typography variant="body1">
+        <Typography variant='body1'>
           Please check your tracking ID and try again, or contact support if the
           problem persists.
         </Typography>

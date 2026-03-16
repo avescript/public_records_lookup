@@ -6,12 +6,14 @@
 'use client';
 
 import React from 'react';
-import { Container, Box } from '@mui/material';
+
+import { Box, Container } from '@/components/migration';
+
 import { LegalReviewDashboard } from '../../../components/staff/LegalReviewDashboard';
 
 export default function LegalReviewPage() {
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth='xl'>
       <Box sx={{ py: 3 }}>
         <LegalReviewDashboard />
       </Box>

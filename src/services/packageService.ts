@@ -6,12 +6,14 @@
  */
 
 import { Timestamp } from 'firebase/firestore';
+
 import * as mockService from './mockFirebaseService';
 
 // Check if we should use mock service
-const useMockService = () => {
-  const shouldUseMock = process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE === 'true' || 
-         (typeof window !== 'undefined' && window.location.hostname === 'localhost');
+const shouldUseMockService = () => {
+  const shouldUseMock =
+    process.env.NEXT_PUBLIC_USE_MOCK_FIREBASE === 'true' ||
+    (typeof window !== 'undefined' && window.location.hostname === 'localhost');
   return shouldUseMock;
 };
 
@@ -83,19 +85,25 @@ export const createPackageManifest = async (
   },
   createdBy: string = 'Staff User'
 ): Promise<PackageManifest> => {
-  console.log('📦 [Package Service] Creating package manifest for request:', requestId);
+  console.log(
+    '📦 [Package Service] Creating package manifest for request:',
+    requestId
+  );
 
   // Convert associated records to package records
-  const packageRecords: PackageRecord[] = associatedRecords.map((record, index) => ({
-    recordId: record.candidateId,
-    title: record.title,
-    source: record.source,
-    pageCount: record.metadata?.pageCount || 1,
-    order: index + 1,
-    includeInPackage: true,
-  }));
+  const packageRecords: PackageRecord[] = associatedRecords.map(
+    (record, index) => ({
+      recordId: record.candidateId,
+      title: record.title,
+      source: record.source,
+      pageCount: record.metadata?.pageCount || 1,
+      order: index + 1,
+      includeInPackage: true,
+    })
+  );
 
-  const totalPages = packageRecords.reduce((sum, record) => sum + record.pageCount, 0) + 1; // +1 for cover sheet
+  const totalPages =
+    packageRecords.reduce((sum, record) => sum + record.pageCount, 0) + 1; // +1 for cover sheet
   const estimatedSize = `${(totalPages * 0.5).toFixed(1)} MB`; // Rough estimate
 
   const manifest: PackageManifest = {
@@ -166,7 +174,8 @@ export const toggleRecordInclusion = (
 
   // Recalculate totals
   const includedRecords = updatedRecords.filter(r => r.includeInPackage);
-  const totalPages = includedRecords.reduce((sum, record) => sum + record.pageCount, 0) + 1;
+  const totalPages =
+    includedRecords.reduce((sum, record) => sum + record.pageCount, 0) + 1;
   const estimatedSize = `${(totalPages * 0.5).toFixed(1)} MB`;
 
   return {
@@ -192,15 +201,17 @@ export const buildPackage = async (
   console.log('🏗️ [Package Service] Building package:', manifest.id);
 
   // Use mock service if Firebase is unavailable
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     console.log('🔄 [Package Service] Using mock service for buildPackage');
     return await mockService.buildPackage(manifest);
   }
 
   try {
     // In production, this would call the server-side PDF generation service
-    console.log('🔥 [Package Service] Attempting real package build (not implemented)');
-    
+    console.log(
+      '🔥 [Package Service] Attempting real package build (not implemented)'
+    );
+
     // For now, return mock result
     const result: PackageBuildResult = {
       manifest: {
@@ -214,7 +225,10 @@ export const buildPackage = async (
       downloadUrl: `/api/packages/${manifest.id}/download.pdf`,
     };
 
-    console.log('✅ [Package Service] Package built successfully:', manifest.id);
+    console.log(
+      '✅ [Package Service] Package built successfully:',
+      manifest.id
+    );
     return result;
   } catch (error) {
     console.error('❌ [Package Service] Error building package:', error);
@@ -223,17 +237,21 @@ export const buildPackage = async (
 };
 
 // Get package by ID
-export const getPackageById = async (packageId: string): Promise<PackageManifest | null> => {
+export const getPackageById = async (
+  packageId: string
+): Promise<PackageManifest | null> => {
   console.log('🔍 [Package Service] Getting package by ID:', packageId);
 
-  if (useMockService()) {
+  if (shouldUseMockService()) {
     console.log('🔄 [Package Service] Using mock service for getPackageById');
     return await mockService.getPackageById(packageId);
   }
 
   try {
     // In production, this would fetch from Firestore
-    console.log('🔥 [Package Service] Attempting Firebase getPackageById (not implemented)');
+    console.log(
+      '🔥 [Package Service] Attempting Firebase getPackageById (not implemented)'
+    );
     return null;
   } catch (error) {
     console.error('❌ [Package Service] Error getting package:', error);
@@ -242,20 +260,29 @@ export const getPackageById = async (packageId: string): Promise<PackageManifest
 };
 
 // List packages for a request
-export const getPackagesForRequest = async (requestId: string): Promise<PackageManifest[]> => {
+export const getPackagesForRequest = async (
+  requestId: string
+): Promise<PackageManifest[]> => {
   console.log('🔍 [Package Service] Getting packages for request:', requestId);
 
-  if (useMockService()) {
-    console.log('🔄 [Package Service] Using mock service for getPackagesForRequest');
+  if (shouldUseMockService()) {
+    console.log(
+      '🔄 [Package Service] Using mock service for getPackagesForRequest'
+    );
     return await mockService.getPackagesForRequest(requestId);
   }
 
   try {
     // In production, this would query Firestore
-    console.log('🔥 [Package Service] Attempting Firebase getPackagesForRequest (not implemented)');
+    console.log(
+      '🔥 [Package Service] Attempting Firebase getPackagesForRequest (not implemented)'
+    );
     return [];
   } catch (error) {
-    console.error('❌ [Package Service] Error getting packages for request:', error);
+    console.error(
+      '❌ [Package Service] Error getting packages for request:',
+      error
+    );
     throw new Error('Failed to get packages for request');
   }
 };

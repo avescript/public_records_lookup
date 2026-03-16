@@ -13,24 +13,46 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { CommentThread } from '../../src/components/staff/CommentThread';
 import { legalReviewService } from '../../src/services/legalReviewService';
-import type { CommentThread as CommentThreadType, Comment } from '../../src/services/legalReviewService';
+import type {
+  CommentThread as CommentThreadType,
+  Comment,
+} from '../../src/services/legalReviewService';
 
 // Mock the legal review service
 jest.mock('../../../src/services/legalReviewService');
-const mockLegalReviewService = legalReviewService as jest.Mocked<typeof legalReviewService>;
+const mockLegalReviewService = legalReviewService as jest.Mocked<
+  typeof legalReviewService
+>;
 
 // Mock Material-UI components for cleaner testing
 jest.mock('@mui/material', () => ({
   ...jest.requireActual('@mui/material'),
-  Dialog: ({ open, children, onClose }: any) => 
-    open ? <div data-testid="dialog" onClick={onClose}>{children}</div> : null,
-  DialogTitle: ({ children }: any) => <div data-testid="dialog-title">{children}</div>,
-  DialogContent: ({ children }: any) => <div data-testid="dialog-content">{children}</div>,
-  DialogActions: ({ children }: any) => <div data-testid="dialog-actions">{children}</div>,
-  Accordion: ({ children }: any) => <div data-testid="accordion">{children}</div>,
-  AccordionSummary: ({ children, onClick }: any) => 
-    <div data-testid="accordion-summary" onClick={onClick}>{children}</div>,
-  AccordionDetails: ({ children }: any) => <div data-testid="accordion-details">{children}</div>,
+  Dialog: ({ open, children, onClose }: any) =>
+    open ? (
+      <div data-testid='dialog' onClick={onClose}>
+        {children}
+      </div>
+    ) : null,
+  DialogTitle: ({ children }: any) => (
+    <div data-testid='dialog-title'>{children}</div>
+  ),
+  DialogContent: ({ children }: any) => (
+    <div data-testid='dialog-content'>{children}</div>
+  ),
+  DialogActions: ({ children }: any) => (
+    <div data-testid='dialog-actions'>{children}</div>
+  ),
+  Accordion: ({ children }: any) => (
+    <div data-testid='accordion'>{children}</div>
+  ),
+  AccordionSummary: ({ children, onClick }: any) => (
+    <div data-testid='accordion-summary' onClick={onClick}>
+      {children}
+    </div>
+  ),
+  AccordionDetails: ({ children }: any) => (
+    <div data-testid='accordion-details'>{children}</div>
+  ),
 }));
 
 describe('CommentThread Component', () => {
@@ -59,15 +81,17 @@ describe('CommentThread Component', () => {
         authorRole: 'legal_reviewer',
         timestamp: '2024-01-15T10:00:00.000Z',
         isResolution: false,
-      }
-    ]
+      },
+    ],
   };
 
   const mockCommentThreads: CommentThreadType[] = [mockThread];
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockLegalReviewService.getCommentThreadsForRecord.mockResolvedValue(mockCommentThreads);
+    mockLegalReviewService.getCommentThreadsForRecord.mockResolvedValue(
+      mockCommentThreads
+    );
     mockLegalReviewService.createCommentThread.mockResolvedValue(mockThread);
     mockLegalReviewService.addComment.mockResolvedValue(mockThread.comments[0]);
     mockLegalReviewService.updateThreadStatus.mockResolvedValue(mockThread);
@@ -77,23 +101,25 @@ describe('CommentThread Component', () => {
     it('should render comment threads section', async () => {
       render(
         <CommentThreadComponentComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
 
       expect(screen.getByText('Comment Threads')).toBeInTheDocument();
       await waitFor(() => {
-        expect(screen.getByText('Need additional redactions on this document')).toBeInTheDocument();
+        expect(
+          screen.getByText('Need additional redactions on this document')
+        ).toBeInTheDocument();
       });
     });
 
     it('should display thread count badge', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -108,8 +134,8 @@ describe('CommentThread Component', () => {
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -122,17 +148,16 @@ describe('CommentThread Component', () => {
     it('should load threads on mount', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
 
       await waitFor(() => {
-        expect(mockLegalReviewService.getCommentThreadsForRecord).toHaveBeenCalledWith(
-          'record-123',
-          'document.pdf'
-        );
+        expect(
+          mockLegalReviewService.getCommentThreadsForRecord
+        ).toHaveBeenCalledWith('record-123', 'document.pdf');
       });
     });
   });
@@ -141,8 +166,8 @@ describe('CommentThread Component', () => {
     it('should open new thread dialog when button clicked', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -164,24 +189,26 @@ describe('CommentThread Component', () => {
         status: 'open',
         createdAt: '2024-01-15T11:00:00.000Z',
         updatedAt: '2024-01-15T11:00:00.000Z',
-        comments: [{
-          id: 'comment-2',
-          threadId: 'thread-2',
-          content: 'New comment thread',
-          authorId: 'user-123',
-          authorName: 'John Doe',
-          authorRole: 'legal_reviewer',
-          timestamp: '2024-01-15T11:00:00.000Z',
-          isResolution: false,
-        }]
+        comments: [
+          {
+            id: 'comment-2',
+            threadId: 'thread-2',
+            content: 'New comment thread',
+            authorId: 'user-123',
+            authorName: 'John Doe',
+            authorRole: 'legal_reviewer',
+            timestamp: '2024-01-15T11:00:00.000Z',
+            isResolution: false,
+          },
+        ],
       };
 
       mockLegalReviewService.createCommentThread.mockResolvedValue(newThread);
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -191,7 +218,9 @@ describe('CommentThread Component', () => {
 
       // Fill form
       const commentInput = screen.getByLabelText('Comment');
-      fireEvent.change(commentInput, { target: { value: 'New comment thread' } });
+      fireEvent.change(commentInput, {
+        target: { value: 'New comment thread' },
+      });
 
       const typeSelect = screen.getByLabelText('Thread Type');
       fireEvent.change(typeSelect, { target: { value: 'general_comment' } });
@@ -224,8 +253,8 @@ describe('CommentThread Component', () => {
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -242,8 +271,8 @@ describe('CommentThread Component', () => {
     it('should validate required fields', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -262,8 +291,8 @@ describe('CommentThread Component', () => {
     it('should close dialog after successful creation', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -287,8 +316,8 @@ describe('CommentThread Component', () => {
     it('should display thread metadata correctly', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -314,22 +343,26 @@ describe('CommentThread Component', () => {
             authorRole: 'records_officer' as const,
             timestamp: '2024-01-15T11:00:00.000Z',
             isResolution: false,
-          }
-        ]
+          },
+        ],
       };
 
-      mockLegalReviewService.getCommentThreadsForRecord.mockResolvedValue([threadWithMultipleComments]);
+      mockLegalReviewService.getCommentThreadsForRecord.mockResolvedValue([
+        threadWithMultipleComments,
+      ]);
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
 
       await waitFor(() => {
-        expect(screen.getByText('Need additional redactions on this document')).toBeInTheDocument();
+        expect(
+          screen.getByText('Need additional redactions on this document')
+        ).toBeInTheDocument();
         expect(screen.getByText('I will review this')).toBeInTheDocument();
       });
     });
@@ -337,8 +370,8 @@ describe('CommentThread Component', () => {
     it('should show comment author information', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -352,8 +385,8 @@ describe('CommentThread Component', () => {
     it('should display comment timestamps', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -369,8 +402,8 @@ describe('CommentThread Component', () => {
     it('should show reply input when reply button clicked', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -381,7 +414,9 @@ describe('CommentThread Component', () => {
 
       fireEvent.click(screen.getByText('Reply'));
 
-      expect(screen.getByPlaceholderText('Add a comment...')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('Add a comment...')
+      ).toBeInTheDocument();
     });
 
     it('should add new comment when submitted', async () => {
@@ -400,8 +435,8 @@ describe('CommentThread Component', () => {
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -431,8 +466,8 @@ describe('CommentThread Component', () => {
     it('should handle resolution comments', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -442,7 +477,9 @@ describe('CommentThread Component', () => {
       });
 
       const replyInput = screen.getByPlaceholderText('Add a comment...');
-      fireEvent.change(replyInput, { target: { value: 'This resolves the issue' } });
+      fireEvent.change(replyInput, {
+        target: { value: 'This resolves the issue' },
+      });
 
       const resolutionCheckbox = screen.getByLabelText('Mark as resolution');
       fireEvent.click(resolutionCheckbox);
@@ -465,8 +502,8 @@ describe('CommentThread Component', () => {
     it('should clear reply input after successful submission', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -475,7 +512,9 @@ describe('CommentThread Component', () => {
         fireEvent.click(screen.getByText('Reply'));
       });
 
-      const replyInput = screen.getByPlaceholderText('Add a comment...') as HTMLInputElement;
+      const replyInput = screen.getByPlaceholderText(
+        'Add a comment...'
+      ) as HTMLInputElement;
       fireEvent.change(replyInput, { target: { value: 'Test reply' } });
       fireEvent.click(screen.getByText('Add Comment'));
 
@@ -489,8 +528,8 @@ describe('CommentThread Component', () => {
     it('should show resolve button for open threads', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -502,12 +541,14 @@ describe('CommentThread Component', () => {
 
     it('should resolve thread when resolve button clicked', async () => {
       const resolvedThread = { ...mockThread, status: 'resolved' as const };
-      mockLegalReviewService.updateThreadStatus.mockResolvedValue(resolvedThread);
+      mockLegalReviewService.updateThreadStatus.mockResolvedValue(
+        resolvedThread
+      );
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -524,12 +565,14 @@ describe('CommentThread Component', () => {
 
     it('should not show resolve button for resolved threads', async () => {
       const resolvedThread = { ...mockThread, status: 'resolved' as const };
-      mockLegalReviewService.getCommentThreadsForRecord.mockResolvedValue([resolvedThread]);
+      mockLegalReviewService.getCommentThreadsForRecord.mockResolvedValue([
+        resolvedThread,
+      ]);
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -541,12 +584,14 @@ describe('CommentThread Component', () => {
 
     it('should show different styling for resolved threads', async () => {
       const resolvedThread = { ...mockThread, status: 'resolved' as const };
-      mockLegalReviewService.getCommentThreadsForRecord.mockResolvedValue([resolvedThread]);
+      mockLegalReviewService.getCommentThreadsForRecord.mockResolvedValue([
+        resolvedThread,
+      ]);
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -560,12 +605,14 @@ describe('CommentThread Component', () => {
   describe('Priority and Type Indicators', () => {
     it('should display correct priority colors', async () => {
       const highPriorityThread = { ...mockThread, priority: 'high' as const };
-      mockLegalReviewService.getCommentThreadsForRecord.mockResolvedValue([highPriorityThread]);
+      mockLegalReviewService.getCommentThreadsForRecord.mockResolvedValue([
+        highPriorityThread,
+      ]);
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -580,8 +627,8 @@ describe('CommentThread Component', () => {
     it('should display thread type with appropriate icon', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -601,14 +648,16 @@ describe('CommentThread Component', () => {
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
 
       await waitFor(() => {
-        expect(screen.getByText('Error loading comment threads')).toBeInTheDocument();
+        expect(
+          screen.getByText('Error loading comment threads')
+        ).toBeInTheDocument();
       });
     });
 
@@ -619,8 +668,8 @@ describe('CommentThread Component', () => {
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -645,8 +694,8 @@ describe('CommentThread Component', () => {
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
@@ -656,7 +705,9 @@ describe('CommentThread Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Failed to update thread status')).toBeInTheDocument();
+        expect(
+          screen.getByText('Failed to update thread status')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -665,14 +716,14 @@ describe('CommentThread Component', () => {
     it('should have proper ARIA labels', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
 
       expect(screen.getByLabelText('Comment Threads')).toBeInTheDocument();
-      
+
       await waitFor(() => {
         expect(screen.getByLabelText('Thread actions')).toBeInTheDocument();
       });
@@ -681,18 +732,18 @@ describe('CommentThread Component', () => {
     it('should support keyboard navigation', async () => {
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );
 
       const newThreadButton = screen.getByText('New Thread');
-      
+
       // Should be focusable
       newThreadButton.focus();
       expect(document.activeElement).toBe(newThreadButton);
-      
+
       // Should respond to Enter key
       fireEvent.keyDown(newThreadButton, { key: 'Enter' });
       expect(screen.getByTestId('dialog')).toBeInTheDocument();
@@ -710,8 +761,8 @@ describe('CommentThread Component', () => {
 
       render(
         <CommentThreadComponentComponent
-          recordId="record-123"
-          fileName="document.pdf"
+          recordId='record-123'
+          fileName='document.pdf'
           currentUser={mockCurrentUser}
         />
       );

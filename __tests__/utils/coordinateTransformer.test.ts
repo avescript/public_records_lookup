@@ -3,7 +3,12 @@
  * Test suite for coordinate conversion utilities
  */
 
-import { CoordinateTransformer, PDFPageDimensions, CanvasDimensions, CoordinateRect } from '../../src/utils/coordinateTransformer';
+import {
+  CoordinateTransformer,
+  PDFPageDimensions,
+  CanvasDimensions,
+  CoordinateRect,
+} from '../../src/utils/coordinateTransformer';
 
 describe('CoordinateTransformer', () => {
   const mockPdfDimensions: PDFPageDimensions = {
@@ -45,7 +50,11 @@ describe('CoordinateTransformer', () => {
 
     test('should handle scale factor correctly', () => {
       const scaledPdfDimensions = { ...mockPdfDimensions, scale: 2.0 };
-      const scaledCanvasDimensions = { ...mockCanvasDimensions, width: 1190, height: 1684 };
+      const scaledCanvasDimensions = {
+        ...mockCanvasDimensions,
+        width: 1190,
+        height: 1684,
+      };
 
       const result = CoordinateTransformer.pdfToCanvas(
         mockRect,
@@ -162,8 +171,11 @@ describe('CoordinateTransformer', () => {
       } as unknown as HTMLCanvasElement;
 
       const screenCoords = { x: 200, y: 300 };
-      
-      const result = CoordinateTransformer.screenToCanvas(screenCoords, mockCanvas);
+
+      const result = CoordinateTransformer.screenToCanvas(
+        screenCoords,
+        mockCanvas
+      );
 
       expect(result.x).toBe(300); // (200 - 50) * (600 / 300)
       expect(result.y).toBe(400); // (300 - 100) * (800 / 400)
@@ -234,7 +246,10 @@ describe('CoordinateTransformer', () => {
       };
 
       const bounds = { width: 500, height: 600 };
-      const result = CoordinateTransformer.normalizeCoordinates(outOfBoundsRect, bounds);
+      const result = CoordinateTransformer.normalizeCoordinates(
+        outOfBoundsRect,
+        bounds
+      );
 
       expect(result.x).toBe(0);
       expect(result.y).toBe(0);
@@ -251,7 +266,10 @@ describe('CoordinateTransformer', () => {
       };
 
       const dimensions = { width: 1000, height: 800 };
-      const result = CoordinateTransformer.relativeToAbsolute(relativeRect, dimensions);
+      const result = CoordinateTransformer.relativeToAbsolute(
+        relativeRect,
+        dimensions
+      );
 
       expect(result.x).toBe(200);
       expect(result.y).toBe(240);
@@ -268,7 +286,10 @@ describe('CoordinateTransformer', () => {
       };
 
       const dimensions = { width: 1000, height: 800 };
-      const result = CoordinateTransformer.absoluteToRelative(absoluteRect, dimensions);
+      const result = CoordinateTransformer.absoluteToRelative(
+        absoluteRect,
+        dimensions
+      );
 
       expect(result.x).toBeCloseTo(0.2, 5);
       expect(result.y).toBeCloseTo(0.3, 5);
@@ -312,7 +333,10 @@ describe('CoordinateTransformer', () => {
       const rect1: CoordinateRect = { x: 0, y: 0, width: 100, height: 100 };
       const rect2: CoordinateRect = { x: 50, y: 0, width: 100, height: 100 };
 
-      const overlapPercentage = CoordinateTransformer.getOverlapPercentage(rect1, rect2);
+      const overlapPercentage = CoordinateTransformer.getOverlapPercentage(
+        rect1,
+        rect2
+      );
 
       expect(overlapPercentage).toBe(50); // 50% of rect1 overlaps with rect2
     });
@@ -344,7 +368,7 @@ describe('CoordinateTransformer', () => {
 
     test('should get rectangle center', () => {
       const rect: CoordinateRect = { x: 10, y: 20, width: 100, height: 200 };
-      
+
       const center = CoordinateTransformer.getRectCenter(rect);
 
       expect(center.x).toBe(60); // 10 + 100/2
@@ -367,7 +391,7 @@ describe('CoordinateTransformer', () => {
   describe('Edge Cases and Error Handling', () => {
     test('should handle unsupported rotation gracefully', () => {
       const unsupportedRotation = { ...mockPdfDimensions, rotation: 45 };
-      
+
       const result = CoordinateTransformer.pdfToCanvas(
         mockRect,
         unsupportedRotation,
@@ -381,8 +405,11 @@ describe('CoordinateTransformer', () => {
 
     test('should handle zero dimensions', () => {
       const zeroDimensions = { width: 0, height: 0 };
-      
-      const result = CoordinateTransformer.normalizeCoordinates(mockRect, zeroDimensions);
+
+      const result = CoordinateTransformer.normalizeCoordinates(
+        mockRect,
+        zeroDimensions
+      );
 
       expect(result.width).toBe(1); // Minimum width
       expect(result.height).toBe(1); // Minimum height
@@ -397,7 +424,10 @@ describe('CoordinateTransformer', () => {
       };
 
       const bounds = { width: 500, height: 600 };
-      const result = CoordinateTransformer.normalizeCoordinates(negativeRect, bounds);
+      const result = CoordinateTransformer.normalizeCoordinates(
+        negativeRect,
+        bounds
+      );
 
       expect(result.x).toBe(0);
       expect(result.y).toBe(0);

@@ -48,7 +48,8 @@ describe('AI Matching Service', () => {
 
     test('should include explainability data', async () => {
       const requestId = 'test-request';
-      const description = 'Michael Johnson, DOB: 1975-08-10, jurisdiction: texas';
+      const description =
+        'Michael Johnson, DOB: 1975-08-10, jurisdiction: texas';
       const searchTerms = ['Michael', 'Johnson', '1975'];
 
       const results = await findMatches(requestId, description, searchTerms);
@@ -59,14 +60,14 @@ describe('AI Matching Service', () => {
         semanticSimilarity: expect.any(Number),
         keywordOverlap: expect.any(Number),
         contextualRelevance: expect.any(Number),
-        reasoningSummary: expect.any(String)
+        reasoningSummary: expect.any(String),
       });
 
       expect(results.searchMetadata).toMatchObject({
         totalCandidatesScanned: expect.any(Number),
         processingTimeMs: expect.any(Number),
         confidenceThreshold: expect.any(Number),
-        searchTimestamp: expect.any(String)
+        searchTimestamp: expect.any(String),
       });
 
       if (results.candidates.length > 0) {
@@ -75,7 +76,7 @@ describe('AI Matching Service', () => {
           id: expect.any(String),
           title: expect.any(String),
           relevanceScore: expect.any(Number),
-          distanceScore: expect.any(Number)
+          distanceScore: expect.any(Number),
         });
       }
     });

@@ -1,8 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MatchResults } from '../index';
-import { MatchResult, MatchCandidate } from '../../../../services/aiMatchingService';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+
+import {
+  MatchCandidate,
+  MatchResult,
+} from '../../../../services/aiMatchingService';
 import { candidateDecisionService } from '../../../../services/candidateDecisionService';
+import { MatchResults } from '../index';
 
 // Mock the decision service
 jest.mock('../../../../services/candidateDecisionService', () => ({
@@ -14,7 +18,9 @@ jest.mock('../../../../services/candidateDecisionService', () => ({
   },
 }));
 
-const mockCandidateDecisionService = candidateDecisionService as jest.Mocked<typeof candidateDecisionService>;
+const mockCandidateDecisionService = candidateDecisionService as jest.Mocked<
+  typeof candidateDecisionService
+>;
 
 // Mock date-fns format function
 jest.mock('date-fns', () => ({
@@ -25,7 +31,8 @@ describe('MatchResults Component', () => {
   const mockCandidate: MatchCandidate = {
     id: 'candidate-123',
     title: 'Software Engineer Incident Report',
-    description: 'Incident report involving software engineer with 5+ years in React and Node.js',
+    description:
+      'Incident report involving software engineer with 5+ years in React and Node.js',
     source: 'Police Reports',
     relevanceScore: 0.92,
     confidence: 'high' as const,
@@ -51,7 +58,8 @@ describe('MatchResults Component', () => {
       semanticSimilarity: 0.92,
       keywordOverlap: 0.8,
       contextualRelevance: 0.85,
-      reasoningSummary: 'High relevance match based on job title and technical skills',
+      reasoningSummary:
+        'High relevance match based on job title and technical skills',
     },
     searchMetadata: {
       totalCandidatesScanned: 150,
@@ -76,33 +84,35 @@ describe('MatchResults Component', () => {
   describe('Basic Rendering', () => {
     it('should render match results dialog when open', () => {
       render(<MatchResults {...defaultProps} />);
-      
+
       expect(screen.getByText('AI Record Matches')).toBeInTheDocument();
-      expect(screen.getByText('Software Engineer Incident Report')).toBeInTheDocument();
+      expect(
+        screen.getByText('Software Engineer Incident Report')
+      ).toBeInTheDocument();
       expect(screen.getByText('92% match')).toBeInTheDocument();
     });
 
     it('should not render dialog when closed', () => {
       render(<MatchResults {...defaultProps} open={false} />);
-      
+
       expect(screen.queryByText('AI Record Matches')).not.toBeInTheDocument();
     });
 
     it('should show loading state', () => {
       render(<MatchResults {...defaultProps} loading={true} />);
-      
+
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
 
     it('should show error state', () => {
-      render(<MatchResults {...defaultProps} error="Search failed" />);
-      
+      render(<MatchResults {...defaultProps} error='Search failed' />);
+
       expect(screen.getByText('Search failed')).toBeInTheDocument();
     });
 
     it('should show no results message when candidates array is empty', () => {
-      const emptyResult = { 
-        ...mockMatchResult, 
+      const emptyResult = {
+        ...mockMatchResult,
         candidates: [],
         searchMetadata: {
           ...mockMatchResult.searchMetadata,
@@ -110,7 +120,7 @@ describe('MatchResults Component', () => {
         },
       };
       render(<MatchResults {...defaultProps} matchResult={emptyResult} />);
-      
+
       // Should show 0 matches in the chip
       expect(screen.getByText('0 matches')).toBeInTheDocument();
     });
@@ -136,14 +146,18 @@ describe('MatchResults Component', () => {
       render(<MatchResults {...defaultProps} />);
 
       await waitFor(() => {
-        expect(mockCandidateDecisionService.getDecisionHistory).toHaveBeenCalledWith('request-456');
+        expect(
+          mockCandidateDecisionService.getDecisionHistory
+        ).toHaveBeenCalledWith('request-456');
       });
 
       // Should show decision status - use getAllByText since text appears in multiple places
       const acceptedElements = screen.getAllByText('Accepted');
       expect(acceptedElements.length).toBeGreaterThan(0);
-      
-      expect(screen.getByText('Accepted by test-user on 2024-01-15 at 2:30 PM')).toBeInTheDocument();
+
+      expect(
+        screen.getByText('Accepted by test-user on 2024-01-15 at 2:30 PM')
+      ).toBeInTheDocument();
     });
 
     it('should handle decision loading errors gracefully', async () => {
@@ -154,62 +168,66 @@ describe('MatchResults Component', () => {
       render(<MatchResults {...defaultProps} />);
 
       await waitFor(() => {
-        expect(mockCandidateDecisionService.getDecisionHistory).toHaveBeenCalled();
+        expect(
+          mockCandidateDecisionService.getDecisionHistory
+        ).toHaveBeenCalled();
       });
 
       // Should still render the component without crashing
-      expect(screen.getByText('Software Engineer Incident Report')).toBeInTheDocument();
+      expect(
+        screen.getByText('Software Engineer Incident Report')
+      ).toBeInTheDocument();
     });
   });
 
   describe('Decision Actions', () => {
     it('should show accept and reject buttons for undecided candidates', () => {
       render(<MatchResults {...defaultProps} />);
-      
-      expect(screen.getByRole('button', { name: /accept/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /reject/i })).toBeInTheDocument();
+
+      expect(
+        screen.getByRole('button', { name: /accept/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /reject/i })
+      ).toBeInTheDocument();
     });
 
     it('should handle accept action successfully', async () => {
       mockCandidateDecisionService.acceptCandidate.mockResolvedValue();
-      
+
       render(<MatchResults {...defaultProps} />);
-      
+
       const acceptButton = screen.getByRole('button', { name: /accept/i });
       fireEvent.click(acceptButton);
 
       await waitFor(() => {
-        expect(mockCandidateDecisionService.acceptCandidate).toHaveBeenCalledWith(
-          'request-456',
-          'candidate-123',
-          'current-user'
-        );
+        expect(
+          mockCandidateDecisionService.acceptCandidate
+        ).toHaveBeenCalledWith('request-456', 'candidate-123', 'current-user');
       });
     });
 
     it('should handle reject action successfully', async () => {
       mockCandidateDecisionService.rejectCandidate.mockResolvedValue();
-      
+
       render(<MatchResults {...defaultProps} />);
-      
+
       const rejectButton = screen.getByRole('button', { name: /reject/i });
       fireEvent.click(rejectButton);
 
       await waitFor(() => {
-        expect(mockCandidateDecisionService.rejectCandidate).toHaveBeenCalledWith(
-          'request-456',
-          'candidate-123',
-          'current-user'
-        );
+        expect(
+          mockCandidateDecisionService.rejectCandidate
+        ).toHaveBeenCalledWith('request-456', 'candidate-123', 'current-user');
       });
     });
 
     it('should call parent onAcceptMatch handler when provided', async () => {
       const onAcceptMatch = jest.fn();
       mockCandidateDecisionService.acceptCandidate.mockResolvedValue();
-      
+
       render(<MatchResults {...defaultProps} onAcceptMatch={onAcceptMatch} />);
-      
+
       const acceptButton = screen.getByRole('button', { name: /accept/i });
       fireEvent.click(acceptButton);
 
@@ -221,9 +239,9 @@ describe('MatchResults Component', () => {
     it('should call parent onRejectMatch handler when provided', async () => {
       const onRejectMatch = jest.fn();
       mockCandidateDecisionService.rejectCandidate.mockResolvedValue();
-      
+
       render(<MatchResults {...defaultProps} onRejectMatch={onRejectMatch} />);
-      
+
       const rejectButton = screen.getByRole('button', { name: /reject/i });
       fireEvent.click(rejectButton);
 
@@ -236,9 +254,9 @@ describe('MatchResults Component', () => {
       mockCandidateDecisionService.acceptCandidate.mockRejectedValue(
         new Error('Failed to accept candidate')
       );
-      
+
       render(<MatchResults {...defaultProps} />);
-      
+
       const acceptButton = screen.getByRole('button', { name: /accept/i });
       fireEvent.click(acceptButton);
 
@@ -247,16 +265,18 @@ describe('MatchResults Component', () => {
       });
 
       // Component should handle error gracefully (no crash)
-      expect(screen.getByText('Software Engineer Incident Report')).toBeInTheDocument();
+      expect(
+        screen.getByText('Software Engineer Incident Report')
+      ).toBeInTheDocument();
     });
 
     it('should handle reject action errors', async () => {
       mockCandidateDecisionService.rejectCandidate.mockRejectedValue(
         new Error('Failed to reject candidate')
       );
-      
+
       render(<MatchResults {...defaultProps} />);
-      
+
       const rejectButton = screen.getByRole('button', { name: /reject/i });
       fireEvent.click(rejectButton);
 
@@ -265,7 +285,9 @@ describe('MatchResults Component', () => {
       });
 
       // Component should handle error gracefully (no crash)
-      expect(screen.getByText('Software Engineer Incident Report')).toBeInTheDocument();
+      expect(
+        screen.getByText('Software Engineer Incident Report')
+      ).toBeInTheDocument();
     });
   });
 
@@ -294,7 +316,9 @@ describe('MatchResults Component', () => {
       });
 
       // Should show "Reject Instead" button
-      expect(screen.getByRole('button', { name: /reject instead/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /reject instead/i })
+      ).toBeInTheDocument();
     });
 
     it('should show rejected status and allow changing to accept', async () => {
@@ -321,7 +345,9 @@ describe('MatchResults Component', () => {
       });
 
       // Should show "Accept Instead" button
-      expect(screen.getByRole('button', { name: /accept instead/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /accept instead/i })
+      ).toBeInTheDocument();
     });
 
     it('should display decision notes when available', async () => {
@@ -343,7 +369,9 @@ describe('MatchResults Component', () => {
       render(<MatchResults {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByText('Notes: Excellent technical skills')).toBeInTheDocument();
+        expect(
+          screen.getByText('Notes: Excellent technical skills')
+        ).toBeInTheDocument();
       });
     });
 
@@ -376,9 +404,9 @@ describe('MatchResults Component', () => {
   describe('View Details Button', () => {
     it('should call onViewDetails when provided', () => {
       const onViewDetails = jest.fn();
-      
+
       render(<MatchResults {...defaultProps} onViewDetails={onViewDetails} />);
-      
+
       const viewButton = screen.getByRole('button', { name: /view details/i });
       fireEvent.click(viewButton);
 
@@ -387,38 +415,51 @@ describe('MatchResults Component', () => {
 
     it('should not crash when onViewDetails is not provided', () => {
       render(<MatchResults {...defaultProps} />);
-      
+
       const viewButton = screen.getByRole('button', { name: /view details/i });
       fireEvent.click(viewButton);
 
       // Should not crash - test passes if no error thrown
-      expect(screen.getByText('Software Engineer Incident Report')).toBeInTheDocument();
+      expect(
+        screen.getByText('Software Engineer Incident Report')
+      ).toBeInTheDocument();
     });
   });
 
   describe('Edge Cases', () => {
     it('should handle null matchResult gracefully', () => {
       render(<MatchResults {...defaultProps} matchResult={null} />);
-      
+
       expect(screen.getByText('AI Record Matches')).toBeInTheDocument();
       // Should show dialog but no candidate count chip since no matchResult
     });
 
     it('should not attempt to load decisions when requestId is missing', () => {
-      const matchResultWithoutId = { ...mockMatchResult, requestId: undefined as any };
-      
-      render(<MatchResults {...defaultProps} matchResult={matchResultWithoutId} />);
-      
-      expect(mockCandidateDecisionService.getDecisionHistory).not.toHaveBeenCalled();
+      const matchResultWithoutId = {
+        ...mockMatchResult,
+        requestId: undefined as any,
+      };
+
+      render(
+        <MatchResults {...defaultProps} matchResult={matchResultWithoutId} />
+      );
+
+      expect(
+        mockCandidateDecisionService.getDecisionHistory
+      ).not.toHaveBeenCalled();
     });
 
     it('should disable buttons when loading is true', () => {
       render(<MatchResults {...defaultProps} loading={true} />);
-      
+
       // When loading, candidates aren't rendered, so buttons don't exist
-      expect(screen.queryByRole('button', { name: /accept/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /reject/i })).not.toBeInTheDocument();
-      
+      expect(
+        screen.queryByRole('button', { name: /accept/i })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /reject/i })
+      ).not.toBeInTheDocument();
+
       // Should show loading indicator instead
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
@@ -457,11 +498,17 @@ describe('MatchResults Component', () => {
         lastUpdated: '2024-01-15T14:30:00Z',
       });
 
-      render(<MatchResults {...defaultProps} matchResult={multiCandidateResult} />);
+      render(
+        <MatchResults {...defaultProps} matchResult={multiCandidateResult} />
+      );
 
       await waitFor(() => {
-        expect(screen.getByText('Software Engineer Incident Report')).toBeInTheDocument();
-        expect(screen.getByText('Senior Developer Incident Report')).toBeInTheDocument();
+        expect(
+          screen.getByText('Software Engineer Incident Report')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Senior Developer Incident Report')
+        ).toBeInTheDocument();
       });
 
       // First candidate should show as accepted

@@ -167,6 +167,7 @@ This file is Copilot’s and the team’s learning journal for the project. It c
 ## Feature Branch Memory Management
 
 ### Core Strategy
+
 The Memory Bank exists as the **single source of truth** on the main branch. Feature branches maintain their own temporary progress tracking without disrupting the main branch context.
 
 ### Feature Development Workflow

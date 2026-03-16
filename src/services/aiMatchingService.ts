@@ -55,11 +55,17 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-001',
     title: 'Use of Force Report - July 2025',
-    description: 'Police use of force incident report dated July 15, 2025. Includes officer statements, witness accounts, body camera footage log, and administrative review documentation.',
+    description:
+      'Police use of force incident report dated July 15, 2025. Includes officer statements, witness accounts, body camera footage log, and administrative review documentation.',
     source: 'Police Reports',
     relevanceScore: 0.95,
     confidence: 'high',
-    keyPhrases: ['use of force', 'police report', 'body camera', 'incident report'],
+    keyPhrases: [
+      'use of force',
+      'police report',
+      'body camera',
+      'incident report',
+    ],
     distanceScore: 0.05,
     recordType: 'Use of Force Report',
     dateCreated: '2025-07-15',
@@ -74,11 +80,18 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-002',
     title: 'Criminal Case File #2025-4387 - Police Report',
-    description: 'Initial police report for burglary case #2025-4387. Includes incident details, evidence collection log, witness statements, and officer observations. Suspect: Marcus Johnson.',
+    description:
+      'Initial police report for burglary case #2025-4387. Includes incident details, evidence collection log, witness statements, and officer observations. Suspect: Marcus Johnson.',
     source: 'Police Reports',
     relevanceScore: 0.98,
     confidence: 'high',
-    keyPhrases: ['criminal case', 'burglary', 'Marcus Johnson', 'evidence', 'case 4387'],
+    keyPhrases: [
+      'criminal case',
+      'burglary',
+      'Marcus Johnson',
+      'evidence',
+      'case 4387',
+    ],
     distanceScore: 0.02,
     recordType: 'Criminal Case File',
     dateCreated: '2025-08-15',
@@ -93,11 +106,18 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-003',
     title: 'Traffic Citation Records - Highway 99 Speed Enforcement',
-    description: 'Traffic citation database records for speeding violations on Highway 99 between Main Street and Oak Avenue, August 2025. Includes citation numbers, dates, violation codes, and fine amounts.',
+    description:
+      'Traffic citation database records for speeding violations on Highway 99 between Main Street and Oak Avenue, August 2025. Includes citation numbers, dates, violation codes, and fine amounts.',
     source: 'Traffic Citations',
     relevanceScore: 0.92,
     confidence: 'high',
-    keyPhrases: ['traffic citation', 'speed enforcement', 'Highway 99', 'Main Street', 'Oak Avenue'],
+    keyPhrases: [
+      'traffic citation',
+      'speed enforcement',
+      'Highway 99',
+      'Main Street',
+      'Oak Avenue',
+    ],
     distanceScore: 0.08,
     recordType: 'Traffic Citation',
     dateCreated: '2025-08-31',
@@ -112,11 +132,17 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-004',
     title: 'Officer Training Records - De-escalation Certification',
-    description: 'Police officer training completion records for de-escalation techniques, mental health crisis intervention, and use of force protocols. Anonymized records for 2024-2025 training cycle.',
+    description:
+      'Police officer training completion records for de-escalation techniques, mental health crisis intervention, and use of force protocols. Anonymized records for 2024-2025 training cycle.',
     source: 'Personnel Training',
     relevanceScore: 0.88,
     confidence: 'high',
-    keyPhrases: ['officer training', 'de-escalation', 'mental health', 'training completion'],
+    keyPhrases: [
+      'officer training',
+      'de-escalation',
+      'mental health',
+      'training completion',
+    ],
     distanceScore: 0.12,
     recordType: 'Training Record',
     dateCreated: '2025-01-15',
@@ -132,11 +158,17 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-005',
     title: 'Emergency Response Time Analysis - 2024-2025',
-    description: 'Fire department emergency response data including call volumes, response times by district, incident types, and resource allocation patterns. Anonymized data for academic research purposes.',
+    description:
+      'Fire department emergency response data including call volumes, response times by district, incident types, and resource allocation patterns. Anonymized data for academic research purposes.',
     source: 'Fire Department Records',
     relevanceScore: 0.91,
     confidence: 'high',
-    keyPhrases: ['emergency response', 'response times', 'call volumes', 'incident types'],
+    keyPhrases: [
+      'emergency response',
+      'response times',
+      'call volumes',
+      'incident types',
+    ],
     distanceScore: 0.09,
     recordType: 'Statistical Report',
     dateCreated: '2025-08-31',
@@ -152,11 +184,17 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-006',
     title: 'City Council Executive Session Minutes - Development Projects',
-    description: 'Executive session minutes from city council meetings discussing development projects, zoning variances, and personnel matters. Legal review completed for public release.',
+    description:
+      'Executive session minutes from city council meetings discussing development projects, zoning variances, and personnel matters. Legal review completed for public release.',
     source: 'City Clerk Records',
     relevanceScore: 0.87,
     confidence: 'high',
-    keyPhrases: ['city council', 'executive session', 'development projects', 'minutes'],
+    keyPhrases: [
+      'city council',
+      'executive session',
+      'development projects',
+      'minutes',
+    ],
     distanceScore: 0.13,
     recordType: 'Meeting Minutes',
     dateCreated: '2024-12-15',
@@ -172,11 +210,17 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-007',
     title: 'Public Works Department Expenditure Report - FY 2025',
-    description: 'Detailed expenditure report for Department of Public Works including contractor payments, equipment purchases, overtime records, and infrastructure spending breakdown.',
+    description:
+      'Detailed expenditure report for Department of Public Works including contractor payments, equipment purchases, overtime records, and infrastructure spending breakdown.',
     source: 'Finance Department',
     relevanceScore: 0.93,
     confidence: 'high',
-    keyPhrases: ['public works', 'expenditure', 'contractor payments', 'infrastructure spending'],
+    keyPhrases: [
+      'public works',
+      'expenditure',
+      'contractor payments',
+      'infrastructure spending',
+    ],
     distanceScore: 0.07,
     recordType: 'Financial Report',
     dateCreated: '2025-06-30',
@@ -192,11 +236,17 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-008',
     title: 'Environmental Impact Assessment - Riverside Development',
-    description: 'Complete environmental impact assessment for proposed Riverside Development Project including consultant reports, public comments, agency correspondence, and permits.',
+    description:
+      'Complete environmental impact assessment for proposed Riverside Development Project including consultant reports, public comments, agency correspondence, and permits.',
     source: 'Environmental Services',
     relevanceScore: 0.89,
     confidence: 'high',
-    keyPhrases: ['environmental impact', 'Riverside Development', 'consultant reports', 'permits'],
+    keyPhrases: [
+      'environmental impact',
+      'Riverside Development',
+      'consultant reports',
+      'permits',
+    ],
     distanceScore: 0.11,
     recordType: 'Environmental Report',
     dateCreated: '2024-06-15',
@@ -211,11 +261,17 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-009',
     title: 'Municipal Water Quality Test Results - 2024-2025',
-    description: 'Comprehensive water quality testing results for municipal water supply including lab reports, EPA compliance documentation, and corrective action records.',
+    description:
+      'Comprehensive water quality testing results for municipal water supply including lab reports, EPA compliance documentation, and corrective action records.',
     source: 'Environmental Services',
     relevanceScore: 0.94,
     confidence: 'high',
-    keyPhrases: ['water quality', 'test results', 'lab reports', 'EPA compliance'],
+    keyPhrases: [
+      'water quality',
+      'test results',
+      'lab reports',
+      'EPA compliance',
+    ],
     distanceScore: 0.06,
     recordType: 'Lab Report',
     dateCreated: '2025-07-31',
@@ -231,11 +287,17 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-010',
     title: 'Building Code Violations - Downtown District (Zip 12345)',
-    description: 'Building code violation notices, citations, and inspection reports for downtown district properties. Includes violation types, correction timelines, and compliance status.',
+    description:
+      'Building code violation notices, citations, and inspection reports for downtown district properties. Includes violation types, correction timelines, and compliance status.',
     source: 'Code Enforcement',
     relevanceScore: 0.96,
     confidence: 'high',
-    keyPhrases: ['building code violations', 'downtown district', 'inspection reports', 'citations'],
+    keyPhrases: [
+      'building code violations',
+      'downtown district',
+      'inspection reports',
+      'citations',
+    ],
     distanceScore: 0.04,
     recordType: 'Code Violation',
     dateCreated: '2024-12-31',
@@ -250,11 +312,17 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-011',
     title: 'Building Permit Processing Data - Residential Construction',
-    description: 'Building permit database including fees collected, processing times, approval rates, and permit types for residential construction. Statistical analysis ready data.',
+    description:
+      'Building permit database including fees collected, processing times, approval rates, and permit types for residential construction. Statistical analysis ready data.',
     source: 'Building Department',
     relevanceScore: 0.91,
     confidence: 'high',
-    keyPhrases: ['building permit', 'processing times', 'residential construction', 'approval rates'],
+    keyPhrases: [
+      'building permit',
+      'processing times',
+      'residential construction',
+      'approval rates',
+    ],
     distanceScore: 0.09,
     recordType: 'Statistical Data',
     dateCreated: '2025-09-01',
@@ -270,11 +338,17 @@ const MOCK_RECORD_CANDIDATES: MatchCandidate[] = [
   {
     id: 'rec-012',
     title: 'Officer Body Camera Footage Logs - Q3 2025',
-    description: 'Index of body camera footage recordings with timestamps, incident references, and retention schedules. Actual footage requires separate request and review process.',
+    description:
+      'Index of body camera footage recordings with timestamps, incident references, and retention schedules. Actual footage requires separate request and review process.',
     source: 'Police Records',
     relevanceScore: 0.85,
     confidence: 'medium',
-    keyPhrases: ['body camera', 'footage logs', 'incident references', 'recordings'],
+    keyPhrases: [
+      'body camera',
+      'footage logs',
+      'incident references',
+      'recordings',
+    ],
     distanceScore: 0.15,
     recordType: 'Media Index',
     dateCreated: '2025-09-30',
@@ -298,17 +372,18 @@ export const findMatches = async (
   searchTerms?: string[]
 ): Promise<MatchResult> => {
   // Simulate processing delay
-  await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
+  await new Promise(resolve =>
+    setTimeout(resolve, 1500 + Math.random() * 1000)
+  );
 
   // Extract key terms from description for mock matching
   const queryTerms = extractKeyTerms(description, searchTerms);
-  
+
   // Simulate semantic matching by scoring candidates
-  const candidates = MOCK_RECORD_CANDIDATES
-    .map(candidate => ({
-      ...candidate,
-      relevanceScore: calculateMockRelevance(queryTerms, candidate),
-    }))
+  const candidates = MOCK_RECORD_CANDIDATES.map(candidate => ({
+    ...candidate,
+    relevanceScore: calculateMockRelevance(queryTerms, candidate),
+  }))
     .filter(candidate => candidate.relevanceScore > 0.3) // Filter low-relevance matches
     .sort((a, b) => b.relevanceScore - a.relevanceScore) // Sort by relevance
     .slice(0, 6); // Return top 6 matches
@@ -339,14 +414,74 @@ export const findMatches = async (
 /**
  * Extract key terms from request description for matching
  */
-function extractKeyTerms(description: string, additionalTerms?: string[]): string[] {
+function extractKeyTerms(
+  description: string,
+  additionalTerms?: string[]
+): string[] {
   const commonWords = new Set([
-    'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
-    'from', 'up', 'about', 'into', 'through', 'during', 'before', 'after', 'above', 'below',
-    'between', 'among', 'under', 'over', 'i', 'me', 'my', 'myself', 'we', 'our', 'ours',
-    'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his',
-    'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them',
-    'their', 'theirs', 'themselves', 'request', 'please', 'need', 'want', 'would', 'like',
+    'the',
+    'a',
+    'an',
+    'and',
+    'or',
+    'but',
+    'in',
+    'on',
+    'at',
+    'to',
+    'for',
+    'of',
+    'with',
+    'by',
+    'from',
+    'up',
+    'about',
+    'into',
+    'through',
+    'during',
+    'before',
+    'after',
+    'above',
+    'below',
+    'between',
+    'among',
+    'under',
+    'over',
+    'i',
+    'me',
+    'my',
+    'myself',
+    'we',
+    'our',
+    'ours',
+    'ourselves',
+    'you',
+    'your',
+    'yours',
+    'yourself',
+    'yourselves',
+    'he',
+    'him',
+    'his',
+    'himself',
+    'she',
+    'her',
+    'hers',
+    'herself',
+    'it',
+    'its',
+    'itself',
+    'they',
+    'them',
+    'their',
+    'theirs',
+    'themselves',
+    'request',
+    'please',
+    'need',
+    'want',
+    'would',
+    'like',
   ]);
 
   const terms = description
@@ -362,10 +497,14 @@ function extractKeyTerms(description: string, additionalTerms?: string[]): strin
 /**
  * Calculate mock relevance score based on term matching
  */
-function calculateMockRelevance(queryTerms: string[], candidate: MatchCandidate): number {
-  const candidateText = `${candidate.title} ${candidate.description}`.toLowerCase();
+function calculateMockRelevance(
+  queryTerms: string[],
+  candidate: MatchCandidate
+): number {
+  const candidateText =
+    `${candidate.title} ${candidate.description}`.toLowerCase();
   const keyPhraseText = candidate.keyPhrases.join(' ').toLowerCase();
-  
+
   let score = 0;
   let matches = 0;
 
@@ -385,45 +524,55 @@ function calculateMockRelevance(queryTerms: string[], candidate: MatchCandidate)
   // Normalize and add some randomness for realistic variation
   const normalizedScore = Math.min(score, 1.0);
   const withVariation = normalizedScore + (Math.random() - 0.5) * 0.1;
-  
+
   return Math.max(0, Math.min(1, withVariation));
 }
 
 /**
  * Calculate keyword overlap percentage
  */
-function calculateKeywordOverlap(queryTerms: string[], candidates: MatchCandidate[]): number {
+function calculateKeywordOverlap(
+  queryTerms: string[],
+  candidates: MatchCandidate[]
+): number {
   if (candidates.length === 0) return 0;
-  
+
   const totalKeyPhrases = candidates.flatMap(c => c.keyPhrases);
-  const overlap = queryTerms.filter(term => 
-    totalKeyPhrases.some(phrase => phrase.toLowerCase().includes(term.toLowerCase()))
+  const overlap = queryTerms.filter(term =>
+    totalKeyPhrases.some(phrase =>
+      phrase.toLowerCase().includes(term.toLowerCase())
+    )
   );
-  
+
   return overlap.length / queryTerms.length;
 }
 
 /**
  * Generate human-readable reasoning for the search results
  */
-function generateReasoningSummary(queryTerms: string[], matchCount: number): string {
+function generateReasoningSummary(
+  queryTerms: string[],
+  matchCount: number
+): string {
   if (matchCount === 0) {
     return `No high-confidence matches found for query terms: "${queryTerms.slice(0, 3).join(', ')}". Consider broadening search terms or checking spelling.`;
   }
-  
+
   if (matchCount >= 5) {
     return `Found ${matchCount} relevant records with strong semantic similarity to your request. Matches based on key terms: "${queryTerms.slice(0, 3).join(', ')}" and contextual relevance.`;
   }
-  
+
   return `Found ${matchCount} potential matches with moderate to high confidence. Results ranked by semantic similarity and keyword relevance.`;
 }
 
 /**
  * Simulate "no matches" scenario for testing
  */
-export const findMatchesEmpty = async (requestId: string): Promise<MatchResult> => {
+export const findMatchesEmpty = async (
+  requestId: string
+): Promise<MatchResult> => {
   await new Promise(resolve => setTimeout(resolve, 1000));
-  
+
   return {
     requestId,
     candidates: [],
@@ -433,7 +582,8 @@ export const findMatchesEmpty = async (requestId: string): Promise<MatchResult> 
       semanticSimilarity: 0,
       keywordOverlap: 0,
       contextualRelevance: 0,
-      reasoningSummary: 'No matches found. The request may be too specific, or relevant records may not be digitized yet.',
+      reasoningSummary:
+        'No matches found. The request may be too specific, or relevant records may not be digitized yet.',
     },
     searchMetadata: {
       totalCandidatesScanned: MOCK_RECORD_CANDIDATES.length,
