@@ -218,6 +218,7 @@ export const Select: React.FC<SelectProps> = ({
       {label && (
         <InputLabel
           id={labelId}
+          shrink
           sx={{
             fontFamily: typography.fontFamily.primary,
             fontSize:
@@ -243,6 +244,7 @@ export const Select: React.FC<SelectProps> = ({
       <MuiSelect
         id={selectId}
         labelId={label ? labelId : undefined}
+        label={label}
         name={name}
         value={value || (multiple ? [] : '')}
         onChange={handleChange}

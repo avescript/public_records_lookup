@@ -1,17 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { SelectChangeEvent } from '@mui/material';
-import {
-  Box,
-  FormControl,
-  FormHelperText,
-  Grid,
-  InputLabel,
-  MenuItem,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Grid, TextField, Typography } from '@mui/material';
 
 import { Select } from '@/components/migration';
 
@@ -86,8 +76,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   const [customStartDate, setCustomStartDate] = useState(value.startDate || '');
   const [customEndDate, setCustomEndDate] = useState(value.endDate || '');
 
-  const handlePresetChange = (event: SelectChangeEvent) => {
-    const newPreset = event.target.value;
+  const handlePresetChange = (event: { target: { value: unknown } }) => {
+    const newPreset = event.target.value as string;
     setPreset(newPreset);
 
     if (newPreset === 'custom') {
@@ -142,23 +132,18 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         {label}
       </Typography>
 
-      <FormControl fullWidth error={!!error} sx={{ mb: 2 }}>
-        <InputLabel>Time Period</InputLabel>
+      <Box sx={{ mb: 2 }}>
         <Select
           value={preset}
           label='Time Period'
+          options={DATE_PRESETS}
           onChange={handlePresetChange}
           disabled={disabled}
+          fullWidth
+          error={error || undefined}
           data-testid='date-range-preset'
-        >
-          {DATE_PRESETS.map(presetOption => (
-            <MenuItem key={presetOption.value} value={presetOption.value}>
-              {presetOption.label}
-            </MenuItem>
-          ))}
-        </Select>
-        {error && <FormHelperText>{error}</FormHelperText>}
-      </FormControl>
+        />
+      </Box>
 
       {showCustomFields && (
         <Grid container spacing={2}>

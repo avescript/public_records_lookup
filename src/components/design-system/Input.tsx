@@ -41,7 +41,13 @@ export interface InputProps extends Omit<TextFieldProps, 'variant' | 'size'> {
 const StyledTextField = styled(TextField, {
   shouldForwardProp: prop =>
     !['state', 'startIcon', 'endIcon'].includes(prop as string),
-})<InputProps>(({ theme, size = 'md', state = 'default', disabled }) => {
+})<InputProps>(({
+  theme,
+  size = 'md',
+  state = 'default',
+  disabled,
+  multiline,
+}) => {
   // Size configurations
   const sizeConfig = {
     sm: {
@@ -194,6 +200,13 @@ const StyledTextField = styled(TextField, {
       fontSize: currentSize.fontSize,
       fontFamily: typography.fontFamily.primary,
       fontWeight: typography.fontWeight.medium,
+
+      // Center the at-rest floating label within the custom input height
+      ...(!multiline && {
+        '&:not(.MuiInputLabel-shrink)': {
+          transform: `translate(14px, ${{ sm: '9px', md: '12px', lg: '15px' }[size]}) scale(1)`,
+        },
+      }),
 
       // Focused label
       '&.Mui-focused': {
