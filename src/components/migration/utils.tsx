@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Migration Utilities for V2 Component Integration
  *

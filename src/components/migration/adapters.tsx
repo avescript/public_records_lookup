@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Migration Adapters for V2 Component Integration
  *
