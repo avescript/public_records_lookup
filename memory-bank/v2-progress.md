@@ -7,8 +7,8 @@
 ### Current Workstream
 
 - Implementing US-V2-020 AI-Enhanced Record Discovery in locate workflow
-- Scope: confidence scoring, semantic ranking, highlight snippets, and batch record processing
-- Next: connect search assistant flows in US-V2-021 after locate baseline is complete
+- Completed: confidence scoring, semantic ranking, highlight snippets, batch processing, side-by-side comparison view, record organization (folders/tags/categories), and manual record upload/attachment
+- Next: start search assistant flows in US-V2-021
 
 ## Epic V2-1: Request Landing Page ✅ COMPLETED
 

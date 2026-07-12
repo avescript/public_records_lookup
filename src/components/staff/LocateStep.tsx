@@ -40,11 +40,13 @@ interface PublicRecord {
   title: string;
   type: 'document' | 'email' | 'report' | 'correspondence';
   department: string;
+  category: string;
   dateCreated: string;
   content: string;
   description: string;
   baseRelevanceScore: number;
   tags: string[];
+  organizationFolder?: string;
   selected?: boolean;
   batchProcessed?: boolean;
 }
@@ -62,6 +64,7 @@ const mockRecords: PublicRecord[] = [
     title: 'Traffic Safety Report - Downtown District',
     type: 'report',
     department: 'Transportation',
+    category: 'Incident Analysis',
     dateCreated: '2024-01-15',
     content:
       'Contains incident summaries, officer narratives, and follow-up actions for downtown traffic collisions and enforcement outcomes.',
@@ -69,12 +72,14 @@ const mockRecords: PublicRecord[] = [
       'Comprehensive analysis of traffic patterns and safety incidents in the downtown district during Q4 2023.',
     baseRelevanceScore: 95,
     tags: ['traffic', 'safety', 'downtown'],
+    organizationFolder: 'Priority Review',
   },
   {
     id: 'PR-2024-002',
     title: 'Email: Downtown Traffic Concerns',
     type: 'email',
     department: 'Transportation',
+    category: 'Correspondence',
     dateCreated: '2024-01-12',
     content:
       'Includes requests for camera footage references, follow-up correspondence, and departmental response deadlines.',
@@ -82,12 +87,14 @@ const mockRecords: PublicRecord[] = [
       'Email correspondence between city council and transportation department regarding traffic concerns.',
     baseRelevanceScore: 88,
     tags: ['email', 'traffic', 'council'],
+    organizationFolder: 'Requester Communications',
   },
   {
     id: 'PR-2024-003',
     title: 'Public Safety Incident Log - Sector 4',
     type: 'document',
     department: 'Police',
+    category: 'Evidence',
     dateCreated: '2024-01-09',
     content:
       'Incident-level entries with timestamps, responding units, witness statements, and references to body camera retention IDs.',
@@ -95,12 +102,14 @@ const mockRecords: PublicRecord[] = [
       'Structured incident log with officer notes and reference IDs for evidence files.',
     baseRelevanceScore: 79,
     tags: ['incident', 'police', 'body camera'],
+    organizationFolder: 'Legal Hold',
   },
   {
     id: 'PR-2024-004',
     title: 'Records Retention Policy - Audio and Video Evidence',
     type: 'correspondence',
     department: 'City Clerk',
+    category: 'Policy',
     dateCreated: '2023-12-21',
     content:
       'Policy guidance for release windows, exemption handling, and legal review requirements for digital recordings.',
@@ -108,7 +117,24 @@ const mockRecords: PublicRecord[] = [
       'Records policy memo for handling retention and disclosure of media evidence.',
     baseRelevanceScore: 71,
     tags: ['policy', 'retention', 'evidence'],
+    organizationFolder: 'Policy References',
   },
+];
+
+const defaultFolders = [
+  'Priority Review',
+  'Legal Hold',
+  'Requester Communications',
+  'Policy References',
+  'Manual Intake',
+];
+
+const defaultCategories = [
+  'Incident Analysis',
+  'Correspondence',
+  'Evidence',
+  'Policy',
+  'Uploaded Material',
 ];
 
 function tokenizeQuery(query: string): string[] {
@@ -265,11 +291,17 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [isBatchProcessing, setIsBatchProcessing] = useState(false);
+  const [folderFilter, setFolderFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [targetFolder, setTargetFolder] = useState(defaultFolders[0]);
+  const [targetCategory, setTargetCategory] = useState(defaultCategories[0]);
+  const [tagInput, setTagInput] = useState('');
+  const [uploadNotice, setUploadNotice] = useState<string | null>(null);
   const [activePreviewRecordId, setActivePreviewRecordId] = useState<
     string | null
   >(mockRecords[0]?.id ?? null);
 
-  const rankedRecords = useMemo<RankedRecord[]>(() => {
+  const allRankedRecords = useMemo<RankedRecord[]>(() => {
     return records
       .map(record => {
         const ranking = calculateRanking(record, searchTerm);
@@ -278,16 +310,46 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
       .sort((a, b) => b.relevanceScore - a.relevanceScore);
   }, [records, searchTerm]);
 
-  const selectedRecords = rankedRecords.filter(r => r.selected);
+  const folderOptions = useMemo(() => {
+    const dynamicFolders = records
+      .map(record => record.organizationFolder)
+      .filter((folder): folder is string => Boolean(folder));
+
+    return Array.from(new Set([...defaultFolders, ...dynamicFolders]));
+  }, [records]);
+
+  const categoryOptions = useMemo(() => {
+    const dynamicCategories = records.map(record => record.category);
+    return Array.from(new Set([...defaultCategories, ...dynamicCategories]));
+  }, [records]);
+
+  const rankedRecords = useMemo(() => {
+    return allRankedRecords.filter(record => {
+      if (
+        folderFilter !== 'all' &&
+        record.organizationFolder !== folderFilter
+      ) {
+        return false;
+      }
+
+      if (categoryFilter !== 'all' && record.category !== categoryFilter) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [allRankedRecords, folderFilter, categoryFilter]);
+
+  const selectedRecords = allRankedRecords.filter(r => r.selected);
   const comparisonRecords = selectedRecords.slice(0, 2);
   const canCompareSelected = comparisonRecords.length === 2;
-  const highConfidenceCount = rankedRecords.filter(
+  const highConfidenceCount = allRankedRecords.filter(
     r => r.confidenceLevel === 'high'
   ).length;
   const isStepComplete = selectedRecords.length > 0;
   const activePreviewRecord =
-    rankedRecords.find(r => r.id === activePreviewRecordId) ||
-    rankedRecords[0] ||
+    allRankedRecords.find(r => r.id === activePreviewRecordId) ||
+    allRankedRecords[0] ||
     null;
 
   const handleRecordToggle = (recordId: string) => {
@@ -323,7 +385,7 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
 
   const handleSelectHighConfidence = () => {
     const highConfidenceIds = new Set(
-      rankedRecords
+      allRankedRecords
         .filter(record => record.confidenceLevel === 'high')
         .map(record => record.id)
     );
@@ -358,6 +420,77 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
     setIsBatchProcessing(false);
   };
 
+  const handleAssignFolderToSelected = () => {
+    if (selectedRecords.length === 0) return;
+
+    setRecords(prev =>
+      prev.map(record =>
+        record.selected
+          ? { ...record, organizationFolder: targetFolder }
+          : record
+      )
+    );
+  };
+
+  const handleAssignCategoryToSelected = () => {
+    if (selectedRecords.length === 0) return;
+
+    setRecords(prev =>
+      prev.map(record =>
+        record.selected ? { ...record, category: targetCategory } : record
+      )
+    );
+  };
+
+  const handleAddTagToSelected = () => {
+    const tag = tagInput.trim().toLowerCase();
+    if (!tag || selectedRecords.length === 0) return;
+
+    setRecords(prev =>
+      prev.map(record => {
+        if (!record.selected) return record;
+        if (record.tags.includes(tag)) return record;
+        return { ...record, tags: [...record.tags, tag] };
+      })
+    );
+
+    setTagInput('');
+  };
+
+  const handleManualUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
+
+    const timestamp = Date.now();
+    const uploadedRecords: PublicRecord[] = files.map((file, index) => {
+      const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
+      const inferredType: PublicRecord['type'] = file.type.includes('message')
+        ? 'email'
+        : 'document';
+
+      return {
+        id: `PR-UP-${timestamp}-${index + 1}`,
+        title: fileNameWithoutExtension,
+        type: inferredType,
+        department: 'Manual Uploads',
+        category: 'Uploaded Material',
+        dateCreated: new Date().toISOString().slice(0, 10),
+        content: `Uploaded file: ${file.name}`,
+        description: `Manually attached file (${Math.max(1, Math.round(file.size / 1024))} KB).`,
+        baseRelevanceScore: 62,
+        tags: ['uploaded', 'manual-attachment'],
+        organizationFolder: 'Manual Intake',
+        selected: true,
+      };
+    });
+
+    setRecords(prev => [...uploadedRecords, ...prev]);
+    setUploadNotice(
+      `${files.length} file${files.length === 1 ? '' : 's'} attached and added to the record set.`
+    );
+    event.target.value = '';
+  };
+
   const confidenceColorMap = {
     high: 'success',
     medium: 'warning',
@@ -385,7 +518,7 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
               <Typography variant='caption' color='text.secondary'>
                 Records Scanned
               </Typography>
-              <Typography variant='h6'>{rankedRecords.length}</Typography>
+              <Typography variant='h6'>{allRankedRecords.length}</Typography>
             </Box>
             <Box>
               <Typography variant='caption' color='text.secondary'>
@@ -402,6 +535,204 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
           </Box>
         </CardContent>
       </Card>
+
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 2,
+          gridTemplateColumns: { xs: '1fr', xl: '1fr 1fr' },
+          mb: 3,
+        }}
+      >
+        <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <FilterIcon fontSize='small' />
+              <Typography variant='h6'>Record Organization</Typography>
+            </Box>
+
+            <Typography variant='caption' color='text.secondary'>
+              Filter the current set
+            </Typography>
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 1,
+                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                mb: 2,
+              }}
+            >
+              <select
+                value={folderFilter}
+                onChange={e => setFolderFilter(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
+              >
+                <option value='all'>All folders</option>
+                {folderOptions.map(folder => (
+                  <option key={folder} value={folder}>
+                    {folder}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={categoryFilter}
+                onChange={e => setCategoryFilter(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
+              >
+                <option value='all'>All categories</option>
+                {categoryOptions.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </Box>
+
+            <Typography variant='caption' color='text.secondary'>
+              Organize selected records ({selectedRecords.length})
+            </Typography>
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 1,
+                gridTemplateColumns: { xs: '1fr', sm: '1fr auto' },
+                mb: 1,
+              }}
+            >
+              <select
+                value={targetFolder}
+                onChange={e => setTargetFolder(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
+              >
+                {folderOptions.map(folder => (
+                  <option key={folder} value={folder}>
+                    {folder}
+                  </option>
+                ))}
+              </select>
+              <Button
+                variant='outline'
+                size='md'
+                disabled={selectedRecords.length === 0}
+                onClick={handleAssignFolderToSelected}
+              >
+                Assign Folder
+              </Button>
+            </Box>
+
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 1,
+                gridTemplateColumns: { xs: '1fr', sm: '1fr auto' },
+                mb: 1,
+              }}
+            >
+              <select
+                value={targetCategory}
+                onChange={e => setTargetCategory(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
+              >
+                {categoryOptions.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+              <Button
+                variant='outline'
+                size='md'
+                disabled={selectedRecords.length === 0}
+                onClick={handleAssignCategoryToSelected}
+              >
+                Assign Category
+              </Button>
+            </Box>
+
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 1,
+                gridTemplateColumns: { xs: '1fr', sm: '1fr auto' },
+              }}
+            >
+              <input
+                type='text'
+                placeholder='Add tag to selected records (e.g. urgent)'
+                value={tagInput}
+                onChange={e => setTagInput(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
+              />
+              <Button
+                variant='outline'
+                size='md'
+                disabled={
+                  selectedRecords.length === 0 || tagInput.trim() === ''
+                }
+                onClick={handleAddTagToSelected}
+              >
+                Add Tag
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
+          <CardContent>
+            <Typography variant='h6' sx={{ mb: 1 }}>
+              Manual Record Upload
+            </Typography>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+              Attach files to include additional records in this locate step.
+            </Typography>
+
+            <input
+              type='file'
+              multiple
+              accept='.pdf,.doc,.docx,.txt,.eml,image/*'
+              onChange={handleManualUpload}
+              style={{ width: '100%' }}
+            />
+
+            {uploadNotice && (
+              <Alert severity='success' sx={{ mt: 2 }}>
+                <Typography variant='body2'>{uploadNotice}</Typography>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
         <Box
@@ -630,6 +961,18 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
                         color='success'
                       />
                     )}
+                    <Chip
+                      size='small'
+                      label={`Category: ${record.category}`}
+                      variant='outlined'
+                    />
+                    {record.organizationFolder && (
+                      <Chip
+                        size='small'
+                        label={`Folder: ${record.organizationFolder}`}
+                        variant='outlined'
+                      />
+                    )}
                   </Stack>
 
                   <Typography
@@ -681,8 +1024,18 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
                   color='text.secondary'
                   sx={{ mb: 2 }}
                 >
-                  {activePreviewRecord.department} • {activePreviewRecord.type}
+                  {activePreviewRecord.department} • {activePreviewRecord.type}{' '}
+                  • {activePreviewRecord.category}
                 </Typography>
+
+                {activePreviewRecord.organizationFolder && (
+                  <Chip
+                    size='small'
+                    label={`Folder: ${activePreviewRecord.organizationFolder}`}
+                    variant='outlined'
+                    sx={{ mb: 2 }}
+                  />
+                )}
 
                 <Divider sx={{ mb: 2 }} />
 

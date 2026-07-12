@@ -104,9 +104,9 @@
 - [ ] **Record Review Interface**
   - [x] Design record preview panel with metadata display
   - [x] Add record selection/deselection with checkboxes
-  - [ ] Implement record organization (folders, tags, categories)
+  - [x] Implement record organization (folders, tags, categories)
   - [x] Create record comparison view (side-by-side)
-  - [ ] Add manual record upload and attachment
+  - [x] Add manual record upload and attachment
 
 ### US-V2-021: AI Chatbot Search Assistant ⏳
 
