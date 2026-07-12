@@ -516,8 +516,21 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
       topDepartments,
       topCategories,
       currentQuery: searchTerm,
+      topMatches: rankedRecords.slice(0, 5).map(record => ({
+        id: record.id,
+        title: record.title,
+        relevanceScore: record.relevanceScore,
+        confidenceLevel: record.confidenceLevel,
+        matchedTerms: record.matchedTerms,
+      })),
     };
-  }, [allRankedRecords, highConfidenceCount, requestId, searchTerm]);
+  }, [
+    allRankedRecords,
+    highConfidenceCount,
+    rankedRecords,
+    requestId,
+    searchTerm,
+  ]);
 
   return (
     <WorkflowPage

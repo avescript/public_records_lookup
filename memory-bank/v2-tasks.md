@@ -114,13 +114,13 @@
   - [ ] Integrate OpenAI/Vertex AI for conversational search
   - [x] Design chat interface with conversation history
   - [x] Implement context-aware search queries
-  - [ ] Add natural language record summarization
+  - [x] Add natural language record summarization
   - [x] Create suggested search queries and refinements
 
 - [ ] **Advanced Search Features**
   - [ ] Natural language query processing
   - [ ] Multi-criteria search (date range, department, content type)
-  - [ ] Search result explanation and reasoning
+  - [x] Search result explanation and reasoning
   - [ ] Save and reuse search queries
   - [ ] Export search results and summaries
 

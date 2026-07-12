@@ -18,6 +18,7 @@ import {
   TextField,
   Typography,
 } from '@/components/migration';
+import { aiChatService } from '@/services/aiChatService';
 
 interface AssistantContext {
   requestId: string;
@@ -26,6 +27,13 @@ interface AssistantContext {
   topDepartments: string[];
   topCategories: string[];
   currentQuery: string;
+  topMatches: {
+    id: string;
+    title: string;
+    relevanceScore: number;
+    confidenceLevel: 'high' | 'medium' | 'low';
+    matchedTerms: string[];
+  }[];
 }
 
 interface Message {
@@ -52,9 +60,10 @@ export function LocateChatAssistant({
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const welcomeMessage = useMemo<Message>(() => {
+  const initialContextSummary = useMemo(() => {
     const starterSuggestions = [
       'incident reports in the last 6 months',
       'records involving body camera retention',
@@ -63,22 +72,77 @@ export function LocateChatAssistant({
     ];
 
     return {
-      id: 'welcome',
-      role: 'assistant',
-      content:
-        `AI assistant ready for request ${context.requestId}. ` +
-        'I can refine natural-language queries, suggest search terms, and explain why matches rank highly. ' +
-        `Current context: ${context.totalRecords} records, ${context.highConfidenceCount} high-confidence matches.`,
-      timestamp: new Date(),
-      suggestions: starterSuggestions,
+      starterSuggestions,
+      summary:
+        `Request ${context.requestId}. ` +
+        `${context.totalRecords} records in scope, ${context.highConfidenceCount} high-confidence matches. ` +
+        `Current query: ${context.currentQuery || 'none'}.`,
     };
   }, [context.highConfidenceCount, context.requestId, context.totalRecords]);
 
   useEffect(() => {
-    if (open && messages.length === 0) {
-      setMessages([welcomeMessage]);
+    if (!open || conversationId) return;
+
+    let isMounted = true;
+
+    const initializeConversation = async () => {
+      try {
+        const conversation = await aiChatService.startConversation(
+          context.requestId,
+          initialContextSummary.summary
+        );
+
+        if (!isMounted) return;
+
+        setConversationId(conversation.id);
+        const history = aiChatService.getConversationHistory(conversation.id);
+
+        const mappedHistory = history.map(message => ({
+          id: message.id,
+          role: message.type,
+          content: message.content,
+          timestamp: new Date(message.timestamp),
+          suggestions: message.suggestions?.map(suggestion => suggestion.query),
+        }));
+
+        setMessages([
+          ...mappedHistory,
+          {
+            id: `local-welcome-${Date.now()}`,
+            role: 'assistant',
+            content:
+              'I can also summarize current match coverage and explain ranking logic from this Locate session.',
+            timestamp: new Date(),
+            suggestions: initialContextSummary.starterSuggestions,
+          },
+        ]);
+      } catch {
+        if (!isMounted) return;
+        setMessages([
+          {
+            id: `fallback-welcome-${Date.now()}`,
+            role: 'assistant',
+            content:
+              'I am available for query refinements and search summaries. Ask for a summary, explanation, or suggested query.',
+            timestamp: new Date(),
+            suggestions: initialContextSummary.starterSuggestions,
+          },
+        ]);
+      }
+    };
+
+    void initializeConversation();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [conversationId, context.requestId, initialContextSummary, open]);
+
+  useEffect(() => {
+    if (!open && conversationId) {
+      aiChatService.endConversation(conversationId);
     }
-  }, [open, messages.length, welcomeMessage]);
+  }, [conversationId, open]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -97,27 +161,54 @@ export function LocateChatAssistant({
     ]);
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     const prompt = inputValue.trim();
-    if (!prompt || isThinking) return;
+    if (!prompt || isThinking || !conversationId) return;
 
-    setMessages(prev => [
-      ...prev,
-      {
-        id: `user-${Date.now()}`,
-        role: 'user',
-        content: prompt,
-        timestamp: new Date(),
-      },
-    ]);
     setInputValue('');
     setIsThinking(true);
 
-    window.setTimeout(() => {
-      const response = generateContextAwareResponse(prompt, context);
-      setMessages(prev => [...prev, response]);
+    try {
+      const response = await aiChatService.sendMessage(
+        conversationId,
+        prompt,
+        true
+      );
+      const history = aiChatService.getConversationHistory(conversationId);
+
+      const mappedHistory: Message[] = history.map(message => ({
+        id: message.id,
+        role: message.type,
+        content: message.content,
+        timestamp: new Date(message.timestamp),
+        suggestions: message.suggestions?.map(suggestion => suggestion.query),
+      }));
+
+      const extraMessages: Message[] = [];
+
+      if (isSummaryPrompt(prompt)) {
+        extraMessages.push(generateSummaryAndReasoningMessage(context));
+      } else if (response.searchPerformed) {
+        extraMessages.push(
+          generateSearchReasoningMessage(context, prompt, response.searchCount)
+        );
+      }
+
+      setMessages([...mappedHistory, ...extraMessages]);
+    } catch {
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `assistant-error-${Date.now()}`,
+          role: 'assistant',
+          content:
+            'I had trouble processing that request. Try rephrasing, or ask for a summary of the current matches.',
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
       setIsThinking(false);
-    }, 700);
+    }
   };
 
   return (
@@ -344,6 +435,76 @@ function generateContextAwareResponse(
       `${prompt} high confidence`,
       `${prompt} in ${context.topCategories[0] || 'evidence'} category`,
       `${prompt} ${context.topDepartments[0] || 'police'} department`,
+    ],
+  };
+}
+
+function isSummaryPrompt(prompt: string): boolean {
+  const lower = prompt.toLowerCase();
+  return (
+    lower.includes('summary') ||
+    lower.includes('summarize') ||
+    lower.includes('reasoning') ||
+    lower.includes('why') ||
+    lower.includes('explain')
+  );
+}
+
+function generateSummaryAndReasoningMessage(
+  context: AssistantContext
+): Message {
+  const topTwo = context.topMatches.slice(0, 2);
+  const topLines = topTwo
+    .map(
+      match =>
+        `- ${match.title} (${match.relevanceScore}% / ${match.confidenceLevel})`
+    )
+    .join('\n');
+
+  const reasoning = topTwo
+    .map(match => {
+      const terms =
+        match.matchedTerms.slice(0, 3).join(', ') || 'semantic overlap';
+      return `${match.id}: ranked high due to matched terms (${terms}) and metadata relevance.`;
+    })
+    .join('\n');
+
+  return {
+    id: `assistant-summary-${Date.now()}`,
+    role: 'assistant',
+    timestamp: new Date(),
+    content:
+      'Current locate summary:\n' +
+      `- Records scanned: ${context.totalRecords}\n` +
+      `- High-confidence matches: ${context.highConfidenceCount}\n` +
+      `- Active query: ${context.currentQuery || 'none'}\n\n` +
+      `Top matches:\n${topLines || '- No top matches available'}\n\n` +
+      `Reasoning snapshot:\n${reasoning || '- Not enough ranking data to explain.'}`,
+    suggestions: [
+      'high confidence records only',
+      `${context.topDepartments[0] || 'police'} records in the last 90 days`,
+    ],
+  };
+}
+
+function generateSearchReasoningMessage(
+  context: AssistantContext,
+  prompt: string,
+  searchCount: number
+): Message {
+  const topMatch = context.topMatches[0];
+
+  return {
+    id: `assistant-reasoning-${Date.now()}`,
+    role: 'assistant',
+    timestamp: new Date(),
+    content:
+      `Reasoning for "${prompt}": returned ${searchCount} service-level results. ` +
+      `In this locate set, top candidate is ${topMatch?.title || 'n/a'} ` +
+      `with ${topMatch?.relevanceScore ?? 0}% relevance and ${topMatch?.confidenceLevel || 'unknown'} confidence.`,
+    suggestions: [
+      `${prompt} high confidence`,
+      `${prompt} ${context.topCategories[0] || 'evidence'} category`,
     ],
   };
 }

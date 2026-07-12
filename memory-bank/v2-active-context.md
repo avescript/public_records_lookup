@@ -6,12 +6,12 @@
 **V1 Foundation:** ✅ Complete (All 7 epics implemented and tested)  
 **V2 Planning:** ✅ Complete - Development started  
 **Current Focus:** Epic V2-2 Step 1 Locate - US-V2-021 AI Chatbot Search Assistant ⏳
-**Latest:** US-V2-021 branch created and chatbot foundation added to Locate (chat drawer + context-aware query suggestions) - July 12, 2026
-**Now Working:** Complete remaining US-V2-021 items (LLM integration + summarization + advanced query features)
+**Latest:** US-V2-021 service-backed chat pass complete in Locate (aiChatService integration, summary generation, and ranking reasoning output) - July 12, 2026
+**Now Working:** Complete remaining US-V2-021 items (OpenAI/Vertex hookup, multi-criteria filtering, saved/exported query workflows)
 **Previous:** Hybrid migration complete ✅ - March 9, 2026 (42 critical files converted)
 **Migration Roadmap:** ✅ COMPLETE - 63 adapters across 8 phases, 79 ESLint rules
 **Hybrid Strategy:** ✅ APPLIED - 42 critical files migrated, ~120 files incremental via ESLint
-**Next Action:** Connect chat assistant to unified AI service and add natural-language summarization/search reasoning
+**Next Action:** Implement provider-backed conversational API integration and multi-criteria query controls
 
 ## Component Migration: Material-UI Audit ✅ COMPLETED March 8, 2026
 
