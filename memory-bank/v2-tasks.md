@@ -105,7 +105,7 @@
   - [x] Design record preview panel with metadata display
   - [x] Add record selection/deselection with checkboxes
   - [ ] Implement record organization (folders, tags, categories)
-  - [ ] Create record comparison view (side-by-side)
+  - [x] Create record comparison view (side-by-side)
   - [ ] Add manual record upload and attachment
 
 ### US-V2-021: AI Chatbot Search Assistant ⏳

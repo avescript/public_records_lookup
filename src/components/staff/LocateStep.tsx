@@ -5,6 +5,7 @@ import {
   AutoAwesome as AIIcon,
   Bolt as LightningIcon,
   Checklist as ChecklistIcon,
+  CompareArrows as CompareIcon,
   Description as DocumentIcon,
   FilterList as FilterIcon,
   Folder as FolderIcon,
@@ -278,6 +279,8 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
   }, [records, searchTerm]);
 
   const selectedRecords = rankedRecords.filter(r => r.selected);
+  const comparisonRecords = selectedRecords.slice(0, 2);
+  const canCompareSelected = comparisonRecords.length === 2;
   const highConfidenceCount = rankedRecords.filter(
     r => r.confidenceLevel === 'high'
   ).length;
@@ -516,6 +519,18 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
         </Box>
       )}
 
+      {selectedRecords.length > 0 && (
+        <Box sx={{ mb: 3 }}>
+          <Alert severity={canCompareSelected ? 'success' : 'info'}>
+            <Typography variant='body2'>
+              {canCompareSelected
+                ? 'Comparison ready. Showing the top 2 selected records side-by-side below.'
+                : 'Select at least 2 records to enable side-by-side comparison.'}
+            </Typography>
+          </Alert>
+        </Box>
+      )}
+
       <Box
         sx={{
           display: 'grid',
@@ -714,6 +729,104 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
           </CardContent>
         </Card>
       </Box>
+
+      {canCompareSelected && (
+        <Card
+          sx={{
+            mt: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <CompareIcon fontSize='small' />
+              <Typography variant='h6'>Record Comparison View</Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 2,
+                gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+              }}
+            >
+              {comparisonRecords.map(record => (
+                <Card
+                  key={`comparison-${record.id}`}
+                  variant='outlined'
+                  sx={{ borderColor: 'divider' }}
+                >
+                  <CardContent>
+                    <Typography
+                      variant='subtitle1'
+                      sx={{ fontWeight: 600, mb: 0.5 }}
+                    >
+                      {record.title}
+                    </Typography>
+                    <Typography
+                      variant='body2'
+                      color='text.secondary'
+                      sx={{ mb: 1.5 }}
+                    >
+                      {record.id} • {record.department} • {record.type}
+                    </Typography>
+
+                    <Stack direction='row' spacing={1} sx={{ mb: 1.5 }}>
+                      <Chip
+                        size='small'
+                        label={`${record.relevanceScore}% match`}
+                        color={getRelevanceColor(record.relevanceScore)}
+                      />
+                      <Chip
+                        size='small'
+                        label={`${record.confidenceLevel} confidence`}
+                        color={confidenceColorMap[record.confidenceLevel]}
+                        variant='outlined'
+                      />
+                    </Stack>
+
+                    <Typography variant='caption' color='text.secondary'>
+                      Matched Terms
+                    </Typography>
+                    <Stack
+                      direction='row'
+                      spacing={1}
+                      useFlexGap
+                      flexWrap='wrap'
+                      sx={{ mb: 1.5 }}
+                    >
+                      {(record.matchedTerms.length > 0
+                        ? record.matchedTerms
+                        : ['no explicit query matches']
+                      )
+                        .slice(0, 6)
+                        .map(term => (
+                          <Chip
+                            key={`${record.id}-${term}`}
+                            size='small'
+                            label={term}
+                            variant='outlined'
+                          />
+                        ))}
+                    </Stack>
+
+                    <Typography variant='caption' color='text.secondary'>
+                      Preview Snippet
+                    </Typography>
+                    <Typography variant='body2' sx={{ mt: 0.5 }}>
+                      {renderHighlightedText(
+                        `${record.previewSnippet}${record.previewSnippet.endsWith('.') ? '' : '...'}`,
+                        record.matchedTerms
+                      )}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
+            </Box>
+          </CardContent>
+        </Card>
+      )}
     </WorkflowPage>
   );
 }
