@@ -1,12 +1,10 @@
 import { Button as MuiButton, styled } from '@mui/material';
 
-import { type Theme } from '@/theme/theme';
 import { tokens } from '@/theme/tokens';
 
-export const StyledButton = styled(MuiButton)<{ $size?: 'sm' | 'md' | 'lg' }>(({
-  theme,
-  $size = 'md',
-}) => {
+export const StyledButton = styled(MuiButton, {
+  shouldForwardProp: prop => prop !== '$size',
+})<{ $size?: 'sm' | 'md' | 'lg' }>(({ $size = 'md' }) => {
   const sizes = {
     sm: {
       padding: `${tokens.spacing.xs} ${tokens.spacing.sm}`,

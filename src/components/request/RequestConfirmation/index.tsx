@@ -266,7 +266,9 @@ export function RequestConfirmation({
         <Button
           variant='outlined'
           size='large'
-          onClick={() => (window.location.href = '/status')}
+          onClick={() =>
+            (window.location.href = `/status?trackingId=${encodeURIComponent(request.trackingId)}`)
+          }
         >
           Track This Request
         </Button>

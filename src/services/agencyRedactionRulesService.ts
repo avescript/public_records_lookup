@@ -654,9 +654,9 @@ export const agencyRedactionRulesService = new AgencyRedactionRulesService();
 export default agencyRedactionRulesService;
 
 // Re-export types for convenience
-export {
+export type {
   AgencyRedactionTemplate,
   RedactionConfig,
   RedactionRule,
-  SensitivityLevel,
 } from './agencyTypes';
+export { SensitivityLevel } from './agencyTypes';

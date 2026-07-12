@@ -130,8 +130,21 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
     >
       {/* Simple Search and Action Bar */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-          <Box sx={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+            alignItems: { xs: 'stretch', sm: 'center' },
+            flexDirection: { xs: 'column', sm: 'row' },
+          }}
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              flex: 1,
+              maxWidth: { xs: '100%', sm: '400px' },
+            }}
+          >
             <SearchIcon
               sx={{
                 position: 'absolute',
@@ -161,7 +174,13 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
           </Button>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+            flexDirection: { xs: 'column', sm: 'row' },
+          }}
+        >
           <Button variant='outline' size='md' onClick={handleSelectAll}>
             {records.every(r => r.selected) ? 'Deselect All' : 'Select All'}
           </Button>
@@ -196,7 +215,7 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
         sx={{
           display: 'grid',
           gap: 2,
-          gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
         }}
       >
         {records.map(record => (

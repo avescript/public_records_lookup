@@ -133,11 +133,20 @@ export const saveRequest = async (
         '🤖 [Request Service] Starting automatic AI matching for mock request:',
         result.trackingId
       );
-      await findMatches(result.id, requestData.description);
-      console.log(
-        '✅ [Request Service] Automatic AI matching completed for mock request:',
-        result.trackingId
-      );
+      void findMatches(result.id, requestData.description)
+        .then(() => {
+          console.log(
+            '✅ [Request Service] Automatic AI matching completed for mock request:',
+            result.trackingId
+          );
+        })
+        .catch(matchError => {
+          console.warn(
+            '⚠️ [Request Service] Automatic AI matching failed for mock request:',
+            result.trackingId,
+            matchError
+          );
+        });
     } catch (matchError) {
       console.warn(
         '⚠️ [Request Service] Automatic AI matching failed for mock request:',
@@ -181,11 +190,20 @@ export const saveRequest = async (
         '🤖 [Request Service] Starting automatic AI matching for request:',
         trackingId
       );
-      await findMatches(docRef.id, requestData.description);
-      console.log(
-        '✅ [Request Service] Automatic AI matching completed for request:',
-        trackingId
-      );
+      void findMatches(docRef.id, requestData.description)
+        .then(() => {
+          console.log(
+            '✅ [Request Service] Automatic AI matching completed for request:',
+            trackingId
+          );
+        })
+        .catch(matchError => {
+          console.warn(
+            '⚠️ [Request Service] Automatic AI matching failed for request:',
+            trackingId,
+            matchError
+          );
+        });
     } catch (matchError) {
       console.warn(
         '⚠️ [Request Service] Automatic AI matching failed for request:',
@@ -211,11 +229,20 @@ export const saveRequest = async (
         '🤖 [Request Service] Starting automatic AI matching for mock request:',
         result.trackingId
       );
-      await findMatches(result.id, requestData.description);
-      console.log(
-        '✅ [Request Service] Automatic AI matching completed for mock request:',
-        result.trackingId
-      );
+      void findMatches(result.id, requestData.description)
+        .then(() => {
+          console.log(
+            '✅ [Request Service] Automatic AI matching completed for mock request:',
+            result.trackingId
+          );
+        })
+        .catch(matchError => {
+          console.warn(
+            '⚠️ [Request Service] Automatic AI matching failed for mock request:',
+            result.trackingId,
+            matchError
+          );
+        });
     } catch (matchError) {
       console.warn(
         '⚠️ [Request Service] Automatic AI matching failed for mock request:',

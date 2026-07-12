@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search as SearchIcon } from '@mui/icons-material';
 import {
   Alert,
@@ -15,6 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import { format } from 'date-fns';
+import { useSearchParams } from 'next/navigation';
 
 import { Button, TextField } from '@/components/migration';
 
@@ -25,13 +26,16 @@ import {
 } from '../../services/requestService';
 
 export default function StatusLookupPage() {
+  const searchParams = useSearchParams();
   const [trackingId, setTrackingId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [request, setRequest] = useState<StoredRequest | null>(null);
 
-  const handleSearch = async () => {
-    if (!trackingId.trim()) {
+  const handleSearch = async (queryTrackingId?: string) => {
+    const trackingIdValue = (queryTrackingId ?? trackingId).trim();
+
+    if (!trackingIdValue) {
       setError('Please enter a tracking ID');
       return;
     }
@@ -41,7 +45,7 @@ export default function StatusLookupPage() {
     setRequest(null);
 
     try {
-      const requestData = await getRequestByTrackingId(trackingId.trim());
+      const requestData = await getRequestByTrackingId(trackingIdValue);
       if (!requestData) {
         setError(
           'Request not found. Please check your tracking ID and try again.'
@@ -64,10 +68,18 @@ export default function StatusLookupPage() {
     }
   };
 
+  useEffect(() => {
+    const trackingIdFromQuery = searchParams.get('trackingId')?.trim();
+    if (!trackingIdFromQuery) return;
+
+    setTrackingId(trackingIdFromQuery);
+    void handleSearch(trackingIdFromQuery);
+  }, [searchParams]);
+
   const formatDate = (timestamp: any) => {
     if (!timestamp) return '';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return format(date, 'MMMM d, yyyy \'at\' h:mm a');
+    return format(date, "MMMM d, yyyy 'at' h:mm a");
   };
 
   const getDepartmentDisplayName = (department: string) => {
@@ -158,7 +170,9 @@ export default function StatusLookupPage() {
                   <SearchIcon />
                 )
               }
-              onClick={handleSearch}
+              onClick={() => {
+                void handleSearch();
+              }}
               disabled={loading || !trackingId.trim()}
               sx={{ minWidth: 120, height: 56 }}
             >

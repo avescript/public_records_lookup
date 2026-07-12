@@ -133,6 +133,7 @@ export const Select: React.FC<SelectProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isOpen, setIsOpen] = React.useState(false);
+  const reactId = React.useId();
 
   // Filter options based on search term
   const filteredOptions = React.useMemo(() => {
@@ -202,7 +203,7 @@ export const Select: React.FC<SelectProps> = ({
   };
 
   // Generate unique ID if not provided
-  const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
+  const selectId = id || `select-${reactId.replace(/:/g, '')}`;
   const labelId = `${selectId}-label`;
   const helperTextId = `${selectId}-helper-text`;
 

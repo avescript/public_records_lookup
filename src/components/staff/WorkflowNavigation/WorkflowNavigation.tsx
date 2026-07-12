@@ -13,6 +13,8 @@ import {
   stepConnectorClasses,
   type StepIconProps,
   styled,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
@@ -180,6 +182,8 @@ export function WorkflowNavigation({
   onStepValidationRequest,
 }: WorkflowNavigationProps) {
   const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const currentStepIndex = steps.findIndex(step => step.key === currentStep);
   const progress = ((currentStepIndex + 1) / steps.length) * 100;
@@ -366,7 +370,8 @@ export function WorkflowNavigation({
           <Stepper
             activeStep={currentStepIndex}
             connector={<StyledStepConnector />}
-            alternativeLabel
+            alternativeLabel={!isMobile}
+            orientation={isMobile ? 'vertical' : 'horizontal'}
           >
             {steps.map((step, index) => {
               const isCompleted = isStepCompleted(step.key);

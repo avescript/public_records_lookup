@@ -409,6 +409,7 @@ export function MetricsPanel({
                   </ListItemAvatar>
                   <ListItemText
                     primary={activity.title}
+                    secondaryTypographyProps={{ component: 'div' }}
                     secondary={
                       <Box>
                         <Typography variant='caption' component='span'>
