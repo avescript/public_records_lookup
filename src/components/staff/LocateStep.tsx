@@ -114,9 +114,10 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
   };
 
   const handleProceedToRedact = () => {
-    console.log('Proceeding to redact with selected records:', selectedRecords);
-    // Navigate to the redact step in the workflow
-    router.push(`/admin/request/${requestId}/workflow/redact`);
+    const recordIds = selectedRecords.map(r => r.id).join(',');
+    router.push(
+      `/admin/request/${requestId}/workflow/redact?records=${encodeURIComponent(recordIds)}`
+    );
   };
 
   return (

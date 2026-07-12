@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 
+import { ClientProviders } from '@/components/providers/ClientProviders';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
 export const metadata: Metadata = {
@@ -16,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <ClientProviders>{children}</ClientProviders>
+        </ThemeProvider>
       </body>
     </html>
   );

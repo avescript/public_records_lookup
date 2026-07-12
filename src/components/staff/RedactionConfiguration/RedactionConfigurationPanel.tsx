@@ -61,15 +61,14 @@ import {
   Tooltip,
   Typography,
 } from '@/components/migration';
-
-import { useAgency } from '../../contexts/AgencyContext';
+import { useAgency } from '@/contexts/AgencyContext';
 import {
   enhancedPIIEngine,
   LegalExemptionType,
   RedactionSensitivityMode,
   SensitivityModeConfig,
-} from '../../services/enhancedPIIEngine';
-import { PIIType } from '../../services/piiDetectionService';
+} from '@/services/enhancedPIIEngine';
+import { PIIType } from '@/services/piiDetectionService';
 
 export interface RedactionConfigurationSettings {
   sensitivityMode: RedactionSensitivityMode;
