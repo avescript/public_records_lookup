@@ -2,6 +2,8 @@
 
 ## Overall Status
 
+Current Priority - Version 2 Workflow: **EPIC V2-2 (Step 1 Locate) IN PROGRESS** ⏳ - **July 12, 2026**
+
 Phase 1 - Core Implementation: **EPIC 1 COMPLETED** ✅
 Phase 2 - Staff Workflows: **EPIC 2 COMPLETED** ✅  
 Phase 3 - AI Search & Matching: **EPIC 3 COMPLETED** ✅

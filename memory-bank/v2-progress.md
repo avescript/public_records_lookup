@@ -1,5 +1,15 @@
 # V2 Development Progress
 
+## Epic V2-2: Step 1 - Locate ⏳ IN PROGRESS
+
+**Start Date:** July 12, 2026
+
+### Current Workstream
+
+- Implementing US-V2-020 AI-Enhanced Record Discovery in locate workflow
+- Scope: confidence scoring, semantic ranking, highlight snippets, and batch record processing
+- Next: connect search assistant flows in US-V2-021 after locate baseline is complete
+
 ## Epic V2-1: Request Landing Page ✅ COMPLETED
 
 **Completion Date:** March 9, 2026

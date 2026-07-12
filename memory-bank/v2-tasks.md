@@ -94,16 +94,16 @@
 
 ### US-V2-020: AI-Enhanced Record Discovery ⏳
 
-- [ ] **Enhanced AI Matching**
-  - [ ] Upgrade existing AI matching with confidence scoring
-  - [ ] Add semantic search across record content
-  - [ ] Implement relevance ranking algorithms
-  - [ ] Create record preview with highlight snippets
-  - [ ] Add batch record processing capabilities
+- [x] **Enhanced AI Matching**
+  - [x] Upgrade existing AI matching with confidence scoring
+  - [x] Add semantic search across record content
+  - [x] Implement relevance ranking algorithms
+  - [x] Create record preview with highlight snippets
+  - [x] Add batch record processing capabilities
 
 - [ ] **Record Review Interface**
-  - [ ] Design record preview panel with metadata display
-  - [ ] Add record selection/deselection with checkboxes
+  - [x] Design record preview panel with metadata display
+  - [x] Add record selection/deselection with checkboxes
   - [ ] Implement record organization (folders, tags, categories)
   - [ ] Create record comparison view (side-by-side)
   - [ ] Add manual record upload and attachment
