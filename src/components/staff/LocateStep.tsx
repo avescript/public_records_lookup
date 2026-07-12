@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import {
   AutoAwesome as AIIcon,
   Bolt as LightningIcon,
+  Chat as ChatIcon,
   Checklist as ChecklistIcon,
   CompareArrows as CompareIcon,
   Description as DocumentIcon,
@@ -27,6 +28,7 @@ import {
   Stack,
   Typography,
 } from '@/components/migration';
+import { LocateChatAssistant } from '@/components/staff/LocateChatAssistant';
 import { WorkflowStep } from '@/components/staff/WorkflowNavigation';
 import { WorkflowPage } from '@/components/staff/WorkflowPage';
 
@@ -297,6 +299,7 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
   const [targetCategory, setTargetCategory] = useState(defaultCategories[0]);
   const [tagInput, setTagInput] = useState('');
   const [uploadNotice, setUploadNotice] = useState<string | null>(null);
+  const [isChatAssistantOpen, setIsChatAssistantOpen] = useState(false);
   const [activePreviewRecordId, setActivePreviewRecordId] = useState<
     string | null
   >(mockRecords[0]?.id ?? null);
@@ -496,6 +499,25 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
     medium: 'warning',
     low: 'error',
   } as const;
+
+  const assistantContext = useMemo(() => {
+    const topDepartments = Array.from(
+      new Set(allRankedRecords.map(record => record.department))
+    ).slice(0, 3);
+
+    const topCategories = Array.from(
+      new Set(allRankedRecords.map(record => record.category))
+    ).slice(0, 3);
+
+    return {
+      requestId,
+      totalRecords: allRankedRecords.length,
+      highConfidenceCount,
+      topDepartments,
+      topCategories,
+      currentQuery: searchTerm,
+    };
+  }, [allRankedRecords, highConfidenceCount, requestId, searchTerm]);
 
   return (
     <WorkflowPage
@@ -780,6 +802,14 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
           >
             <AIIcon />
             Select High Confidence
+          </Button>
+          <Button
+            variant='outline'
+            size='md'
+            onClick={() => setIsChatAssistantOpen(true)}
+          >
+            <ChatIcon />
+            AI Assistant
           </Button>
         </Box>
 
@@ -1180,6 +1210,13 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
           </CardContent>
         </Card>
       )}
+
+      <LocateChatAssistant
+        open={isChatAssistantOpen}
+        onClose={() => setIsChatAssistantOpen(false)}
+        context={assistantContext}
+        onApplyQuery={query => setSearchTerm(query)}
+      />
     </WorkflowPage>
   );
 }

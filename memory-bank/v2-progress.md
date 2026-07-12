@@ -6,9 +6,10 @@
 
 ### Current Workstream
 
-- Implementing US-V2-020 AI-Enhanced Record Discovery in locate workflow
-- Completed: confidence scoring, semantic ranking, highlight snippets, batch processing, side-by-side comparison view, record organization (folders/tags/categories), and manual record upload/attachment
-- Next: start search assistant flows in US-V2-021
+- US-V2-020 baseline complete in locate workflow
+- US-V2-021 started on branch `feature/US-V2-021-ai-chatbot-search-assistant`
+- Completed in US-V2-021 (initial pass): chat interface with conversation history, context-aware query suggestions, and one-click suggested search refinements
+- Next: integrate AI provider (OpenAI/Vertex), add record summarization, and search reasoning output
 
 ## Epic V2-1: Request Landing Page ✅ COMPLETED
 

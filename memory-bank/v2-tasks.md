@@ -112,10 +112,10 @@
 
 - [ ] **Chatbot Integration**
   - [ ] Integrate OpenAI/Vertex AI for conversational search
-  - [ ] Design chat interface with conversation history
-  - [ ] Implement context-aware search queries
+  - [x] Design chat interface with conversation history
+  - [x] Implement context-aware search queries
   - [ ] Add natural language record summarization
-  - [ ] Create suggested search queries and refinements
+  - [x] Create suggested search queries and refinements
 
 - [ ] **Advanced Search Features**
   - [ ] Natural language query processing
