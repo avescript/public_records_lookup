@@ -8,8 +8,8 @@
 
 - US-V2-020 baseline complete in locate workflow
 - US-V2-021 started on branch `feature/US-V2-021-ai-chatbot-search-assistant`
-- Completed in US-V2-021: chat interface with conversation history, context-aware query suggestions/refinements, aiChatService-backed assistant responses, natural-language record summarization, and search reasoning output
-- Next: integrate external provider path (OpenAI/Vertex), add multi-criteria query controls, and add save/export query flows
+- Completed in US-V2-021: chat interface with conversation history, context-aware query suggestions/refinements, aiChatService-backed assistant responses, natural-language record summarization, search reasoning output, provider-backed conversational routing (OpenAI/Vertex + fallback), natural-language query parsing, multi-criteria filters (date range, department, content type), and saved query persistence/reuse controls
+- Next: implement export search results and summaries
 
 ## Epic V2-1: Request Landing Page ✅ COMPLETED
 

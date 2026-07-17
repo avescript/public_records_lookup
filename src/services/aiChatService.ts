@@ -19,14 +19,24 @@ import { enhancedAIRecordService } from './enhancedAIRecordService';
  * Provides OpenAI integration for natural language processing and search guidance
  */
 export class AIChatService {
+  private provider: 'mock' | 'openai' | 'vertex';
   private apiKey: string;
   private apiEndpoint: string;
+  private openAIModel: string;
+  private vertexEndpoint: string;
   private conversations: Map<string, ChatConversation> = new Map();
   private searchHistory: Map<string, EnhancedMatchCandidate[]> = new Map();
 
   constructor(apiKey?: string) {
+    this.provider =
+      (process.env.NEXT_PUBLIC_AI_CHAT_PROVIDER as
+        | 'mock'
+        | 'openai'
+        | 'vertex') || 'mock';
     this.apiKey = apiKey || process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
     this.apiEndpoint = 'https://api.openai.com/v1/chat/completions';
+    this.openAIModel = process.env.NEXT_PUBLIC_OPENAI_MODEL || 'gpt-4o-mini';
+    this.vertexEndpoint = process.env.NEXT_PUBLIC_VERTEX_CHAT_ENDPOINT || '';
   }
 
   /**
@@ -382,8 +392,160 @@ export class AIChatService {
     intent: SearchIntent,
     searchResults: EnhancedMatchCandidate[] | null
   ): Promise<{ content: string; suggestions?: SearchSuggestion[] }> {
-    // Mock AI response generation - in production, this would call OpenAI API
+    if (this.provider === 'openai' && this.apiKey) {
+      const providerResponse = await this.generateOpenAIResponse(
+        userMessage,
+        conversation,
+        searchResults
+      );
+      if (providerResponse) return providerResponse;
+    }
 
+    if (this.provider === 'vertex' && this.vertexEndpoint) {
+      const providerResponse = await this.generateVertexResponse(
+        userMessage,
+        conversation,
+        searchResults
+      );
+      if (providerResponse) return providerResponse;
+    }
+
+    return this.generateMockAIResponse(userMessage, intent, searchResults);
+  }
+
+  private async generateOpenAIResponse(
+    userMessage: string,
+    conversation: ChatConversation,
+    searchResults: EnhancedMatchCandidate[] | null
+  ): Promise<{ content: string; suggestions?: SearchSuggestion[] } | null> {
+    try {
+      const systemPrompt =
+        'You are an AI search assistant for public records staff. ' +
+        'Return concise guidance for refining queries and selecting relevant records. ' +
+        'When possible, suggest 2-4 refined search queries.';
+
+      const contextSnippet = searchResults
+        ? `Current result count: ${searchResults.length}. Top titles: ${searchResults
+            .slice(0, 3)
+            .map(result => result.title)
+            .join('; ')}`
+        : 'No search results available yet.';
+
+      const messages = [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content:
+            `Request ${conversation.requestId}. ${contextSnippet}\n` +
+            `User query: ${userMessage}\n` +
+            'Respond with practical next steps and include refined queries.',
+        },
+      ];
+
+      const response = await fetch(this.apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: this.openAIModel,
+          messages,
+          temperature: 0.3,
+        }),
+      });
+
+      if (!response.ok) return null;
+
+      const payload = (await response.json()) as {
+        choices?: { message?: { content?: string } }[];
+      };
+
+      const content = payload.choices?.[0]?.message?.content?.trim();
+      if (!content) return null;
+
+      return {
+        content,
+        suggestions: this.deriveSuggestionsFromText(content, userMessage),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  private async generateVertexResponse(
+    userMessage: string,
+    conversation: ChatConversation,
+    searchResults: EnhancedMatchCandidate[] | null
+  ): Promise<{ content: string; suggestions?: SearchSuggestion[] } | null> {
+    try {
+      // Vertex calls should go through a backend endpoint/proxy to avoid exposing credentials.
+      const response = await fetch(this.vertexEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requestId: conversation.requestId,
+          prompt: userMessage,
+          searchResults: searchResults?.slice(0, 5).map(result => ({
+            id: result.id,
+            title: result.title,
+            confidence: result.confidence,
+          })),
+        }),
+      });
+
+      if (!response.ok) return null;
+
+      const payload = (await response.json()) as {
+        content?: string;
+        suggestions?: string[];
+      };
+
+      if (!payload.content) return null;
+
+      return {
+        content: payload.content,
+        suggestions: (payload.suggestions || []).map(query => ({
+          query,
+          description: 'Suggested refinement from Vertex response',
+        })),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  private deriveSuggestionsFromText(
+    content: string,
+    fallbackSeed: string
+  ): SearchSuggestion[] {
+    const lines = content
+      .split('\n')
+      .map(line => line.replace(/^[-*\d.\s]+/, '').trim())
+      .filter(Boolean)
+      .filter(line => line.length > 8)
+      .slice(0, 3);
+
+    if (lines.length === 0) {
+      return [
+        {
+          query: `${fallbackSeed} high confidence`,
+          description: 'Filter to strongest relevance matches',
+        },
+      ];
+    }
+
+    return lines.map(line => ({
+      query: line,
+      description: 'Refined query suggestion',
+    }));
+  }
+
+  private generateMockAIResponse(
+    userMessage: string,
+    intent: SearchIntent,
+    searchResults: EnhancedMatchCandidate[] | null
+  ): { content: string; suggestions?: SearchSuggestion[] } {
     let content = '';
     const suggestions: SearchSuggestion[] = [];
 
