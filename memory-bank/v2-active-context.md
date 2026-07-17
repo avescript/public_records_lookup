@@ -6,12 +6,12 @@
 **V1 Foundation:** ✅ Complete (All 7 epics implemented and tested)  
 **V2 Planning:** ✅ Complete - Development started  
 **Current Focus:** Epic V2-3 Step 2 Redact - US-V2-030 Enhanced AI Redaction System ⏳
-**Latest:** US-V2-030 item 1 completed (PII detection upgraded with multi-level sensitivity filtering and UI controls) - July 17, 2026
-**Now Working:** Continue US-V2-030 AI Redaction Engine with legal exemption detection and categorization
+**Latest:** US-V2-030 item 2 completed (legal exemption detection/categorization added to PII findings with category filtering) - July 17, 2026
+**Now Working:** Continue US-V2-030 AI Redaction Engine with redaction confidence scoring
 **Previous:** Hybrid migration complete ✅ - March 9, 2026 (42 critical files converted)
 **Migration Roadmap:** ✅ COMPLETE - 63 adapters across 8 phases, 79 ESLint rules
 **Hybrid Strategy:** ✅ APPLIED - 42 critical files migrated, ~120 files incremental via ESLint
-**Next Action:** Implement legal exemption detection and categorization (US-V2-030 item 2)
+**Next Action:** Implement redaction confidence scoring (US-V2-030 item 3)
 
 ## Component Migration: Material-UI Audit ✅ COMPLETED March 8, 2026
 

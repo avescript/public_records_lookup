@@ -132,7 +132,7 @@
 
 - [ ] **AI Redaction Engine**
   - [x] Upgrade PII detection with multiple sensitivity levels
-  - [ ] Add legal exemption detection and categorization
+  - [x] Add legal exemption detection and categorization
   - [ ] Implement redaction confidence scoring
   - [ ] Create custom redaction rule creation
   - [ ] Add batch redaction across multiple documents
