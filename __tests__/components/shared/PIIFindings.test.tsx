@@ -1,17 +1,25 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+
 import '@testing-library/jest-dom';
+
 import PIIFindings from '../../../src/components/shared/PIIFindings';
 import {
   piiDetectionService,
-  PIIType,
   PIIFinding,
+  PIIType,
 } from '../../../src/services/piiDetectionService';
 
 // Mock PII Detection Service
 jest.mock('../../../src/services/piiDetectionService', () => ({
   piiDetectionService: {
     getFindingsForRecord: jest.fn(),
+  },
+  PIISensitivityLevel: {
+    LOW: 'low',
+    MEDIUM: 'medium',
+    HIGH: 'high',
+    CRITICAL: 'critical',
   },
   PIIType: {
     SSN: 'SSN',
@@ -94,6 +102,7 @@ describe('PIIFindings', () => {
       totalFindings: 4,
       highConfidenceFindings: 3,
       piiTypesDetected: ['SSN', 'PHONE', 'ADDRESS', 'EMAIL'],
+      sensitivityBreakdown: { low: 0, medium: 2, high: 1, critical: 1 },
     });
   });
 
@@ -219,6 +228,7 @@ describe('PIIFindings', () => {
       totalFindings: 0,
       highConfidenceFindings: 0,
       piiTypesDetected: [],
+      sensitivityBreakdown: { low: 0, medium: 0, high: 0, critical: 0 },
     });
 
     render(<PIIFindings {...defaultProps} />);
@@ -240,6 +250,7 @@ describe('PIIFindings', () => {
       totalFindings: 0,
       highConfidenceFindings: 0,
       piiTypesDetected: [],
+      sensitivityBreakdown: { low: 0, medium: 0, high: 0, critical: 0 },
     });
 
     const { container } = render(
@@ -395,6 +406,7 @@ describe('PIIFindings', () => {
       totalFindings: 5,
       highConfidenceFindings: 3,
       piiTypesDetected: ['SSN', 'PHONE', 'ADDRESS', 'EMAIL', 'PERSON_NAME'],
+      sensitivityBreakdown: { low: 1, medium: 2, high: 1, critical: 1 },
     });
 
     render(<PIIFindings {...defaultProps} />);

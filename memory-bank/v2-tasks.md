@@ -131,7 +131,7 @@
 ### US-V2-030: Enhanced AI Redaction System ⏳
 
 - [ ] **AI Redaction Engine**
-  - [ ] Upgrade PII detection with multiple sensitivity levels
+  - [x] Upgrade PII detection with multiple sensitivity levels
   - [ ] Add legal exemption detection and categorization
   - [ ] Implement redaction confidence scoring
   - [ ] Create custom redaction rule creation

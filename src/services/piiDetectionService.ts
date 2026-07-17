@@ -14,6 +14,20 @@ export interface PIIFinding {
   height: number;
   text: string;
   reasoning: string;
+  sensitivityLevel?: PIISensitivityLevel;
+}
+
+export enum PIISensitivityLevel {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical',
+}
+
+export interface PIIDetectionOptions {
+  sensitivityLevel?: PIISensitivityLevel;
+  minConfidence?: number;
+  piiTypes?: PIIType[];
 }
 
 export enum PIIType {
@@ -40,9 +54,38 @@ export interface PIIFindingsResult {
   totalFindings: number;
   highConfidenceFindings: number;
   piiTypesDetected: PIIType[];
+  sensitivityBreakdown: Record<PIISensitivityLevel, number>;
 }
 
 export class PIIDetectionService {
+  private readonly sensitivityRank: Record<PIISensitivityLevel, number> = {
+    [PIISensitivityLevel.LOW]: 1,
+    [PIISensitivityLevel.MEDIUM]: 2,
+    [PIISensitivityLevel.HIGH]: 3,
+    [PIISensitivityLevel.CRITICAL]: 4,
+  };
+
+  private readonly criticalPIITypes: Set<PIIType> = new Set([
+    PIIType.SSN,
+    PIIType.ACCOUNT_NUMBER,
+    PIIType.ROUTING_NUMBER,
+    PIIType.MEDICAL_ID,
+    PIIType.CONFIDENTIAL_SOURCE,
+  ]);
+
+  private readonly highPIITypes: Set<PIIType> = new Set([
+    PIIType.DRIVERS_LICENSE,
+    PIIType.DOB,
+    PIIType.PERSON_NAME,
+    PIIType.ADDRESS,
+  ]);
+
+  private readonly mediumPIITypes: Set<PIIType> = new Set([
+    PIIType.PHONE,
+    PIIType.EMAIL,
+    PIIType.BADGE_NUMBER,
+  ]);
+
   private findings: PIIFinding[] = [];
   private initialized: boolean = false;
 
@@ -100,12 +143,78 @@ export class PIIDetectionService {
         height: parseInt(values[8]),
         text: values[9],
         reasoning: values[10],
+        sensitivityLevel: this.calculateSensitivityLevel(
+          values[3] as PIIType,
+          parseFloat(values[4])
+        ),
       };
 
       findings.push(finding);
     }
 
     return findings;
+  }
+
+  private calculateSensitivityLevel(
+    piiType: PIIType,
+    confidence: number
+  ): PIISensitivityLevel {
+    let level: PIISensitivityLevel;
+
+    if (this.criticalPIITypes.has(piiType)) {
+      level = PIISensitivityLevel.CRITICAL;
+    } else if (this.highPIITypes.has(piiType)) {
+      level = PIISensitivityLevel.HIGH;
+    } else if (this.mediumPIITypes.has(piiType)) {
+      level = PIISensitivityLevel.MEDIUM;
+    } else {
+      level = PIISensitivityLevel.LOW;
+    }
+
+    if (confidence >= 0.92 && level !== PIISensitivityLevel.CRITICAL) {
+      if (level === PIISensitivityLevel.HIGH) {
+        return PIISensitivityLevel.CRITICAL;
+      }
+      if (level === PIISensitivityLevel.MEDIUM) {
+        return PIISensitivityLevel.HIGH;
+      }
+      return PIISensitivityLevel.MEDIUM;
+    }
+
+    return level;
+  }
+
+  private meetsSensitivityThreshold(
+    finding: PIIFinding,
+    threshold?: PIISensitivityLevel
+  ): boolean {
+    if (!threshold) return true;
+
+    const level =
+      finding.sensitivityLevel ||
+      this.calculateSensitivityLevel(finding.piiType, finding.confidence);
+
+    return this.sensitivityRank[level] >= this.sensitivityRank[threshold];
+  }
+
+  private buildSensitivityBreakdown(
+    findings: PIIFinding[]
+  ): Record<PIISensitivityLevel, number> {
+    const breakdown: Record<PIISensitivityLevel, number> = {
+      [PIISensitivityLevel.LOW]: 0,
+      [PIISensitivityLevel.MEDIUM]: 0,
+      [PIISensitivityLevel.HIGH]: 0,
+      [PIISensitivityLevel.CRITICAL]: 0,
+    };
+
+    findings.forEach(finding => {
+      const level =
+        finding.sensitivityLevel ||
+        this.calculateSensitivityLevel(finding.piiType, finding.confidence);
+      breakdown[level] += 1;
+    });
+
+    return breakdown;
   }
 
   /**
@@ -136,7 +245,10 @@ export class PIIDetectionService {
   /**
    * Get PII findings for a specific record
    */
-  async getFindingsForRecord(recordId: string): Promise<PIIFindingsResult> {
+  async getFindingsForRecord(
+    recordId: string,
+    options: PIIDetectionOptions = {}
+  ): Promise<PIIFindingsResult> {
     if (!this.initialized) {
       await this.initialize();
     }
@@ -161,20 +273,40 @@ export class PIIDetectionService {
       );
     }
 
-    const highConfidenceFindings = allFindings.filter(
+    const filteredFindings = allFindings.filter(finding => {
+      const typeMatches = options.piiTypes
+        ? options.piiTypes.includes(finding.piiType)
+        : true;
+      const confidenceMatches =
+        options.minConfidence !== undefined
+          ? finding.confidence >= options.minConfidence
+          : true;
+      const sensitivityMatches = this.meetsSensitivityThreshold(
+        finding,
+        options.sensitivityLevel
+      );
+
+      return typeMatches && confidenceMatches && sensitivityMatches;
+    });
+
+    const highConfidenceFindings = filteredFindings.filter(
       finding => finding.confidence >= 0.8
     );
 
     const piiTypesDetected = Array.from(
-      new Set(allFindings.map(finding => finding.piiType))
+      new Set(filteredFindings.map(finding => finding.piiType))
     );
+
+    const sensitivityBreakdown =
+      this.buildSensitivityBreakdown(filteredFindings);
 
     return {
       recordId,
-      findings: allFindings,
-      totalFindings: allFindings.length,
+      findings: filteredFindings,
+      totalFindings: filteredFindings.length,
       highConfidenceFindings: highConfidenceFindings.length,
       piiTypesDetected,
+      sensitivityBreakdown,
     };
   }
 
@@ -216,7 +348,8 @@ export class PIIDetectionService {
    * Get PII findings for a specific record (original method preserved)
    */
   async getFindingsForRecordDirect(
-    recordId: string
+    recordId: string,
+    options: PIIDetectionOptions = {}
   ): Promise<PIIFindingsResult> {
     if (!this.initialized) {
       await this.initialize();
@@ -226,20 +359,40 @@ export class PIIDetectionService {
       finding => finding.recordId === recordId
     );
 
-    const highConfidenceFindings = recordFindings.filter(
+    const filteredFindings = recordFindings.filter(finding => {
+      const typeMatches = options.piiTypes
+        ? options.piiTypes.includes(finding.piiType)
+        : true;
+      const confidenceMatches =
+        options.minConfidence !== undefined
+          ? finding.confidence >= options.minConfidence
+          : true;
+      const sensitivityMatches = this.meetsSensitivityThreshold(
+        finding,
+        options.sensitivityLevel
+      );
+
+      return typeMatches && confidenceMatches && sensitivityMatches;
+    });
+
+    const highConfidenceFindings = filteredFindings.filter(
       finding => finding.confidence >= 0.8
     );
 
     const piiTypesDetected = Array.from(
-      new Set(recordFindings.map(finding => finding.piiType))
+      new Set(filteredFindings.map(finding => finding.piiType))
     );
+
+    const sensitivityBreakdown =
+      this.buildSensitivityBreakdown(filteredFindings);
 
     return {
       recordId,
-      findings: recordFindings,
-      totalFindings: recordFindings.length,
+      findings: filteredFindings,
+      totalFindings: filteredFindings.length,
       highConfidenceFindings: highConfidenceFindings.length,
       piiTypesDetected,
+      sensitivityBreakdown,
     };
   }
 

@@ -43,6 +43,7 @@ import {
   piiDetectionService,
   PIIFinding,
   PIIFindingsResult,
+  PIISensitivityLevel,
   PIIType,
 } from '../../../services/piiDetectionService';
 
@@ -190,13 +191,21 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
     'all' | 'high' | 'medium' | 'low'
   >('all');
   const [showOnlyHighRisk, setShowOnlyHighRisk] = useState(false);
+  const [sensitivityFilter, setSensitivityFilter] = useState<
+    'all' | PIISensitivityLevel
+  >('all');
 
   useEffect(() => {
     const loadFindings = async () => {
       try {
         setLoading(true);
         setError(null);
-        const result = await piiDetectionService.getFindingsForRecord(recordId);
+        const result = await piiDetectionService.getFindingsForRecord(
+          recordId,
+          sensitivityFilter === 'all'
+            ? {}
+            : { sensitivityLevel: sensitivityFilter }
+        );
         setFindingsResult(result);
 
         // Auto-expand first few groups
@@ -212,7 +221,7 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
     };
 
     loadFindings();
-  }, [recordId]);
+  }, [recordId, sensitivityFilter]);
 
   const filteredFindings = useMemo(() => {
     if (!findingsResult) return [];
@@ -421,6 +430,27 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
                 <MenuItem value='high'>High (≥80%)</MenuItem>
                 <MenuItem value='medium'>Medium (70-79%)</MenuItem>
                 <MenuItem value='low'>Low (&lt;70%)</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl size='small' sx={{ minWidth: 140 }}>
+              <InputLabel>Sensitivity</InputLabel>
+              <Select
+                value={sensitivityFilter}
+                label='Sensitivity'
+                onChange={e =>
+                  setSensitivityFilter(
+                    e.target.value as 'all' | PIISensitivityLevel
+                  )
+                }
+              >
+                <MenuItem value='all'>All Levels</MenuItem>
+                <MenuItem value={PIISensitivityLevel.LOW}>Low+</MenuItem>
+                <MenuItem value={PIISensitivityLevel.MEDIUM}>Medium+</MenuItem>
+                <MenuItem value={PIISensitivityLevel.HIGH}>High+</MenuItem>
+                <MenuItem value={PIISensitivityLevel.CRITICAL}>
+                  Critical Only
+                </MenuItem>
               </Select>
             </FormControl>
 

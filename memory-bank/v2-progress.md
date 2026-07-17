@@ -9,7 +9,9 @@
 - US-V2-020 baseline complete in locate workflow
 - US-V2-021 implemented on branch `feature/US-V2-021-ai-chatbot-search-assistant`
 - Completed in US-V2-021: chat interface with conversation history, context-aware query suggestions/refinements, aiChatService-backed assistant responses, natural-language record summarization, search reasoning output, provider-backed conversational routing (OpenAI/Vertex + fallback), natural-language query parsing, multi-criteria filters (date range, department, content type), saved query persistence/reuse controls, and export workflows for search results/summaries (CSV/JSON)
-- Next: move to next prioritized V2 item beyond US-V2-021
+- Started US-V2-030 on branch `feature/US-V2-030-enhanced-pii-sensitivity-levels`
+- Completed in US-V2-030 item 1: upgraded `piiDetectionService` with multi-level sensitivity classification/filtering (`low|medium|high|critical`), added sensitivity-aware API options for record lookups, surfaced sensitivity selector in `PIIFindings`, and expanded related unit/component tests
+- Next: implement US-V2-030 legal exemption detection and categorization
 
 ## Epic V2-1: Request Landing Page ✅ COMPLETED
 

@@ -1,6 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+
 import '@testing-library/jest-dom';
+
 import PDFPreview from '../../../src/components/shared/PDFPreview';
 import {
   piiDetectionService,
@@ -90,6 +92,7 @@ describe('PDFPreview', () => {
       totalFindings: 2,
       highConfidenceFindings: 1,
       piiTypesDetected: ['SSN', 'PHONE'],
+      sensitivityBreakdown: { low: 0, medium: 1, high: 0, critical: 1 },
     });
   });
 

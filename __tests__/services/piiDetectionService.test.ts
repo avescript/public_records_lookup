@@ -1,7 +1,7 @@
 import {
   PIIDetectionService,
+  PIISensitivityLevel,
   PIIType,
-  PIIFindingsResult,
 } from '../../src/services/piiDetectionService';
 
 // Mock fetch function
@@ -84,6 +84,7 @@ describe('PIIDetectionService', () => {
         height: 15,
         text: '123-45-6789',
         reasoning: 'Pattern matches XXX-XX-XXXX format',
+        sensitivityLevel: PIISensitivityLevel.CRITICAL,
       });
     });
 
@@ -145,6 +146,14 @@ invalid,line
           PIIType.PERSON_NAME,
         ])
       );
+      expect(result.sensitivityBreakdown).toEqual(
+        expect.objectContaining({
+          low: expect.any(Number),
+          medium: expect.any(Number),
+          high: expect.any(Number),
+          critical: expect.any(Number),
+        })
+      );
     });
 
     it('should return empty result for non-existent record', async () => {
@@ -155,6 +164,47 @@ invalid,line
       expect(result.findings).toHaveLength(0);
       expect(result.highConfidenceFindings).toBe(0);
       expect(result.piiTypesDetected).toHaveLength(0);
+      expect(result.sensitivityBreakdown).toEqual({
+        low: 0,
+        medium: 0,
+        high: 0,
+        critical: 0,
+      });
+    });
+
+    it('should filter findings by minimum sensitivity level', async () => {
+      const result = await service.getFindingsForRecord('1', {
+        sensitivityLevel: PIISensitivityLevel.HIGH,
+      });
+
+      expect(result.totalFindings).toBe(2);
+      expect(
+        result.findings.every(finding =>
+          [PIISensitivityLevel.HIGH, PIISensitivityLevel.CRITICAL].includes(
+            finding.sensitivityLevel as PIISensitivityLevel
+          )
+        )
+      ).toBe(true);
+    });
+
+    it('should filter findings by minimum confidence', async () => {
+      const result = await service.getFindingsForRecord('1', {
+        minConfidence: 0.9,
+      });
+
+      expect(result.totalFindings).toBe(2);
+      expect(result.findings.every(finding => finding.confidence >= 0.9)).toBe(
+        true
+      );
+    });
+
+    it('should filter findings by pii type list', async () => {
+      const result = await service.getFindingsForRecord('1', {
+        piiTypes: [PIIType.SSN],
+      });
+
+      expect(result.totalFindings).toBe(1);
+      expect(result.findings[0].piiType).toBe(PIIType.SSN);
     });
 
     it('should initialize service if not already initialized', async () => {
