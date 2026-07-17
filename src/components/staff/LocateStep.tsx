@@ -8,6 +8,7 @@ import {
   Checklist as ChecklistIcon,
   CompareArrows as CompareIcon,
   Description as DocumentIcon,
+  Download as DownloadIcon,
   FilterList as FilterIcon,
   Folder as FolderIcon,
   Preview as PreviewIcon,
@@ -31,6 +32,7 @@ import {
 import { LocateChatAssistant } from '@/components/staff/LocateChatAssistant';
 import { WorkflowStep } from '@/components/staff/WorkflowNavigation';
 import { WorkflowPage } from '@/components/staff/WorkflowPage';
+import { aiChatService } from '@/services/aiChatService';
 
 export interface LocateStepProps {
   requestId: string;
@@ -77,6 +79,43 @@ interface SavedLocateQuery {
   dateStart: string;
   dateEnd: string;
   createdAt: string;
+}
+
+interface LocateExportSummary {
+  generatedAt: string;
+  requestId: string;
+  search: {
+    query: string;
+    filters: {
+      folder: string;
+      category: string;
+      department: string;
+      contentType: string;
+      dateStart: string;
+      dateEnd: string;
+    };
+  };
+  totals: {
+    scanned: number;
+    filtered: number;
+    selected: number;
+    highConfidence: number;
+  };
+  selectedRecordIds: string[];
+  records: Array<{
+    id: string;
+    title: string;
+    department: string;
+    contentType: PublicRecord['type'];
+    category: string;
+    dateCreated: string;
+    relevanceScore: number;
+    confidenceLevel: 'high' | 'medium' | 'low';
+    matchedTerms: string[];
+    tags: string[];
+  }>;
+  savedQueries: SavedLocateQuery[];
+  chatConversationMarkdown: string;
 }
 
 const mockRecords: PublicRecord[] = [
@@ -349,6 +388,11 @@ function parseLocateQuery(query: string): ParsedLocateQuery {
   return result;
 }
 
+function csvEscape(value: string): string {
+  const escaped = value.replace(/"/g, '""');
+  return `"${escaped}"`;
+}
+
 export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
   const savedQueriesStorageKey = `locate-saved-queries-${requestId}`;
   const router = useRouter();
@@ -619,6 +663,107 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
     setDateEndFilter('');
   };
 
+  const triggerDownload = (
+    content: string,
+    fileName: string,
+    mimeType: string
+  ) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const buildExportSummary = (): LocateExportSummary => {
+    return {
+      generatedAt: new Date().toISOString(),
+      requestId,
+      search: {
+        query: searchTerm,
+        filters: {
+          folder: folderFilter,
+          category: categoryFilter,
+          department: departmentFilter,
+          contentType: contentTypeFilter,
+          dateStart: dateStartFilter,
+          dateEnd: dateEndFilter,
+        },
+      },
+      totals: {
+        scanned: allRankedRecords.length,
+        filtered: rankedRecords.length,
+        selected: selectedRecords.length,
+        highConfidence: highConfidenceCount,
+      },
+      selectedRecordIds: selectedRecords.map(record => record.id),
+      records: rankedRecords.map(record => ({
+        id: record.id,
+        title: record.title,
+        department: record.department,
+        contentType: record.type,
+        category: record.category,
+        dateCreated: record.dateCreated,
+        relevanceScore: record.relevanceScore,
+        confidenceLevel: record.confidenceLevel,
+        matchedTerms: record.matchedTerms,
+        tags: record.tags,
+      })),
+      savedQueries,
+      chatConversationMarkdown:
+        aiChatService.exportConversationForRequest(requestId),
+    };
+  };
+
+  const handleExportSummaryJson = () => {
+    const summary = buildExportSummary();
+    triggerDownload(
+      JSON.stringify(summary, null, 2),
+      `locate-search-summary-${requestId}-${Date.now()}.json`,
+      'application/json'
+    );
+  };
+
+  const handleExportResultsCsv = () => {
+    const header = [
+      'id',
+      'title',
+      'department',
+      'contentType',
+      'category',
+      'dateCreated',
+      'relevanceScore',
+      'confidenceLevel',
+      'matchedTerms',
+      'tags',
+    ];
+
+    const rows = rankedRecords.map(record => [
+      record.id,
+      record.title,
+      record.department,
+      record.type,
+      record.category,
+      record.dateCreated,
+      String(record.relevanceScore),
+      record.confidenceLevel,
+      record.matchedTerms.join('|'),
+      record.tags.join('|'),
+    ]);
+
+    const csv =
+      `${header.map(csvEscape).join(',')}\n` +
+      rows.map(row => row.map(cell => csvEscape(cell)).join(',')).join('\n');
+
+    triggerDownload(
+      csv,
+      `locate-search-results-${requestId}-${Date.now()}.csv`,
+      'text/csv;charset=utf-8;'
+    );
+  };
+
   const handleSaveCurrentQuery = () => {
     const trimmedName = savedQueryName.trim();
     const fallbackName = `Query ${savedQueries.length + 1}`;
@@ -746,6 +891,37 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
               <Typography variant='h6'>{selectedRecords.length}</Typography>
             </Box>
           </Box>
+        </CardContent>
+      </Card>
+
+      <Card sx={{ mb: 3, border: '1px solid', borderColor: 'divider' }}>
+        <CardContent>
+          <Typography variant='h6' sx={{ mb: 1 }}>
+            Export Search Results and Summaries
+          </Typography>
+          <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+            Export current filtered records as CSV or export full search and
+            chat summary as JSON.
+          </Typography>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+            <Button
+              variant='outline'
+              size='md'
+              onClick={handleExportResultsCsv}
+              disabled={rankedRecords.length === 0}
+            >
+              <DownloadIcon />
+              Export Results CSV
+            </Button>
+            <Button
+              variant='outline'
+              size='md'
+              onClick={handleExportSummaryJson}
+            >
+              <DownloadIcon />
+              Export Summary JSON
+            </Button>
+          </Stack>
         </CardContent>
       </Card>
 

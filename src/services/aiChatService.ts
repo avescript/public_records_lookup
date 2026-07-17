@@ -721,6 +721,30 @@ Just tell me what you're looking for and I'll help you find it!`;
 
     return export_content;
   }
+
+  /**
+   * Get the latest conversation for a request.
+   */
+  getLatestConversationForRequest(requestId: string): ChatConversation | null {
+    const candidates = Array.from(this.conversations.values())
+      .filter(conversation => conversation.requestId === requestId)
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+
+    return candidates[0] || null;
+  }
+
+  /**
+   * Export the latest conversation markdown for a request.
+   */
+  exportConversationForRequest(requestId: string): string {
+    const latest = this.getLatestConversationForRequest(requestId);
+    if (!latest) return '';
+
+    return this.exportConversation(latest.id);
+  }
 }
 
 // Singleton instance

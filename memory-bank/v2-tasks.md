@@ -122,7 +122,7 @@
   - [x] Multi-criteria search (date range, department, content type)
   - [x] Search result explanation and reasoning
   - [x] Save and reuse search queries
-  - [ ] Export search results and summaries
+  - [x] Export search results and summaries
 
 ---
 
