@@ -21,6 +21,14 @@ jest.mock('../../../src/services/piiDetectionService', () => ({
     HIGH: 'high',
     CRITICAL: 'critical',
   },
+  LegalExemptionCategory: {
+    PERSONAL_PRIVACY: 'personal_privacy',
+    LAW_ENFORCEMENT: 'law_enforcement',
+    FINANCIAL: 'financial',
+    MEDICAL: 'medical',
+    INVESTIGATIVE: 'investigative',
+    OTHER: 'other',
+  },
   PIIType: {
     SSN: 'SSN',
     PHONE: 'PHONE',
@@ -48,6 +56,14 @@ const mockFindings: PIIFinding[] = [
     height: 15,
     text: '123-45-6789',
     reasoning: 'Pattern matches SSN format',
+    legalExemptions: [
+      {
+        code: 'FOIA_B6_PERSONAL_PRIVACY',
+        category: 'personal_privacy' as any,
+        description: 'Personal privacy protections for identifiable data.',
+      },
+    ],
+    primaryExemptionCategory: 'personal_privacy' as any,
   },
   {
     recordId: '1',

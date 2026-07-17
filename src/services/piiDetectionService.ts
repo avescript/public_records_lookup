@@ -15,6 +15,8 @@ export interface PIIFinding {
   text: string;
   reasoning: string;
   sensitivityLevel?: PIISensitivityLevel;
+  legalExemptions?: LegalExemption[];
+  primaryExemptionCategory?: LegalExemptionCategory;
 }
 
 export enum PIISensitivityLevel {
@@ -28,6 +30,23 @@ export interface PIIDetectionOptions {
   sensitivityLevel?: PIISensitivityLevel;
   minConfidence?: number;
   piiTypes?: PIIType[];
+  legalExemptionCategory?: LegalExemptionCategory;
+  requireLegalExemptions?: boolean;
+}
+
+export enum LegalExemptionCategory {
+  PERSONAL_PRIVACY = 'personal_privacy',
+  LAW_ENFORCEMENT = 'law_enforcement',
+  FINANCIAL = 'financial',
+  MEDICAL = 'medical',
+  INVESTIGATIVE = 'investigative',
+  OTHER = 'other',
+}
+
+export interface LegalExemption {
+  code: string;
+  category: LegalExemptionCategory;
+  description: string;
 }
 
 export enum PIIType {
@@ -55,6 +74,7 @@ export interface PIIFindingsResult {
   highConfidenceFindings: number;
   piiTypesDetected: PIIType[];
   sensitivityBreakdown: Record<PIISensitivityLevel, number>;
+  legalExemptionBreakdown: Record<LegalExemptionCategory, number>;
 }
 
 export class PIIDetectionService {
@@ -149,10 +169,107 @@ export class PIIDetectionService {
         ),
       };
 
+      const legalExemptions = this.detectLegalExemptions(
+        finding.piiType,
+        finding.text,
+        finding.reasoning
+      );
+
+      finding.legalExemptions = legalExemptions;
+      finding.primaryExemptionCategory = legalExemptions[0]?.category;
+
       findings.push(finding);
     }
 
     return findings;
+  }
+
+  private detectLegalExemptions(
+    piiType: PIIType,
+    text: string,
+    reasoning: string
+  ): LegalExemption[] {
+    const exemptions: LegalExemption[] = [];
+    const context = `${text} ${reasoning}`.toLowerCase();
+
+    const addExemption = (exemption: LegalExemption) => {
+      if (!exemptions.some(item => item.code === exemption.code)) {
+        exemptions.push(exemption);
+      }
+    };
+
+    if (
+      [
+        PIIType.SSN,
+        PIIType.PHONE,
+        PIIType.ADDRESS,
+        PIIType.PERSON_NAME,
+        PIIType.EMAIL,
+        PIIType.DOB,
+        PIIType.DRIVERS_LICENSE,
+      ].includes(piiType)
+    ) {
+      addExemption({
+        code: 'FOIA_B6_PERSONAL_PRIVACY',
+        category: LegalExemptionCategory.PERSONAL_PRIVACY,
+        description: 'Personal privacy protections for identifiable data.',
+      });
+    }
+
+    if ([PIIType.ACCOUNT_NUMBER, PIIType.ROUTING_NUMBER].includes(piiType)) {
+      addExemption({
+        code: 'FINANCIAL_PRIVACY',
+        category: LegalExemptionCategory.FINANCIAL,
+        description: 'Financial account and routing information protections.',
+      });
+    }
+
+    if (piiType === PIIType.MEDICAL_ID) {
+      addExemption({
+        code: 'HIPAA_HEALTH_INFORMATION',
+        category: LegalExemptionCategory.MEDICAL,
+        description: 'Medical privacy requirements under health regulations.',
+      });
+    }
+
+    if (
+      [
+        PIIType.CASE_NUMBER,
+        PIIType.INCIDENT_NUMBER,
+        PIIType.BADGE_NUMBER,
+        PIIType.VEHICLE_ID,
+        PIIType.CONFIDENTIAL_SOURCE,
+      ].includes(piiType)
+    ) {
+      addExemption({
+        code: 'FOIA_B7_LAW_ENFORCEMENT',
+        category: LegalExemptionCategory.LAW_ENFORCEMENT,
+        description: 'Law-enforcement-sensitive information protections.',
+      });
+    }
+
+    if (
+      context.includes('investigation') ||
+      context.includes('informant') ||
+      context.includes('witness') ||
+      context.includes('confidential source')
+    ) {
+      addExemption({
+        code: 'ONGOING_INVESTIGATION',
+        category: LegalExemptionCategory.INVESTIGATIVE,
+        description: 'Investigative integrity and source protection.',
+      });
+    }
+
+    if (exemptions.length === 0) {
+      addExemption({
+        code: 'GENERAL_SENSITIVITY_REVIEW',
+        category: LegalExemptionCategory.OTHER,
+        description: 'General review recommended based on sensitive context.',
+      });
+    }
+
+    return exemptions;
   }
 
   private calculateSensitivityLevel(
@@ -212,6 +329,30 @@ export class PIIDetectionService {
         finding.sensitivityLevel ||
         this.calculateSensitivityLevel(finding.piiType, finding.confidence);
       breakdown[level] += 1;
+    });
+
+    return breakdown;
+  }
+
+  private buildLegalExemptionBreakdown(
+    findings: PIIFinding[]
+  ): Record<LegalExemptionCategory, number> {
+    const breakdown: Record<LegalExemptionCategory, number> = {
+      [LegalExemptionCategory.PERSONAL_PRIVACY]: 0,
+      [LegalExemptionCategory.LAW_ENFORCEMENT]: 0,
+      [LegalExemptionCategory.FINANCIAL]: 0,
+      [LegalExemptionCategory.MEDICAL]: 0,
+      [LegalExemptionCategory.INVESTIGATIVE]: 0,
+      [LegalExemptionCategory.OTHER]: 0,
+    };
+
+    findings.forEach(finding => {
+      const categories = new Set(
+        (finding.legalExemptions || []).map(exemption => exemption.category)
+      );
+      categories.forEach(category => {
+        breakdown[category] += 1;
+      });
     });
 
     return breakdown;
@@ -285,8 +426,22 @@ export class PIIDetectionService {
         finding,
         options.sensitivityLevel
       );
+      const legalCategoryMatches = options.legalExemptionCategory
+        ? (finding.legalExemptions || []).some(
+            exemption => exemption.category === options.legalExemptionCategory
+          )
+        : true;
+      const hasLegalExemptions = options.requireLegalExemptions
+        ? (finding.legalExemptions || []).length > 0
+        : true;
 
-      return typeMatches && confidenceMatches && sensitivityMatches;
+      return (
+        typeMatches &&
+        confidenceMatches &&
+        sensitivityMatches &&
+        legalCategoryMatches &&
+        hasLegalExemptions
+      );
     });
 
     const highConfidenceFindings = filteredFindings.filter(
@@ -299,6 +454,8 @@ export class PIIDetectionService {
 
     const sensitivityBreakdown =
       this.buildSensitivityBreakdown(filteredFindings);
+    const legalExemptionBreakdown =
+      this.buildLegalExemptionBreakdown(filteredFindings);
 
     return {
       recordId,
@@ -307,6 +464,7 @@ export class PIIDetectionService {
       highConfidenceFindings: highConfidenceFindings.length,
       piiTypesDetected,
       sensitivityBreakdown,
+      legalExemptionBreakdown,
     };
   }
 
@@ -371,8 +529,22 @@ export class PIIDetectionService {
         finding,
         options.sensitivityLevel
       );
+      const legalCategoryMatches = options.legalExemptionCategory
+        ? (finding.legalExemptions || []).some(
+            exemption => exemption.category === options.legalExemptionCategory
+          )
+        : true;
+      const hasLegalExemptions = options.requireLegalExemptions
+        ? (finding.legalExemptions || []).length > 0
+        : true;
 
-      return typeMatches && confidenceMatches && sensitivityMatches;
+      return (
+        typeMatches &&
+        confidenceMatches &&
+        sensitivityMatches &&
+        legalCategoryMatches &&
+        hasLegalExemptions
+      );
     });
 
     const highConfidenceFindings = filteredFindings.filter(
@@ -385,6 +557,8 @@ export class PIIDetectionService {
 
     const sensitivityBreakdown =
       this.buildSensitivityBreakdown(filteredFindings);
+    const legalExemptionBreakdown =
+      this.buildLegalExemptionBreakdown(filteredFindings);
 
     return {
       recordId,
@@ -393,6 +567,7 @@ export class PIIDetectionService {
       highConfidenceFindings: highConfidenceFindings.length,
       piiTypesDetected,
       sensitivityBreakdown,
+      legalExemptionBreakdown,
     };
   }
 

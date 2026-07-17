@@ -40,6 +40,7 @@ import {
 } from '@/components/migration';
 
 import {
+  LegalExemptionCategory,
   piiDetectionService,
   PIIFinding,
   PIIFindingsResult,
@@ -168,6 +169,18 @@ const PIIFindingItem: React.FC<PIIFindingItemProps> = ({
                 Coordinates: ({finding.x}, {finding.y}) - {finding.width} ×{' '}
                 {finding.height}
               </Typography>
+              {!!finding.legalExemptions?.length && (
+                <Stack direction='row' spacing={0.5} sx={{ mt: 0.5 }}>
+                  {finding.legalExemptions.map(exemption => (
+                    <Chip
+                      key={exemption.code}
+                      size='small'
+                      label={exemption.category.replace(/_/g, ' ')}
+                      variant='outlined'
+                    />
+                  ))}
+                </Stack>
+              )}
             </Box>
           )}
         </Box>
@@ -194,6 +207,9 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
   const [sensitivityFilter, setSensitivityFilter] = useState<
     'all' | PIISensitivityLevel
   >('all');
+  const [exemptionFilter, setExemptionFilter] = useState<
+    'all' | LegalExemptionCategory
+  >('all');
 
   useEffect(() => {
     const loadFindings = async () => {
@@ -202,9 +218,14 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
         setError(null);
         const result = await piiDetectionService.getFindingsForRecord(
           recordId,
-          sensitivityFilter === 'all'
-            ? {}
-            : { sensitivityLevel: sensitivityFilter }
+          {
+            ...(sensitivityFilter === 'all'
+              ? {}
+              : { sensitivityLevel: sensitivityFilter }),
+            ...(exemptionFilter === 'all'
+              ? {}
+              : { legalExemptionCategory: exemptionFilter }),
+          }
         );
         setFindingsResult(result);
 
@@ -221,7 +242,7 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
     };
 
     loadFindings();
-  }, [recordId, sensitivityFilter]);
+  }, [recordId, sensitivityFilter, exemptionFilter]);
 
   const filteredFindings = useMemo(() => {
     if (!findingsResult) return [];
@@ -407,6 +428,11 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
                 label={`${findingsResult.piiTypesDetected.length} types`}
                 variant='outlined'
               />
+              <Chip
+                size='small'
+                label={`${Object.values(findingsResult.legalExemptionBreakdown).reduce((sum, count) => sum + (count > 0 ? 1 : 0), 0)} exemption categories`}
+                variant='outlined'
+              />
             </Stack>
           </Box>
 
@@ -451,6 +477,37 @@ const PIIFindings: React.FC<PIIFindingsProps> = ({
                 <MenuItem value={PIISensitivityLevel.CRITICAL}>
                   Critical Only
                 </MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl size='small' sx={{ minWidth: 170 }}>
+              <InputLabel>Exemption</InputLabel>
+              <Select
+                value={exemptionFilter}
+                label='Exemption'
+                onChange={e =>
+                  setExemptionFilter(
+                    e.target.value as 'all' | LegalExemptionCategory
+                  )
+                }
+              >
+                <MenuItem value='all'>All Categories</MenuItem>
+                <MenuItem value={LegalExemptionCategory.PERSONAL_PRIVACY}>
+                  Personal Privacy
+                </MenuItem>
+                <MenuItem value={LegalExemptionCategory.LAW_ENFORCEMENT}>
+                  Law Enforcement
+                </MenuItem>
+                <MenuItem value={LegalExemptionCategory.FINANCIAL}>
+                  Financial
+                </MenuItem>
+                <MenuItem value={LegalExemptionCategory.MEDICAL}>
+                  Medical
+                </MenuItem>
+                <MenuItem value={LegalExemptionCategory.INVESTIGATIVE}>
+                  Investigative
+                </MenuItem>
+                <MenuItem value={LegalExemptionCategory.OTHER}>Other</MenuItem>
               </Select>
             </FormControl>
 

@@ -1,4 +1,5 @@
 import {
+  LegalExemptionCategory,
   PIIDetectionService,
   PIISensitivityLevel,
   PIIType,
@@ -72,20 +73,24 @@ describe('PIIDetectionService', () => {
       await service.initialize();
       const findings = (service as any).findings;
 
-      expect(findings[0]).toEqual({
-        recordId: '1',
-        fileName: 'police_report_001.pdf',
-        pageNumber: 1,
-        piiType: 'SSN',
-        confidence: 0.95,
-        x: 150,
-        y: 200,
-        width: 120,
-        height: 15,
-        text: '123-45-6789',
-        reasoning: 'Pattern matches XXX-XX-XXXX format',
-        sensitivityLevel: PIISensitivityLevel.CRITICAL,
-      });
+      expect(findings[0]).toEqual(
+        expect.objectContaining({
+          recordId: '1',
+          fileName: 'police_report_001.pdf',
+          pageNumber: 1,
+          piiType: 'SSN',
+          confidence: 0.95,
+          x: 150,
+          y: 200,
+          width: 120,
+          height: 15,
+          text: '123-45-6789',
+          reasoning: 'Pattern matches XXX-XX-XXXX format',
+          sensitivityLevel: PIISensitivityLevel.CRITICAL,
+          primaryExemptionCategory: LegalExemptionCategory.PERSONAL_PRIVACY,
+        })
+      );
+      expect(findings[0].legalExemptions?.length).toBeGreaterThan(0);
     });
 
     it('should handle quoted values in CSV', async () => {
@@ -154,6 +159,16 @@ invalid,line
           critical: expect.any(Number),
         })
       );
+      expect(result.legalExemptionBreakdown).toEqual(
+        expect.objectContaining({
+          personal_privacy: expect.any(Number),
+          law_enforcement: expect.any(Number),
+          financial: expect.any(Number),
+          medical: expect.any(Number),
+          investigative: expect.any(Number),
+          other: expect.any(Number),
+        })
+      );
     });
 
     it('should return empty result for non-existent record', async () => {
@@ -169,6 +184,14 @@ invalid,line
         medium: 0,
         high: 0,
         critical: 0,
+      });
+      expect(result.legalExemptionBreakdown).toEqual({
+        personal_privacy: 0,
+        law_enforcement: 0,
+        financial: 0,
+        medical: 0,
+        investigative: 0,
+        other: 0,
       });
     });
 
@@ -205,6 +228,21 @@ invalid,line
 
       expect(result.totalFindings).toBe(1);
       expect(result.findings[0].piiType).toBe(PIIType.SSN);
+    });
+
+    it('should filter findings by legal exemption category', async () => {
+      const result = await service.getFindingsForRecord('1', {
+        legalExemptionCategory: LegalExemptionCategory.PERSONAL_PRIVACY,
+      });
+
+      expect(result.totalFindings).toBe(3);
+      expect(
+        result.findings.every(
+          finding =>
+            finding.primaryExemptionCategory ===
+            LegalExemptionCategory.PERSONAL_PRIVACY
+        )
+      ).toBe(true);
     });
 
     it('should initialize service if not already initialized', async () => {
