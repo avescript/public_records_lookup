@@ -111,18 +111,18 @@
 ### US-V2-021: AI Chatbot Search Assistant ⏳
 
 - [ ] **Chatbot Integration**
-  - [ ] Integrate OpenAI/Vertex AI for conversational search
-  - [ ] Design chat interface with conversation history
-  - [ ] Implement context-aware search queries
-  - [ ] Add natural language record summarization
-  - [ ] Create suggested search queries and refinements
+  - [x] Integrate OpenAI/Vertex AI for conversational search
+  - [x] Design chat interface with conversation history
+  - [x] Implement context-aware search queries
+  - [x] Add natural language record summarization
+  - [x] Create suggested search queries and refinements
 
 - [ ] **Advanced Search Features**
-  - [ ] Natural language query processing
-  - [ ] Multi-criteria search (date range, department, content type)
-  - [ ] Search result explanation and reasoning
-  - [ ] Save and reuse search queries
-  - [ ] Export search results and summaries
+  - [x] Natural language query processing
+  - [x] Multi-criteria search (date range, department, content type)
+  - [x] Search result explanation and reasoning
+  - [x] Save and reuse search queries
+  - [x] Export search results and summaries
 
 ---
 

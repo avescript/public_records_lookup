@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   AutoAwesome as AIIcon,
   Bolt as LightningIcon,
+  Chat as ChatIcon,
   Checklist as ChecklistIcon,
   CompareArrows as CompareIcon,
   Description as DocumentIcon,
+  Download as DownloadIcon,
   FilterList as FilterIcon,
   Folder as FolderIcon,
   Preview as PreviewIcon,
@@ -27,8 +29,10 @@ import {
   Stack,
   Typography,
 } from '@/components/migration';
+import { LocateChatAssistant } from '@/components/staff/LocateChatAssistant';
 import { WorkflowStep } from '@/components/staff/WorkflowNavigation';
 import { WorkflowPage } from '@/components/staff/WorkflowPage';
+import { aiChatService } from '@/services/aiChatService';
 
 export interface LocateStepProps {
   requestId: string;
@@ -56,6 +60,62 @@ interface RankedRecord extends PublicRecord {
   confidenceLevel: 'high' | 'medium' | 'low';
   matchedTerms: string[];
   previewSnippet: string;
+}
+
+interface ParsedLocateQuery {
+  query: string;
+  department?: string;
+  contentType?: PublicRecord['type'];
+  dateStart?: string;
+  dateEnd?: string;
+}
+
+interface SavedLocateQuery {
+  id: string;
+  name: string;
+  query: string;
+  department: string;
+  contentType: 'all' | PublicRecord['type'];
+  dateStart: string;
+  dateEnd: string;
+  createdAt: string;
+}
+
+interface LocateExportSummary {
+  generatedAt: string;
+  requestId: string;
+  search: {
+    query: string;
+    filters: {
+      folder: string;
+      category: string;
+      department: string;
+      contentType: string;
+      dateStart: string;
+      dateEnd: string;
+    };
+  };
+  totals: {
+    scanned: number;
+    filtered: number;
+    selected: number;
+    highConfidence: number;
+  };
+  selectedRecordIds: string[];
+  records: Array<{
+    id: string;
+    title: string;
+    department: string;
+    contentType: PublicRecord['type'];
+    category: string;
+    dateCreated: string;
+    relevanceScore: number;
+    confidenceLevel: 'high' | 'medium' | 'low';
+    matchedTerms: string[];
+    tags: string[];
+  }>;
+  savedQueries: SavedLocateQuery[];
+  chatConversationMarkdown: string;
 }
 
 const mockRecords: PublicRecord[] = [
@@ -284,7 +344,57 @@ function getRelevanceColor(score: number): 'success' | 'warning' | 'error' {
   return 'error';
 }
 
+function formatDateForInput(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function parseLocateQuery(query: string): ParsedLocateQuery {
+  const lower = query.toLowerCase();
+  const result: ParsedLocateQuery = { query };
+
+  if (lower.includes('police')) result.department = 'Police';
+  else if (lower.includes('transportation'))
+    result.department = 'Transportation';
+  else if (lower.includes('city clerk')) result.department = 'City Clerk';
+  else if (lower.includes('manual upload'))
+    result.department = 'Manual Uploads';
+
+  if (lower.includes('email')) result.contentType = 'email';
+  else if (lower.includes('report')) result.contentType = 'report';
+  else if (lower.includes('document')) result.contentType = 'document';
+  else if (lower.includes('correspondence'))
+    result.contentType = 'correspondence';
+
+  const rangeMatch = lower.match(
+    /from\s+(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/
+  );
+  if (rangeMatch) {
+    result.dateStart = rangeMatch[1];
+    result.dateEnd = rangeMatch[2];
+  }
+
+  const lastDaysMatch = lower.match(/last\s+(\d{1,3})\s+days?/);
+  if (lastDaysMatch) {
+    const days = Number(lastDaysMatch[1]);
+    if (!Number.isNaN(days) && days > 0) {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(endDate.getDate() - days);
+      result.dateStart = formatDateForInput(startDate);
+      result.dateEnd = formatDateForInput(endDate);
+    }
+  }
+
+  return result;
+}
+
+function csvEscape(value: string): string {
+  const escaped = value.replace(/"/g, '""');
+  return `"${escaped}"`;
+}
+
 export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
+  const savedQueriesStorageKey = `locate-saved-queries-${requestId}`;
   const router = useRouter();
   const [records, setRecords] = useState<PublicRecord[]>(
     mockRecords.map(r => ({ ...r, selected: false }))
@@ -293,10 +403,19 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
   const [isBatchProcessing, setIsBatchProcessing] = useState(false);
   const [folderFilter, setFolderFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [departmentFilter, setDepartmentFilter] = useState('all');
+  const [contentTypeFilter, setContentTypeFilter] = useState<
+    'all' | PublicRecord['type']
+  >('all');
+  const [dateStartFilter, setDateStartFilter] = useState('');
+  const [dateEndFilter, setDateEndFilter] = useState('');
+  const [savedQueries, setSavedQueries] = useState<SavedLocateQuery[]>([]);
+  const [savedQueryName, setSavedQueryName] = useState('');
   const [targetFolder, setTargetFolder] = useState(defaultFolders[0]);
   const [targetCategory, setTargetCategory] = useState(defaultCategories[0]);
   const [tagInput, setTagInput] = useState('');
   const [uploadNotice, setUploadNotice] = useState<string | null>(null);
+  const [isChatAssistantOpen, setIsChatAssistantOpen] = useState(false);
   const [activePreviewRecordId, setActivePreviewRecordId] = useState<
     string | null
   >(mockRecords[0]?.id ?? null);
@@ -323,6 +442,10 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
     return Array.from(new Set([...defaultCategories, ...dynamicCategories]));
   }, [records]);
 
+  const departmentOptions = useMemo(() => {
+    return Array.from(new Set(records.map(record => record.department)));
+  }, [records]);
+
   const rankedRecords = useMemo(() => {
     return allRankedRecords.filter(record => {
       if (
@@ -336,9 +459,41 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
         return false;
       }
 
+      if (
+        departmentFilter !== 'all' &&
+        record.department !== departmentFilter
+      ) {
+        return false;
+      }
+
+      if (contentTypeFilter !== 'all' && record.type !== contentTypeFilter) {
+        return false;
+      }
+
+      const recordDate = new Date(record.dateCreated);
+
+      if (dateStartFilter) {
+        const startDate = new Date(dateStartFilter);
+        if (recordDate < startDate) return false;
+      }
+
+      if (dateEndFilter) {
+        const endDate = new Date(dateEndFilter);
+        endDate.setHours(23, 59, 59, 999);
+        if (recordDate > endDate) return false;
+      }
+
       return true;
     });
-  }, [allRankedRecords, folderFilter, categoryFilter]);
+  }, [
+    allRankedRecords,
+    folderFilter,
+    categoryFilter,
+    departmentFilter,
+    contentTypeFilter,
+    dateStartFilter,
+    dateEndFilter,
+  ]);
 
   const selectedRecords = allRankedRecords.filter(r => r.selected);
   const comparisonRecords = selectedRecords.slice(0, 2);
@@ -491,11 +646,214 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
     event.target.value = '';
   };
 
+  const applyParsedLocateQuery = (query: string) => {
+    const parsed = parseLocateQuery(query);
+    setSearchTerm(parsed.query);
+
+    if (parsed.department) setDepartmentFilter(parsed.department);
+    if (parsed.contentType) setContentTypeFilter(parsed.contentType);
+    if (parsed.dateStart) setDateStartFilter(parsed.dateStart);
+    if (parsed.dateEnd) setDateEndFilter(parsed.dateEnd);
+  };
+
+  const handleClearAdvancedFilters = () => {
+    setDepartmentFilter('all');
+    setContentTypeFilter('all');
+    setDateStartFilter('');
+    setDateEndFilter('');
+  };
+
+  const triggerDownload = (
+    content: string,
+    fileName: string,
+    mimeType: string
+  ) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const buildExportSummary = (): LocateExportSummary => {
+    return {
+      generatedAt: new Date().toISOString(),
+      requestId,
+      search: {
+        query: searchTerm,
+        filters: {
+          folder: folderFilter,
+          category: categoryFilter,
+          department: departmentFilter,
+          contentType: contentTypeFilter,
+          dateStart: dateStartFilter,
+          dateEnd: dateEndFilter,
+        },
+      },
+      totals: {
+        scanned: allRankedRecords.length,
+        filtered: rankedRecords.length,
+        selected: selectedRecords.length,
+        highConfidence: highConfidenceCount,
+      },
+      selectedRecordIds: selectedRecords.map(record => record.id),
+      records: rankedRecords.map(record => ({
+        id: record.id,
+        title: record.title,
+        department: record.department,
+        contentType: record.type,
+        category: record.category,
+        dateCreated: record.dateCreated,
+        relevanceScore: record.relevanceScore,
+        confidenceLevel: record.confidenceLevel,
+        matchedTerms: record.matchedTerms,
+        tags: record.tags,
+      })),
+      savedQueries,
+      chatConversationMarkdown:
+        aiChatService.exportConversationForRequest(requestId),
+    };
+  };
+
+  const handleExportSummaryJson = () => {
+    const summary = buildExportSummary();
+    triggerDownload(
+      JSON.stringify(summary, null, 2),
+      `locate-search-summary-${requestId}-${Date.now()}.json`,
+      'application/json'
+    );
+  };
+
+  const handleExportResultsCsv = () => {
+    const header = [
+      'id',
+      'title',
+      'department',
+      'contentType',
+      'category',
+      'dateCreated',
+      'relevanceScore',
+      'confidenceLevel',
+      'matchedTerms',
+      'tags',
+    ];
+
+    const rows = rankedRecords.map(record => [
+      record.id,
+      record.title,
+      record.department,
+      record.type,
+      record.category,
+      record.dateCreated,
+      String(record.relevanceScore),
+      record.confidenceLevel,
+      record.matchedTerms.join('|'),
+      record.tags.join('|'),
+    ]);
+
+    const csv =
+      `${header.map(csvEscape).join(',')}\n` +
+      rows.map(row => row.map(cell => csvEscape(cell)).join(',')).join('\n');
+
+    triggerDownload(
+      csv,
+      `locate-search-results-${requestId}-${Date.now()}.csv`,
+      'text/csv;charset=utf-8;'
+    );
+  };
+
+  const handleSaveCurrentQuery = () => {
+    const trimmedName = savedQueryName.trim();
+    const fallbackName = `Query ${savedQueries.length + 1}`;
+
+    const entry: SavedLocateQuery = {
+      id: `saved-${Date.now()}`,
+      name: trimmedName || fallbackName,
+      query: searchTerm,
+      department: departmentFilter,
+      contentType: contentTypeFilter,
+      dateStart: dateStartFilter,
+      dateEnd: dateEndFilter,
+      createdAt: new Date().toISOString(),
+    };
+
+    setSavedQueries(prev => [entry, ...prev].slice(0, 12));
+    setSavedQueryName('');
+  };
+
+  const applySavedQuery = (entry: SavedLocateQuery) => {
+    setSearchTerm(entry.query);
+    setDepartmentFilter(entry.department);
+    setContentTypeFilter(entry.contentType);
+    setDateStartFilter(entry.dateStart);
+    setDateEndFilter(entry.dateEnd);
+  };
+
+  const deleteSavedQuery = (id: string) => {
+    setSavedQueries(prev => prev.filter(entry => entry.id !== id));
+  };
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(savedQueriesStorageKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as SavedLocateQuery[];
+      if (Array.isArray(parsed)) setSavedQueries(parsed);
+    } catch {
+      setSavedQueries([]);
+    }
+  }, [savedQueriesStorageKey]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        savedQueriesStorageKey,
+        JSON.stringify(savedQueries)
+      );
+    } catch {
+      // Ignore storage failures to avoid blocking workflow interactions.
+    }
+  }, [savedQueries, savedQueriesStorageKey]);
+
   const confidenceColorMap = {
     high: 'success',
     medium: 'warning',
     low: 'error',
   } as const;
+
+  const assistantContext = useMemo(() => {
+    const topDepartments = Array.from(
+      new Set(allRankedRecords.map(record => record.department))
+    ).slice(0, 3);
+
+    const topCategories = Array.from(
+      new Set(allRankedRecords.map(record => record.category))
+    ).slice(0, 3);
+
+    return {
+      requestId,
+      totalRecords: allRankedRecords.length,
+      highConfidenceCount,
+      topDepartments,
+      topCategories,
+      currentQuery: searchTerm,
+      topMatches: rankedRecords.slice(0, 5).map(record => ({
+        id: record.id,
+        title: record.title,
+        relevanceScore: record.relevanceScore,
+        confidenceLevel: record.confidenceLevel,
+        matchedTerms: record.matchedTerms,
+      })),
+    };
+  }, [
+    allRankedRecords,
+    highConfidenceCount,
+    rankedRecords,
+    requestId,
+    searchTerm,
+  ]);
 
   return (
     <WorkflowPage
@@ -533,6 +891,37 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
               <Typography variant='h6'>{selectedRecords.length}</Typography>
             </Box>
           </Box>
+        </CardContent>
+      </Card>
+
+      <Card sx={{ mb: 3, border: '1px solid', borderColor: 'divider' }}>
+        <CardContent>
+          <Typography variant='h6' sx={{ mb: 1 }}>
+            Export Search Results and Summaries
+          </Typography>
+          <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+            Export current filtered records as CSV or export full search and
+            chat summary as JSON.
+          </Typography>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+            <Button
+              variant='outline'
+              size='md'
+              onClick={handleExportResultsCsv}
+              disabled={rankedRecords.length === 0}
+            >
+              <DownloadIcon />
+              Export Results CSV
+            </Button>
+            <Button
+              variant='outline'
+              size='md'
+              onClick={handleExportSummaryJson}
+            >
+              <DownloadIcon />
+              Export Summary JSON
+            </Button>
+          </Stack>
         </CardContent>
       </Card>
 
@@ -599,6 +988,100 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
                   </option>
                 ))}
               </select>
+            </Box>
+
+            <Typography variant='caption' color='text.secondary'>
+              Advanced search filters
+            </Typography>
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 1,
+                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                mb: 1,
+              }}
+            >
+              <select
+                value={departmentFilter}
+                onChange={e => setDepartmentFilter(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
+              >
+                <option value='all'>All departments</option>
+                {departmentOptions.map(department => (
+                  <option key={department} value={department}>
+                    {department}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={contentTypeFilter}
+                onChange={e =>
+                  setContentTypeFilter(
+                    e.target.value as 'all' | PublicRecord['type']
+                  )
+                }
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
+              >
+                <option value='all'>All content types</option>
+                <option value='document'>Document</option>
+                <option value='email'>Email</option>
+                <option value='report'>Report</option>
+                <option value='correspondence'>Correspondence</option>
+              </select>
+            </Box>
+
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 1,
+                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr auto' },
+                mb: 2,
+              }}
+            >
+              <input
+                type='date'
+                value={dateStartFilter}
+                onChange={e => setDateStartFilter(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
+              />
+              <input
+                type='date'
+                value={dateEndFilter}
+                onChange={e => setDateEndFilter(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
+              />
+              <Button
+                variant='outline'
+                size='md'
+                onClick={handleClearAdvancedFilters}
+              >
+                Clear
+              </Button>
             </Box>
 
             <Typography variant='caption' color='text.secondary'>
@@ -734,6 +1217,103 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
         </Card>
       </Box>
 
+      <Card sx={{ mb: 3, border: '1px solid', borderColor: 'divider' }}>
+        <CardContent>
+          <Typography variant='h6' sx={{ mb: 1 }}>
+            Saved Search Queries
+          </Typography>
+          <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+            Save current query and filter combinations to quickly reuse them.
+          </Typography>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 1,
+              gridTemplateColumns: { xs: '1fr', sm: '1fr auto' },
+              mb: 2,
+            }}
+          >
+            <input
+              type='text'
+              placeholder='Saved query name (optional)'
+              value={savedQueryName}
+              onChange={e => setSavedQueryName(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                fontSize: '14px',
+              }}
+            />
+            <Button
+              variant='outline'
+              size='md'
+              onClick={handleSaveCurrentQuery}
+              disabled={
+                !searchTerm.trim() &&
+                departmentFilter === 'all' &&
+                contentTypeFilter === 'all' &&
+                !dateStartFilter &&
+                !dateEndFilter
+              }
+            >
+              Save Current Query
+            </Button>
+          </Box>
+
+          {savedQueries.length === 0 ? (
+            <Typography variant='body2' color='text.secondary'>
+              No saved queries yet.
+            </Typography>
+          ) : (
+            <Stack direction='column' spacing={1}>
+              {savedQueries.map(entry => (
+                <Box
+                  key={entry.id}
+                  sx={{
+                    display: 'grid',
+                    gap: 1,
+                    gridTemplateColumns: { xs: '1fr', md: '1fr auto auto' },
+                    alignItems: 'center',
+                    p: 1,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                  }}
+                >
+                  <Box>
+                    <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                      {entry.name}
+                    </Typography>
+                    <Typography variant='caption' color='text.secondary'>
+                      Query: {entry.query || 'none'} | Department:{' '}
+                      {entry.department} | Type: {entry.contentType} | Date:{' '}
+                      {entry.dateStart || 'any'} - {entry.dateEnd || 'any'}
+                    </Typography>
+                  </Box>
+                  <Button
+                    variant='outline'
+                    size='md'
+                    onClick={() => applySavedQuery(entry)}
+                  >
+                    Apply
+                  </Button>
+                  <Button
+                    variant='outline'
+                    size='md'
+                    onClick={() => deleteSavedQuery(entry.id)}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              ))}
+            </Stack>
+          )}
+        </CardContent>
+      </Card>
+
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
         <Box
           sx={{
@@ -780,6 +1360,23 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
           >
             <AIIcon />
             Select High Confidence
+          </Button>
+          <Button
+            variant='outline'
+            size='md'
+            onClick={() => setIsChatAssistantOpen(true)}
+          >
+            <ChatIcon />
+            AI Assistant
+          </Button>
+          <Button
+            variant='outline'
+            size='md'
+            onClick={() => applyParsedLocateQuery(searchTerm)}
+            disabled={!searchTerm.trim()}
+          >
+            <FilterIcon />
+            Apply NLP Filters
           </Button>
         </Box>
 
@@ -1180,6 +1777,13 @@ export function LocateStep({ requestId, completedSteps }: LocateStepProps) {
           </CardContent>
         </Card>
       )}
+
+      <LocateChatAssistant
+        open={isChatAssistantOpen}
+        onClose={() => setIsChatAssistantOpen(false)}
+        context={assistantContext}
+        onApplyQuery={applyParsedLocateQuery}
+      />
     </WorkflowPage>
   );
 }
